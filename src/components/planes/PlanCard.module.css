@@ -1,0 +1,413 @@
+/* ===== CARD DE PLAN - Diseño Profesional y Sutil ===== */
+.planCard {
+  /* Variables CSS locales - Más sutiles */
+  --plan-card-border-width: 1px;
+  --plan-card-border-opacity: 0.06;
+  --plan-card-border-opacity-hover: 0.12;
+  --plan-card-shadow-base: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+  --plan-card-shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --plan-card-hover-lift: -3px;
+  --plan-card-hover-lift-mobile: -2px;
+  
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  border: var(--plan-card-border-width) solid rgba(0, 0, 0, var(--plan-card-border-opacity));
+  box-shadow: var(--plan-card-shadow-base);
+  
+  /* Transiciones más suaves */
+  transition: 
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+@media (max-width: 768px) {
+  .planCard {
+    max-width: 300px;
+    --plan-card-hover-lift: var(--plan-card-hover-lift-mobile);
+  }
+}
+
+.planCard:hover {
+  transform: translateY(var(--plan-card-hover-lift));
+  border-color: rgba(0, 0, 0, var(--plan-card-border-opacity-hover));
+  box-shadow: var(--plan-card-shadow-hover);
+}
+
+.planCard:active {
+  transform: translateY(calc(var(--plan-card-hover-lift) * 0.6));
+}
+
+/* ===== HEADER DEL PLAN - Más sutil ===== */
+.planHeader {
+  --header-padding-y: var(--spacing-3);
+  --header-padding-x: var(--spacing-4);
+  --header-border-opacity: 0.05;
+  
+  padding: var(--header-padding-y) var(--header-padding-x);
+  background: var(--color-neutral-50);
+  border-bottom: 1px solid rgba(0, 0, 0, var(--header-border-opacity));
+}
+
+.planTitle {
+  --title-font-size: clamp(0.8125rem, 2vw, 1rem);
+  --title-letter-spacing: 0.5px;
+  
+  font-size: var(--title-font-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-neutral-800);
+  font-family: var(--font-display);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: var(--title-letter-spacing);
+  text-align: left;
+  line-height: 1.3;
+}
+
+/* ===== CONTENIDO DEL PLAN - Espaciados más respirados ===== */
+.planContent {
+  --content-padding-base: var(--spacing-4);
+  --content-padding-desktop: var(--spacing-5);
+  --content-gap: var(--spacing-4);
+  
+  display: flex;
+  flex-direction: column;
+  gap: var(--content-gap);
+  padding: var(--content-padding-base);
+}
+
+@media (min-width: 768px) {
+  .planContent {
+    padding: var(--content-padding-desktop);
+  }
+}
+
+/* ===== CONTENEDOR MODELO Y VERSIÓN - Más sutil ===== */
+.modeloVersionContainer {
+  --version-container-border-opacity: 0.04;
+  --version-container-padding-bottom: var(--spacing-2);
+  --version-container-margin-bottom: var(--spacing-3);
+  
+  text-align: center;
+  padding-bottom: var(--version-container-padding-bottom);
+  border-bottom: 1px solid rgba(0, 0, 0, var(--version-container-border-opacity));
+  margin-bottom: var(--version-container-margin-bottom);
+}
+
+/* ===== TÍTULO MODELO Y VERSIÓN - Más elegante ===== */
+.modeloVersionTitle {
+  --version-title-font-size: clamp(1rem, 2.5vw, 1.375rem);
+  --version-title-letter-spacing: 0.5px;
+  --version-title-line-height: 1.3;
+  
+  font-size: var(--version-title-font-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-neutral-800);
+  font-family: var(--font-display);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: var(--version-title-letter-spacing);
+  line-height: var(--version-title-line-height);
+}
+
+.versionSeparator {
+  --version-separator-letter-spacing: 0.5px;
+  
+  font-weight: var(--font-weight-normal);
+  color: var(--color-neutral-600);
+  letter-spacing: var(--version-separator-letter-spacing);
+}
+
+/* ===== CUOTA DESDE - Diseño más refinado ===== */
+.cuotaDesdeContainer {
+  --cuota-container-padding-y: var(--spacing-3);
+  --cuota-container-padding-x: 0;
+  --cuota-container-margin-bottom: var(--spacing-4);
+  --cuota-container-border-opacity: 0.04;
+  
+  padding: var(--cuota-container-padding-y) var(--cuota-container-padding-x);
+  margin-bottom: var(--cuota-container-margin-bottom);
+  border-bottom: 1px solid rgba(0, 0, 0, var(--cuota-container-border-opacity));
+}
+
+.cuotaDesdeRow {
+  --cuota-row-gap: var(--spacing-3);
+  
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--cuota-row-gap);
+  align-items: flex-start; /* ✅ Alineación arriba */
+  width: 100%;
+}
+
+.cuotaDesdeItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  align-items: center;
+  justify-content: flex-start; /* ✅ Alineación arriba */
+}
+
+.cuotaDesdeLabel {
+  --cuota-label-font-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
+  --cuota-label-letter-spacing: 0.5px;
+  
+  font-size: var(--cuota-label-font-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-neutral-500);
+  text-transform: capitalize; /* ✅ Solo primera letra mayúscula */
+  letter-spacing: var(--cuota-label-letter-spacing);
+  font-family: var(--font-display);
+  line-height: 1.4;
+}
+
+.cuotaDesdeValue {
+  --cuota-value-font-size: clamp(2.5rem, 6.5vw, 3.75rem); /* ✅ Mucho más grande */
+  --cuota-value-line-height: 1.2;
+  --cuota-value-letter-spacing: -0.2px;
+  
+  font-size: var(--cuota-value-font-size);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-brand-500);
+  font-family: var(--font-condensed);
+  font-style: normal;
+  display: flex;
+  align-items: flex-start; /* ✅ Alineación arriba */
+  justify-content: center;
+  line-height: var(--cuota-value-line-height);
+  letter-spacing: var(--cuota-value-letter-spacing);
+  width: 100%;
+  
+  /* Optimización de renderizado */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.cuotasTotalesItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  align-items: center;
+  justify-content: flex-start; /* ✅ Alineación arriba */
+}
+
+.cuotasTotalesLabelKey {
+  --cuotas-label-key-font-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
+  --cuotas-label-key-letter-spacing: 0.5px;
+  
+  font-size: var(--cuotas-label-key-font-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-neutral-500);
+  text-transform: capitalize; /* ✅ Solo primera letra mayúscula */
+  letter-spacing: var(--cuotas-label-key-letter-spacing);
+  font-family: var(--font-display);
+  line-height: 1.4;
+}
+
+.cuotasTotalesContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* ✅ Centrado horizontalmente */
+  justify-content: flex-start; /* ✅ Alineación arriba verticalmente */
+  gap: 0.375rem;
+  width: 100%;
+}
+
+.cuotasTotalesNumber {
+  --cuotas-totales-font-size: clamp(2.25rem, 6vw, 3.25rem);
+  --cuotas-totales-line-height: 1.15;
+  --cuotas-totales-letter-spacing: -0.2px;
+  
+  font-size: var(--cuotas-totales-font-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-neutral-800);
+  font-family: var(--font-condensed);
+  display: block;
+  line-height: var(--cuotas-totales-line-height);
+  letter-spacing: var(--cuotas-totales-letter-spacing);
+  white-space: nowrap;
+  align-self: center; /* ✅ Centrado horizontalmente */
+  
+  /* Optimización de renderizado */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+.cuotasTotalesLabel {
+  --cuotas-label-font-size: clamp(0.9375rem, 2.5vw, 1.25rem);
+  --cuotas-label-line-height: 1.3;
+  
+  font-size: var(--cuotas-label-font-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-neutral-600);
+  font-family: var(--font-condensed);
+  text-transform: lowercase;
+  line-height: var(--cuotas-label-line-height);
+  white-space: nowrap;
+}
+
+/* ===== FILA INFERIOR - Características en 2 filas (Fila 1: Valor móvil, Fila 2: Tipo de plan) ===== */
+.infoBottomRow {
+  --info-row-gap: var(--spacing-3);
+  --info-row-margin-bottom: var(--spacing-2);
+  
+  display: flex;
+  flex-direction: column; /* ✅ Layout de filas */
+  gap: var(--info-row-gap);
+  margin-bottom: var(--info-row-margin-bottom);
+  width: 100%;
+}
+
+/* Mantener 2 filas también en mobile */
+@media (max-width: 480px) {
+  .infoBottomRow {
+    gap: var(--spacing-3);
+  }
+}
+
+.infoBottomRowItem {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* ✅ Dos columnas iguales */
+  gap: var(--spacing-3);
+  align-items: stretch; /* ✅ Alineación vertical */
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .infoBottomRowItem {
+    gap: var(--spacing-2);
+  }
+}
+
+.infoBottomItem {
+  --info-item-gap: 0.375rem;
+  
+  display: flex;
+  flex-direction: column;
+  gap: var(--info-item-gap);
+  width: 100%;
+  min-width: 0;
+  justify-content: flex-start; /* ✅ Alineación vertical consistente */
+}
+
+/* Fila 1: Valor móvil - Estilos específicos */
+.infoBottomRow > .infoBottomRowItem:first-child {
+  --valor-movil-label-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
+  --valor-movil-value-size: clamp(1.125rem, 3vw, 1.5rem);
+}
+
+.infoBottomRow > .infoBottomRowItem:first-child .infoBottomItem {
+  gap: var(--spacing-1);
+}
+
+.infoBottomRow > .infoBottomRowItem:first-child .infoBottomLabel {
+  font-size: var(--valor-movil-label-size);
+}
+
+.infoBottomRow > .infoBottomRowItem:first-child .infoBottomValue {
+  font-size: var(--valor-movil-value-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-neutral-700);
+  line-height: 1.3;
+  display: flex;
+  align-items: center;
+}
+
+.infoBottomLabel {
+  --info-label-font-size: clamp(0.625rem, 1.3vw, 0.75rem);
+  --info-label-letter-spacing: 0.4px;
+  --info-label-line-height: 1.3;
+  
+  font-size: var(--info-label-font-size);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-neutral-500);
+  text-transform: capitalize; /* ✅ Solo primera letra mayúscula */
+  letter-spacing: var(--info-label-letter-spacing);
+  line-height: var(--info-label-line-height);
+}
+
+.infoBottomValue {
+  --info-value-font-size: clamp(0.75rem, 1.6vw, 0.875rem);
+  --info-value-line-height: 1.4;
+  
+  font-size: var(--info-value-font-size);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-neutral-700);
+  font-family: var(--font-condensed);
+  line-height: var(--info-value-line-height);
+}
+
+/* ===== BOTONES DE ACCIÓN - Más elegante ===== */
+.planActions {
+  --actions-margin-top: var(--spacing-3);
+  --actions-padding-top: var(--spacing-3);
+  --actions-border-opacity: 0.04;
+  --actions-gap: var(--spacing-2);
+  
+  display: flex;
+  justify-content: center;
+  gap: var(--actions-gap);
+  margin-top: var(--actions-margin-top);
+  padding-top: var(--actions-padding-top);
+  border-top: 1px solid rgba(0, 0, 0, var(--actions-border-opacity));
+}
+
+.planActions .actionButton {
+  flex: 1;
+  max-width: 100%;
+}
+
+.actionButton {
+  --button-padding-y: var(--spacing-3);
+  --button-padding-x: var(--spacing-4);
+  --button-font-size: clamp(0.8125rem, 2vw, 0.9375rem);
+  --button-letter-spacing: 0.5px;
+  --button-hover-lift: -1px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--button-padding-y) var(--button-padding-x);
+  background: var(--color-brand-500);
+  color: var(--color-white);
+  text-decoration: none;
+  font-size: var(--button-font-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: var(--button-letter-spacing);
+  border-radius: var(--border-radius-md);
+  
+  /* Transiciones más suaves */
+  transition: 
+    background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  cursor: pointer;
+}
+
+.actionButton:hover {
+  background: var(--color-brand-600);
+  transform: translateY(var(--button-hover-lift));
+  box-shadow: 0 2px 8px rgba(6, 27, 156, 0.15);
+}
+
+.actionButton:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(6, 27, 156, 0.1);
+}
+
+.actionButton:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}

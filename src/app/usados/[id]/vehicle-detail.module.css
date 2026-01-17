@@ -1,0 +1,181 @@
+/**
+ * vehicle-detail.module.css - Estilos para detalle de vehículo usado
+ * 
+ * @author Indiana Peugeot
+ * @version 1.0.0
+ */
+
+.container {
+  padding: var(--spacing-6) clamp(var(--container-padding-mobile), 5vw, var(--spacing-8));
+  min-height: auto; /* Dejar que el contenido determine la altura */
+  max-width: 100%; /* Permitir que CardDetalle controle su propio ancho */
+  margin: 0 auto;
+  width: 100%;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  margin-bottom: var(--spacing-6);
+  margin-left: clamp(var(--container-padding-mobile), 4vw, var(--container-padding-desktop));
+  transition: color var(--transition-fast);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  max-width: 1600px;
+}
+
+.backLink:hover {
+  color: var(--color-brand-500);
+}
+
+.content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-6);
+  margin-bottom: 0;
+}
+
+.imageSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.mainImage {
+  width: 100%;
+  height: auto;
+  border-radius: var(--border-radius-lg);
+  object-fit: cover;
+}
+
+.imagePlaceholder {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--color-neutral-100);
+  border-radius: var(--border-radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: var(--spacing-2);
+}
+
+.galleryImage {
+  width: 100%;
+  height: auto;
+  border-radius: var(--border-radius-md);
+  object-fit: cover;
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.title {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.version {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.price {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-brand-500);
+  margin: 0;
+}
+
+.specs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4);
+  background: var(--color-neutral-50);
+  border-radius: var(--border-radius-md);
+}
+
+.spec {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.specLabel {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.specValue {
+  color: var(--color-text-primary);
+}
+
+.whatsappButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-5);
+  background: #25d366;
+  color: white;
+  text-decoration: none;
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-semibold);
+  transition: background var(--transition-fast);
+}
+
+.whatsappButton:hover {
+  background: #20ba5a;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .container {
+    padding: var(--spacing-8) clamp(var(--container-padding-tablet), 6vw, var(--spacing-10));
+    max-width: 100%; /* Permitir expansión completa */
+  }
+
+  .backLink {
+    margin-bottom: var(--spacing-8);
+    margin-left: clamp(var(--container-padding-tablet), 4vw, var(--container-padding-desktop));
+  }
+
+  .content {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    padding: var(--spacing-10) clamp(var(--container-padding-desktop), 6vw, 5rem);
+    max-width: 100%; /* Permitir expansión completa */
+  }
+
+  .backLink {
+    margin-bottom: var(--spacing-10);
+    margin-left: clamp(var(--container-padding-desktop), 5vw, 4rem);
+  }
+
+  .content {
+    max-width: 100%;
+    width: 100%;
+  }
+}
+

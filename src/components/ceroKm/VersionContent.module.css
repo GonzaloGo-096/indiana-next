@@ -1,0 +1,262 @@
+/**
+ * VersionContent.module.css - Estilos del contenido de versión
+ * 
+ * @author Indiana Usados
+ * @version 1.0.0
+ */
+
+/* ===== MOBILE LAYOUT ===== */
+.mobileContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 16px;
+  min-width: 100%;
+  scroll-snap-align: start;
+}
+
+/* Ocultar mobile layout en desktop */
+@media (min-width: 768px) {
+  .mobileContainer {
+    display: none;
+  }
+}
+
+/* ===== DESKTOP LAYOUT ===== */
+.desktopWrapper {
+  display: none; /* Oculto por defecto (mobile-first) */
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Mostrar desktop layout solo en desktop */
+@media (min-width: 768px) {
+  .desktopWrapper {
+    display: flex;
+  }
+}
+
+.desktopContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  padding: 24px 0;
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-self: center;
+  gap: 16px;
+}
+
+/* ===== IMAGEN ===== */
+.imageContainer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--color-white); /* ✅ Mismo color que el background de la sección */
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 16px;
+}
+
+.imagePlaceholder {
+  width: 100%;
+  height: 100%;
+  background: var(--color-neutral-100);
+  border-radius: var(--border-radius-lg);
+}
+
+/* ===== COLOR SECTION ===== */
+.colorSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.colorTitle {
+  width: 100%;
+  margin: 0;
+  padding-bottom: 2px;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-poppins);
+  color: var(--color-neutral-500);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--color-neutral-300);
+}
+
+.colorLabel {
+  font-size: 1rem;
+  color: var(--color-brand-500);
+  font-weight: var(--font-weight-bold);
+}
+
+/* ===== INFO SECTION ===== */
+.infoSection {
+  text-align: left;
+  margin-top: 12px;
+}
+
+.versionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-poppins);
+  color: var(--color-text-primary);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.versionName {
+  color: var(--color-neutral-500);
+}
+
+.versionDescription {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--color-neutral-700);
+}
+
+/* ===== EQUIPAMIENTO SECTION ===== */
+.equipamientoSection {
+  margin-top: 8px;
+}
+
+.equipamientoTitle {
+  margin: 0 0 6px 0;
+  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-poppins);
+  color: var(--color-neutral-700);
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+.equipamientoList {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.equipamientoItem {
+  position: relative;
+  padding-left: 20px;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--color-neutral-700);
+}
+
+.equipamientoItem::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--color-brand-500);
+  font-weight: var(--font-weight-bold);
+  font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 768px) {
+  .mobileContainer {
+    padding: 24px;
+    gap: 24px;
+  }
+
+  .versionTitle {
+    font-size: 1.75rem;
+  }
+
+  .versionDescription {
+    font-size: 1.0625rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .desktopContainer {
+    grid-template-columns: 1.6fr 1fr;
+    gap: 40px;
+    padding: 24px 0;
+  }
+
+  .imageContainer {
+    aspect-ratio: 4 / 3;
+    max-width: 100%;
+  }
+
+  .image {
+    padding: 16px;
+  }
+
+  .leftColumn {
+    gap: 12px;
+    padding-right: 100px;
+  }
+
+  .rightColumn {
+    gap: 8px;
+    padding-top: 0;
+  }
+
+  .colorTitle {
+    font-size: 0.75rem;
+  }
+
+  .colorLabel {
+    font-size: 0.9375rem;
+  }
+
+  .versionTitle {
+    font-size: 2.25rem;
+    letter-spacing: 0.8px;
+  }
+
+  .versionDescription {
+    font-size: 1.35rem;
+    line-height: 1.3;
+    margin-top: 8px;
+  }
+
+  .equipamientoSection {
+    margin-top: 12px;
+  }
+
+  .equipamientoTitle {
+    font-size: 1.125rem;
+    margin-bottom: 8px;
+  }
+
+  .equipamientoList {
+    gap: 6px;
+  }
+
+  .equipamientoItem {
+    font-size: 1.125rem;
+    line-height: 1.25;
+  }
+}
+

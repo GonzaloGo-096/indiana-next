@@ -1,0 +1,254 @@
+/**
+ * GalleryModal.module.css - Estilos para modal de galería
+ * 
+ * @author Indiana Peugeot
+ * @version 1.0.0
+ */
+
+/* ===== MODAL OVERLAY ===== */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===== MODAL CONTENT ===== */
+.modalContent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  max-width: 1200px;
+  padding: 60px 16px 120px;
+}
+
+/* ===== CLOSE BUTTON ===== */
+.modalCloseBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modalCloseBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+/* ===== MODAL IMAGE ===== */
+.modalImageContainer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-height: calc(100vh - 200px);
+  overflow: hidden;
+}
+
+.modalImage {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+  animation: zoomIn 0.3s ease;
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ===== NAVIGATION BUTTONS ===== */
+.modalNavBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.modalNavBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.modalNavPrev {
+  left: 16px;
+}
+
+.modalNavNext {
+  right: 16px;
+}
+
+/* ===== COUNTER ===== */
+.modalCounter {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-condensed);
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 10;
+}
+
+/* ===== THUMBNAILS ===== */
+.modalThumbnails {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  border-radius: 12px;
+  max-width: calc(100% - 32px);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  z-index: 10;
+}
+
+.modalThumbnails::-webkit-scrollbar {
+  display: none;
+}
+
+.modalThumb {
+  flex-shrink: 0;
+  width: 80px;
+  height: 60px;
+  border: 2px solid transparent;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+  padding: 0;
+}
+
+.modalThumb:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.1);
+}
+
+.modalThumbActive {
+  border-color: white;
+  transform: scale(1.15);
+}
+
+.modalThumbImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .modalContent {
+    padding: 50px 12px 100px;
+  }
+
+  .modalCloseBtn {
+    top: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .modalNavBtn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .modalNavPrev {
+    left: 12px;
+  }
+
+  .modalNavNext {
+    right: 12px;
+  }
+
+  .modalCounter {
+    top: 12px;
+    font-size: 0.75rem;
+    padding: 3px 10px;
+  }
+
+  .modalThumbnails {
+    bottom: 12px;
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .modalThumb {
+    width: 60px;
+    height: 45px;
+  }
+}
+
+/* ===== ACCESIBILIDAD: REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  .modalOverlay,
+  .modalImage,
+  .modalNavBtn,
+  .modalThumb {
+    animation: none;
+    transition: none;
+  }
+}
+

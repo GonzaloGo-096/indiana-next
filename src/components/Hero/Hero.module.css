@@ -1,0 +1,289 @@
+/**
+ * Hero.module.css - Estilos del Hero principal
+ * 
+ * Diseño minimalista y premium
+ * Mobile-first responsive
+ * 
+ * @author Indiana Usados
+ * @version 1.0.0
+ */
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.hero {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  height: 80vh;
+  min-height: 500px;
+  max-height: 900px;
+  display: flex;
+  /* Mobile: contenido arriba */
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10vh;
+  overflow: hidden;
+}
+
+/* ✅ Efecto de transición muy sutil hacia la sección negra de abajo */
+.hero::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(10, 13, 20, 0.15) 70%,
+    rgba(10, 13, 20, 0.4) 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ===== STAGGERED REVEAL ANIMATION ===== */
+.backgroundPicture {
+  opacity: 0;
+  transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.hero.visible .backgroundPicture {
+  opacity: 1;
+}
+
+.title {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: 0.3s;
+}
+
+.hero.visible .title {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.subtitle {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: 0.5s;
+}
+
+.hero.visible .subtitle {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ctaContainer {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: 0.7s;
+}
+
+.hero.visible .ctaContainer {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== IMAGEN DE FONDO ===== */
+/* Nota: opacity y transition están en la sección de animación arriba */
+.backgroundPicture {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.backgroundImage {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Mostrar mobile por defecto, desktop en pantallas grandes */
+.backgroundImageMobile {
+  display: block;
+}
+
+.backgroundImageDesktop {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .backgroundImageMobile {
+    display: none;
+  }
+
+  .backgroundImageDesktop {
+    display: block;
+  }
+}
+
+/* ===== OVERLAY OSCURO ===== */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 13, 20, 0.4) 0%,
+    rgba(10, 13, 20, 0.6) 100%
+  );
+  z-index: 1;
+}
+
+/* ===== CONTENIDO ===== */
+.content {
+  position: relative;
+  z-index: 2;
+  max-width: 600px;
+  width: 100%;
+  padding: 0 var(--spacing-4);
+  /* Mobile: centrado horizontal */
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+/* ===== TÍTULO ===== */
+.title {
+  margin: 0;
+  color: var(--color-white);
+  font-family: var(--font-condensed);
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* ===== SUBTÍTULO ===== */
+.subtitle {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: var(--font-condensed);
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: var(--font-weight-normal);
+  line-height: 1.5;
+  max-width: 500px;
+}
+
+/* ===== CONTENEDOR CTAs ===== */
+.ctaContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-4);
+  width: 100%;
+  max-width: 320px;
+}
+
+/* ===== BOTONES CTA ===== */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 2rem;
+  font-family: var(--font-condensed);
+  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.ctaDivider {
+  opacity: 0.5;
+  font-weight: var(--font-weight-light);
+}
+
+/* Botón primario - Lleno con borde blanco */
+.ctaPrimary {
+  background: var(--color-brand-600);
+  color: var(--color-white);
+  border: 2px solid var(--color-white);
+}
+
+.ctaPrimary:hover {
+  background: var(--color-brand-500);
+  border-color: var(--color-white);
+  transform: translateY(-2px);
+}
+
+/* Botón secundario - Outline */
+.ctaSecondary {
+  background: transparent;
+  color: var(--color-white);
+  border: 2px solid var(--color-white);
+}
+
+.ctaSecondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Focus states para accesibilidad */
+.cta:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 3px;
+}
+
+/* ===== RESPONSIVE ===== */
+
+/* Tablet: 768px+ */
+@media (min-width: 768px) {
+  .hero {
+    /* Tablet/Desktop: contenido centrado verticalmente, a la derecha */
+    align-items: center;
+    justify-content: flex-end;
+    padding-top: 0;
+    padding-right: 5%;
+  }
+
+  .content {
+    /* Alineado a la derecha */
+    text-align: right;
+    align-items: flex-end;
+    gap: var(--spacing-5);
+    max-width: 500px;
+  }
+
+  .ctaContainer {
+    flex-direction: row;
+    justify-content: flex-end;
+    max-width: none;
+    gap: var(--spacing-4);
+  }
+
+  .cta {
+    min-width: 200px;
+  }
+}
+
+/* Desktop: 992px+ */
+@media (min-width: 992px) {
+  .hero {
+    height: 85vh;
+    padding-right: 8%;
+  }
+
+  .content {
+    gap: var(--spacing-6);
+    max-width: 550px;
+  }
+
+  .cta {
+    padding: 1rem 2.5rem;
+    font-size: 1.125rem;
+  }
+}
+

@@ -1,0 +1,486 @@
+/**
+ * usados.module.css - Estilos para página de Usados
+ * 
+ * @author Indiana Peugeot
+ * @version 1.0.0
+ */
+
+.page {
+  min-height: 100vh;
+  background: var(--color-white);
+}
+
+/* ===== HEADER ===== */
+.header {
+  padding: clamp(2rem, 5vw, 4rem) 0;
+  background: linear-gradient(
+    135deg,
+    var(--color-neutral-50) 0%,
+    var(--color-white) 100%
+  );
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.headerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--container-padding-mobile);
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .headerContent {
+    padding: 0 var(--container-padding-desktop);
+  }
+}
+
+.title {
+  margin: 0 0 var(--spacing-3) 0;
+  font-family: var(--font-condensed);
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  line-height: 1.1;
+}
+
+.subtitle {
+  margin: 0;
+  font-family: var(--font-poppins);
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ===== SECCIÓN DE PROMOCIONES ===== */
+.promocionesSection {
+  padding: clamp(3rem, 6vw, 5rem) 0;
+  background: var(--color-white);
+}
+
+/* ===== CTA SECTION ===== */
+.ctaSection {
+  padding: clamp(2rem, 4vw, 3rem) 0;
+  background: var(--color-neutral-50);
+  text-align: center;
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-4) var(--spacing-6);
+  background: var(--color-brand-500);
+  color: var(--color-white);
+  text-decoration: none;
+  font-family: var(--font-condensed);
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-md);
+}
+
+.ctaButton:hover {
+  background: var(--color-brand-600);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.ctaButton:active {
+  transform: translateY(0);
+}
+
+.promocionesTitle {
+  margin: 0 0 var(--spacing-5) 0;
+  font-family: var(--font-condensed);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.promocionesGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-4);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .promocionesGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-5);
+  }
+}
+
+.promocionCard {
+  padding: var(--spacing-5);
+  background: var(--color-white);
+  border: 2px solid var(--color-neutral-200);
+  border-radius: var(--border-radius-lg);
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.promocionCard:hover {
+  border-color: var(--color-brand-500);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.cardTitle {
+  margin: 0 0 var(--spacing-3) 0;
+  font-family: var(--font-condensed);
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-brand-500);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cardText {
+  margin: 0;
+  font-family: var(--font-poppins);
+  font-size: clamp(0.9375rem, 2vw, 1rem);
+  line-height: 1.6;
+  color: var(--color-text-secondary);
+}
+
+/* ===== SECCIÓN DE CARRUSEL ===== */
+.carouselSection {
+  padding: clamp(3rem, 6vw, 5rem) 0;
+  background: var(--color-neutral-50);
+}
+
+.carouselTitle {
+  margin: 0 0 var(--spacing-5) 0;
+  font-family: var(--font-condensed);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+}
+
+.placeholder {
+  padding: var(--spacing-8) 0;
+  text-align: center;
+}
+
+.placeholder p {
+  margin: 0 0 var(--spacing-2) 0;
+  font-family: var(--font-poppins);
+  font-size: 1.125rem;
+  color: var(--color-text-secondary);
+}
+
+.placeholderNote {
+  font-size: 0.875rem !important;
+  color: var(--color-neutral-500) !important;
+  font-style: italic;
+}
+
+/* ===== SECCIÓN DE CONTENIDO ===== */
+.contentSection {
+  padding: var(--spacing-6) 0;
+  background: var(--color-white);
+}
+
+/* ===== GRID DE VEHÍCULOS ===== */
+.gridSection {
+  margin-top: var(--spacing-6);
+}
+
+.gridHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-4);
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+}
+
+.gridTotal {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.sortSelect {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+  background: white;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.sortSelect:hover {
+  border-color: var(--color-brand-500);
+}
+
+.vehiclesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-6);
+}
+
+.vehicleCard {
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  color: inherit;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.vehicleCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.vehicleCardImage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--color-neutral-100);
+}
+
+.vehicleImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vehicleImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-neutral-100);
+  color: var(--color-text-secondary);
+}
+
+.vehicleCardContent {
+  padding: var(--spacing-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.vehicleTitle {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.vehicleVersion {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.vehicleSpecs {
+  display: flex;
+  gap: var(--spacing-3);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  flex-wrap: wrap;
+}
+
+.vehiclePrice {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-brand-500);
+  margin: var(--spacing-2) 0 0 0;
+}
+
+/* ===== FILTROS ===== */
+.filtersSection {
+  margin-bottom: var(--spacing-6);
+  padding: var(--spacing-4);
+  background: var(--color-neutral-50);
+  border-radius: var(--border-radius-md);
+}
+
+.filtersForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.filtersRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--spacing-3);
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.filterGroup label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.filterGroup input {
+  padding: var(--spacing-2) var(--spacing-3);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-base);
+}
+
+.filtersActions {
+  display: flex;
+  gap: var(--spacing-3);
+}
+
+.filterButton {
+  padding: var(--spacing-3) var(--spacing-5);
+  background: var(--color-brand-500);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.filterButton:hover:not(:disabled) {
+  background: var(--color-brand-600);
+}
+
+.filterButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.filterButtonSecondary {
+  padding: var(--spacing-3) var(--spacing-5);
+  background: white;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.filterButtonSecondary:hover {
+  border-color: var(--color-neutral-400);
+}
+
+/* ===== PAGINACIÓN ===== */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-6);
+}
+
+.paginationButton {
+  padding: var(--spacing-2) var(--spacing-4);
+  background: white;
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+
+.paginationButton:hover {
+  border-color: var(--color-brand-500);
+}
+
+.paginationInfo {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+}
+
+/* ===== ESTADOS ===== */
+.gridLoading,
+.gridEmpty {
+  padding: var(--spacing-8);
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.errorMessage {
+  display: flex;
+  gap: var(--spacing-4);
+  padding: var(--spacing-5);
+  background: #fff3cd;
+  border: 2px solid #ffc107;
+  border-radius: var(--border-radius-lg);
+  margin-bottom: var(--spacing-6);
+  color: #856404;
+}
+
+.errorIcon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.errorContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.errorTitle {
+  margin: 0;
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: #856404;
+}
+
+.errorText {
+  margin: 0;
+  font-size: var(--font-size-base);
+  line-height: 1.5;
+  color: #856404;
+}
+
+.errorButton {
+  margin-top: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  background: #ffc107;
+  color: #856404;
+  border: 2px solid #ffc107;
+  border-radius: var(--border-radius-md);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  align-self: flex-start;
+}
+
+.errorButton:hover {
+  background: #ffb300;
+  border-color: #ffb300;
+  transform: translateY(-1px);
+}
+

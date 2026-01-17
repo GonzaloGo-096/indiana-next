@@ -1,0 +1,294 @@
+/**
+ * FeatureSection.module.css - Estilos de sección de características
+ * 
+ * Mobile-first approach:
+ * - Mobile: altura automática, contenido alineado arriba
+ * - Desktop: altura escénica (min-height), contenido centrado
+ * 
+ * @author Indiana Usados
+ * @version 2.0.0 - Sistema de superficies aplicado (FASE 3.3)
+ */
+
+/* ===== SECTION (Mobile-first: sin altura forzada) ===== */
+.section {
+  width: 100%;
+  /* ✅ Migrado: Fondo oscuro histórico eliminado → token semántico surface (unificación visual bajo sistema de superficies claras) */
+  background-color: var(--color-surface);
+  overflow: hidden;
+  padding-top: 60px;
+  padding-bottom: 10px;
+}
+
+/* Sombra en borde inferior para la última FeatureSection (antes de DimensionsSection) */
+.section.isLast {
+  position: relative;
+  /* Sombra solo en borde inferior para simular elevación sobre la sección de dimensiones */
+  box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.1),
+    0 4px 8px -2px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== CONTAINER (Mobile: stack vertical) ===== */
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* ===== IMAGE WRAPPER ===== */
+.imageWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* next/image necesita position: relative en el contenedor (ya está en .imageWrapper) */
+
+/* Mobile: mostrar imagen mobile, ocultar desktop */
+.imageMobile {
+  display: block;
+}
+
+.imageDesktop {
+  display: none;
+}
+
+/* ===== CONTENT (Mobile: alineado arriba, sin centrado vertical) ===== */
+.content {
+  padding: 24px 20px 32px;
+}
+
+.title {
+  margin: 0 0 12px 0;
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-poppins);
+  /* ✅ Migrado: Texto blanco → text-primary (adaptado a fondo claro) */
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+
+.titleDivider {
+  margin: 0 8px;
+  /* ✅ Migrado: Divider blanco semitransparente → neutral-400 (adaptado a fondo claro) */
+  color: var(--color-neutral-400);
+  font-weight: normal;
+}
+
+.description {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  /* ✅ Migrado: Texto blanco semitransparente → neutral-700 (adaptado a fondo claro) */
+  color: var(--color-neutral-700);
+}
+
+.itemsList {
+  margin: 0;
+  padding-left: 20px;
+  list-style: none;
+}
+
+.item {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  line-height: 1.5;
+  /* ✅ Migrado: Texto blanco semitransparente → neutral-700 (adaptado a fondo claro) */
+  color: var(--color-neutral-700);
+  position: relative;
+  padding-left: 16px;
+}
+
+.item::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  /* ✅ Migrado: Bullet blanco semitransparente → neutral-500 (adaptado a fondo claro) */
+  color: var(--color-neutral-500);
+  font-weight: bold;
+}
+
+/* ===== 3D SECTION (208 Mobile Only) ===== */
+.threeDContent {
+  display: block;
+}
+
+.normalContent {
+  display: none;
+}
+
+.threeDTitle {
+  margin: 0 0 12px 0;
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-poppins);
+  /* ✅ Migrado: Texto blanco → text-primary (adaptado a fondo claro) */
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.3;
+}
+
+.threeDDescription {
+  margin: 0 0 20px 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  /* ✅ Migrado: Texto blanco semitransparente → neutral-700 (adaptado a fondo claro) */
+  color: var(--color-neutral-700);
+}
+
+.threeDButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 0.9375rem;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-poppins);
+  color: #ffffff;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: var(--border-radius-lg);
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+  width: 100%;
+  max-width: 320px;
+}
+
+.threeDButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4);
+}
+
+.threeDButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.threeDButton:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+.threeDIcon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+/* Ocultar contenido 3D y mostrar contenido normal en desktop */
+@media (min-width: 768px) {
+  .threeDContent {
+    display: none;
+  }
+
+  .normalContent {
+    display: block;
+  }
+}
+
+/* ===== RESPONSIVE: DESKTOP ===== */
+@media (min-width: 992px) {
+  /* Desktop: altura escénica forzada */
+  .section {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    padding-top: 80px;
+    padding-bottom: 15px;
+  }
+
+  /* Desktop: layout horizontal con grid - imagen más grande */
+  .container {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    align-items: center;
+    gap: 40px;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 48px;
+  }
+
+  /* Reverse: imagen a la derecha */
+  .reverse .container {
+    direction: rtl;
+  }
+
+  .reverse .container > * {
+    direction: ltr;
+  }
+
+  /* Desktop: mostrar imagen desktop, ocultar mobile */
+  .imageMobile {
+    display: none;
+  }
+
+  .imageDesktop {
+    display: block;
+    border-radius: var(--border-radius-lg);
+  }
+
+  /* Desktop: contenido centrado en su celda */
+  .content {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    line-height: 1.2;
+  }
+
+  .description {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .itemsList {
+    padding-left: 24px;
+  }
+
+  .item {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    margin-bottom: 12px;
+  }
+}
+
+/* ===== RESPONSIVE: LARGE DESKTOP ===== */
+@media (min-width: 1400px) {
+  .section {
+    min-height: 75vh;
+  }
+
+  .container {
+    gap: 80px;
+    padding: 64px;
+  }
+
+  .title {
+    font-size: 2.5rem;
+    line-height: 1.2;
+  }
+
+  .description {
+    font-size: 1.35rem;
+  }
+}
+

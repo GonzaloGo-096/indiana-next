@@ -1,0 +1,285 @@
+/* Dashboard.module.css - Estilos optimizados para admin */
+
+.dashboard {
+  min-height: 100vh;
+  background: #f8f9fa;
+}
+
+/* Header */
+.header {
+  background: white;
+  border-bottom: 1px solid #dee2e6;
+  padding: 15px 0;
+}
+
+.headerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.userInfo span {
+  color: #666;
+  font-size: 13px;
+}
+
+.logoutButton {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.logoutButton:hover {
+  background: #c82333;
+}
+
+/* Content */
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.addButton, .backButton {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.addButton {
+  background: #28a745;
+  color: white;
+}
+
+.addButton:hover {
+  background: #218838;
+}
+
+.backButton {
+  background: #6c757d;
+  color: white;
+}
+
+.backButton:hover {
+  background: #5a6268;
+}
+
+/* Vehicles List */
+.vehiclesList h2 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.vehicleItem {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vehicleInfo {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+}
+
+.vehicleImage {
+  width: 70px;
+  height: 50px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.vehicleImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vehicleDetails h3 {
+  margin: 0 0 5px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.vehicleDetails p {
+  margin: 0 0 2px 0;
+  font-size: 12px;
+  color: #666;
+}
+
+.vehicleActions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.editButton, .deleteButton {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.editButton {
+  background: #007bff;
+  color: white;
+}
+
+.editButton:hover {
+  background: #0056b3;
+}
+
+.deleteButton {
+  background: #dc3545;
+  color: white;
+}
+
+.deleteButton:hover {
+  background: #c82333;
+}
+
+/* Estilos del modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: #f8f9fa;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 1400px;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.modalBody {
+  padding: 0;
+  overflow-y: auto;
+  max-height: calc(90vh - 80px);
+  background: white;
+}
+
+.modalCloseButton {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: #6c757d;
+  border: 2px solid #495057;
+  color: white;
+  font-size: 20px;
+  font-weight: 400;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  z-index: 1001;
+}
+
+.modalCloseButton:hover {
+  background: #495057;
+  transform: scale(1.05);
+}
+
+.errorMessage {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 20px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .headerContent {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .actionButtons {
+    flex-direction: column;
+  }
+  
+  .vehicleItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .vehicleInfo {
+    width: 100%;
+  }
+  
+  .vehicleActions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .modal {
+    margin: 10px;
+    max-height: 95vh;
+  }
+}
+

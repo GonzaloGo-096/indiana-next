@@ -1,0 +1,452 @@
+/**
+ * CardSimilar.module.css - Card compacta sin logo para carruseles
+ * 
+ * Variante de CardAuto diseñada para carruseles horizontales:
+ * - Sin logo (más compacta horizontalmente)
+ * - Ancho adaptable al contenido (más fina)
+ * - Layout optimizado para espacios reducidos
+ * - Box model ajustado a los datos
+ * 
+ * @author Indiana Peugeot
+ * @version 1.0.0 - Next.js migrado
+ */
+
+/* ===== VARIABLES CSS LOCALES ===== */
+.card {
+    /* Variables de espaciado más compactas */
+    --card-padding-base: var(--spacing-3);
+    --card-padding-compact: var(--spacing-2);
+    --card-gap-base: var(--spacing-2);
+    --card-gap-compact: var(--spacing-2);
+    
+    /* Variables de borde y sombra */
+    --card-border-width: 0.5px;
+    --card-border-opacity: 0.08;
+    --card-border-opacity-hover: 0.15;
+    --card-shadow-base: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06);
+    --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12), 0 12px 32px rgba(0, 0, 0, 0.08);
+    --card-hover-lift: -6px;
+    --card-hover-lift-mobile: -4px;
+    --card-image-zoom: 1.04;
+    
+    /* Layout: Ancho fijo para uniformidad */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%; /* ✅ Ancho fijo para uniformidad */
+    max-width: 320px; /* ✅ Ancho máximo fijo (un poco más pequeño que CardAuto) */
+    min-width: 240px; /* Mínimo para mobile */
+    
+    /* Estilo visual */
+    background: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    border: var(--card-border-width) solid rgba(0, 0, 0, var(--card-border-opacity));
+    box-shadow: var(--card-shadow-base);
+    
+    /* Comportamiento */
+    overflow: hidden;
+    position: relative;
+    margin: 0 auto;
+    cursor: pointer;
+    z-index: 10;
+    
+    /* Transiciones consolidadas y refinadas */
+    transition: 
+        transform var(--transition-smooth),
+        box-shadow var(--transition-smooth),
+        border-color var(--transition-smooth);
+}
+
+/* Hover: Efecto flotación refinado */
+.card:hover {
+    transform: translateY(var(--card-hover-lift));
+    border-color: rgba(0, 0, 0, var(--card-border-opacity-hover));
+    box-shadow: var(--card-shadow-hover);
+}
+
+/* Active: Feedback táctil para mobile */
+.card:active {
+    transform: translateY(calc(var(--card-hover-lift) * 0.5));
+}
+
+/* Focus: Accesibilidad mejorada */
+.card:focus {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+}
+
+.card:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* ===== CONTENEDOR DE IMAGEN (FOCO PRINCIPAL) ===== */
+.card__image-container {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    aspect-ratio: 16 / 9; /* Más compacta que 16/10 */
+    background: var(--color-neutral-50);
+    
+    /* Optimización de performance */
+    contain: layout style paint;
+}
+
+.card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: transform var(--transition-smooth);
+    z-index: 0 !important;
+}
+
+.card__image-container [class*="image"],
+.card__image-container [class*="placeholder"] {
+    z-index: 0 !important;
+}
+
+/* Zoom sutil en hover */
+.card:hover .card__image {
+    transform: scale(var(--card-image-zoom));
+}
+
+/* ===== CUERPO DE LA TARJETA ===== */
+.card__body {
+    --body-padding-y: var(--card-padding-base);
+    --body-padding-x: var(--card-padding-base);
+    --body-gap: var(--card-gap-base);
+    
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--body-gap);
+    padding: var(--body-padding-y) var(--body-padding-x);
+    background: var(--color-white);
+    justify-content: space-between;
+}
+
+/* ===== CONTENEDOR 1: Solo datos, sin logo (más compacto) ===== */
+.container1 {
+    --container-border-opacity: 0.06;
+    --container-border-radius-top: var(--border-radius-md);
+    
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    width: 100%;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-shrink: 0;
+    min-height: 0;
+}
+
+/* FILA 1: Marca + Modelo - Sin logo, más compacto */
+.container1_row1 {
+    --row-line-height: 1.15;
+    --row-gap: var(--spacing-1);
+    
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-start;
+    gap: var(--row-gap);
+    width: 100%;
+    flex-wrap: wrap; /* ✅ Permite que el texto se envuelva si es necesario */
+    min-width: 0;
+    flex-shrink: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    line-height: var(--row-line-height);
+}
+
+/* Marca: Más grande */
+.marca_text {
+    --marca-font-size: clamp(1.5rem, 5vw, 1.75rem);
+    
+    font-size: var(--marca-font-size);
+    font-weight: var(--font-weight-bold);
+    font-family: var(--font-condensed);
+    color: var(--color-text-primary);
+    letter-spacing: -0.3px;
+    flex-shrink: 0;
+    white-space: normal; /* ✅ Permite que se envuelva si es necesario */
+}
+
+/* Separador: Más sutil */
+.marca_modelo_separator {
+    --separator-opacity: 0.2;
+    --separator-font-size: clamp(1.5rem, 5vw, 1.75rem);
+    
+    font-size: var(--separator-font-size);
+    font-weight: var(--font-weight-light);
+    font-family: var(--font-condensed);
+    color: var(--color-neutral-400);
+    opacity: var(--separator-opacity);
+    padding: 0 calc(var(--spacing-1) * 0.5);
+    flex-shrink: 0;
+}
+
+/* Modelo: Más grande */
+.modelo_title {
+    --modelo-font-size: clamp(1.375rem, 4.8vw, 1.625rem);
+    
+    font-size: var(--modelo-font-size);
+    font-weight: var(--font-weight-semibold);
+    font-family: var(--font-condensed);
+    color: var(--color-neutral-600);
+    line-height: var(--row-line-height);
+    letter-spacing: -0.2px;
+    margin: 0;
+    text-align: left;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: visible; /* ✅ Permite que se vea completo */
+    text-overflow: clip; /* ✅ Sin ellipsis */
+    white-space: normal; /* ✅ Permite que se envuelva */
+}
+
+/* Versión: Mismo tamaño que modelo, en gris */
+.version_text {
+    --version-font-size: clamp(1.375rem, 4.8vw, 1.625rem); /* ✅ Mismo tamaño que modelo */
+    
+    font-size: var(--version-font-size);
+    font-weight: var(--font-weight-semibold);
+    font-family: var(--font-condensed);
+    color: var(--color-neutral-500); /* ✅ Gris */
+    line-height: var(--row-line-height);
+    letter-spacing: -0.2px;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: visible; /* ✅ Permite que se vea completo */
+    text-overflow: clip; /* ✅ Sin ellipsis */
+    white-space: normal; /* ✅ Permite que se envuelva */
+    margin-left: var(--spacing-1); /* ✅ Espacio antes de la versión */
+}
+
+/* FILA 3: Caja, Km, Año - Distribuidos en todo el ancho */
+.container1_row3 {
+    --data-margin-top: var(--spacing-3);
+    
+    display: flex;
+    justify-content: space-between; /* Distribuir en todo el ancho */
+    align-items: flex-end;
+    gap: var(--spacing-2);
+    flex-wrap: nowrap;
+    width: 100%;
+    min-width: 0;
+    overflow: visible;
+    flex-shrink: 0;
+    margin-top: var(--data-margin-top);
+    padding-top: 0;
+}
+
+.container1_row3_automatica {
+    /* Sin cambios */
+}
+
+.row2_data_item {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start; /* Todos alineados a la izquierda */
+    height: 100%;
+    flex: 1 1 0; /* Distribuir equitativamente */
+    min-width: 0;
+    padding: 0;
+}
+
+/* Padding right para Caja (primer elemento) */
+.row2_data_item:first-child {
+    padding-right: var(--spacing-3);
+}
+
+.row2_data_item_automatica {
+    /* Sin cambios */
+}
+
+.row2_data_content {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    align-items: flex-start; /* Todos alineados a la izquierda */
+    justify-content: flex-end;
+    text-align: left;
+    width: 100%;
+}
+
+/* Label: Más grande y alineado a la izquierda */
+.row2_data_label {
+    --label-font-size: clamp(0.875rem, 2.5vw, 1rem);
+    --label-letter-spacing: 0.2px;
+    
+    font-size: var(--label-font-size);
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-condensed);
+    color: var(--color-neutral-600);
+    letter-spacing: var(--label-letter-spacing);
+    text-transform: capitalize;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+    margin-bottom: 4px;
+    text-align: left;
+    width: 100%;
+}
+
+/* Value: Más grande y alineado a la izquierda */
+.row2_data_value {
+    --value-font-size: clamp(1.375rem, 4vw, 1.625rem);
+    --value-letter-spacing: -0.3px;
+    --value-line-height: 1.25;
+    --value-font-weight: 300;
+    
+    font-size: var(--value-font-size);
+    font-weight: var(--value-font-weight);
+    font-family: var(--font-condensed);
+    color: var(--color-neutral-600);
+    line-height: var(--value-line-height);
+    letter-spacing: var(--value-letter-spacing);
+    width: 100%;
+    text-align: left;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: clip;
+    
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+}
+
+/* ===== PRECIO ===== */
+.container4 {
+    --price-border-opacity: 0.05;
+    --price-border-radius: var(--border-radius-lg);
+    
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: var(--spacing-2);
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 1px solid var(--color-neutral-200);
+}
+
+.price_label_container {
+    --label-width: 30%;
+    --label-padding-left: var(--spacing-2);
+    
+    flex: 0 0 var(--label-width);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0;
+    padding-left: var(--label-padding-left);
+    background: transparent;
+}
+
+.price_label {
+    --label-font-size: clamp(1rem, 2.5vw, 1.25rem);
+    
+    font-size: var(--label-font-size);
+    font-weight: var(--font-weight-medium);
+    font-style: normal;
+    font-family: var(--font-condensed);
+    color: var(--color-neutral-600);
+    text-align: left;
+    text-transform: lowercase;
+    letter-spacing: 0.5px;
+}
+
+.price_display {
+    --price-width: 70%;
+    --price-padding-right: var(--spacing-3);
+    
+    flex: 0 0 var(--price-width);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 0;
+    padding-top: var(--spacing-1);
+    padding-right: var(--price-padding-right);
+    background: transparent;
+}
+
+.price_value {
+    --price-font-size: clamp(1.875rem, 5.2vw, 2.25rem);
+    --price-letter-spacing: -0.4px;
+    --price-line-height: 1.15;
+    --price-symbol-size: 0.7em;
+    
+    font-size: var(--price-font-size);
+    font-weight: var(--font-weight-bold);
+    font-style: normal;
+    font-family: var(--font-condensed);
+    color: var(--color-brand-500);
+    line-height: var(--price-line-height);
+    letter-spacing: var(--price-letter-spacing);
+    text-align: right;
+}
+
+.price_value::first-letter {
+    font-size: var(--price-symbol-size);
+}
+
+/* ===== RESPONSIVE - MOBILE FIRST ===== */
+
+/* Mobile: Espaciado más compacto */
+@media (max-width: 575px) {
+    .card {
+        --card-hover-lift: var(--card-hover-lift-mobile);
+        max-width: 280px; /* ✅ Ancho fijo en mobile */
+        min-width: 240px;
+    }
+    
+    .card__body {
+        --body-padding-y: var(--card-padding-compact);
+        --body-padding-x: var(--card-padding-compact);
+        --body-gap: var(--card-gap-compact);
+    }
+    
+    .container1_row3 {
+        --data-margin-top: var(--spacing-1);
+    }
+}
+
+/* Tablet: Espaciado medio */
+@media (min-width: 576px) {
+    .card {
+        max-width: 300px; /* ✅ Ancho fijo en tablet */
+        min-width: 280px;
+    }
+    
+    .card__body {
+        --body-padding-y: var(--card-padding-base);
+        --body-padding-x: var(--card-padding-base);
+        --body-gap: var(--spacing-3);
+    }
+}
+
+/* Desktop: Espaciado generoso */
+@media (min-width: 768px) {
+    .card {
+        max-width: 320px; /* ✅ Ancho fijo en desktop */
+        min-width: 300px;
+    }
+    
+    .card__body {
+        --body-gap: var(--spacing-2);
+    }
+}
+
+/* ===== ACCESIBILIDAD: REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+    .card,
+    .card__image {
+        transition: none;
+    }
+    
+    .card:hover .card__image {
+        transform: none;
+    }
+}
+

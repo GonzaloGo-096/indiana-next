@@ -1,0 +1,212 @@
+/**
+ * BrandsCarousel.module.css - Estilos para el carrusel de marcas
+ * 
+ * Migrado desde React - Estilos exactos
+ * 
+ * @author Indiana Peugeot
+ * @version 1.1.0 - Migración desde React
+ */
+
+.carouselContainer {
+  width: 100%;
+  background: #ffffff; /* ✅ Fondo blanco */
+  padding: 16px 20px 8px 20px; /* ✅ Padding lateral para espacio de flechas sin afectar centrado */
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border-radius: 0; /* ✅ Bordes rectos */
+  margin-bottom: 0; /* ✅ Sin margen inferior para que quede junto al contenedor negro */
+  /* ✅ Sombra ambiental sutil para crear sensación de profundidad y separación del fondo */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
+  overflow: visible; /* ✅ Asegurar que las flechas no se oculten */
+  border: none; /* ✅ Sin borde */
+  box-sizing: content-box; /* ✅ El padding no afecta el ancho total */
+}
+
+/* ✅ Cuando hay selección, los logos no seleccionados se atenúan */
+.carouselContainer.hasSelection .brandItem:not(.brandItemSelected) .brandLogo {
+  opacity: 0.4;
+  filter: grayscale(30%);
+  transition: opacity 0.1s ease-out, filter 0.1s ease-out; /* ✅ Transición rápida */
+}
+
+.carouselTrack {
+  flex: 1;
+  display: flex;
+  gap: 56px; /* ✅ Aumentado de 48px a 56px para separación más sutil */
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  padding: 8px 24px; /* ✅ Padding vertical aumentado para reservar espacio suficiente cuando el logo crece (scale 1.1) */
+}
+
+.carouselTrack::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.brandItem {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80px; /* ✅ Aumentado de 60px a 80px */
+  cursor: pointer;
+  transition: transform 0.1s ease-out;
+  padding: 0 16px; /* ✅ Padding lateral para evitar cortes */
+  position: relative; /* ✅ Para posicionar el checkmark */
+  will-change: transform; /* ✅ Acelerar renderizado */
+}
+
+.brandItem:hover {
+  transform: scale(1.1);
+}
+
+.brandLogo {
+  max-height: 80px; /* ✅ Aumentado de 60px a 80px */
+  max-width: 160px; /* ✅ Aumentado de 120px a 160px */
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  filter: grayscale(0%); /* ✅ Logos a color */
+  opacity: 1; /* ✅ Opacidad completa */
+  transition: opacity 0.1s ease-out, filter 0.1s ease-out; /* ✅ Animación rápida */
+  will-change: opacity, filter; /* ✅ Acelerar renderizado */
+}
+
+/* ✅ Logo pequeño para Peugeot y Fiat */
+.brandLogoSmall {
+  max-height: 70px;
+  max-width: 140px;
+}
+
+/* ✅ Logo grande para Honda */
+.brandLogoLarge {
+  max-height: 95px;
+  max-width: 190px;
+}
+
+/* ✅ Logo específico para Ford (más pequeño) */
+.brandLogoFord {
+  max-height: 70px; /* ✅ Más pequeño que el logo grande estándar */
+  max-width: 140px; /* ✅ Más pequeño que el logo grande estándar */
+}
+
+.brandItem:hover .brandLogo {
+  opacity: 0.8; /* ✅ Efecto hover sutil */
+  transform: scale(1.05);
+}
+
+/* ✅ Hover sobre logo seleccionado: mantener opacidad plena */
+.brandItemSelected:hover .brandLogo {
+  opacity: 1;
+}
+
+/* ✅ ESTADO SELECCIONADO: Logo activo en color pleno */
+.brandItemSelected .brandLogo {
+  opacity: 1 !important;
+  filter: grayscale(0%) !important;
+  transition: opacity 0.1s ease-out, filter 0.1s ease-out; /* ✅ Transición rápida */
+}
+
+/* ✅ Checkmark verde para marca seleccionada */
+.checkmark {
+  position: absolute;
+  top: -4px;
+  right: 4px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: checkmarkAppear 0.1s ease-out;
+  will-change: transform, opacity; /* ✅ Acelerar renderizado */
+}
+
+@keyframes checkmarkAppear {
+  from {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.arrowButton {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #333;
+  z-index: 10;
+}
+
+.arrowRight {
+  margin-left: auto;
+}
+
+/* ✅ Ocultar flechas en mobile y aumentar espacio entre logos */
+@media (max-width: 768px) {
+  .arrowButton {
+    display: none;
+  }
+
+  /* ✅ Mobile: bordes rectos */
+  .carouselContainer {
+    border-radius: 0; /* ✅ Bordes rectos */
+    padding-bottom: 0; /* ✅ Sin padding bottom para quedar pegado a los botones */
+    margin-bottom: 0;
+  }
+
+  .carouselTrack {
+    gap: 24px; /* ✅ Aumentado de 16px a 24px en mobile para más separación */
+    padding: 8px 12px; /* ✅ Reducido padding lateral de 24px a 12px */
+  }
+
+  .brandItem {
+    padding: 0 6px; /* ✅ Aumentado de 4px a 6px para más separación */
+  }
+}
+
+/* ✅ Desktop: flechas con position absolute, no ocupan espacio, siempre con fondo negro */
+@media (min-width: 769px) {
+  .arrowButton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 0;
+    margin-right: 0;
+    background: var(--color-neutral-900); /* ✅ Fondo negro siempre visible */
+    color: var(--color-white); /* ✅ Ícono blanco para contraste */
+    z-index: 20; /* ✅ Aumentar z-index para asegurar visibilidad */
+  }
+
+  .arrowButton:hover {
+    background: var(--color-neutral-800); /* ✅ Fondo más claro en hover */
+    transform: translateY(-50%) scale(1.1); /* ✅ Combinar translateY y scale para mantener posición */
+  }
+
+  .arrowButton:active {
+    transform: translateY(-50%) scale(0.95); /* ✅ Mantener posición al hacer click */
+  }
+
+  .arrowButton:first-of-type {
+    left: -20px; /* ✅ Fuera del contenedor */
+  }
+
+  .arrowButton.arrowRight {
+    right: -20px !important; /* ✅ Fuera del contenedor */
+    left: auto !important;
+    margin-left: 0;
+  }
+}
+

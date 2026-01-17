@@ -1,0 +1,240 @@
+/**
+ * CarouselDots.module.css - Indicador de carrusel minimal y elegante
+ * - Dots discretos, estado activo destacado con mayor ancho (pill)
+ * - Animaciones suaves y sutiles
+ */
+
+.dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-neutral-300);
+  opacity: 0.7;
+  transition:
+    background-color var(--transition-smooth),
+    opacity var(--transition-smooth),
+    transform var(--transition-smooth),
+    width var(--transition-smooth);
+}
+
+.dot:hover {
+  opacity: 0.9;
+}
+
+.dotActive {
+  width: 18px; /* pill */
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-brand-500);
+  box-shadow: 0 2px 6px var(--color-brand-500-rgba-20);
+  opacity: 1;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+/* ===== Variant: Autocity-inspired (gris clarito) ===== */
+.dotAuto {
+  /* reset button styles */
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 999px;
+  box-sizing: content-box;
+  display: inline-block;
+
+  width: 8px;
+  height: 8px;
+  background: var(--color-neutral-200); /* gris clarito */
+  border: 2px solid var(--color-neutral-300); /* contorno gris clarito */
+  opacity: 1;
+  transition:
+    background-color var(--transition-smooth),
+    border-color var(--transition-smooth),
+    transform var(--transition-smooth),
+    width var(--transition-smooth);
+}
+
+.dotAutoActive {
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: content-box;
+  display: inline-block;
+
+  width: 24px; /* barra alargada */
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-neutral-400); /* gris un poco más oscuro pero clarito */
+  border: 2px solid var(--color-neutral-400); /* mantiene gris */
+  opacity: 1;
+}
+
+/* Marcadores sutiles de borde (gris, más chicos) */
+.edgeMarker {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--color-neutral-400);
+  opacity: 0.9;
+  flex: 0 0 auto;
+}
+
+/* ===== Variant: Micro-Dash (2b) ===== */
+.dotDash {
+  width: 10px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--color-neutral-300);
+  opacity: 0.7;
+  transition:
+    background-color var(--transition-smooth),
+    opacity var(--transition-smooth),
+    transform var(--transition-smooth),
+    width var(--transition-smooth);
+}
+
+.dotDashActive {
+  width: 24px;
+  height: 2px;
+  border-radius: 999px;
+  background: var(--color-brand-500);
+  box-shadow: 0 1px 4px var(--color-brand-500-rgba-20);
+  opacity: 1;
+}
+
+/* ===== Variant: iOS Minimal (1c) ===== */
+.dotIos {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1.5px solid var(--color-neutral-300);
+  opacity: 0.8;
+  transition: 
+    border-color var(--transition-smooth),
+    background-color var(--transition-smooth),
+    transform var(--transition-smooth);
+}
+
+.dotIosActive {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--color-brand-500);
+  border-color: var(--color-brand-500);
+  box-shadow: 0 2px 4px var(--color-brand-500-rgba-20);
+  opacity: 1;
+}
+
+/* ===== Variant: MD3 Mixed-Shape (3d) ===== */
+.dotMd3 {
+  width: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-neutral-300);
+  opacity: 0.7;
+  transition: 
+    background-color var(--transition-smooth),
+    width var(--transition-smooth),
+    height var(--transition-smooth),
+    transform var(--transition-smooth);
+}
+
+.dotMd3Active {
+  width: 12px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-brand-500);
+  box-shadow: 0 1px 4px var(--color-brand-500-rgba-20);
+  opacity: 1;
+}
+
+/* ===== Variant: Comet (alargado, múltiples segmentos disparejos) ===== */
+.rail {
+  position: relative;
+  width: clamp(140px, 28vw, 220px);
+  height: 18px;
+  background: #ffffff; /* Fondo blanco solicitado */
+  border: 1px solid var(--color-neutral-200);
+  border-radius: 999px;
+  overflow: hidden;
+  margin: 8px auto 0;
+}
+
+.cometGroup {
+  --comet-width: 52%;
+  position: absolute;
+  top: 50%;
+  left: calc(var(--progress, 0) * (100% - var(--comet-width)));
+  transform: translateY(-50%);
+  width: var(--comet-width);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: left var(--transition-smooth);
+}
+
+.seg {
+  display: block;
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* 4 billas: 2 azules y 2 blancas, tamaños disparejos */
+.segBlueSm {
+  width: 10px;
+  height: 10px;
+  background: var(--color-brand-500);
+  box-shadow: 0 2px 6px var(--color-brand-500-rgba-20);
+}
+.segWhiteMd {
+  width: 14px;
+  height: 14px;
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+.segBlueSm2 {
+  width: 10px;
+  height: 10px;
+  background: var(--color-brand-500);
+  box-shadow: 0 2px 6px var(--color-brand-500-rgba-20);
+}
+.segWhiteMd2 {
+  width: 14px;
+  height: 14px;
+  background: #ffffff;
+  border: 1px solid var(--color-neutral-300);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot {
+    transition: none;
+  }
+  .dotDash {
+    transition: none;
+  }
+  .dotIos {
+    transition: none;
+  }
+  .dotMd3 {
+    transition: none;
+  }
+  .cometGroup {
+    transition: none;
+  }
+}
+

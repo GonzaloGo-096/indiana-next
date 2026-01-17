@@ -1,0 +1,1120 @@
+/**
+ * CardDetalle.module.css - Rediseño completo moderno, elegante y minimalista
+ * 
+ * Layout 50/50 simétrico sin fondos/cards:
+ * - Izquierda: Carrusel fijo sin fondo
+ * - Derecha: Datos sin fondo
+ * 
+ * Jerarquía visual:
+ * 1. Título/Modelo (más importante)
+ * 2. Año, Km, Caja (segunda importancia)
+ * 3. Cilindrada, HP, Tracción (menos importante)
+ * 
+ * @author Indiana Peugeot
+ * @version 6.0.0 - Next.js migrado
+ */
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.cardContent {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  margin-bottom: var(--spacing-10);
+  padding: 0 clamp(var(--container-padding-mobile), 5vw, var(--spacing-8));
+  background: transparent;
+  box-sizing: border-box;
+}
+
+/* ===== LAYOUT PRINCIPAL 50/50 ===== */
+.mainLayout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
+/* ===== SECCIÓN IZQUIERDA: CARRUSEL (sin fondo/card) ===== */
+.carouselSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  order: 1;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0 !important; /* ✅ Eliminar todo el padding */
+  padding-left: 0 !important; /* ✅ Forzar padding-left a 0 */
+  padding-right: 0 !important; /* ✅ Forzar padding-right a 0 */
+}
+
+.imageCarouselWrapper {
+  width: 100%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Estilos personalizados para el carrusel dentro de CardDetalle */
+.imageCarouselWrapper :global(.carouselContainer) {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  width: 100%;
+}
+
+.imageCarouselWrapper :global(.mainImageContainer) {
+  background: transparent;
+  border-radius: var(--border-radius-lg);
+  /* ✅ Mobile: Estándar 16:9 para galerías de autos */
+  aspect-ratio: 16 / 9;
+  min-height: 300px;
+  max-height: none; /* Permitir que fluya naturalmente */
+  border: none;
+  box-shadow: none;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ✅ Mobile: contain para ver auto completo, desktop: cover */
+.imageCarouselWrapper :global(.mainImageContainer .mainImage) {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* ✅ Mobile: ver auto completo */
+  object-position: center;
+}
+
+/* Desktop: Estándar de la industria 4:3 con altura mínima de 600px */
+@media (min-width: 769px) {
+  .imageCarouselWrapper :global(.mainImageContainer) {
+    aspect-ratio: 4 / 3; /* ✅ Estándar de la industria para galerías de autos */
+    min-height: 600px; /* ✅ Altura mínima estándar de la industria */
+    max-height: none; /* Permitir que fluya naturalmente */
+  }
+
+  .imageCarouselWrapper :global(.mainImageContainer .mainImage) {
+    object-fit: cover; /* Desktop: llenar espacio */
+  }
+}
+
+/* Contenedor de miniaturas: mismo ancho que la foto principal */
+.imageCarouselWrapper :global(.thumbnailsContainer) {
+  width: 100%;
+  margin-top: var(--spacing-4);
+  padding-left: 6px !important; /* ✅ Padding-left de 6px */
+  padding-right: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  overflow: hidden;
+}
+
+.imageCarouselWrapper :global(.thumbnails) {
+  width: 100%;
+  justify-content: flex-start;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Ocultar flechas de navegación de miniaturas si están fuera */
+.imageCarouselWrapper :global(.thumbnailArrowLeft),
+.imageCarouselWrapper :global(.thumbnailArrowRight) {
+  display: none !important;
+}
+
+/* Ocultar controles azules de miniaturas */
+.imageCarouselWrapper :global(.thumbnailControls) {
+  display: none !important;
+}
+
+.imageCarouselWrapper :global(.thumbnail) {
+  width: 140px !important;
+  height: 105px !important;
+  border-radius: var(--border-radius-md);
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: none !important;
+  transition: border-color var(--transition-fast);
+}
+
+.imageCarouselWrapper :global(.thumbnail:hover) {
+  border-color: rgba(0, 0, 0, 0.2) !important;
+  box-shadow: none !important;
+  transform: translateY(-2px);
+}
+
+.imageCarouselWrapper :global(.thumbnail.active) {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+  border-width: 1px !important;
+  box-shadow: none !important;
+  transform: scale(1.2) !important;
+}
+
+.imageCarouselWrapper :global(.thumbnail.active::after) {
+  display: none !important;
+}
+
+/* Desktop: Miniaturas aún más grandes */
+@media (min-width: 992px) {
+  .imageCarouselWrapper :global(.thumbnail) {
+    width: 160px !important;
+    height: 120px !important;
+  }
+}
+
+/* ===== SECCIÓN DERECHA: DATOS (sin fondo/card) ===== */
+.dataSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  order: 2;
+  background: transparent;
+  align-items: stretch;
+  justify-content: flex-start;
+  position: relative;
+  padding-left: 6px !important; /* ✅ Padding-left de 6px */
+  padding-right: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* ===== HEADER: Logo + Título/Modelo + Especificaciones ===== */
+.headerSection {
+  display: flex;
+  flex-direction: row;
+  gap: var(--spacing-5);
+  width: 100%;
+  align-items: flex-start;
+  justify-content: space-between; /* ✅ En mobile: espacio entre datos y logo */
+  padding-bottom: var(--spacing-6);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  min-height: 0;
+  position: relative; /* ✅ Para desktop: permitir logo absolute */
+}
+
+/* Nueva sección para Año, Km, Caja (fuera del headerSection) */
+.mainDataSection {
+  width: 100%;
+  padding-top: var(--spacing-2);
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Logo: en mobile está en el headerSection, en desktop es absolute */
+.logoContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.brand_logo {
+  --logo-size-base: clamp(100px, 20vw, 140px);
+  --logo-opacity: 0.92;
+
+  width: var(--logo-size-base);
+  height: var(--logo-size-base);
+  display: block;
+  object-fit: contain;
+  opacity: var(--logo-opacity);
+  transition: opacity var(--transition-smooth);
+}
+
+.brand_logo_small {
+  --logo-size-base: clamp(85px, 18vw, 120px);
+  width: var(--logo-size-base);
+  height: var(--logo-size-base);
+}
+
+.brand_logo_large {
+  --logo-size-base: clamp(110px, 22vw, 160px);
+  width: var(--logo-size-base);
+  height: var(--logo-size-base);
+}
+
+.headerData {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  justify-content: flex-start;
+  align-items: flex-start;
+  order: 1;
+}
+
+/* FILA 1: Título/Modelo (MÁS IMPORTANTE) */
+.titleRow {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: flex-start;
+  width: 100%;
+  flex-wrap: wrap; /* ✅ Si no caben todos, bajan completos */
+  gap: var(--spacing-2); /* ✅ Espacio entre marca, modelo y versión */
+  min-width: 0;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  max-width: 100%; /* ✅ Asegurar que respete el ancho disponible */
+}
+
+.marca_text {
+  --marca-font-size: clamp(2rem, 5.5vw, 3rem);
+
+  font-size: var(--marca-font-size);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-condensed);
+  color: var(--color-text-primary);
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  display: inline-block;
+  white-space: nowrap; /* ✅ No se parte en 2 filas, baja completo si no cabe */
+  flex-shrink: 0;
+}
+
+.modelo_title {
+  --modelo-font-size: clamp(2rem, 5.5vw, 3rem);
+
+  font-size: var(--modelo-font-size);
+  font-weight: var(--font-weight-light); /* ✅ Fuente más fina/sutil */
+  font-family: var(--font-condensed);
+  color: var(--color-neutral-600); /* ✅ Gris como en vehicle card */
+  line-height: 1.15;
+  letter-spacing: -0.5px;
+  margin: 0;
+  padding: 0;
+  padding-bottom: 0;
+  margin-bottom: 0;
+  text-align: left;
+  display: inline-block;
+  white-space: nowrap; /* ✅ No se parte en 2 filas, baja completo si no cabe */
+  flex-shrink: 1;
+  min-width: 0;
+}
+
+/* Sección de versión (dentro del header, antes de los 3 datos) */
+.versionSection {
+  width: 100%;
+  padding-top: var(--spacing-4);
+  padding-bottom: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: var(--spacing-3);
+  flex-wrap: wrap; /* ✅ Permitir wrap si no cabe horizontalmente */
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Versión ahora está en titleRow, ajustar estilos */
+.titleRow .version_text {
+  margin-left: 0; /* ✅ Sin margen extra, usa gap del contenedor */
+}
+
+.versionSpec_value {
+  --spec-font-size: clamp(1rem, 2.5vw, 1.25rem);
+
+  font-size: var(--spec-font-size);
+  font-weight: var(--font-weight-light);
+  font-family: var(--font-condensed);
+  color: var(--color-neutral-500);
+  line-height: 1.4;
+  letter-spacing: -0.2px;
+  display: inline-block;
+  white-space: normal; /* ✅ Permitir wrap si es necesario */
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.versionSpec_separator_subtle {
+  --separator-opacity: 0.05;
+  --separator-font-size: clamp(1rem, 2.5vw, 1.25rem);
+
+  font-size: var(--separator-font-size);
+  font-weight: var(--font-weight-light);
+  font-family: var(--font-condensed);
+  color: var(--color-neutral-400);
+  opacity: var(--separator-opacity);
+  padding: 0 var(--spacing-1);
+  flex-shrink: 0;
+  user-select: none;
+  display: inline-block;
+  margin: 0 var(--spacing-1);
+}
+
+.version_text {
+  --version-font-size: clamp(1.5rem, 4vw, 2rem);
+
+  font-size: var(--version-font-size);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-condensed);
+  color: var(--color-neutral-600);
+  line-height: 1.15;
+  letter-spacing: -0.3px;
+  display: inline-block;
+  white-space: nowrap; /* ✅ No se parte en 2 filas, baja completo si no cabe */
+  min-width: 0;
+  flex-shrink: 1;
+  max-width: 100%;
+}
+
+/* FILA 2: Año, Km, Caja (SEGUNDA IMPORTANCIA) */
+.mainDataRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: baseline;
+  gap: clamp(2rem, 4vw, 5rem);
+  flex-wrap: nowrap;
+  width: 100%;
+  min-width: 0;
+  align-self: flex-start;
+}
+
+.mainDataItem {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.mainDataItem:first-child {
+  flex: 1 2 0%;
+}
+
+.mainDataContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+  align-items: flex-start;
+  justify-content: flex-end;
+  text-align: left;
+  width: 100%;
+  min-width: 0;
+}
+
+.mainDataLabelGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  justify-content: flex-start;
+}
+
+.mainDataIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-neutral-600);
+  opacity: 0.8;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.mainDataIcon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.mainDataLabel {
+  --label-font-size: clamp(0.75rem, 2vw, 0.9375rem);
+
+  font-size: var(--label-font-size);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-condensed);
+  color: var(--color-neutral-600);
+  letter-spacing: 0.2px;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.mainDataValue {
+  --value-font-size: clamp(1.5rem, 4vw, 2rem);
+
+  font-size: var(--value-font-size);
+  font-weight: var(--font-weight-light);
+  font-family: var(--font-condensed);
+  color: var(--color-text-primary);
+  line-height: 1.25;
+  letter-spacing: -0.3px;
+  width: 100%;
+  text-align: left;
+  white-space: nowrap;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ===== SECCIÓN PRECIO ===== */
+.priceSection {
+  --price-border-opacity: 0.05;
+  --price-border-radius: var(--border-radius-lg);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: var(--spacing-2);
+  margin-top: 0;
+  padding-top: var(--spacing-4);
+  padding-bottom: var(--spacing-4);
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  border-left: 1px solid rgba(0, 0, 0, var(--price-border-opacity));
+  border-radius: var(--price-border-radius) 0 0 0;
+}
+
+.price_label_container {
+  --label-width: 30%;
+  --label-padding-left: var(--spacing-2);
+
+  flex: 0 0 var(--label-width);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+  padding-left: var(--label-padding-left);
+  background: transparent;
+}
+
+.price_label {
+  --label-font-size: clamp(1.125rem, 2.8vw, 1.375rem);
+
+  font-size: var(--label-font-size);
+  font-weight: var(--font-weight-medium);
+  font-style: normal;
+  font-family: var(--font-condensed);
+  color: var(--color-neutral-600);
+  text-align: left;
+  text-transform: lowercase;
+  letter-spacing: 0.5px;
+}
+
+.price_display {
+  --price-width: 70%;
+  --price-padding-right: var(--spacing-3);
+
+  flex: 0 0 var(--price-width);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0;
+  padding-top: var(--spacing-1);
+  padding-right: var(--price-padding-right);
+  background: transparent;
+}
+
+.price_value {
+  --price-font-size: clamp(2.5rem, 6.5vw, 3.25rem);
+  --price-letter-spacing: -0.4px;
+  --price-line-height: 1.15;
+  --price-symbol-size: 0.7em;
+
+  font-size: var(--price-font-size);
+  font-weight: var(--font-weight-bold);
+  font-style: normal;
+  font-family: var(--font-condensed);
+  color: var(--color-brand-500);
+  line-height: var(--price-line-height);
+  letter-spacing: var(--price-letter-spacing);
+  text-align: right;
+}
+
+.price_value::first-letter {
+  font-size: var(--price-symbol-size);
+}
+
+/* ===== SECCIÓN INFORMACIÓN ADICIONAL ===== */
+.additionalInfoSection {
+  width: 100%;
+  padding-top: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.infoContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: var(--spacing-4) 0;
+  width: 100%;
+  align-items: start;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  text-align: left;
+}
+
+.infoKey {
+  --label-font-size: clamp(0.9375rem, 2.5vw, 1.125rem);
+
+  font-size: var(--label-font-size);
+  font-weight: var(--font-weight-medium);
+  font-family: var(--font-condensed);
+  color: var(--color-neutral-600);
+  letter-spacing: 0.2px;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.infoValue {
+  --value-font-size: clamp(1.25rem, 3.5vw, 1.5rem);
+
+  font-size: var(--value-font-size);
+  font-weight: var(--font-weight-light);
+  font-family: var(--font-condensed);
+  color: var(--color-neutral-600);
+  line-height: 1.2;
+  letter-spacing: -0.2px;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ===== RESPONSIVE DESIGN - MOBILE FIRST ===== */
+
+/* Mobile: Stack vertical con alineación profesional */
+@media (max-width: 767px) {
+  .cardContent {
+    padding: 0;
+    min-width: 0;
+    margin-bottom: var(--spacing-8);
+  }
+
+  .mainLayout {
+    gap: var(--spacing-5);
+    align-items: stretch;
+  }
+
+  .carouselSection {
+    width: 100%;
+    align-items: stretch;
+    padding-left: 6px !important; /* ✅ Padding-left de 6px */
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .dataSection {
+    width: 100%;
+    align-items: stretch;
+    padding-left: 6px !important; /* ✅ Padding-left de 6px */
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .headerSection {
+    flex-direction: row;
+    gap: 2rem; /* ✅ Gap intermedio más grande (doble) */
+    padding-bottom: var(--spacing-4);
+    align-items: flex-start; /* ✅ Alineado arriba, con la marca */
+    justify-content: flex-start; /* Logo más cerca */
+    padding-right: 0; /* ✅ Sin padding-right en mobile */
+  }
+
+  .logoContainer {
+    position: static; /* ✅ Sin position absolute en mobile */
+    max-width: none;
+    flex-shrink: 0;
+    align-items: flex-start; /* ✅ Alineado arriba */
+    justify-content: flex-start; /* ✅ Arranca arriba */
+    order: 2; /* ✅ Logo a la derecha */
+    padding-top: var(--spacing-2); /* ✅ Padding top al logo */
+  }
+
+  .brand_logo {
+    --logo-size-base: clamp(120px, 30vw, 180px); /* ✅ Logo más grande en mobile */
+    width: var(--logo-size-base);
+    height: var(--logo-size-base);
+  }
+
+  .brand_logo_small {
+    --logo-size-base: clamp(100px, 28vw, 160px);
+    width: var(--logo-size-base);
+    height: var(--logo-size-base);
+  }
+
+  .brand_logo_large {
+    --logo-size-base: clamp(140px, 32vw, 200px);
+    width: var(--logo-size-base);
+    height: var(--logo-size-base);
+  }
+
+  .headerData {
+    gap: var(--spacing-3);
+    flex: 0 0 auto; /* ✅ Ancho del contenido, no se expande */
+    width: fit-content; /* ✅ Ancho del contenido */
+    min-width: 0;
+    align-items: flex-start;
+    order: 1; /* ✅ Datos a la izquierda */
+    max-width: none; /* ✅ Sin limitación de ancho en mobile */
+  }
+
+  .mainDataRow {
+    flex-direction: row;
+    gap: clamp(1.5rem, 3vw, 2.5rem);
+    width: 100%;
+    justify-content: flex-start;
+    align-items: baseline;
+    flex-wrap: nowrap;
+  }
+
+  .mainDataItem {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+
+  .mainDataItem:first-child {
+    flex: 1 2 0%;
+  }
+
+  .titleRow {
+    flex-direction: column; /* ✅ En mobile: marca, modelo, versión en columna */
+    flex-wrap: nowrap;
+    gap: var(--spacing-1); /* ✅ Menos espacio entre elementos en columna */
+    align-items: flex-start;
+  }
+
+  .marca_text {
+    --marca-font-size: clamp(2.5rem, 7vw, 3.5rem);
+    font-size: var(--marca-font-size);
+  }
+
+  .modelo_title {
+    --modelo-font-size: clamp(2.5rem, 7vw, 3.5rem);
+    font-size: var(--modelo-font-size);
+  }
+
+  .version_text {
+    --version-font-size: clamp(2rem, 5.5vw, 2.5rem);
+    font-size: var(--version-font-size);
+  }
+
+  .mainDataValue {
+    --value-font-size: clamp(1.75rem, 5vw, 2.25rem);
+    font-size: var(--value-font-size);
+  }
+
+  .mainDataLabel {
+    --label-font-size: clamp(0.875rem, 2.5vw, 1rem);
+    font-size: var(--label-font-size);
+  }
+
+  .imageCarouselWrapper {
+    width: 100%;
+  }
+
+  .imageCarouselWrapper :global(.mainImageContainer) {
+    aspect-ratio: 16 / 9; /* ✅ Mobile: más ancho para vehículos */
+    min-height: 250px;
+  }
+
+  .imageCarouselWrapper :global(.mainImageContainer .mainImage) {
+    object-fit: contain; /* ✅ CRÍTICO: contain para ver el auto completo */
+  }
+
+  .imageCarouselWrapper :global(.thumbnail) {
+    width: 110px !important;
+    height: 82px !important;
+  }
+
+  .imageCarouselWrapper :global(.thumbnail.active) {
+    transform: scale(1.2) !important;
+  }
+
+  .priceSection,
+  .additionalInfoSection {
+    width: 100%;
+    align-items: stretch;
+    justify-content: center;
+    padding-top: var(--spacing-6);
+  }
+
+  .price_display {
+    justify-content: flex-end;
+  }
+
+  .infoContainer {
+    width: 100%;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-4) 0;
+  }
+
+  .price_value {
+    --price-font-size: clamp(2.75rem, 7.5vw, 3.5rem);
+  }
+}
+
+/* Tablet y Desktop: Layout 50/50 con separación profesional */
+@media (min-width: 768px) {
+  .cardContent {
+    padding: 0 clamp(var(--container-padding-tablet), 6vw, var(--spacing-10));
+    min-width: 0;
+    margin-bottom: var(--spacing-12);
+  }
+
+  .mainLayout {
+    flex-direction: row;
+    gap: clamp(2.5rem, 4vw, 3.5rem); /* ✅ Espacio entre secciones */
+    align-items: flex-start;
+    justify-content: center; /* ✅ Centrado */
+    width: 100%;
+    max-width: 100%; /* ✅ Usar todo el ancho disponible */
+    margin: 0 auto; /* ✅ Centrar el layout */
+  }
+
+  .carouselSection {
+    flex: 0 1 calc(50% - clamp(1.25rem, 2vw, 1.75rem)); /* ✅ 50% menos la mitad del gap */
+    min-width: 0;
+    max-width: none;
+    order: 1;
+    position: sticky;
+    top: calc(77px + var(--spacing-6));
+    align-self: flex-start;
+    max-height: none; /* ✅ Permitir que el contenido determine la altura */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding-left: 6px !important; /* ✅ Padding-left de 6px */
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .dataSection {
+    flex: 0 1 calc(50% - clamp(1.25rem, 2vw, 1.75rem)); /* ✅ 50% menos la mitad del gap */
+    min-width: 0;
+    max-width: none;
+    order: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--spacing-8); /* ✅ Más espacio entre elementos */
+    padding-left: 6px !important; /* ✅ Padding-left de 6px */
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .headerSection {
+    gap: var(--spacing-6);
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-bottom: var(--spacing-8); /* ✅ Más espacio inferior */
+  }
+
+  .logoContainer {
+    position: absolute;
+    top: -1.3rem;
+    right: 21%;
+    z-index: 10;
+  }
+
+  .headerSection {
+    /* ✅ Padding-right calculado: logo máximo (160px) + margen (24px) = ~184px */
+    padding-right: clamp(140px, 25%, 180px);
+  }
+
+  .headerData {
+    flex: 1;
+    min-width: 0;
+    align-items: flex-start;
+    max-width: calc(100% - clamp(140px, 25%, 180px)); /* ✅ Limitar ancho para evitar superposición */
+  }
+
+  .mainDataSection {
+    padding-top: var(--spacing-4); /* ✅ Más espacio superior */
+    padding-bottom: var(--spacing-6); /* ✅ Más espacio inferior */
+  }
+
+  .mainDataRow {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: baseline;
+    gap: clamp(3.5rem, 5vw, 5rem); /* ✅ Más espacio entre datos */
+    flex-wrap: nowrap;
+  }
+
+  .mainDataItem {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+
+  .mainDataItem:first-child {
+    flex: 1 2 0%;
+  }
+
+  .imageCarouselWrapper {
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .imageCarouselWrapper :global(.mainImageContainer) {
+    aspect-ratio: 4 / 3; /* ✅ Estándar de la industria */
+    min-height: 600px; /* ✅ Altura mínima estándar de la industria */
+    max-height: none; /* Permitir que fluya naturalmente */
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .imageCarouselWrapper :global(.mainImageContainer .mainImage) {
+    object-fit: cover; /* Desktop: llenar espacio */
+  }
+
+  .imageCarouselWrapper :global(.thumbnail) {
+    width: 140px !important;
+    height: 105px !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    box-shadow: none !important;
+  }
+
+  .imageCarouselWrapper :global(.thumbnail:hover) {
+    border-color: rgba(0, 0, 0, 0.2) !important;
+    box-shadow: none !important;
+  }
+
+  .imageCarouselWrapper :global(.thumbnail.active) {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    box-shadow: none !important;
+    transform: scale(1.2) !important;
+  }
+
+  .priceSection,
+  .additionalInfoSection {
+    width: 100%;
+    align-self: stretch;
+  }
+}
+
+/* Desktop grande: Más espaciado y alineación profesional */
+@media (min-width: 992px) {
+  .cardContent {
+    padding: 0 clamp(var(--container-padding-desktop), 6vw, 5rem);
+    min-width: 0;
+    margin-bottom: var(--spacing-14);
+  }
+
+  .mainLayout {
+    gap: clamp(3rem, 5vw, 4rem); /* ✅ Espacio entre secciones */
+    align-items: flex-start;
+    justify-content: center; /* ✅ Centrado */
+    max-width: 100%; /* ✅ Usar todo el ancho disponible */
+    padding: var(--spacing-6); /* ✅ Padding en los 4 lados al contenedor padre */
+    box-sizing: border-box;
+  }
+
+  .carouselSection {
+    flex: 0 1 calc(50% - clamp(1.5rem, 2.5vw, 2rem)); /* ✅ 50% menos la mitad del gap */
+    max-width: none;
+    min-width: 0;
+    top: calc(77px + var(--spacing-8));
+    padding-left: 6px !important; /* ✅ Padding-left de 6px */
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .dataSection {
+    flex: 0 1 calc(50% - clamp(1.5rem, 2.5vw, 2rem)); /* ✅ 50% menos la mitad del gap */
+    max-width: none;
+    min-width: 0;
+    gap: var(--spacing-10); /* ✅ Más espacio entre elementos en desktop */
+    padding-left: 6px !important; /* ✅ Padding-left de 6px */
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .headerSection {
+    gap: var(--spacing-6);
+    padding-bottom: var(--spacing-8); /* ✅ Más espacio inferior */
+    align-items: flex-start;
+  }
+
+  .mainDataSection {
+    padding-top: var(--spacing-5); /* ✅ Más espacio superior */
+    padding-bottom: var(--spacing-8); /* ✅ Más espacio inferior */
+  }
+
+  .mainDataRow {
+    gap: clamp(5rem, 6vw, 7rem); /* ✅ Más espacio entre datos en desktop grande */
+    justify-content: flex-start;
+    align-items: baseline;
+    flex-wrap: nowrap;
+  }
+
+  .mainDataItem {
+    flex: 1 1 0%;
+    min-width: 0;
+  }
+
+  .mainDataItem:first-child {
+    flex: 1 2 0%;
+  }
+
+  .mainDataValue {
+    --value-font-size: clamp(1.5rem, 4vw, 2rem);
+  }
+
+  .mainDataLabel {
+    --label-font-size: clamp(0.75rem, 2vw, 0.9375rem);
+  }
+
+  .priceSection {
+    padding-top: var(--spacing-6); /* ✅ Más espacio superior */
+    padding-bottom: var(--spacing-6); /* ✅ Más espacio inferior */
+    margin-top: var(--spacing-2); /* ✅ Separación adicional */
+  }
+
+  .additionalInfoSection {
+    padding-top: var(--spacing-6); /* ✅ Más espacio superior */
+    margin-bottom: var(--spacing-6); /* ✅ Más espacio inferior */
+  }
+
+  .infoContainer {
+    gap: var(--spacing-4) 0;
+  }
+
+  .imageCarouselWrapper :global(.mainImageContainer) {
+    aspect-ratio: 4 / 3; /* ✅ Estándar de la industria */
+    min-height: 600px; /* ✅ Altura mínima estándar de la industria */
+    max-height: none; /* Permitir que fluya naturalmente */
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .imageCarouselWrapper :global(.mainImageContainer .mainImage) {
+    object-fit: cover; /* Desktop: llenar espacio */
+  }
+
+  .imageCarouselWrapper :global(.thumbnail) {
+    width: 110px !important; /* ✅ Reducido para achicar carrusel */
+    height: 82px !important; /* ✅ Reducido manteniendo proporción */
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    box-shadow: none !important;
+  }
+
+  .imageCarouselWrapper :global(.thumbnail:hover) {
+    border-color: rgba(0, 0, 0, 0.2) !important;
+    box-shadow: none !important;
+  }
+
+  .imageCarouselWrapper :global(.thumbnail.active) {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    box-shadow: none !important;
+    transform: scale(1.2) !important;
+  }
+}
+
+/* Pantallas muy grandes: Alineación perfecta y espaciado máximo */
+@media (min-width: 1400px) {
+  .cardContent {
+    padding: 0;
+    max-width: 1600px;
+    min-width: 0;
+  }
+
+  .mainLayout {
+    gap: clamp(4rem, 6vw, 5rem); /* ✅ Espacio generoso */
+    align-items: flex-start;
+    justify-content: center;
+    max-width: 1600px; /* ✅ Limitar ancho para legibilidad */
+    padding: var(--spacing-8); /* ✅ Padding en los 4 lados al contenedor padre (pantallas grandes) */
+    box-sizing: border-box;
+  }
+
+  .carouselSection {
+    flex: 0 0 48%; /* ✅ Ancho fijo consistente */
+    max-width: 48%;
+    min-width: 0;
+    padding-left: 6px !important; /* ✅ Padding-left de 6px */
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .dataSection {
+    flex: 0 0 48%; /* ✅ Ancho fijo consistente */
+    max-width: 48%;
+    min-width: 0;
+    gap: var(--spacing-10); /* ✅ Espacio generoso */
+    padding-left: 6px !important; /* ✅ Padding-left de 6px */
+    padding-right: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  .headerSection {
+    gap: var(--spacing-8);
+  }
+
+  .logoContainer {
+    max-width: 160px;
+    position: absolute;
+    top: -1.5rem;
+    right: 24%;
+    z-index: 10;
+  }
+
+  .headerSection {
+    /* ✅ Padding-right calculado: logo máximo (160px) + margen (24px) = ~184px */
+    padding-right: clamp(140px, 25%, 180px);
+  }
+
+  .headerData {
+    max-width: calc(100% - clamp(140px, 25%, 180px)); /* ✅ Limitar ancho para evitar superposición */
+  }
+
+  .imageCarouselWrapper :global(.mainImageContainer) {
+    aspect-ratio: 4 / 3; /* ✅ Estándar de la industria */
+    min-height: 650px; /* ✅ Altura mínima para pantallas muy grandes */
+    max-height: none; /* Permitir que fluya naturalmente */
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .imageCarouselWrapper :global(.mainImageContainer .mainImage) {
+    object-fit: cover; /* Desktop: llenar espacio */
+  }
+
+  .imageCarouselWrapper :global(.thumbnail) {
+    width: 170px !important;
+    height: 127px !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    box-shadow: none !important;
+  }
+
+  .imageCarouselWrapper :global(.thumbnail:hover) {
+    border-color: rgba(0, 0, 0, 0.2) !important;
+    box-shadow: none !important;
+  }
+
+  .imageCarouselWrapper :global(.thumbnail.active) {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+    box-shadow: none !important;
+    transform: scale(1.2) !important;
+  }
+}
+
+/* ===== ACCESIBILIDAD: REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  .brand_logo,
+  .mainDataIcon,
+  .imageCarouselWrapper :global(.thumbnailItem) {
+    transition: none;
+  }
+}
+

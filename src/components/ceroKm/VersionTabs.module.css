@@ -1,0 +1,89 @@
+/**
+ * VersionTabs.module.css - Estilos de tabs de versiones
+ * 
+ * @author Indiana Usados
+ * @version 1.0.0
+ */
+
+.container {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-start;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.container::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-poppins);
+  letter-spacing: 0.5px;
+  color: var(--color-neutral-600);
+  background: transparent;
+  border: 2px solid var(--color-neutral-200);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: color var(--transition-fast), background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.tab:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-neutral-400);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+.tab.active {
+  color: var(--color-white);
+  background: var(--color-text-primary);
+  border-color: var(--color-text-primary);
+}
+
+/* Letras GT en rojo (solo cuando no está activo) */
+.gtText {
+  color: #dc2626;
+}
+
+.tab.active .gtText {
+  color: var(--color-white);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 768px) {
+  .container {
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .tab {
+    padding: 14px 32px;
+    font-size: 1rem;
+    letter-spacing: 1px;
+  }
+}
+
+@media (min-width: 992px) {
+  .container {
+    justify-content: flex-start;
+  }
+
+  .tab {
+    padding: 12px 28px;
+    font-size: 1rem;
+    letter-spacing: 0.75px;
+  }
+}
+

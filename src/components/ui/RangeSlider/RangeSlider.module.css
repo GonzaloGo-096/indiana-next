@@ -1,0 +1,214 @@
+/**
+ * RangeSlider.module.css - Estilos optimizados para el componente de rango
+ * 
+ * @author Indiana Peugeot
+ * @version 2.0.0 - Optimizado y limpio
+ */
+
+.rangeSlider {
+  width: 75%; /* Reducido en 25% */
+  margin-bottom: 0; /* ✅ Sin margin bottom */
+  margin-top: 0; /* ✅ Sin margin top */
+  margin-left: auto;
+  margin-right: auto;
+  padding-top: 0; /* ✅ Sin padding top */
+  padding-bottom: 0; /* ✅ Sin padding bottom */
+}
+
+.label {
+  display: block;
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-neutral-700, #374151);
+  margin-bottom: 0; /* ✅ Sin margin bottom */
+  margin-top: 0; /* ✅ Sin margin top */
+  text-align: center;
+  padding-top: 0; /* ✅ Sin padding top */
+  padding-bottom: 0; /* ✅ Sin padding bottom */
+}
+
+.container {
+  position: relative;
+}
+
+.track {
+  position: relative;
+  height: 6px;
+  background: var(--color-neutral-200, #e5e7eb);
+  border-radius: 3px;
+  cursor: pointer;
+  user-select: none;
+  touch-action: none; /* ✅ Evita que el navegador capture gestos de scroll */
+}
+
+.range {
+  position: absolute;
+  height: 100%;
+  background: var(--color-brand-500, #0066cc);
+  border-radius: 3px;
+  transition: all 0.2s ease;
+}
+
+.thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 18px;
+  height: 18px;
+  background: var(--color-white, #ffffff); /* ✅ CAMBIADO: Fondo blanco */
+  border: 2px solid var(--color-neutral-900, #111827); /* ✅ CAMBIADO: Borde negro */
+  border-radius: 50%;
+  cursor: grab;
+  transition: all 0.2s ease;
+  z-index: 2;
+  touch-action: none; /* ✅ Evita que el navegador capture gestos de scroll */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.thumb:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.thumb.active {
+  transform: translate(-50%, -50%) scale(1.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  cursor: grabbing;
+}
+
+.thumbMin {
+  z-index: 3;
+}
+
+.thumbMax {
+  z-index: 3;
+}
+
+/* ✅ Aumentar z-index cuando el thumb está activo o en hover para que el tooltip esté por encima */
+.thumb:hover,
+.thumb.active {
+  z-index: 100000 !important; /* ✅ Z-index muy alto cuando está activo */
+}
+
+.thumb:hover .tooltip,
+.thumb.active .tooltip {
+  z-index: 999999 !important; /* ✅ Z-index extremadamente alto para el tooltip */
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-neutral-800, #1f2937);
+  color: var(--color-white, #ffffff);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-medium, 500);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 999999; /* ✅ Z-index extremadamente alto para que esté por encima de TODO */
+  isolation: isolate; /* ✅ Crear nuevo stacking context */
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--color-neutral-800, #1f2937);
+}
+
+.thumb:hover .tooltip,
+.thumb.active .tooltip {
+  opacity: 1;
+}
+
+.values {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0; /* ✅ Sin margin top */
+  margin-bottom: 0; /* ✅ Sin margin bottom */
+  gap: 1rem;
+}
+
+.value {
+  font-size: var(--font-size-lg, 1.125rem);
+  color: var(--color-text-primary, #1a1a1a);
+  font-weight: 400; /* ✅ Menos bold - peso normal */
+}
+
+.separator {
+  color: var(--color-text-primary, #1a1a1a);
+  font-size: var(--font-size-lg, 1.125rem);
+  margin: 0 var(--spacing-xs, 0.5rem);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .rangeSlider {
+    width: 100%; /* En mobile usar ancho completo */
+  }
+  
+  .label {
+    font-size: var(--font-size-base, 1rem);
+  }
+  
+  .track {
+    height: 10px; /* ✅ Más grueso */
+  }
+  
+  .thumb {
+    width: 32px; /* ✅ Más grande */
+    height: 32px; /* ✅ Más grande */
+    border-width: 3px; /* ✅ Borde más grueso */
+  }
+  
+  .values {
+    font-size: 1.25rem; /* ✅ Más grande - 20px */
+  }
+  
+  .value {
+    font-size: 1.25rem; /* ✅ Más grande - 20px */
+    font-weight: 400; /* ✅ Menos bold - peso normal */
+  }
+  
+  .separator {
+    font-size: 1.25rem; /* ✅ Más grande también */
+  }
+  
+  .tooltip {
+    font-size: 0.75rem; /* ✅ Más chico - 12px */
+    padding: 4px 8px; /* ✅ Padding reducido */
+    font-weight: 600; /* ✅ Más bold */
+    bottom: 35px; /* ✅ Ajustado para la bolilla más grande */
+  }
+}
+
+/* Touch optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .thumb {
+    width: 32px; /* ✅ Más grande para touch */
+    height: 32px; /* ✅ Más grande para touch */
+    border-width: 3px; /* ✅ Borde más grueso */
+  }
+  
+  .track {
+    height: 10px; /* ✅ Más grueso */
+  }
+  
+  .tooltip {
+    font-size: 1.125rem; /* ✅ Mucho más grande - 18px */
+    padding: 8px 14px; /* ✅ Más padding */
+    font-weight: 600; /* ✅ Más bold */
+    bottom: 35px; /* ✅ Ajustado para la bolilla más grande */
+  }
+}
+

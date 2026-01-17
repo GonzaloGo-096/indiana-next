@@ -1,0 +1,323 @@
+/**
+ * PriceRangeCarousel.module.css - Carrusel horizontal mobile-first
+ * 
+ * Diseño mobile-first con scroll horizontal suave.
+ * Cards adaptadas para tamaño más compacto en carrusel.
+ * Flechas unificadas: 40px x 40px, fondo negro, posición absoluta.
+ * 
+ * @author Indiana Peugeot
+ * @version 1.0.0 - Next.js migrado
+ */
+
+/* ===== SECCIÓN PRINCIPAL ===== */
+.section {
+  width: 100%;
+  margin-top: 0;
+  padding: var(--spacing-6) 0;
+  background: var(--color-white);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding-mobile);
+}
+
+/* ===== HEADER (Título y subtítulo) ===== */
+.header {
+  margin-bottom: var(--spacing-5);
+  text-align: center;
+}
+
+.title {
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--spacing-2) 0;
+  font-family: var(--font-condensed);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.subtitle {
+  font-size: clamp(0.8rem, 2.5vw, 0.9375rem);
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-weight: var(--font-weight-normal);
+}
+
+/* ===== CARRUSEL WRAPPER ===== */
+.carouselWrapper {
+  position: relative;
+  width: 100%;
+  overflow: visible; /* ✅ Permite que las flechas salgan del contenedor */
+  padding: 0 20px; /* ✅ Padding para espacio de las flechas sin afectar centrado */
+  box-sizing: content-box; /* ✅ El padding no afecta el ancho total */
+}
+
+/* ===== FLECHAS DE NAVEGACIÓN - Estilo unificado ===== */
+.arrowButton {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: -20px; /* ✅ Fuera del contenedor */
+  width: 40px;
+  height: 40px;
+  background: var(--color-neutral-900);
+  color: var(--color-white);
+  border: none;
+  border-radius: 50%;
+  display: none; /* Oculto por defecto (mobile) */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.arrowButton:hover {
+  background: var(--color-brand-500);
+}
+
+.arrowButton:active {
+  transform: translateY(-50%) scale(0.98);
+}
+
+.arrowButton:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+.arrowButton svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+.arrowButtonRight {
+  left: auto;
+  right: -20px; /* ✅ Fuera del contenedor */
+}
+
+/* ===== CONTENEDOR DE CARRUSEL (scroll horizontal) ===== */
+.carouselContainer {
+  display: flex;
+  gap: var(--spacing-4);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  padding: var(--spacing-2) var(--spacing-2) var(--spacing-4) var(--spacing-2);
+
+  /* Ocultar scrollbar completamente pero mantener funcionalidad */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge */
+
+  /* Webkit scrollbar - ocultar completamente */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+  /* Touch scrolling optimizado para mobile */
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+
+/* ===== WRAPPER DE CADA CARD ===== */
+.cardWrapper {
+  flex: 0 0 auto;
+  min-width: 240px;
+  max-width: 300px;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* CardSimilar dentro del wrapper - adapta al contenido */
+.cardWrapper :global(.card) {
+  width: 100%;
+  min-width: 240px;
+}
+
+/* ===== SKELETON LOADING ===== */
+.skeletonCard {
+  flex: 0 0 auto;
+  width: 280px;
+  height: 380px;
+  background: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+.skeletonImage {
+  width: 100%;
+  height: 175px;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-100) 25%,
+    var(--color-neutral-50) 50%,
+    var(--color-neutral-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonContent {
+  flex: 1;
+  padding: var(--spacing-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.skeletonText {
+  height: 12px;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-100) 25%,
+    var(--color-neutral-50) 50%,
+    var(--color-neutral-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ===== ERROR STATE ===== */
+.errorState {
+  width: 100%;
+  padding: var(--spacing-6);
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+/* ===== RESPONSIVE: TABLET Y DESKTOP ===== */
+@media (min-width: 768px) {
+  .section {
+    margin-top: 0;
+    padding: var(--spacing-8) 0;
+  }
+
+  .container {
+    padding: 0 var(--container-padding-tablet);
+  }
+
+  .header {
+    margin-bottom: var(--spacing-6);
+    text-align: left;
+  }
+
+  .carouselContainer {
+    gap: var(--spacing-5);
+    padding: var(--spacing-3) var(--spacing-3) var(--spacing-5)
+      var(--spacing-3);
+  }
+
+  .cardWrapper {
+    min-width: 260px;
+    max-width: 320px;
+  }
+
+  .skeletonCard {
+    width: 300px;
+    height: 400px;
+  }
+}
+
+@media (min-width: 992px) {
+  .section {
+    margin-top: 0;
+    padding: var(--spacing-10) 0;
+  }
+
+  .container {
+    padding: 0 var(--container-padding-desktop);
+  }
+
+  .carouselContainer {
+    gap: var(--spacing-6);
+    /* Scrollbar oculta en desktop también */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .carouselContainer::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* ✅ Mostrar flechas solo en desktop */
+  .arrowButton {
+    display: flex !important;
+  }
+
+  .cardWrapper {
+    min-width: 280px;
+    max-width: 340px;
+  }
+
+  .skeletonCard {
+    width: 320px;
+    height: 420px;
+  }
+}
+
+/* ===== MOBILE: Ajustes específicos para pantallas pequeñas ===== */
+@media (max-width: 576px) {
+  .section {
+    margin-top: 0;
+    padding: var(--spacing-4) 0;
+  }
+
+  .container {
+    padding: 0 var(--spacing-3);
+  }
+
+  .header {
+    margin-bottom: var(--spacing-4);
+  }
+
+  .title {
+    font-size: 1.125rem;
+  }
+
+  .subtitle {
+    font-size: 0.75rem;
+  }
+
+  .carouselContainer {
+    gap: var(--spacing-3);
+    padding: var(--spacing-2) var(--spacing-2) var(--spacing-3)
+      var(--spacing-2);
+  }
+
+  .cardWrapper {
+    min-width: 220px;
+    max-width: 280px;
+  }
+
+  .skeletonCard {
+    width: 260px;
+    height: 360px;
+  }
+
+  /* Snap más agresivo en mobile */
+  .carouselContainer {
+    scroll-snap-type: x mandatory;
+  }
+}
+

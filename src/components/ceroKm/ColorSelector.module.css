@@ -1,0 +1,91 @@
+/**
+ * ColorSelector.module.css - Estilos del selector de colores
+ * 
+ * @author Indiana Usados
+ * @version 1.0.0
+ */
+
+.container {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* ===== BOTÓN DE COLOR ===== */
+.colorButton {
+  position: relative;
+  padding: 3px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: border-color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.colorButton:hover {
+  transform: scale(1.1);
+}
+
+.colorButton:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+/* Estado activo */
+.colorButton.active {
+  border-color: var(--color-brand-500);
+}
+
+/* Sin imagen disponible */
+.colorButton.noImage {
+  opacity: 0.6;
+}
+
+.colorButton.noImage:hover {
+  opacity: 0.8;
+}
+
+/* ===== CÍRCULO DE COLOR ===== */
+.colorCircle {
+  display: block;
+  border-radius: 50%;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Tamaños */
+.sm .colorCircle {
+  width: 24px;
+  height: 24px;
+}
+
+.md .colorCircle {
+  width: 32px;
+  height: 32px;
+}
+
+.lg .colorCircle {
+  width: 40px;
+  height: 40px;
+}
+
+/* ===== INDICADOR SIN IMAGEN ===== */
+.noImageIndicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 2px;
+  height: 70%;
+  background: rgba(0, 0, 0, 0.4);
+  transform: translate(-50%, -50%) rotate(45deg);
+  pointer-events: none;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (min-width: 768px) {
+  .container {
+    gap: 8px;
+  }
+}
+

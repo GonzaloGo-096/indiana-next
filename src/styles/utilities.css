@@ -1,0 +1,91 @@
+/**
+ * utilities.css - Clases utilitarias para responsive design
+ * 
+ * Convenciones:
+ * - Mobile-first approach
+ * - Nombres descriptivos y claros
+ * - Basado en breakpoints del design system
+ * 
+ * @author Indiana Usados
+ * @version 1.0.0
+ */
+
+/* ===== VISIBILITY UTILITIES ===== */
+
+/* Ocultar en mobile, mostrar en tablet+ */
+.hidden-mobile {
+  display: none;
+}
+
+@media (min-width: var(--tablet-min)) {
+  .hidden-mobile {
+    display: block;
+  }
+}
+
+/* Ocultar en mobile, mostrar como flex en tablet+ */
+.hidden-mobile-flex {
+  display: none;
+}
+
+@media (min-width: var(--tablet-min)) {
+  .hidden-mobile-flex {
+    display: flex;
+  }
+}
+
+/* Ocultar en mobile, mostrar como grid en tablet+ */
+.hidden-mobile-grid {
+  display: none;
+}
+
+@media (min-width: var(--tablet-min)) {
+  .hidden-mobile-grid {
+    display: grid;
+  }
+}
+
+/* Mostrar solo en mobile */
+.visible-mobile-only {
+  display: block;
+}
+
+@media (min-width: var(--tablet-min)) {
+  .visible-mobile-only {
+    display: none;
+  }
+}
+
+/* Mostrar solo en tablet */
+.visible-tablet-only {
+  display: none;
+}
+
+@media (min-width: var(--tablet-min)) and (max-width: 991px) {
+  .visible-tablet-only {
+    display: block;
+  }
+}
+
+/* Mostrar solo en desktop */
+.visible-desktop-only {
+  display: none;
+}
+
+@media (min-width: var(--desktop-min)) {
+  .visible-desktop-only {
+    display: block;
+  }
+}
+
+/* Ocultar en desktop */
+.hidden-desktop {
+  display: block;
+}
+
+@media (min-width: var(--desktop-min)) {
+  .hidden-desktop {
+    display: none;
+  }
+}
+

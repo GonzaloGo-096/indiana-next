@@ -1,0 +1,321 @@
+/**
+ * ImageCarousel.module.css - Estilos profesionales con mejoras mobile
+ * 
+ * ✅ MEJORAS MOBILE:
+ * - object-fit: contain para ver el auto completo (no zoom)
+ * - Aspect ratio adecuado para vehículos
+ * - Contenedor adaptativo
+ * 
+ * @author Indiana Peugeot
+ * @version 2.0.0 - Next.js optimizado
+ */
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.carouselContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  contain: layout style paint;
+  position: relative;
+}
+
+/* ===== CONTENEDOR DE IMAGEN PRINCIPAL ===== */
+.mainImageContainer {
+  position: relative;
+  width: 100%;
+  /* ✅ Mobile: Aspect ratio para vehículos (más ancho que alto) */
+  aspect-ratio: 16 / 9;
+  min-height: 300px; /* Fallback para navegadores sin aspect-ratio */
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  background-color: var(--color-neutral-50);
+  contain: layout style paint;
+  touch-action: pan-y pinch-zoom;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mainImageClickable {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.mainImageClickable:hover {
+  transform: scale(1.01);
+}
+
+.mainImageClickable:active {
+  transform: scale(0.99);
+}
+
+/* ✅ MEJORA MOBILE: object-fit contain para ver el auto completo */
+.mainImage {
+  width: 100%;
+  height: 100%;
+  /* ✅ Mobile: contain para ver el auto completo, desktop: cover para llenar */
+  object-fit: contain;
+  object-position: center;
+  background-color: transparent;
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Desktop: cover para llenar el espacio */
+@media (min-width: 769px) {
+  .mainImageContainer {
+    aspect-ratio: 4 / 3; /* Desktop: más cuadrado */
+    min-height: 500px;
+  }
+
+  .mainImage {
+    object-fit: cover; /* Desktop: llenar espacio */
+  }
+}
+
+/* ===== FLECHAS DE NAVEGACIÓN IMAGEN PRINCIPAL - DESKTOP ===== */
+.mainArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  background: var(--color-neutral-900);
+  border: none;
+  border-radius: 50%;
+  display: none; /* Ocultas por defecto (mobile) */
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 10;
+  color: var(--color-white);
+  opacity: 0.9;
+}
+
+.mainArrow:hover {
+  opacity: 1;
+  background: var(--color-neutral-800);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.mainArrowLeft {
+  left: 8px;
+}
+
+.mainArrowRight {
+  right: 8px;
+}
+
+.mainArrow svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ✅ Mostrar flechas solo en desktop */
+@media (min-width: 769px) {
+  .mainArrow {
+    display: flex;
+  }
+}
+
+/* ===== INDICADOR DE POSICIÓN ===== */
+.positionCounter {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: var(--font-condensed);
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.positionCounter:hover {
+  background: rgba(0, 0, 0, 0.9);
+  transform: scale(1.05);
+}
+
+/* ===== CONTENEDOR DE MINIATURAS ===== */
+.thumbnailsContainer {
+  width: 100%;
+  height: auto;
+  min-height: 110px;
+  overflow: visible;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: transparent;
+  border-radius: 0;
+  padding-top: 0 !important; /* ✅ padding-top: 0 */
+  padding-bottom: 16px !important; /* ✅ padding-bottom: 16px */
+  padding-left: 6px !important; /* ✅ Padding-left de 6px */
+  padding-right: 0 !important; /* ✅ padding-right: 0 */
+  margin-top: 16px;
+  opacity: 1;
+  visibility: visible;
+  z-index: 5;
+  position: relative;
+}
+
+.thumbnails {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: nowrap;
+  height: auto;
+  overflow-x: auto;
+  overflow-y: visible;
+  max-width: 100%;
+  flex: 1;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.thumbnails::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== MINIATURAS ===== */
+.thumbnail {
+  flex-shrink: 0;
+  width: 120px;
+  height: 85px;
+  border-radius: var(--border-radius-md);
+  overflow: visible;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgba(255, 255, 255, 0.1);
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  will-change: transform;
+  z-index: 1;
+  padding: 0;
+}
+
+.thumbnail:hover {
+  transform: translateY(-3px);
+  z-index: 10;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+.thumbnail.active {
+  transform: scale(1.15);
+  position: relative;
+  z-index: 5;
+  border-color: rgba(0, 0, 0, 0.3);
+}
+
+.thumbnailImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: all 0.2s ease;
+  border-radius: calc(var(--border-radius-md) - 2px);
+  will-change: transform;
+  display: block;
+}
+
+.thumbnail:hover .thumbnailImage {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+.thumbnail.active .thumbnailImage {
+  filter: brightness(1.15);
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .mainImageContainer {
+    aspect-ratio: 16 / 9; /* Mobile: más ancho para vehículos */
+    min-height: 250px;
+    border-radius: var(--border-radius-md);
+  }
+
+  .mainImage {
+    object-fit: contain; /* ✅ CRÍTICO: contain para ver el auto completo */
+    object-position: center;
+  }
+
+  .thumbnailsContainer {
+    min-height: 90px;
+    margin-top: 12px;
+    padding-bottom: 10px;
+  }
+
+  .thumbnails {
+    gap: 8px;
+    padding: 8px 0;
+  }
+
+  .thumbnail {
+    width: 85px;
+    height: 60px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .thumbnail.active {
+    transform: scale(1.12);
+  }
+
+  .positionCounter {
+    top: 12px;
+    right: 12px;
+    padding: 3px 10px;
+    font-size: 0.7rem;
+  }
+}
+
+@media (min-width: 992px) {
+  /* ✅ Desktop: Achicar carrusel para mejor performance */
+  .carouselContainer {
+    max-width: 700px; /* Limitar ancho del carrusel completo */
+    margin: 0 auto;
+  }
+
+  .mainImageContainer {
+    min-height: 525px; /* Reducido de 600px para carrusel más compacto */
+    max-height: 525px; /* Limitar altura también */
+  }
+
+  .thumbnail {
+    width: 110px; /* Reducido de 160px */
+    height: 82px; /* Reducido de 120px, manteniendo proporción */
+  }
+}
+
+/* ===== ACCESIBILIDAD: REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  .mainImage,
+  .thumbnail,
+  .thumbnailImage {
+    animation: none;
+    transition: none;
+  }
+}
+

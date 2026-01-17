@@ -1,0 +1,577 @@
+/**
+ * ListAutos.module.css - Estilos ULTRA OPTIMIZADOS recreados
+ * 
+ * Migrado desde React - Estilos exactos
+ * 
+ * @author Indiana Peugeot
+ * @version 5.0.0 - Migración desde React
+ */
+
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.container {
+    min-height: 100vh;
+    padding: var(--section-padding-desktop, 4rem) 0;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: var(--section-padding-mobile, 2rem) 0;
+    }
+}
+
+/* ===== CONTENEDOR DE LISTA CON TÍTULO ===== */
+.listContainer {
+    position: relative;
+    max-width: 1610px; /* ✅ AUMENTADO 15%: De 1400px a 1610px para cards más anchas */
+    margin: 0 auto;
+    padding: 0 42px; /* ✅ OPTIMIZADO: Padding uniforme en desktop */
+    margin-top: 64px; /* ✅ MANTENER: Separación del Nav */
+}
+
+/* Línea vertical sutil izquierda */
+.verticalLine {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(
+        to bottom,
+        #e5e7eb 0%,
+        #9ca3af 50%,
+        #e5e7eb 100%
+    );
+    border-radius: 2px;
+    opacity: 0.6;
+}
+
+/* Línea vertical sutil derecha */
+.verticalLineRight {
+    position: absolute;
+    right: -24px;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(
+        to bottom,
+        #e5e7eb 0%,
+        #9ca3af 50%,
+        #e5e7eb 100%
+    );
+    border-radius: 2px;
+    opacity: 0.6;
+}
+
+/* Sección del título */
+.titleSection {
+    margin-bottom: 32px;
+    padding-left: 24px;
+    position: relative;
+}
+
+.mainTitle {
+    font-size: 32px;
+    font-weight: 700;
+    color: #374151;
+    margin: 0;
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1.2;
+    position: relative;
+}
+
+/* ===== CONTENIDO ===== */
+.content {
+    padding-left: 24px;
+}
+
+@media (max-width: 768px) {
+    .listContainer {
+        padding: 0 1rem; /* ✅ Padding del contenedor en mobile */
+        margin-top: 48px; /* ✅ MANTENER: Separación del Nav */
+    }
+    
+    .content {
+        padding-left: 0; /* ✅ Sin padding adicional - el contenedor ya maneja el espaciado */
+        padding-right: 0;
+    }
+    
+    .titleSection {
+        padding-left: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .mainTitle {
+        font-size: 24px;
+        text-align: left;
+    }
+    
+    .verticalLine {
+        width: 2px;
+    }
+    
+    .verticalLineRight {
+        width: 2px;
+        right: -16px;
+    }
+}
+
+/* ===== CONTENEDOR DEL GRID - ULTRA OPTIMIZADO ===== */
+.gridContainer {
+    position: relative;
+    width: 100%;
+    max-width: 100%; /* ✅ Prevenir desbordamiento */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-bottom: 120px; /* ✅ 120px de espacio antes del footer (después del botón o última fila) */
+    
+    /* ✅ OPTIMIZACIÓN: Mejorar scroll performance */
+    contain: layout style;
+}
+
+/* ===== GRID DE VEHÍCULOS - ESTÁNDAR CON TAMAÑO FIJO ===== */
+.grid {
+    display: grid;
+    /* ✅ MOBILE: 1 columna, card ocupa 100% */
+    grid-template-columns: 1fr;
+    gap: clamp(16px, 4vw, 32px); /* ✅ Gap reducido: De 24-48px a 16-32px */
+    min-height: 150px;
+    padding: 0;
+    margin: 0 auto; /* ✅ Centrado */
+    max-width: 100%; /* ✅ CAPA 4: Asegurar que no exceda el contenedor */
+    width: 100%; /* ✅ CAPA 4: Ocupar ancho disponible sin desbordar */
+    
+    /* ✅ OPTIMIZACIÓN: Mejorar scroll performance del grid */
+    contain: layout style;
+    
+    /* ✅ OPTIMIZACIÓN: Forzar capa de composición para scroll suave */
+    transform: translateZ(0);
+}
+
+/* Mobile: Asegurar que el grid esté centrado */
+@media (max-width: 768px) {
+    .grid {
+        justify-items: center; /* ✅ Centrar items del grid */
+        align-items: center; /* ✅ Centrar verticalmente */
+    }
+}
+
+/* Tablet: 2 columnas flexibles (desde 768px hasta 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+    .grid {
+        grid-template-columns: repeat(2, minmax(280px, 1fr)); /* ✅ Flexible: mínimo 280px, máximo 1fr */
+        gap: clamp(16px, 3vw, 24px); /* ✅ Gap reducido para tablets */
+        justify-content: center;
+        padding: 0;
+        max-width: 100%; /* ✅ CRÍTICO: No exceder el contenedor */
+        width: 100%; /* ✅ Ocupar ancho disponible */
+        box-sizing: border-box;
+    }
+}
+
+/* Desktop: Grid adaptativo - 2 o 3 columnas según espacio disponible (desde 992px) */
+@media (min-width: 992px) {
+    .grid {
+        /* ✅ Grid adaptativo: automáticamente ajusta entre 2 y 3 columnas según espacio */
+        grid-template-columns: repeat(auto-fit, minmax(280px, 380px));
+        gap: clamp(24px, 4vw, 48px);
+        justify-content: center;
+        margin: 0 auto;
+        max-width: 100%; /* ✅ CRÍTICO: No exceder el contenedor */
+        width: 100%; /* ✅ Ocupar ancho disponible */
+        box-sizing: border-box;
+    }
+}
+
+/* Desktop grande: Forzar 3 columnas cuando hay espacio suficiente (desde 1300px) */
+@media (min-width: 1300px) {
+    .grid {
+        grid-template-columns: repeat(3, 380px); /* ✅ Forzar 3 columnas en pantallas grandes */
+        gap: clamp(24px, 4vw, 48px);
+        justify-content: center;
+        margin: 0 auto;
+        max-width: fit-content; /* ✅ Ajustarse al contenido cuando hay espacio */
+        width: fit-content;
+        box-sizing: border-box;
+    }
+}
+
+/* ===== WRAPPER DE TARJETAS - ULTRA COMPACTO ===== */
+.cardWrapper {
+    min-height: 350px;
+    height: auto; /* ✅ CRÍTICO: Altura real basada en contenido para que height: 100% de la card funcione */
+    width: 100%;
+    
+    /* ✅ OPTIMIZACIÓN: Mejorar scroll performance */
+    contain: layout style;
+    
+    /* ✅ OPTIMIZACIÓN: Aceleración GPU para scroll suave */
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+/* ✅ Cards con tamaño fijo en el grid */
+.cardWrapper :global(.card) {
+    width: 100%;
+}
+
+/* Mobile: Centrar las cards */
+@media (max-width: 768px) {
+    .cardWrapper {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        box-sizing: border-box; /* ✅ Asegurar que respete el ancho del contenedor */
+    }
+    
+    .cardWrapper :global(.card) {
+        max-width: 340px; /* ✅ Ancho recomendado para mobile (340px es estándar) */
+        width: 100%; /* ✅ Ocupar hasta el máximo disponible */
+        box-sizing: border-box; /* ✅ Incluir padding y border en el ancho */
+        margin: 0 auto; /* ✅ Centrar la card */
+    }
+}
+
+@media (max-width: 768px) {
+    .cardWrapper {
+        min-height: 300px;
+    }
+}
+
+/* ===== CONTENEDOR DE CARGA ===== */
+.loadingContainer {
+    min-height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 32px 0;
+}
+
+.loading {
+    min-height: 300px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(16px, 4vw, 32px);
+    width: 100%;
+    max-width: 100%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+    .loading {
+        grid-template-columns: repeat(2, minmax(280px, 1fr));
+    }
+}
+
+@media (min-width: 992px) {
+    .loading {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 380px));
+    }
+}
+
+@media (min-width: 1300px) {
+    .loading {
+        grid-template-columns: repeat(3, 380px);
+    }
+}
+
+/* Skeleton Card */
+.skeletonCard {
+    background: var(--color-white, #ffffff);
+    border-radius: var(--border-radius-lg, 12px);
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    min-height: 350px;
+}
+
+.skeletonImage {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 25%,
+        #e0e0e0 50%,
+        #f0f0f0 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+.skeletonContent {
+    padding: var(--spacing-3, 12px);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2, 8px);
+}
+
+.skeletonText {
+    height: 16px;
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 25%,
+        #e0e0e0 50%,
+        #f0f0f0 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: 4px;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ===== MENSAJE DE FIN DE LISTA ===== */
+.endMessage {
+    text-align: center;
+    padding: 32px 0;
+    color: #6b7280;
+}
+
+.endMessage p {
+    margin-bottom: 16px;
+    font-size: 18px;
+}
+
+/* ===== ESTADOS DE ERROR Y VACÍO ===== */
+.error,
+.empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    padding: 32px;
+    text-align: center;
+}
+
+.errorContent,
+.emptyContent {
+    max-width: 500px;
+    padding: 32px;
+    border-radius: 12px;
+    background-color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.error h3,
+.empty h3 {
+    color: #ef4444;
+    margin-bottom: 16px;
+    font-size: 20px;
+}
+
+.error p,
+.empty p {
+    color: #6b7280;
+    margin-bottom: 16px;
+    line-height: 1.6;
+}
+
+/* ===== BANNER DE ERROR ===== */
+.errorBanner {
+    margin-bottom: 32px;
+    padding: 16px;
+    background-color: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    color: #d97706;
+}
+
+.errorBanner .errorContent {
+    box-shadow: none;
+    padding: 0;
+    background: none;
+}
+
+.errorBanner h3 {
+    color: #d97706;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+/* ===== BOTONES ===== */
+.retryButton {
+    margin-top: 16px;
+    padding: 10px 20px;
+    background: var(--color-brand-500, #0066cc);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s ease;
+}
+
+.retryButton:hover {
+    background: var(--color-brand-600, #0052a3);
+}
+
+/* ===== SCROLL INFINITO - OPTIMIZADO ===== */
+.scrollTrigger {
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 32px;
+}
+
+.loadingMore {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 24px;
+    padding: 16px;
+    color: #6b7280;
+}
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #d1d5db;
+    border-top: 2px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1.2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.noMoreResults {
+    margin-top: 24px;
+    padding: 16px;
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.noResults {
+    text-align: center;
+    padding: 2rem;
+    color: #0a0d14;
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+
+/* ===== RESPONSIVE ADJUSTMENTS ===== */
+@media (max-width: 768px) {
+    .container {
+        padding: 16px 0;
+    }
+    
+    .error,
+    .empty {
+        min-height: 300px;
+        padding: 16px;
+    }
+    
+    .errorContent,
+    .emptyContent {
+        padding: 24px;
+    }
+    
+    .errorBanner {
+        margin-bottom: 24px;
+        padding: 12px;
+    }
+}
+
+/* ✅ BOTÓN "CARGAR MÁS" - ESTILO UNIFICADO PLANES (OUTLINE - TRANSPARENTE) */
+.loadMoreSection {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 0;
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 100%;
+}
+
+.loadMoreButton {
+    --button-padding-y: var(--spacing-3);
+    --button-padding-x: var(--spacing-4);
+    --button-font-size: clamp(0.875rem, 2vw, 1rem);
+    --button-letter-spacing: 0.5px;
+    --button-hover-lift: -1px;
+    
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--button-padding-y) var(--button-padding-x);
+    background: transparent;
+    color: var(--color-brand-500);
+    text-decoration: none;
+    font-size: var(--button-font-size);
+    font-weight: var(--font-weight-semibold);
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: var(--button-letter-spacing);
+    border-radius: var(--border-radius-md);
+    border: 2px solid var(--color-brand-500);
+    cursor: pointer;
+    min-width: 160px;
+    transition: 
+        background-color var(--transition-fast),
+        transform var(--transition-fast),
+        border-color var(--transition-fast),
+        color var(--transition-fast);
+}
+
+.loadMoreButton:hover:not(:disabled) {
+    background: rgba(0, 102, 204, 0.1);
+    color: var(--color-brand-600);
+    border-color: var(--color-brand-600);
+    transform: translateY(var(--button-hover-lift));
+}
+
+.loadMoreButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.loadMoreButton:disabled {
+    background: transparent;
+    color: var(--color-neutral-400);
+    border-color: var(--color-neutral-400);
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.6;
+}
+
+.loadMoreButton:focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+}
+
+/* ✅ ANIMACIÓN: Entrada suave */
+.loadMoreButton {
+    animation: slideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) translateZ(0);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) translateZ(0);
+    }
+}
+
+/* ✅ RESPONSIVE - Mobile compacto */
+@media (max-width: 768px) {
+    .loadMoreButton {
+        padding: var(--spacing-2) var(--spacing-3);
+        font-size: clamp(0.8125rem, 1.5vw, 0.875rem);
+        min-width: 150px;
+    }
+}
+

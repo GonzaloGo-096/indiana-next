@@ -1,0 +1,792 @@
+/**
+ * CeroKilometros.module.css - Diseño Premium Profesional
+ * 
+ * Conceptos aplicados:
+ * - Minimalismo elegante con jerarquía visual clara
+ * - Glassmorphism sutil para elementos flotantes
+ * - Micro-interacciones refinadas
+ * - Espaciado generoso (breathing room)
+ * - Tipografía jerárquica con contraste controlado
+ * - Gradientes sutiles para profundidad
+ * - Sistema de badges y indicadores visuales
+ * 
+ * @author Indiana Usados
+ * @version 4.0.0 - Rediseño Premium Profesional
+ */
+
+/* ===== PAGE CONTAINER ===== */
+.page {
+  min-height: 100vh;
+  background: linear-gradient(
+    to bottom,
+    var(--color-neutral-50) 0%,
+    var(--color-white) 20%,
+    var(--color-white) 100%
+  );
+  padding: 0 0 80px 0;
+}
+
+/* ===== HEADER - Contextual Editorial (Altura Media) ===== */
+.header {
+  position: relative;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: clamp(40px, 6vw, 64px) clamp(24px, 4vw, 48px) clamp(32px, 5vw, 48px);
+  background: transparent;
+  overflow: hidden;
+}
+
+.headerContent {
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+/* ===== LOGOS CONTAINER ===== */
+.logosContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-top: clamp(24px, 4vw, 32px);
+  margin-bottom: 0;
+  z-index: 1;
+}
+
+.peugeotLogo {
+  height: clamp(60px, 7vw, 85px);
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
+  transition: transform var(--transition-smooth);
+}
+
+.peugeotLogo:hover {
+  transform: scale(1.05);
+}
+
+.logoDivider {
+  width: 1px;
+  height: clamp(60px, 7vw, 85px);
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--color-neutral-400) 20%,
+    var(--color-neutral-400) 80%,
+    transparent 100%
+  );
+  opacity: 0.5;
+  flex-shrink: 0;
+}
+
+.indianaLogo {
+  height: clamp(90px, 11vw, 130px);
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.08));
+  transition: transform var(--transition-smooth);
+}
+
+.indianaLogo:hover {
+  transform: scale(1.05);
+}
+
+.title {
+  position: relative;
+  margin: 0 0 clamp(12px, 2vw, 16px) 0;
+  font-family: var(--font-condensed);
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  line-height: 1.1;
+  z-index: 1;
+}
+
+.subtitle {
+  position: relative;
+  margin: 0 auto;
+  max-width: 680px;
+  font-size: clamp(0.9375rem, 2vw, 1.125rem);
+  color: var(--color-neutral-600);
+  font-weight: var(--font-weight-normal);
+  letter-spacing: 0.2px;
+  line-height: 1.6;
+  z-index: 1;
+}
+
+.headerBadge {
+  position: relative;
+  margin-top: clamp(20px, 3vw, 28px);
+  z-index: 1;
+}
+
+.badgeText {
+  display: inline-block;
+  padding: 0;
+  font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-neutral-500);
+  background: transparent;
+  border: none;
+  letter-spacing: 0.5px;
+  position: relative;
+  font-style: italic;
+}
+
+.badgeText::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -8px;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--color-neutral-300) 50%,
+    transparent 100%
+  );
+}
+
+.badgeText::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--color-neutral-300) 50%,
+    transparent 100%
+  );
+}
+
+/* ===== SECTION HEADERS - Diseño Elegante con Logo Arriba ===== */
+.sectionHeader {
+  position: relative;
+  max-width: var(--container-max-width);
+  margin: clamp(32px, 5vw, 48px) auto clamp(8px, 1.5vw, 12px);
+  padding: 0 clamp(16px, 4vw, 32px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sectionContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(16px, 2.5vw, 24px);
+  width: 100%;
+}
+
+.sectionLogoWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 2.5vw, 24px);
+  width: 100%;
+}
+
+.sectionLine {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--color-neutral-300) 20%,
+    var(--color-neutral-300) 80%,
+    transparent 100%
+  );
+  max-width: 120px;
+}
+
+.sectionLogoWrapper .sectionLine:first-child {
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    var(--color-neutral-300) 20%,
+    var(--color-neutral-300) 80%,
+    transparent 100%
+  );
+}
+
+.sectionLogoWrapper .sectionLine:last-child {
+  background: linear-gradient(
+    to left,
+    transparent 0%,
+    var(--color-neutral-300) 20%,
+    var(--color-neutral-300) 80%,
+    transparent 100%
+  );
+}
+
+.sectionLogo {
+  height: clamp(40px, 5vw, 60px);
+  width: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.sectionTitle {
+  position: relative;
+  margin: 0;
+  font-family: var(--font-condensed);
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  line-height: 1.1;
+  text-align: center;
+}
+
+/* ===== CARRUSEL SECTION - Diseño Moderno ===== */
+.carouselSection {
+  position: relative;
+  padding: 0 0 clamp(32px, 5vw, 48px);
+  margin: 0 auto;
+}
+
+.carouselWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 clamp(36px, calc(4vw + 20px), 68px); /* ✅ Padding lateral aumentado para espacio de flechas */
+  overflow: visible; /* ✅ Permite que las flechas salgan */
+  box-sizing: content-box; /* ✅ El padding no afecta el ancho total */
+}
+
+.carousel {
+  display: flex;
+  gap: clamp(20px, 3vw, 32px);
+  padding: 24px clamp(12px, 2vw, 20px);
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel > div {
+  scroll-snap-align: start;
+}
+
+/* ===== SCROLL BUTTONS - Estilo unificado con planes ===== */
+.scrollButton {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #333;
+  z-index: 10;
+}
+
+.scrollButton svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+.scrollButtonLeft {
+  margin-right: 0;
+}
+
+.scrollButtonRight {
+  margin-left: 0;
+}
+
+/* Ocultar flechas en mobile */
+@media (max-width: 768px) {
+  .scrollButton {
+    display: none;
+  }
+}
+
+/* Desktop: flechas con position absolute */
+@media (min-width: 769px) {
+  .scrollButton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 0;
+    margin-right: 0;
+    background: var(--color-neutral-900);
+    color: var(--color-white);
+    z-index: 20;
+    display: flex;
+  }
+
+  .scrollButton:hover:not(:disabled) {
+    background: var(--color-neutral-800);
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  .scrollButton:active:not(:disabled) {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  .scrollButton:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+
+  .scrollButtonLeft {
+    left: -20px; /* ✅ Fuera del contenedor */
+  }
+
+  .scrollButtonRight {
+    right: -20px !important; /* ✅ Fuera del contenedor */
+    left: auto !important;
+    margin-left: 0;
+  }
+}
+
+.scrollHint {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0 0 0;
+  font-size: clamp(0.8125rem, 2vw, 0.9375rem);
+  color: var(--color-neutral-500);
+  text-align: center;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.3px;
+}
+
+.scrollHint span {
+  font-size: 1.125rem;
+  color: var(--color-brand-500);
+  animation: bounceHorizontal 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  font-weight: var(--font-weight-bold);
+}
+
+.scrollHint span:first-child {
+  animation-direction: alternate-reverse;
+}
+
+@keyframes bounceHorizontal {
+  0%, 100% { 
+    transform: translateX(0);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: translateX(4px);
+    opacity: 1;
+  }
+}
+
+.ctaSection {
+  position: relative;
+  text-align: center;
+  padding: clamp(48px, 6vw, 64px) clamp(24px, 4vw, 48px);
+  margin: clamp(48px, 6vw, 80px) auto 0;
+  max-width: 800px;
+  background: linear-gradient(
+    135deg,
+    rgba(6, 27, 156, 0.03) 0%,
+    rgba(6, 27, 156, 0.01) 100%
+  );
+  border-radius: var(--border-radius-xl);
+  border: 1px solid var(--color-neutral-200);
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.04),
+    0 1px 4px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+}
+
+.ctaSection::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(
+    circle,
+    rgba(6, 27, 156, 0.05) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ctaText {
+  position: relative;
+  margin: 0 0 24px 0;
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.3px;
+  line-height: 1.5;
+  z-index: 1;
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: clamp(0.625rem, 1.5vw, 0.75rem) clamp(1.25rem, 3vw, 1.5rem);
+  background: var(--color-white);
+  color: var(--color-text-primary);
+  border: 2px solid #25D366;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+  z-index: 1;
+}
+
+.ctaButton:hover {
+  background: #f0f0f0;
+  border-color: #128C7E;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
+}
+
+.ctaButton:focus-visible {
+  outline: 2px solid #25D366;
+  outline-offset: 2px;
+}
+
+.ctaButton:active {
+  transform: translateY(0);
+  background: #e5e5e5;
+}
+
+.whatsappIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-primary);
+  flex-shrink: 0;
+}
+
+@media (max-width: var(--mobile-max)) {
+  .ctaButton {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.9rem;
+    gap: 0.375rem;
+  }
+  
+  .whatsappIcon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.financingBridge {
+  position: relative;
+  max-width: var(--container-max-width);
+  margin: clamp(48px, 6vw, 64px) auto 0;
+  padding: clamp(48px, 6vw, 64px) clamp(24px, 4vw, 48px);
+  background: linear-gradient(
+    135deg,
+    rgba(6, 27, 156, 0.02) 0%,
+    rgba(6, 27, 156, 0.01) 100%
+  );
+  border-top: 1px solid var(--color-neutral-200);
+  border-bottom: 1px solid var(--color-neutral-200);
+}
+
+.financingContent {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.financingTitle {
+  margin: 0 0 clamp(16px, 2.5vw, 20px) 0;
+  font-family: var(--font-condensed);
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  line-height: 1.1;
+}
+
+.financingText {
+  margin: 0;
+  font-family: var(--font-poppins);
+  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-normal);
+  line-height: 1.7;
+}
+
+.financingLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: clamp(0.5rem, 1.2vw, 0.625rem) clamp(1.25rem, 2.5vw, 1.5rem);
+  background: transparent;
+  color: var(--color-brand-500);
+  border: 1.5px solid var(--color-brand-500);
+  border-radius: var(--border-radius-md);
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
+  font-size: clamp(0.875rem, 1.6vw, 0.9375rem);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  transition: 
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast);
+  cursor: pointer;
+}
+
+.financingLink:hover {
+  background: var(--color-brand-500-rgba-10);
+  color: var(--color-brand-600);
+  border-color: var(--color-brand-600);
+  transform: translateY(-1px);
+}
+
+.financingLink:active {
+  transform: translateY(0);
+}
+
+.financingLink:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+.editorialClose {
+  position: relative;
+  max-width: var(--container-max-width);
+  margin: clamp(48px, 6vw, 64px) auto clamp(48px, 6vw, 64px);
+  padding: clamp(48px, 6vw, 64px) clamp(24px, 4vw, 48px);
+  text-align: center;
+}
+
+.editorialSubtitle {
+  margin: 0 0 clamp(16px, 2.5vw, 20px) 0;
+  font-family: var(--font-condensed);
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  line-height: 1.1;
+}
+
+.editorialText {
+  margin: 0 auto;
+  max-width: 1000px;
+  font-family: var(--font-poppins);
+  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-normal);
+  line-height: 1.7;
+}
+
+@media (max-width: var(--mobile-max)) {
+  .editorialClose {
+    margin-top: clamp(56px, 8vw, 72px);
+    margin-bottom: clamp(40px, 6vw, 56px);
+    padding: 0 clamp(20px, 5vw, 32px);
+  }
+  
+  .editorialSubtitle {
+    font-size: clamp(1.0625rem, 2.2vw, 1.125rem);
+    margin-bottom: clamp(14px, 2.5vw, 18px);
+  }
+  
+  .editorialText {
+    font-size: clamp(0.9375rem, 1.8vw, 1rem);
+    line-height: 1.75;
+  }
+}
+
+.highlightYears {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-neutral-700);
+  font-size: 1.05em;
+  letter-spacing: 0.3px;
+}
+
+@media (min-width: 768px) {
+  .header {
+    padding: clamp(48px, 6vw, 64px) clamp(32px, 5vw, 64px) clamp(40px, 5vw, 56px);
+  }
+  
+  .financingBridge {
+    padding: clamp(56px, 7vw, 72px) clamp(32px, 4vw, 48px);
+  }
+  
+  .sectionHeader {
+    margin-top: clamp(40px, 5vw, 56px);
+    margin-bottom: clamp(4px, 1vw, 8px);
+    padding: 0 clamp(24px, 4vw, 48px);
+  }
+  
+  .carouselWrapper {
+    padding: 0 clamp(32px, 5vw, 64px);
+  }
+  
+  .carousel {
+    gap: clamp(24px, 3vw, 36px);
+    padding: 32px clamp(16px, 2vw, 24px);
+    scroll-snap-type: none;
+  }
+  
+  .carousel > div {
+    scroll-snap-align: unset;
+  }
+  
+  .scrollButton {
+    display: flex;
+  }
+  
+  .scrollHint {
+    display: none;
+  }
+  
+  .ctaSection {
+    margin: clamp(64px, 8vw, 96px) auto 0;
+    padding: clamp(56px, 7vw, 80px) clamp(32px, 4vw, 64px);
+  }
+  
+  .ctaText {
+    font-size: clamp(1.25rem, 2.5vw, 1.5rem);
+  }
+  
+  .ctaButton {
+    padding: clamp(16px, 2vw, 20px) clamp(40px, 5vw, 56px);
+    font-size: clamp(1rem, 2vw, 1.125rem);
+  }
+}
+
+@media (min-width: 992px) {
+  .header {
+    padding: clamp(56px, 7vw, 72px) clamp(48px, 6vw, 80px) clamp(48px, 6vw, 64px);
+  }
+  
+  .financingBridge {
+    padding: clamp(48px, 6vw, 56px) clamp(48px, 6vw, 64px);
+  }
+  
+  .editorialClose {
+    padding: clamp(56px, 7vw, 72px) clamp(48px, 6vw, 80px);
+  }
+  
+  .sectionHeader {
+    margin-top: clamp(48px, 6vw, 64px);
+    margin-bottom: clamp(4px, 1vw, 8px);
+  }
+  
+  .carouselWrapper {
+    padding: 0 clamp(56px, 7vw, 80px);
+  }
+  
+  .carousel {
+    gap: clamp(32px, 4vw, 40px);
+    padding: 40px clamp(20px, 3vw, 32px);
+  }
+  
+  .scrollButton {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .scrollButton svg {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .scrollButtonLeft {
+    left: clamp(16px, 2vw, 24px);
+  }
+  
+  .scrollButtonRight {
+    right: clamp(16px, 2vw, 24px);
+  }
+  
+  .ctaSection {
+    max-width: 900px;
+    margin: clamp(80px, 10vw, 120px) auto 0;
+    padding: clamp(64px, 8vw, 96px) clamp(48px, 6vw, 80px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel {
+    scroll-behavior: auto;
+  }
+  
+  .scrollButton,
+  .ctaButton,
+  .logo,
+  .card,
+  .image {
+    transition: none;
+  }
+  
+  .scrollHint span {
+    animation: none;
+  }
+  
+  .card:hover {
+    transform: none;
+  }
+  
+  .card:hover .image {
+    transform: none;
+  }
+}
+
+.carousel,
+.card,
+.imageContainer {
+  will-change: transform;
+  contain: layout style paint;
+}
+
+@media (prefers-contrast: high) {
+  .card {
+    border-width: 2px;
+    border-color: var(--color-neutral-400);
+  }
+  
+  .scrollButton {
+    border: 2px solid var(--color-neutral-400);
+  }
+}
+

@@ -1,0 +1,285 @@
+/**
+ * variables.css - Variables CSS globales del sistema de diseño
+ * 
+ * Centraliza todas las variables del sistema para mejor mantenimiento
+ * y consistencia en toda la aplicación.
+ * 
+ * @author Indiana Usados
+ * @version 3.0.0 - Migración a #061B9C como color principal, escala completa brand 50-900
+ */
+
+:root {
+    /* ===== VARIABLES DE FUENTES ===== */
+    --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Inter', Arial, sans-serif;
+    /* Las variables --font-condensed y --font-poppins se definen en layout.js desde next/font */
+    --font-condensed: 'Barlow Condensed', var(--font-sans);
+    --font-poppins: 'Poppins', var(--font-sans);
+    /* Alias para compatibilidad */
+    --font-display: var(--font-condensed);
+    --font-family-primary: var(--font-condensed);
+    --font-family: var(--font-condensed);
+
+    /* ===== VARIABLES DE ESPACIADO ===== */
+    --spacing-1: 0.25rem;
+    --spacing-2: 0.5rem;
+    --spacing-3: 0.75rem;
+    --spacing-4: 1rem;
+    --spacing-5: 1.25rem;
+    --spacing-6: 1.5rem;
+
+    /* ===== VARIABLES DE ESPACIADOS DE SECCIÓN ===== */
+    --section-pad-y: clamp(1.25rem, 4vw, 2.5rem);
+    --section-gap: clamp(1rem, 3vw, 2rem);
+    --section-padding-compact: clamp(0.875rem, 3vw, 1.75rem);
+
+    /* ===== VARIABLES DE TIPOGRAFÍA ===== */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    /* ===== VARIABLES DE TIPOGRAFÍA DE TITULARES ===== */
+    --font-hero-lg: clamp(1.75rem, 6vw, 2.75rem);
+    --font-hero-xl: clamp(2rem, 7vw, 3.25rem);
+
+    /* ========================================
+       ESCALAS BASE DE COLORES
+       ======================================== */
+
+    /* ===== COLORES BASE ===== */
+    --color-white: #ffffff;
+
+    /* ===== ESCALA NEUTRAL (Grises) ===== */
+    --color-neutral-50: #f9fafb;
+    --color-neutral-100: #f3f4f6;
+    --color-neutral-200: #e5e7eb;
+    --color-neutral-300: #d1d5db;
+    --color-neutral-400: #9ca3af;
+    --color-neutral-500: #6b7280;
+    --color-neutral-600: #4b5563;
+    --color-neutral-700: #374151;
+    --color-neutral-800: #1f2937;
+    --color-neutral-900: #0a0d14;
+
+    /* ===== ESCALA PRIMARY (Azul genérico) ===== */
+    --color-primary-50: #eff6ff;
+    --color-primary-100: #dbeafe;
+    --color-primary-200: #bfdbfe;
+    --color-primary-300: #93c5fd;
+    --color-primary-400: #60a5fa;
+    --color-primary-500: #3b82f6;
+    --color-primary-600: #2563eb;
+    --color-primary-700: #1d4ed8;
+    --color-primary-800: #1e40af;
+    --color-primary-900: #1e3a8a;
+
+    /* ========================================
+       COLORES SEMÁNTICOS (Error, Success, Warning, Info)
+       ======================================== */
+
+    /* ===== ESCALA ERROR (Rojo) ===== */
+    --color-error-50: #fef2f2;
+    --color-error-100: #fee2e2;
+    --color-error-200: #fecaca;
+    --color-error-300: #fca5a5;
+    --color-error-400: #f87171;
+    --color-error-500: #ef4444;
+    --color-error-600: #dc2626;
+    --color-error-700: #b91c1c;
+    --color-error-800: #991b1b;
+    --color-error-900: #7f1d1d;
+
+    /* ===== ESCALA SUCCESS (Verde) ===== */
+    --color-success-50: #f0fdf4;
+    --color-success-100: #dcfce7;
+    --color-success-200: #bbf7d0;
+    --color-success-300: #86efac;
+    --color-success-400: #4ade80;
+    --color-success-500: #22c55e;
+    --color-success-600: #16a34a;
+    --color-success-700: #15803d;
+    --color-success-800: #166534;
+    --color-success-900: #14532d;
+
+    /* ===== ESCALA WARNING (Amarillo/Naranja) ===== */
+    --color-warning-50: #fffbeb;
+    --color-warning-100: #fef3c7;
+    --color-warning-200: #fde68a;
+    --color-warning-300: #fcd34d;
+    --color-warning-400: #fbbf24;
+    --color-warning-500: #f59e0b;
+    --color-warning-600: #d97706;
+    --color-warning-700: #b45309;
+    --color-warning-800: #92400e;
+    --color-warning-900: #78350f;
+
+    /* ===== ESCALA INFO (Azul) ===== */
+    --color-info-50: #eff6ff;
+    --color-info-100: #dbeafe;
+    --color-info-200: #bfdbfe;
+    --color-info-300: #93c5fd;
+    --color-info-400: #60a5fa;
+    --color-info-500: #3b82f6;
+    --color-info-600: #2563eb;
+    --color-info-700: #1d4ed8;
+    --color-info-800: #1e40af;
+    --color-info-900: #1e3a8a;
+
+    /* ========================================
+       COLORES DE MARCA
+       ======================================== */
+
+    /* ===== ESCALA BRAND (Azul Indiana - Marca principal) ===== */
+    --color-brand-50: #eff2ff;
+    --color-brand-100: #dde4ff;
+    --color-brand-200: #c2ceff;
+    --color-brand-300: #9ba8ff;
+    --color-brand-400: #6d7aff;
+    --color-brand-500: #061B9C;
+    --color-brand-600: #050F7A;
+    --color-brand-700: #040A5C;
+    --color-brand-800: #03063D;
+    --color-brand-900: #02031F;
+    
+    --color-brand-500-rgba-10: color-mix(in srgb, var(--color-brand-500) 10%, transparent);
+    --color-brand-500-rgba-15: color-mix(in srgb, var(--color-brand-500) 15%, transparent);
+    --color-brand-500-rgba-20: color-mix(in srgb, var(--color-brand-500) 20%, transparent);
+    --color-brand-500-rgba-25: color-mix(in srgb, var(--color-brand-500) 25%, transparent);
+    --color-brand-500-rgba-30: color-mix(in srgb, var(--color-brand-500) 30%, transparent);
+    --color-brand-500-rgba-40: color-mix(in srgb, var(--color-brand-500) 40%, transparent);
+
+    /* ========================================
+       TOKENS SEMÁNTICOS DE TEXTO
+       ======================================== */
+
+    --color-text-primary: var(--color-neutral-900);
+    --color-text-secondary: var(--color-neutral-600);
+    --color-text-tertiary: var(--color-neutral-500);
+    --color-text-inverse: var(--color-white);
+
+    /* ========================================
+       TOKENS SEMÁNTICOS DE SUPERFICIES
+       ======================================== */
+    
+    --color-surface: #fafafa;
+    --color-surface-subtle: var(--color-neutral-100);
+    --color-surface-elevated: var(--color-neutral-50);
+    --color-surface-dark: var(--color-neutral-800);
+
+    /* ===== TOKENS SEMÁNTICOS DE BORDES ===== */
+    --color-border: var(--color-neutral-200);
+    --color-border-subtle: var(--color-neutral-100);
+
+    /* ========================================
+       TRANSICIONES
+       ======================================== */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.3s ease;
+    --transition-medium: 0.5s ease;
+    --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: 0.8s ease;
+
+    /* ========================================
+       SOMBRAS
+       ======================================== */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+    /* ========================================
+       BORDER RADIUS
+       ======================================== */
+    --border-radius-sm: 4px;
+    --border-radius-md: 8px;
+    --border-radius-lg: 12px;
+    --border-radius-xl: 16px;
+    --border-radius-2xl: 20px;
+
+    /* ========================================
+       VARIABLES ESPECÍFICAS DE COMPONENTES
+       ======================================== */
+
+    /* ===== CARD AUTO ===== */
+    --card-border-radius: 16px;
+    --card-border-radius-tablet: 12px;
+    --card-border-radius-mobile: 8px;
+    
+    --card-header-height: 55px;
+    --card-header-height-tablet: 45px;
+    --card-header-height-mobile: 40px;
+    
+    --card-image-height: 200px;
+    --card-table-padding: var(--spacing-2) var(--spacing-1) var(--spacing-2) 0;
+
+    /* ========================================
+       LAYOUT
+       ======================================== */
+    --container-max-width: 1200px;
+    --container-padding: var(--spacing-4);
+    
+    /* ========================================
+       Z-INDEX
+       ======================================== */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+
+    /* ========================================
+       BREAKPOINTS Y RESPONSIVE
+       ======================================== */
+    --breakpoint-xs: 0px;
+    --breakpoint-sm: 576px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 992px;
+    --breakpoint-xl: 1200px;
+    --breakpoint-2xl: 1400px;
+    
+    --mobile-max: 767px;
+    --tablet-min: 768px;
+    --desktop-min: 992px;
+
+    --breakpoint-xs-value: 0;
+    --breakpoint-sm-value: 576;
+    --breakpoint-md-value: 768;
+    --breakpoint-lg-value: 992;
+    --breakpoint-xl-value: 1200;
+    --breakpoint-2xl-value: 1400;
+
+    /* ========================================
+       UTILIDADES RESPONSIVE
+       ======================================== */
+    --container-padding-mobile: var(--spacing-4);
+    --container-padding-tablet: var(--spacing-6);
+    --container-padding-desktop: var(--spacing-8);
+
+    --section-padding-mobile: var(--spacing-4);
+    --section-padding-tablet: var(--spacing-6);
+    --section-padding-desktop: var(--spacing-8);
+
+    --font-size-title-mobile: var(--font-size-xl);
+    --font-size-title-tablet: var(--font-size-2xl);
+    --font-size-title-desktop: 2rem;
+
+    --font-size-subtitle-mobile: var(--font-size-lg);
+    --font-size-subtitle-tablet: var(--font-size-xl);
+    --font-size-subtitle-desktop: var(--font-size-2xl);
+
+    /* ===== LINE HEIGHT ===== */
+    --line-height-normal: 1.5;
+    --line-height-tight: 1.25;
+    --line-height-relaxed: 1.75;
+}
+

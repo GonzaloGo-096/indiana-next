@@ -1,0 +1,809 @@
+/**
+ * FilterFormSimple.module.css
+ * @version 2.1.0 - Color de marca aplicado a CTAs principales (FASE 3.4)
+ * Migrado a Next.js
+ */
+
+/* ===== BASE ===== */
+.filterContainer {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
+.filterButtonMobile {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  /* ✅ Migrado: CTA principal → color de marca según sistema */
+  background-color: var(--color-brand-500, #0066cc);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* ✅ Migrado: Hover → brand-600 para jerarquía visual */
+.filterButtonMobile:hover { background-color: var(--color-brand-600, #0052a3); transform: translateY(-1px); }
+.filterButtonMobile:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.badge {
+  background: #ef4444;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 1.125rem;
+  height: 1.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  margin-left: 0.25rem;
+}
+
+.errorMessage {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  animation: slideIn 0.3s ease;
+}
+
+.retryButton {
+  background: #dc2626;
+  color: white;
+  border: none;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.retryButton:hover { background: #b91c1c; }
+.retryButton:disabled { background: #9ca3af; cursor: not-allowed; }
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.formWrapper {
+  position: relative;
+  width: 95%;
+  max-width: 700px;
+  background: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+  overflow: visible;
+  z-index: 10;
+  padding: 0 1rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.03125rem;
+  padding: 0.125rem;
+}
+
+.formTitle {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-bottom: 0;
+  padding: 0;
+  border: none; /* ✅ Border eliminado */
+}
+
+.formTitle h3 {
+  display: none; /* ✅ Título oculto */
+}
+
+.titleActions {
+  display: none; /* ✅ Botones del título ocultos (movidos abajo) */
+}
+
+.closeButtonMobile { 
+  display: none; /* ✅ Oculto en desktop, visible en mobile */
+}
+
+.rangesSection,
+.selectsSection {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem; /* ✅ Más separación entre inputs */
+  margin-bottom: 0;
+  padding: 0;
+  border-radius: 0;
+  overflow: visible;
+  justify-items: stretch;
+}
+
+  .rangesSection {
+    z-index: 1; /* ✅ Z-index bajo - debe estar por debajo de selects */
+    position: relative;
+    margin-bottom: 1.25rem; /* ✅ Espacio reducido entre secciones */
+  }
+
+.rangesSection .formGroup { 
+  margin-bottom: 0; 
+  position: relative;
+  z-index: 1; /* ✅ Z-index bajo para que no interfiera */
+}
+
+/* ✅ Cuando el RangeSlider está en uso, aumentar el z-index del formGroup para que el tooltip esté por encima */
+.rangesSection .formGroup:hover,
+.rangesSection .formGroup:focus-within {
+  z-index: 100000 !important; /* ✅ Z-index muy alto cuando el RangeSlider está en uso */
+}
+
+.rangesSection .formGroup .rangeSlider:hover {
+  z-index: 100000 !important;
+}
+
+.rangesSection .formGroup .rangeSlider .thumb:hover,
+.rangesSection .formGroup .rangeSlider .thumb.active {
+  z-index: 100000 !important; /* ✅ Z-index alto para el thumb activo */
+}
+
+.rangesSection .formGroup .rangeSlider .container:hover {
+  z-index: 100000 !important;
+}
+
+/* ✅ Asegurar que el contenedor del RangeSlider permita que el tooltip esté por encima */
+.rangesSection .formGroup .rangeSlider .container {
+  position: relative;
+  z-index: 1; /* ✅ Z-index base bajo */
+}
+
+/* ✅ Cuando el RangeSlider está en uso, aumentar z-index del contenedor */
+.rangesSection .formGroup:hover .rangeSlider .container,
+.rangesSection .formGroup:focus-within .rangeSlider .container {
+  z-index: 100000 !important;
+}
+
+.rangesSection .formGroup .rangeSlider:hover .container {
+  z-index: 100000 !important;
+}
+
+/* ✅ Cuando el tooltip está activo, aumentar el z-index del contenedor y usar fixed si es necesario */
+.rangesSection .formGroup .rangeSlider .thumb:hover .tooltip,
+.rangesSection .formGroup .rangeSlider .thumb.active .tooltip {
+  z-index: 999999 !important; /* ✅ Z-index extremadamente alto */
+}
+
+.rangesSection .formGroup label { 
+  color: var(--color-text-primary, #1a1a1a); 
+  font-weight: var(--font-weight-semibold, 600); 
+  margin-bottom: var(--spacing-2, 0.5rem); 
+  font-size: var(--font-size-base, 1rem) !important; /* ✅ Tamaño normal */
+}
+
+.selectsSection {
+  background: transparent; /* ✅ Fondo transparente para integración visual */
+  padding: 0;
+  border-radius: 0;
+  border: none;
+  position: relative;
+  z-index: 100; /* ✅ Z-index alto para que toda la sección esté por encima */
+}
+
+/* ✅ Orden inverso de z-index para que el primer select tenga prioridad sobre los de abajo */
+/* ✅ NOTA: Botones ahora son el primer elemento (nth-child(1)), entonces los selects son nth-child(2) y nth-child(3) */
+.selectsSection .formGroup {
+  position: relative;
+}
+
+.selectsSection .formGroup:nth-child(2) { z-index: 103; } /* Caja - Mayor z-index porque está arriba */
+.selectsSection .formGroup:nth-child(3) { z-index: 102; } /* Combustible - Menor z-index porque está abajo */
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2, 0.5rem); /* ✅ Espaciado consistente entre label e input */
+  width: 100%;
+  align-items: stretch; /* ✅ Alineación a la izquierda para mejor lectura */
+  margin-bottom: 0;
+  max-width: none;
+  padding: 0;
+  overflow: visible;
+  position: relative;
+}
+
+.formGroup > div { 
+  width: 100%; 
+  max-width: none; 
+  padding: 0; 
+  margin-bottom: 0; 
+}
+
+.formGroup > div > div { 
+  margin-bottom: 0; 
+}
+
+.formGroup .rangeSlider,
+.formGroup .multiSelect { 
+  margin-bottom: 0; 
+  width: 100%; 
+  padding: 0; 
+}
+
+/* ✅ Reducir tamaño visual de inputs (select y range) - Desktop */
+.formGroup .multiSelect .trigger { 
+  padding: 5px 8px !important; /* ✅ Tamaño más compacto */
+  min-height: 32px !important; /* ✅ Tamaño más compacto */
+  font-size: 0.875rem !important; /* ✅ 14px - más pequeño */
+}
+
+/* ✅ Tamaño reducido de texto en MultiSelect - Desktop */
+.formGroup .multiSelect .trigger .text {
+  font-size: 0.875rem !important; /* ✅ 14px - más pequeño */
+}
+
+/* ✅ Estilos del RangeSlider en formulario de filtros - Desktop */
+.formGroup .rangeSlider .container,
+.formGroup .rangeSlider .values { 
+  padding: 0; 
+}
+
+/* ✅ Valores del RangeSlider más compactos en desktop */
+.formGroup .rangeSlider .values {
+  font-size: 0.875rem !important; /* ✅ 14px - más compacto */
+  font-weight: 400 !important; /* ✅ Menos bold */
+  gap: 0.5rem;
+}
+
+.formGroup .rangeSlider .values .value {
+  font-size: 0.875rem !important; /* ✅ 14px - más compacto */
+  font-weight: 400 !important; /* ✅ Menos bold */
+}
+
+/* ✅ Tooltip del RangeSlider más compacto en desktop - z-index muy alto */
+.formGroup .rangeSlider .tooltip {
+  font-size: 0.75rem !important; /* ✅ 12px - más chico */
+  padding: 3px 6px !important; /* ✅ Padding más reducido */
+  font-weight: 600 !important;
+  z-index: 999999 !important; /* ✅ Z-index extremadamente alto para que esté por encima de TODO */
+  position: absolute !important;
+}
+
+/* ✅ Thumb del RangeSlider más compacto en desktop */
+.formGroup .rangeSlider .thumb {
+  width: 20px !important; /* ✅ Más compacto */
+  height: 20px !important; /* ✅ Más compacto */
+  border-width: 2px !important;
+}
+
+/* ✅ Track del RangeSlider más delgado en desktop */
+.formGroup .rangeSlider .track {
+  height: 6px !important; /* ✅ Más delgado */
+}
+
+.formGroup .container { 
+  margin-bottom: 0; 
+}
+
+.formGroup label {
+  text-align: left; /* ✅ Alineación a la izquierda para mejor legibilidad */
+  font-weight: var(--font-weight-semibold, 600);
+  font-size: 0.875rem !important; /* ✅ 14px - más compacto */
+  font-family: var(--font-display, "Barlow Condensed", sans-serif);
+  color: var(--color-text-primary, #1a1a1a);
+  margin-bottom: 0.5rem; /* ✅ Espacio reducido */
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+}
+
+.buttonBase {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3, 0.75rem) var(--spacing-6, 1.5rem); /* ✅ Padding más generoso (12px 24px) */
+  border-radius: 8px; /* ✅ Bordes más redondeados y modernos */
+  font-size: var(--font-size-base, 1rem); /* ✅ 16px - tamaño estándar legible */
+  font-weight: var(--font-weight-semibold, 600);
+  font-family: var(--font-display, "Barlow Condensed", sans-serif);
+  cursor: pointer;
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid transparent;
+  text-decoration: none;
+  min-height: 44px; /* ✅ Altura mínima accesible */
+  white-space: nowrap;
+}
+
+.applyButton {
+  composes: buttonBase;
+  /* ✅ Migrado: CTA principal → color de marca según sistema */
+  background-color: var(--color-brand-500, #0066cc);
+  color: var(--color-white, #ffffff);
+  border-color: var(--color-brand-500, #0066cc);
+  box-shadow: 0 2px 4px rgba(0, 102, 204, 0.2); /* ✅ Sombra sutil para profundidad */
+}
+
+/* ✅ Migrado: Hover/Active → brand-600 para jerarquía visual */
+.applyButton:hover:not(:disabled) { 
+  background-color: var(--color-brand-600, #0052a3); 
+  border-color: var(--color-brand-600, #0052a3); 
+  transform: translateY(-1px); 
+  box-shadow: 0 4px 8px rgba(0, 102, 204, 0.25); /* ✅ Sombra más pronunciada en hover */
+}
+
+.applyButton:active:not(:disabled) { 
+  transform: translateY(0); 
+  box-shadow: 0 1px 2px rgba(0, 102, 204, 0.2); 
+}
+
+.clearButton {
+  composes: buttonBase;
+  background: var(--color-neutral-100, #f3f4f6);
+  color: var(--color-text-secondary, #6b7280);
+  border-color: var(--color-neutral-300, #d1d5db);
+}
+
+.clearButton:hover:not(:disabled) { 
+  background: var(--color-neutral-200, #e5e7eb); 
+  border-color: var(--color-neutral-400, #9ca3af); 
+  color: var(--color-text-primary, #1a1a1a);
+  transform: translateY(-1px); 
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); 
+}
+
+.clearButton:active:not(:disabled) { 
+  transform: translateY(0); 
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); 
+}
+
+.applyButton:disabled,
+.clearButton:disabled { 
+  opacity: 0.5; 
+  cursor: not-allowed; 
+  transform: none; 
+  box-shadow: none; 
+}
+
+/* ✅ Botones en desktop - Dentro del grid ocupando el espacio del input faltante */
+.desktopButtons {
+  display: none; /* Oculto por defecto, visible en desktop */
+  gap: var(--spacing-3, 0.75rem); /* ✅ Espaciado entre botones (12px) */
+  align-items: flex-start; /* ✅ Alinear arriba */
+  justify-content: stretch;
+  flex-direction: row; /* ✅ Botones uno al lado del otro (horizontal) */
+  margin-top: 0; /* ✅ Sin margen superior (ya está en el grid) */
+  padding: 0; /* ✅ Sin padding extra */
+  border: none; /* ✅ Sin borde */
+  /* ✅ Añadir padding-top igual al espacio del label + margin-bottom para alinear con inputs */
+  padding-top: calc(0.875rem + 0.5rem); /* ✅ Altura del label (14px) + margin-bottom (8px) */
+  align-self: start; /* ✅ Alinear con el inicio del grid item */
+}
+
+/* ✅ Botones dentro del grid ocupan todo el espacio disponible */
+.desktopButtons button {
+  flex: 1; /* ✅ Cada botón ocupa la mitad del espacio horizontal */
+  width: 100%; /* ✅ Ancho completo dentro del flex */
+}
+
+
+/* ===== DESKTOP VISIBILITY STATES ===== */
+.desktopVisible {
+  width: 100%;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+}
+
+.desktopHidden {
+  width: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-20px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s ease;
+  height: 0;
+  overflow: hidden;
+}
+
+/* ===== RESPONSIVE ===== */
+/* ⚠️ Breakpoint 768px sincronizado con Vehiculos.jsx */
+@media (min-width: 769px) {
+  .rangesSection,
+  .selectsSection { 
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem; /* ✅ Más separación entre inputs */
+  }
+  
+  /* ✅ Aumentar distancia entre la fila de arriba (botones + caja + combustible) y la de abajo (año + km + precio) */
+  .selectsSection {
+    margin-bottom: 3rem !important; /* ✅ Más espacio entre las dos filas */
+  }
+  
+  .rangesSection {
+    margin-top: 0 !important; /* ✅ Asegurar que no haya margin-top adicional */
+  }
+  .formWrapper { 
+    width: 100%; /* ✅ Ancho completo del contenedor padre */
+    max-width: none; /* ✅ Sin límite */
+    margin: 0; /* ✅ Sin márgenes */
+    /* ✅ Mismo fondo blanco y sombra que el carrusel */
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
+    border-radius: 0;
+    border: none;
+    padding: 16px 24px; /* ✅ Padding lateral para contenido */
+    box-sizing: border-box; /* ✅ Incluir padding en el ancho */
+  }
+  .filterContainer { 
+    margin-top: 0;
+    width: 100vw; /* ✅ Ancho completo del viewport */
+    max-width: 100vw; /* ✅ Sin límite */
+    justify-content: flex-start;
+    margin-left: calc(-50vw + 50%); /* ✅ Breakout: ocupar todo el viewport */
+    margin-right: calc(-50vw + 50%);
+    box-sizing: border-box; /* ✅ Incluir padding en el ancho */
+  }
+  .mobileButtons { display: none; }
+  
+  /* ✅ Mostrar botones abajo en desktop */
+  .desktopButtons {
+    display: flex;
+  }
+  
+  .closeButtonMobile {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .filterContainer { 
+    margin-top: 0; /* ✅ Sin margen en mobile */
+    padding-bottom: 0; 
+    /* ✅ No ocupar espacio - el drawer es fixed, no necesita estar en el flow */
+    height: 0;
+    overflow: visible; /* ✅ Permitir que el drawer (fixed) salga */
+  }
+  
+  .filterButtonMobile { display: none; }
+  
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    cursor: pointer;
+  }
+  
+  .formWrapper {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 55vh; /* ✅ Máximo 55% de la altura (más compacto, no pantalla completa) */
+    z-index: 1001;
+    transform: translateY(100%); /* ✅ Oculto hacia abajo */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 16px 16px 0 0; /* ✅ Redondeado arriba */
+    background: #ffffff;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* ✅ Ancho completo */
+    overflow-y: auto; /* ✅ Scroll vertical */
+    overflow-x: visible; /* ✅ Permitir que dropdowns salgan */
+  }
+  
+  .filterContainer.open .formWrapper { transform: translateY(0); }
+  
+  .form {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: visible; /* ✅ Permitir que dropdowns salgan horizontalmente */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain; /* Evita que el scroll se propague al body */
+    touch-action: pan-y; /* Solo permite scroll vertical, bloquea movimiento horizontal */
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-height: 0; /* ✅ Permitir que el flex funcione correctamente */
+    position: relative; /* ✅ Contexto de posicionamiento */
+  }
+  
+  /* Bloquear movimiento del formWrapper al tocar fuera de inputs */
+  .formWrapper {
+    touch-action: none;
+    overscroll-behavior: contain;
+  }
+  
+  .formWrapper * {
+    touch-action: pan-y;
+  }
+
+  .form::-webkit-scrollbar { display: none; }
+
+  /* ✅ Mobile: Contenido con scroll con padding más reducido */
+  .rangesSection,
+  .selectsSection {
+    padding: 0.75rem 1rem; /* ✅ Padding vertical reducido, horizontal sutil */
+    padding-bottom: 0.5rem;
+  }
+
+  /* ✅ Mobile: Una columna vertical para los filtros */
+  .rangesSection {
+    display: flex;
+    flex-direction: column; /* ✅ Una columna vertical */
+    gap: 1.25rem; /* ✅ Más separación entre inputs */
+    margin-bottom: 0.5rem;
+  }
+
+  .selectsSection { 
+    display: flex;
+    flex-direction: column; /* ✅ Una columna vertical */
+    gap: 1.25rem; /* ✅ Más separación entre inputs */
+    margin-bottom: 0;
+    padding-bottom: 0.75rem; /* ✅ Padding más reducido */
+  }
+
+  /* ✅ Ocultar botones desktop en mobile */
+  .desktopButtons {
+    display: none !important;
+  }
+  
+  /* ✅ Mobile: Asegurar que selectsSection esté por encima de rangesSection */
+  .selectsSection {
+    z-index: 500 !important; /* ✅ Z-index muy alto para toda la sección */
+    position: relative;
+  }
+  
+  .rangesSection {
+    z-index: 1 !important; /* ✅ Z-index bajo - debe estar por debajo */
+    position: relative;
+  }
+  
+  /* ✅ En mobile: orden inverso de z-index para que el primer select tenga prioridad */
+  /* ✅ Nota: Ahora desktopButtons es nth-child(1), entonces los selects son nth-child(2) y nth-child(3) */
+  .selectsSection .formGroup {
+    position: relative !important;
+    z-index: 500 !important; /* ✅ Z-index base muy alto para todos los selects */
+  }
+  
+  .selectsSection .formGroup:nth-child(2) { 
+    z-index: 502 !important; /* Caja - Mayor z-index porque está arriba */
+  }
+  
+  .selectsSection .formGroup:nth-child(3) { 
+    z-index: 501 !important; /* Combustible - Menor z-index porque está abajo */
+  }
+  
+  /* ✅ Mobile: Asegurar que los RangeSliders tengan z-index menor que los selects */
+  .rangesSection .formGroup {
+    position: relative !important;
+    z-index: 1 !important; /* ✅ Z-index muy bajo para que los selects queden por encima */
+  }
+
+  /* ✅ Mobile: Cuando el RangeSlider está en uso, aumentar el z-index del formGroup */
+  .rangesSection .formGroup:hover {
+    z-index: 100000 !important; /* ✅ Z-index muy alto cuando el RangeSlider está en uso */
+  }
+
+  /* ✅ Mobile: Aumentar z-index del thumb cuando está activo */
+  .rangesSection .formGroup .rangeSlider .thumb:hover,
+  .rangesSection .formGroup .rangeSlider .thumb.active {
+    z-index: 100000 !important; /* ✅ Z-index alto para el thumb activo */
+  }
+
+  /* ✅ Mobile: Asegurar que el tooltip esté por encima de todo cuando está activo */
+  .rangesSection .formGroup .rangeSlider .thumb:hover .tooltip,
+  .rangesSection .formGroup .rangeSlider .thumb.active .tooltip {
+    z-index: 999999 !important; /* ✅ Z-index extremadamente alto */
+  }
+  
+  /* ✅ Mobile: El dropdown del MultiSelect necesita z-index extremadamente alto */
+  .selectsSection .formGroup .multiSelect {
+    position: relative !important;
+    z-index: inherit !important; /* ✅ Heredar z-index del formGroup */
+  }
+  
+  /* ✅ Mobile: Contenedor del MultiSelect con z-index alto */
+  .selectsSection .formGroup .multiSelect .container {
+    position: relative !important;
+    z-index: inherit !important;
+  }
+  
+  /* ✅ Mobile: Dropdown con z-index extremadamente alto - debe estar por encima de todo */
+  .selectsSection .formGroup .multiSelect .dropdown {
+    z-index: 10000 !important; /* ✅ Z-index extremadamente alto para el dropdown */
+    position: absolute !important; /* ✅ Asegurar position absolute */
+  }
+  
+  /* ✅ Mobile: FormGroup en una columna (ancho completo) - Más compacto */
+  .formGroup { 
+    width: 100%; /* ✅ Ancho completo */
+    max-width: none;
+    padding: 0;
+    margin-bottom: 0;
+    position: relative;
+    gap: 0.375rem !important; /* ✅ Espacio más reducido entre label e input */
+  }
+
+  /* ✅ Mobile: Labels más compactos */
+  .formGroup label {
+    font-size: 0.8125rem !important; /* ✅ 13px - más compacto */
+    font-weight: 600 !important;
+    margin-bottom: 0.375rem !important; /* ✅ Espacio más reducido */
+    color: var(--color-text-primary, #1a1a1a) !important;
+  }
+
+  /* ✅ Mobile: RangeSlider más grande */
+  .formGroup .rangeSlider {
+    font-size: 1rem !important;
+  }
+
+  /* ✅ Mobile: Valores del RangeSlider más compactos */
+  .formGroup .rangeSlider .values {
+    font-size: 1rem !important; /* ✅ 16px - más compacto */
+    font-weight: 400 !important; /* ✅ Menos bold */
+    margin-top: 0 !important; /* ✅ Sin margin top */
+    margin-bottom: 0 !important; /* ✅ Sin margin bottom */
+    gap: 0.5rem; /* ✅ Espacio entre valores */
+  }
+
+  /* ✅ Mobile: Valor individual del RangeSlider */
+  .formGroup .rangeSlider .values .value {
+    font-size: 1rem !important; /* ✅ 16px - más compacto */
+    font-weight: 400 !important; /* ✅ Menos bold */
+    color: var(--color-text-primary, #1a1a1a) !important;
+  }
+
+  /* ✅ Mobile: Tooltip del RangeSlider más compacto - z-index muy alto */
+  .formGroup .rangeSlider .tooltip {
+    font-size: 0.75rem !important; /* ✅ 12px - más chico */
+    padding: 4px 8px !important; /* ✅ Padding más reducido */
+    font-weight: 600 !important;
+    z-index: 999999 !important; /* ✅ Z-index extremadamente alto para que esté por encima de TODO */
+    position: absolute !important;
+  }
+
+  /* ✅ Mobile: Thumb del RangeSlider más compacto */
+  .formGroup .rangeSlider .thumb {
+    width: 24px !important; /* ✅ 24px - tamaño estándar */
+    height: 24px !important; /* ✅ 24px - tamaño estándar */
+    border-width: 2px !important; /* ✅ Borde estándar */
+  }
+
+  /* ✅ Mobile: Track del RangeSlider estándar */
+  .formGroup .rangeSlider .track {
+    height: 8px !important; /* ✅ 8px - tamaño estándar */
+  }
+
+  /* ✅ Mobile: MultiSelect más compacto */
+  .formGroup .multiSelect .trigger {
+    padding: 10px 12px !important; /* ✅ Padding reducido */
+    min-height: 44px !important; /* ✅ Altura más compacta */
+    font-size: 0.875rem !important; /* ✅ 14px - más compacto */
+    border-width: 1.5px !important; /* ✅ Borde estándar */
+  }
+
+  /* ✅ Mobile: Texto del MultiSelect más compacto */
+  .formGroup .multiSelect .trigger .text {
+    font-size: 0.875rem !important; /* ✅ 14px - más compacto */
+    font-weight: 500 !important;
+  }
+
+  /* ✅ Mobile: Icono del MultiSelect estándar */
+  .formGroup .multiSelect .trigger .arrow {
+    width: 18px !important; /* ✅ Icono estándar */
+    height: 18px !important;
+  }
+  .formGroup > div { width: 100%; max-width: none; padding: 0; }
+  .titleActions { display: flex; gap: 0.5rem; align-items: center; }
+  
+  .formTitle {
+    /* ✅ Barra de arrastre visual en top - compacta */
+    padding: 0.75rem 0; /* ✅ Padding reducido */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border-bottom: 1px solid #e5e7eb;
+    min-height: 48px; /* ✅ Altura mínima más compacta */
+  }
+
+  /* ✅ Barra de arrastre visual - compacta */
+  .formTitle::before {
+    content: '';
+    position: absolute;
+    width: 40px; /* ✅ Tamaño estándar */
+    height: 4px; /* ✅ Tamaño estándar */
+    background: #d1d5db;
+    border-radius: 2px; /* ✅ Tamaño estándar */
+    top: 0.625rem; /* ✅ Ajustado para centrar */
+  }
+
+  .closeButtonMobile {
+    position: absolute;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.5rem; /* ✅ Padding reducido */
+    border-radius: 0.375rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem; /* ✅ Tamaño más compacto */
+    min-height: 2.5rem; /* ✅ Tamaño más compacto */
+  }
+  
+  .closeButtonMobile:hover { background: rgba(0, 0, 0, 0.05); color: #374151; }
+  .closeButtonMobile:active { transform: scale(0.95); }
+  .titleActions .applyButton,
+  .titleActions .clearButton { display: none; }
+
+  /* ✅ Botones fijos abajo del drawer - más compactos */
+  .mobileButtons {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 0.625rem;
+    padding: 0.75rem; /* ✅ Padding reducido */
+    margin-top: auto; /* ✅ Empujar al final */
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+    z-index: 10;
+  }
+
+  .mobileButtons .applyButton,
+  .mobileButtons .clearButton { 
+    flex: 1; 
+    height: 2.25rem; /* ✅ Altura más compacta */
+    font-size: 0.8125rem; /* ✅ 13px - más compacto */
+    font-weight: 600; 
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  /* ✅ Migrado: CTA principal mobile → color de marca según sistema */
+  .mobileButtons .applyButton { background-color: var(--color-brand-500, #0066cc); color: #ffffff; border: 1px solid var(--color-brand-500, #0066cc); }
+  /* ✅ Migrado: Hover mobile → brand-600 para jerarquía visual */
+  .mobileButtons .applyButton:hover { background-color: var(--color-brand-600, #0052a3); }
+  .mobileButtons .clearButton { background: transparent; color: #6b7280; border: 1px solid #d1d5db; }
+  .mobileButtons .clearButton:hover { background: #f3f4f6; }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .applyButton:hover:not(:disabled),
+  .clearButton:hover:not(:disabled),
+  .filterButtonMobile:hover { transform: none; }
+}
+

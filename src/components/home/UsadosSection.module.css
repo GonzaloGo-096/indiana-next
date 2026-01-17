@@ -1,0 +1,103 @@
+/**
+ * UsadosSection.module.css - Estilos para sección Usados Multimarca
+ * 
+ * Diseño: Fondo claro, contenido centrado
+ * 
+ * @author Indiana Peugeot
+ * @version 1.0.0
+ */
+
+.section {
+  padding: clamp(3.5rem, 8vw, 5rem) 0;
+  background: var(--color-white);
+  color: var(--color-text-primary);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ✅ Efecto de transición muy sutil desde la sección negra (fade in desde arriba) */
+.section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 30px;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 13, 20, 0.5) 0%,
+    rgba(10, 13, 20, 0.2) 50%,
+    rgba(255, 255, 255, 0.4) 80%,
+    rgba(255, 255, 255, 1) 100%
+  );
+  z-index: 0;
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-5);
+  text-align: center;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-condensed);
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  line-height: 1.1;
+}
+
+.description {
+  margin: 0;
+  font-family: var(--font-poppins);
+  font-size: clamp(1rem, 2.5vw, 1.125rem);
+  line-height: 1.7;
+  color: var(--color-text-secondary);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3) var(--spacing-6);
+  background: var(--color-brand-500);
+  color: var(--color-white);
+  border: 2px solid var(--color-brand-500);
+  border-radius: var(--border-radius-md);
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: var(--font-condensed);
+  font-weight: var(--font-weight-bold);
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  line-height: 1;
+  transition: all var(--transition-fast);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.button:hover {
+  background: var(--color-brand-600);
+  border-color: var(--color-brand-600);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+

@@ -1,0 +1,357 @@
+/**
+ * 0km-detalle.module.css - Estilos de página detalle 0km
+ * 
+ * Mobile-first: Carrusel de versiones
+ * Desktop: Tabs + 2 columnas
+ * 
+ * Migrado desde React: CeroKilometroDetalle.module.css
+ * 
+ * @author Indiana Usados
+ * @version 3.0.0 - Sistema de superficies aplicado (FASE 3.3)
+ */
+
+/* ===== PAGE CONTAINER ===== */
+.page {
+  min-height: 100vh;
+  /* ✅ Fondo blanco para que las cards floten sobre él */
+  background-color: var(--color-white);
+  padding-bottom: 0;
+}
+
+/* ===== HEADER ===== */
+.header {
+  padding: 24px 16px 16px;
+  text-align: center;
+}
+
+.backLink {
+  display: inline-block;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+  color: var(--color-neutral-500);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.backLink:hover {
+  color: var(--color-brand-500);
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 32px 0;
+  font-size: clamp(1.75rem, 6vw, 3.5rem);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-poppins);
+  color: var(--color-text-primary);
+  letter-spacing: 0.5px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.brandIcon {
+  flex-shrink: 0;
+  width: clamp(48px, 9vw, 80px);
+  height: clamp(48px, 9vw, 80px);
+}
+
+.modelName {
+  color: var(--color-brand-500);
+  font-weight: var(--font-weight-bold);
+}
+
+.versionName {
+  color: var(--color-neutral-500);
+  font-weight: var(--font-weight-semibold);
+  font-size: 0.6em;
+  letter-spacing: 0.3px;
+}
+
+/* Letras GT siempre en rojo */
+.gtText {
+  color: #dc2626;
+}
+
+/* ===== HERO IMAGE (solo desktop) ===== */
+.heroContainer {
+  display: none;
+  width: 100%;
+  margin: 0 0 48px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.heroBadge {
+  position: absolute;
+  left: 48px;
+  top: 48px;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-poppins);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  z-index: 10;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.heroImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+/* next/image necesita position: relative en el contenedor (ya está en .heroContainer) */
+
+/* ===== ERROR STATE ===== */
+.container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.errorTitle {
+  margin: 24px 0 16px;
+  font-size: 1.5rem;
+  font-family: var(--font-poppins);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+}
+
+.errorText {
+  color: var(--color-neutral-600);
+}
+
+/* ===== TABS (Visible en mobile y desktop) ===== */
+.tabsContainer {
+  display: block;
+  padding: 0 16px 16px;
+}
+
+/* ===== MOBILE/DESKTOP CONTENT ===== */
+/* ✅ NOTA: VersionContent maneja su propio responsive internamente.
+ * Ya no se usan wrappers .mobileContent/.desktopContent.
+ * El layout se determina por prop y CSS interno de VersionContent. */
+
+/* ===== RESPONSIVE: TABLET ===== */
+@media (min-width: 768px) {
+  .header {
+    padding: 32px 24px 24px;
+    text-align: center;
+  }
+  
+  .title {
+    margin-bottom: 32px;
+  }
+  
+  .tabsContainer {
+    padding: 0 24px 24px;
+  }
+  
+  .heroContainer {
+    display: block;
+  }
+}
+
+/* ===== RESPONSIVE: DESKTOP ===== */
+@media (min-width: 992px) {
+  .header {
+    padding: 0 32px 32px;
+  }
+  
+  .title {
+    gap: 16px;
+    letter-spacing: 1px;
+  }
+  
+  .versionName {
+    letter-spacing: 0.5px;
+  }
+  
+  .tabsContainer {
+    padding: 0 32px 0;
+  }
+}
+
+/* ===== PDF SECTION ===== */
+.pdfSection {
+  padding: 32px 16px;
+  text-align: center;
+}
+
+.pdfContainer {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+}
+
+@media (min-width: 768px) {
+  .pdfSection {
+    padding: 40px 24px;
+  }
+}
+
+@media (min-width: 992px) {
+  .pdfSection {
+    padding: 48px 32px;
+  }
+}
+
+/* ===== CTA CONTAINER ===== */
+.ctaContainer {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  justify-content: center;
+}
+
+/* ===== CTA SECTION - Contacto WhatsApp ===== */
+.ctaSection {
+  position: relative;
+  text-align: center;
+  padding: clamp(48px, 6vw, 64px) clamp(24px, 4vw, 48px);
+  margin: clamp(48px, 6vw, 80px) 0 0;
+  max-width: 800px;
+  width: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(6, 27, 156, 0.03) 0%,
+    rgba(6, 27, 156, 0.01) 100%
+  );
+  border-radius: var(--border-radius-xl);
+  border: 1px solid var(--color-neutral-200);
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.04),
+    0 1px 4px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .ctaContainer {
+    padding: 0 24px;
+  }
+}
+
+@media (min-width: 992px) {
+  .ctaContainer {
+    padding: 0 48px;
+  }
+}
+
+/* Decoración de fondo sutil */
+.ctaSection::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(
+    circle,
+    rgba(6, 27, 156, 0.05) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ctaText {
+  position: relative;
+  margin: 0 0 24px 0;
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.3px;
+  line-height: 1.5;
+  z-index: 1;
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: clamp(0.625rem, 1.5vw, 0.75rem) clamp(1.25rem, 3vw, 1.5rem);
+  background: var(--color-white);
+  color: var(--color-text-primary);
+  border: 2px solid #25D366;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
+  font-size: clamp(0.9rem, 1.8vw, 1rem);
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: 
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+  z-index: 1;
+}
+
+.ctaButton:hover {
+  background: #f0f0f0;
+  border-color: #128C7E;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
+}
+
+.ctaButton:focus-visible {
+  outline: 2px solid #25D366;
+  outline-offset: 2px;
+}
+
+.ctaButton:active {
+  transform: translateY(0);
+  background: #e5e5e5;
+}
+
+.whatsappIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-primary);
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .ctaSection {
+    margin: clamp(32px, 5vw, 48px) 16px 0;
+    padding: clamp(32px, 5vw, 48px) clamp(20px, 4vw, 32px);
+  }
+  
+  .ctaButton {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.9rem;
+    gap: 0.375rem;
+  }
+  
+  .whatsappIcon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+/* ===== ACCESIBILIDAD ===== */
+@media (prefers-reduced-motion: reduce) {
+  /* ✅ Estilos de .carousel movidos a VersionCarousel.module.css */
+  
+  .navButton,
+  .backLink,
+  .dot,
+  .ctaButton {
+    transition: none;
+  }
+  
+  .ctaButton:hover {
+    transform: none;
+  }
+}

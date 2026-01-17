@@ -1,0 +1,370 @@
+/**
+ * vehiculos.module.css - Estilos para página de vehículos
+ * 
+ * Migrado desde React: Vehiculos.module.css
+ * 
+ * @author Indiana Peugeot
+ * @version 2.0.0 - Migración desde React
+ */
+
+/* ===== PAGE CONTAINER ===== */
+.page {
+  /* ✅ Migrado: Fondo principal → token semántico surface */
+  background-color: var(--color-surface, #ffffff);
+  min-height: 100vh;
+}
+
+/* ===== TITLE CONTAINER ===== */
+.titleContainer {
+  max-width: var(--container-max-width, 1400px);
+  margin-left: 16px;
+  margin-right: auto;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 6px;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 15px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.titleSection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+  justify-content: flex-start;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  margin-top: 40px;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 5px 0 0 15px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.mainTitle {
+  font-size: 2.53125rem;
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-text-primary, #1a1a1a);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-family: var(--font-condensed, "Barlow Condensed", sans-serif);
+  position: relative;
+}
+
+/* ===== CAROUSEL SECTION ===== */
+.carouselSection {
+  width: 100%;
+  background: transparent; /* ✅ Sin fondo para evitar doble borde */
+  padding: 0; /* ✅ Sin padding para evitar doble borde */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0; /* ✅ Sin gap para evitar espacios */
+  border-radius: 0; /* ✅ Bordes rectos */
+  margin-bottom: 24px; /* ✅ Separación de la lista */
+  box-shadow: none; /* ✅ Sin sombra para evitar doble borde */
+  border: none; /* ✅ Sin borde */
+}
+
+.filtersWrapper {
+  padding: 0 24px;
+}
+
+.actionButtons {
+  /* ✅ MOBILE-FIRST: Visible por defecto en mobile */
+  display: flex;
+  gap: 0; /* ✅ Mobile: sin gap, pegados entre sí */
+  align-items: stretch; /* ✅ Mobile: estirar para ocupar toda la altura */
+  position: relative;
+  border: none;
+  border-radius: 0; /* ✅ Bordes rectos */
+  /* ✅ Mobile: ancho completo */
+  width: 100%;
+  /* ✅ Mismo fondo y sombra que el carrusel para efecto sobresalido */
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
+  margin-top: 0; /* ✅ Pegado al carrusel */
+  margin-bottom: 24px; /* ✅ Separación de la lista */
+  /* ✅ Mobile: padding adaptado, sin padding lateral para que quede pegado */
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 0; /* ✅ Sin padding superior para quedar pegado al carrusel */
+  padding-bottom: 12px; /* ✅ Mobile: padding inferior touch-friendly */
+}
+
+/* ✅ Desktop: Botones fuera del carrusel */
+.actionButtonsDesktop {
+  display: none; /* Oculto en mobile */
+}
+
+/* ✅ Mobile: Contenedores de botones (para dropdown) también ocupan 50% */
+.actionButtons > div {
+  flex: 1;
+  display: flex;
+  position: relative;
+}
+
+.actionButton {
+  /* ✅ Mobile: ocupa exactamente 50% del espacio (flex: 1 en su contenedor) */
+  flex: 1;
+  width: 100%; /* ✅ Ancho completo del contenedor */
+  background: transparent;
+  border: none;
+  font-size: 0.875rem; /* ✅ Mobile: tamaño más pequeño para mejor legibilidad */
+  font-weight: var(--font-weight-semibold);
+  /* ✅ Migrado: Texto principal oscuro → text-primary */
+  color: var(--color-text-primary);
+  text-transform: none; /* ✅ Sin mayúsculas forzadas */
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  padding: 12px 8px; /* ✅ Mobile: padding touch-friendly, menos lateral para aprovechar espacio */
+  min-height: 48px; /* ✅ Mobile: altura mínima touch-friendly aumentada */
+  border-radius: 0; /* ✅ Sin bordes redondeados en mobile para que quede pegado */
+  /* ✅ Mobile: borde derecho para separar visualmente los botones */
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  /* ✅ Optimizado: solo transicionar propiedades específicas (mejor rendimiento) */
+  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center; /* ✅ Mobile: centrar contenido */
+  gap: 6px; /* ✅ Espaciado entre icono y texto reducido para mobile */
+  font-family: var(--font-display);
+  white-space: nowrap; /* ✅ Evitar que el texto se parta */
+}
+
+/* ✅ Eliminar borde del contenedor del último botón */
+.actionButtons > div:last-child .actionButton {
+  border-right: none;
+}
+
+/* ✅ También aplicar a botones directos (sin contenedor) */
+.actionButtons > button:first-child {
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.actionButtons > button:last-child {
+  border-right: none;
+}
+
+.actionButton:hover {
+  background-color: var(--color-brand-500-rgba-10); /* ✅ Fondo sutil al hover */
+  color: var(--color-brand-600);
+}
+
+.actionButton.active {
+  /* ✅ Simplificación: se elimina color-mix(), se conserva valor visual (equivalente a --color-brand-500 con 15% opacidad) */
+  background: var(--color-brand-500-rgba-15);
+  color: var(--color-brand-600);
+}
+
+.actionButton svg {
+  width: 18px; /* ✅ Tamaño fijo y equilibrado */
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  flex-shrink: 0; /* ✅ Evitar que el icono se comprima */
+  /* Asegurar que el ícono siempre sea el mismo */
+  stroke-dasharray: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.actionButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  max-width: var(--container-max-width, 1400px);
+  margin: 0 auto;
+  padding-top: 6px;
+  padding-bottom: 0;
+  padding-left: 15px;
+  padding-right: 15px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-x: hidden;
+}
+
+/* ===== VEHICLES GRID ===== */
+.vehiclesGrid {
+  width: 100%;
+  padding-left: 0;
+}
+
+/* ===== PLACEHOLDERS (temporal) ===== */
+.brandsCarouselPlaceholder,
+.filtersPlaceholder,
+.sortDropdownPlaceholder,
+.gridPlaceholder {
+  padding: 20px;
+  background: var(--color-neutral-50, #f5f5f5);
+  border: 2px dashed var(--color-neutral-300, #d1d5db);
+  border-radius: 8px;
+  text-align: center;
+  color: var(--color-neutral-600, #6b7280);
+  font-size: 14px;
+}
+
+/* ===== BACK BUTTON ===== */
+.backButtonContainer {
+  margin-top: 10px;
+  margin-bottom: clamp(3rem, 6vw, 4rem); /* ✅ Margin bottom para separar del footer */
+  text-align: center;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2, 8px);
+  padding: var(--spacing-3, 12px) var(--spacing-5, 20px);
+  background: var(--color-white, #ffffff);
+  color: var(--color-brand-500, #0066cc);
+  text-decoration: none;
+  font-size: clamp(0.875rem, 1.5vw, 1rem);
+  font-weight: 600;
+  font-family: var(--font-sans, "Poppins", sans-serif);
+  letter-spacing: 0.02em;
+  border-radius: var(--border-radius-md, 8px);
+  border: 2px solid var(--color-brand-500, #0066cc);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.2s);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+  width: fit-content;
+  min-width: 200px;
+}
+
+.backButton:hover {
+  background: rgba(0, 102, 204, 0.1);
+  color: var(--color-brand-600, #0052a3);
+  border-color: var(--color-brand-600, #0052a3);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md, 0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+/* ===== ERROR MESSAGE ===== */
+.errorMessage {
+  padding: 16px;
+  background: #fee2e2;
+  border: 1px solid #ef4444;
+  border-radius: 8px;
+  color: #dc2626;
+  margin-bottom: 16px;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .container {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .carouselSection {
+    border-radius: 0; /* ✅ Bordes rectos en mobile también */
+    padding-bottom: 0;
+  }
+
+  .filtersWrapper {
+    padding: 0 12px;
+  }
+}
+
+/* Desktop (992px+) */
+/* ⚠️ BREAKPOINT HARDCODED: Interdependiente con FilterFormSimple.module.css */
+/* Ambos deben usar 769px para mantener sincronización de botones y drawer */
+@media (min-width: 992px) {
+  .container {
+    padding-top: 6px;
+    padding-bottom: 0;
+  }
+  
+  .mainTitle {
+    /* ✅ Desktop: Título más grande */
+    font-size: 2.7rem;
+  }
+  
+  .titleSection {
+    /* ✅ Desktop: Fila horizontal */
+    flex-direction: row;
+    text-align: left;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--spacing-2, 8px);
+    margin-left: 0;
+    margin-right: 0;
+    padding-left: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  /* ✅ Desktop: Ocultar botones dentro del carrusel */
+  .carouselSection .actionButtons {
+    display: none;
+  }
+  
+  /* ✅ Desktop: Mostrar botones fuera del carrusel */
+  .actionButtonsDesktop {
+    display: flex;
+    gap: 12px; /* ✅ Desktop: espacio entre botones */
+    align-items: center;
+    justify-content: flex-start; /* ✅ Alineados a la izquierda */
+    padding: 10px 24px 10px 15px; /* ✅ Padding: izquierda mínimo, derecha más */
+    margin-bottom: 32px; /* ✅ Separación de la lista */
+    margin-left: calc(-50vw + 50%); /* ✅ Breakout: salir del costado del viewport */
+    width: fit-content; /* ✅ Solo ancho del contenido */
+    background: #ffffff; /* ✅ Mismo fondo que el carrusel */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02); /* ✅ Misma sombra */
+    border-radius: 0 0 12px 0; /* ✅ Border radius solo abajo a la derecha, arriba y derecha rectos */
+  }
+  
+  /* ✅ Desktop: Contenedores de botones no ocupan espacio extra */
+  .actionButtonsDesktop > div {
+    flex: 0 1 auto;
+    width: auto;
+    position: relative;
+  }
+  
+  .actionButtonsDesktop .actionButton {
+    /* ✅ Desktop: ancho natural (no flex: 1) */
+    flex: 0 1 auto;
+    width: auto; /* ✅ Desktop: ancho natural */
+    font-size: 0.9375rem; /* ✅ Desktop: tamaño estándar (15px) */
+    padding: 8px 16px; /* ✅ Desktop: menos padding */
+    min-height: auto; /* ✅ Desktop: sin restricción de altura */
+    border-radius: 6px; /* ✅ Desktop: bordes redondeados */
+    border-right: none; /* ✅ Desktop: sin borde entre botones */
+    gap: 8px; /* ✅ Desktop: más espacio entre icono y texto */
+  }
+  
+  /* ✅ Desktop: sin bordes entre botones */
+  .actionButtonsDesktop > button:first-child {
+    border-right: none;
+  }
+  
+  /* ✅ Desktop: Sin gap entre carrusel y botones */
+  .carouselSection {
+    margin-bottom: 0; /* ✅ Sin margen inferior para que los botones queden pegados */
+  }
+  
+  /* ✅ Desktop: Botones pegados al carrusel (sin gap) */
+  .actionButtonsDesktop {
+    margin-top: 0; /* ✅ Sin margen superior para que queden pegados */
+  }
+}
+

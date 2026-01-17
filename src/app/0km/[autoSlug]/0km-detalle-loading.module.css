@@ -1,0 +1,170 @@
+/* ===== LOADING STATE PARA /0KM/[AUTOSLUG] ===== */
+.container {
+  background: var(--color-surface, #ffffff);
+}
+
+.hero {
+  width: 100%;
+  height: 400px;
+  margin-bottom: var(--spacing-6);
+}
+
+.skeletonHeroImage {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200, #e8eaed) 25%,
+    var(--color-neutral-100, #f1f3f4) 50%,
+    var(--color-neutral-200, #e8eaed) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.header {
+  padding: 0 var(--spacing-4);
+  margin-bottom: var(--spacing-8);
+  text-align: center;
+}
+
+.skeletonTitle {
+  width: 250px;
+  height: 48px;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200, #e8eaed) 25%,
+    var(--color-neutral-100, #f1f3f4) 50%,
+    var(--color-neutral-200, #e8eaed) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--border-radius-md, 8px);
+  margin: 0 auto var(--spacing-3);
+}
+
+.skeletonSubtitle {
+  width: 180px;
+  height: 28px;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200, #e8eaed) 25%,
+    var(--color-neutral-100, #f1f3f4) 50%,
+    var(--color-neutral-200, #e8eaed) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--border-radius-md, 8px);
+  margin: 0 auto;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+  padding: 0 var(--spacing-4);
+}
+
+.leftColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.skeletonImage {
+  width: 100%;
+  height: 300px;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200, #e8eaed) 25%,
+    var(--color-neutral-100, #f1f3f4) 50%,
+    var(--color-neutral-200, #e8eaed) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--border-radius-lg, 12px);
+}
+
+.skeletonColorSelector {
+  width: 100%;
+  height: 60px;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200, #e8eaed) 25%,
+    var(--color-neutral-100, #f1f3f4) 50%,
+    var(--color-neutral-200, #e8eaed) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--border-radius-md, 8px);
+}
+
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.skeletonText {
+  width: 100%;
+  height: 20px;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200, #e8eaed) 25%,
+    var(--color-neutral-100, #f1f3f4) 50%,
+    var(--color-neutral-200, #e8eaed) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--border-radius-sm, 4px);
+}
+
+.skeletonText:nth-child(2) {
+  width: 80%;
+}
+
+.skeletonList {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200, #e8eaed) 25%,
+    var(--color-neutral-100, #f1f3f4) 50%,
+    var(--color-neutral-200, #e8eaed) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--border-radius-md, 8px);
+  margin-top: var(--spacing-2);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .content {
+    flex-direction: row;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .leftColumn {
+    flex: 1;
+  }
+
+  .rightColumn {
+    flex: 1;
+  }
+
+  .skeletonImage {
+    height: 400px;
+  }
+}
+

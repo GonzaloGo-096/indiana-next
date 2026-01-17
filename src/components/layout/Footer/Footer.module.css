@@ -1,0 +1,112 @@
+/**
+ * Footer.module.css - Diseño mobile-first profesional
+ * 
+ * Características:
+ * - Mobile-first responsive design
+ * - Fondo oscuro profesional
+ * - Variables del design system
+ * - Espaciados optimizados para mobile
+ * 
+ * @author Indiana Usados
+ * @version 4.0.0 - Refactor mobile-first profesional
+ */
+
+/* ===== FOOTER PRINCIPAL (MOBILE-FIRST) ===== */
+.footer {
+  /* ✅ Migrado: Fondo oscuro de sección → surface-dark */
+  background-color: var(--color-surface-dark);
+  color: var(--color-white);
+  padding: 1rem 0 2rem 0;
+  margin-top: 0;
+  position: relative;
+  /* Borde superior sutil para separación visual */
+  /* ✅ Simplificación: se elimina color-mix(), se conserva valor visual (equivalente a --color-brand-500 con 20% opacidad) */
+  border-top: 1px solid var(--color-brand-500-rgba-20);
+}
+
+/* ===== CONTENEDOR ===== */
+.container {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-4);
+}
+
+/* ===== LOGO ENCABEZADO ===== */
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: var(--spacing-8);
+  margin-top: 0;
+  padding-bottom: var(--spacing-6);
+  padding-top: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.logo {
+  width: clamp(250px, 45vw, 350px);
+  height: auto;
+  opacity: 0.9;
+  transition: opacity var(--transition-fast);
+  display: block;
+}
+
+.logo:hover {
+  opacity: 1;
+}
+
+/* ===== COPYRIGHT ===== */
+.bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: var(--spacing-5);
+  text-align: center;
+  margin-top: var(--spacing-6);
+}
+
+.copyright {
+  color: var(--color-neutral-400);
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-family: var(--font-condensed);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  opacity: 0.7;
+}
+
+/* ===== RESPONSIVE - TABLET Y DESKTOP ===== */
+
+@media (min-width: 640px) {
+  .footer {
+    padding: 1.5rem 0 2.5rem 0;
+    margin-top: 0;
+  }
+  
+  .container {
+    padding: 0 var(--spacing-6);
+  }
+  
+  .logo {
+    display: none;
+  }
+  
+  .bottom {
+    padding-top: var(--spacing-6);
+    margin-top: var(--spacing-8);
+  }
+
+  .copyright {
+    font-size: var(--font-size-sm);
+  }
+}
+
+@media (min-width: 992px) {
+  .footer {
+    padding: 2rem 0 3.5rem 0;
+    margin-top: 0;
+  }
+
+  .container {
+    padding: 0 var(--container-padding-desktop);
+  }
+}
+

@@ -1,0 +1,213 @@
+/* ===== SECCIÓN POR MODELO ===== */
+.modeloSection {
+  width: 100%;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+  padding-top: clamp(3rem, 6vw, 4.5rem); /* ✅ Padding superior para alejar del borde */
+}
+
+.modeloTitle {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  font-family: var(--font-display);
+  margin: 0 0 var(--spacing-5) 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: var(--spacing-3);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+.modeloTitleIcon {
+  flex-shrink: 0;
+  display: block;
+}
+
+/* ===== CARRUSEL DE CARDS ===== */
+.carouselContainer {
+  width: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: var(--spacing-5);
+  padding: 0 20px; /* ✅ Padding lateral para espacio de flechas sin afectar centrado */
+  overflow: visible; /* ✅ Permite que las flechas salgan */
+  box-sizing: content-box; /* ✅ El padding no afecta el ancho total */
+}
+
+.carouselTrack {
+  flex: 1;
+  display: flex;
+  gap: var(--spacing-5);
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  padding: var(--spacing-2) 0;
+  scroll-padding: var(--spacing-2);
+}
+
+.carouselTrack::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* ===== CARD DE IMAGEN DEL MODELO ===== */
+.modeloImageCard {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 500px;
+  overflow: visible;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  transition: none;
+  padding: var(--spacing-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.modeloImageCard:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.modeloImage {
+  width: 100%;
+  height: auto;
+  max-width: 580px;
+  object-fit: contain;
+  display: block;
+}
+
+/* ===== BOTÓN DEBAJO DE LA IMAGEN DEL MODELO ===== */
+.modeloImageButtonContainer {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: var(--spacing-4);
+  padding-top: var(--spacing-3);
+}
+
+.modeloImageButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3) var(--spacing-5);
+  background: transparent;
+  color: var(--color-brand-500);
+  text-decoration: none;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  transition: background-color var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
+  border: 2px solid var(--color-brand-500);
+  cursor: pointer;
+}
+
+.modeloImageButton:hover {
+  background: var(--color-brand-500-rgba-10);
+  color: var(--color-brand-600);
+  border-color: var(--color-brand-600);
+  transform: translateY(-1px);
+}
+
+.modeloImageButton:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .modeloImageCard {
+    max-width: 380px;
+    padding: var(--spacing-5);
+  }
+  
+  .modeloImage {
+    max-width: 450px;
+  }
+}
+
+@media (min-width: 769px) {
+  .modeloImageCard {
+    margin-right: var(--spacing-5);
+  }
+}
+
+/* ===== INDICADOR (DOTS) - Separación sutil del carrusel ===== */
+.carouselDots {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-4); /* aire sutil */
+  padding-top: var(--spacing-2);
+}
+
+/* ===== FLECHAS DE NAVEGACIÓN ===== */
+.arrowButton {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #333;
+  z-index: 10;
+}
+
+.arrowRight {
+  margin-left: auto;
+}
+
+/* Ocultar flechas en mobile */
+@media (max-width: 768px) {
+  .arrowButton {
+    display: none;
+  }
+}
+
+/* Desktop: flechas con position absolute */
+@media (min-width: 769px) {
+  .arrowButton {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 0;
+    margin-right: 0;
+    background: var(--color-neutral-900);
+    color: var(--color-white);
+    z-index: 20;
+  }
+
+  .arrowButton:hover {
+    background: var(--color-neutral-800);
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  .arrowButton:active {
+    transform: translateY(-50%) scale(0.95);
+  }
+
+  .arrowButton:first-of-type {
+    left: -20px; /* ✅ Fuera del contenedor */
+  }
+
+  .arrowButton.arrowRight {
+    right: -20px !important; /* ✅ Fuera del contenedor */
+    left: auto !important;
+    margin-left: 0;
+  }
+}
+

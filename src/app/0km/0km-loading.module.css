@@ -1,0 +1,123 @@
+/* ===== LOADING STATE PARA /0KM ===== */
+.container {
+  padding: var(--spacing-6) var(--spacing-4);
+  background: var(--color-surface, #ffffff);
+}
+
+.header {
+  margin-bottom: var(--spacing-8);
+  text-align: center;
+}
+
+.skeletonTitle {
+  width: 300px;
+  height: 40px;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200, #e8eaed) 25%,
+    var(--color-neutral-100, #f1f3f4) 50%,
+    var(--color-neutral-200, #e8eaed) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--border-radius-md, 8px);
+  margin: 0 auto var(--spacing-3);
+}
+
+.skeletonSubtitle {
+  width: 200px;
+  height: 24px;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200, #e8eaed) 25%,
+    var(--color-neutral-100, #f1f3f4) 50%,
+    var(--color-neutral-200, #e8eaed) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--border-radius-md, 8px);
+  margin: 0 auto;
+}
+
+.carousel {
+  display: flex;
+  gap: var(--spacing-4);
+  overflow-x: hidden;
+  padding: var(--spacing-2) 0;
+}
+
+.card {
+  flex: 0 0 280px;
+  background: var(--color-white, #ffffff);
+  border-radius: var(--border-radius-lg, 12px);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.skeletonImage {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200, #e8eaed) 25%,
+    var(--color-neutral-100, #f1f3f4) 50%,
+    var(--color-neutral-200, #e8eaed) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.skeletonText {
+  width: 80%;
+  height: 20px;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200, #e8eaed) 25%,
+    var(--color-neutral-100, #f1f3f4) 50%,
+    var(--color-neutral-200, #e8eaed) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--border-radius-sm, 4px);
+  margin: var(--spacing-4) auto var(--spacing-2);
+}
+
+.skeletonButton {
+  width: 60%;
+  height: 36px;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200, #e8eaed) 25%,
+    var(--color-neutral-100, #f1f3f4) 50%,
+    var(--color-neutral-200, #e8eaed) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--border-radius-md, 8px);
+  margin: 0 auto var(--spacing-4);
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .carousel {
+    gap: var(--spacing-6);
+  }
+
+  .card {
+    flex: 0 0 320px;
+  }
+
+  .skeletonImage {
+    height: 240px;
+  }
+}
+
