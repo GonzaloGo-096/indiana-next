@@ -1,0 +1,92 @@
+/**
+ * ActionButtons.module.css - Estilos para botones de acción
+ * 
+ * ✅ NOTA: Los estilos específicos de mobile/desktop se aplican desde
+ * vehiculos.module.css usando las clases actionButtonsMobile y actionButtonsDesktop
+ * 
+ * @author Indiana Peugeot
+ * @version 1.0.0
+ */
+
+.actionButtons {
+  display: flex;
+  gap: 0; /* Mobile: sin gap, pegados entre sí */
+  align-items: stretch; /* Mobile: estirar para ocupar toda la altura */
+  position: relative;
+  border: none;
+  border-radius: 0; /* Bordes rectos */
+  width: 100%; /* Mobile: ancho completo */
+}
+
+.actionButtons > div {
+  flex: 1;
+  display: flex;
+  position: relative;
+}
+
+.actionButton {
+  flex: 1;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-1);
+  padding: var(--spacing-2) var(--spacing-3);
+  background: transparent;
+  border: none;
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 0.875rem; /* Mobile: tamaño más pequeño */
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  text-transform: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  min-height: 48px; /* Mobile: altura mínima táctil */
+}
+
+.actionButtons > div:last-child .actionButton {
+  border-right: none;
+}
+
+.actionButtons > button:first-child {
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.actionButtons > button:last-child {
+  border-right: none;
+}
+
+.actionButton:hover:not(:disabled) {
+  background-color: var(--color-brand-500-rgba-10);
+  color: var(--color-brand-600);
+}
+
+.actionButton.active {
+  background: var(--color-brand-500-rgba-15);
+  color: var(--color-brand-600);
+}
+
+.actionButton svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  flex-shrink: 0;
+  stroke-dasharray: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.actionButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.actionButton span {
+  display: inline-block;
+}
+
+/* Desktop styles se aplican desde vehiculos.module.css */
+

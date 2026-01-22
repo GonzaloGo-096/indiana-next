@@ -1,0 +1,141 @@
+/**
+ * Skeleton.module.css - Estilos para componentes de carga
+ * 
+ * Características:
+ * - Animación shimmer estandarizada
+ * - Soporte para prefers-reduced-motion
+ * - Colores usando variables CSS del design system
+ * - Responsive design
+ * 
+ * @author Indiana Peugeot
+ * @version 1.0.0
+ */
+
+/* ===== SKELETON BASE ===== */
+.skeleton {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200, #e8eaed) 25%,
+    var(--color-neutral-100, #f1f3f4) 50%,
+    var(--color-neutral-200, #e8eaed) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: var(--border-radius-md, 8px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== VARIANTES DE TIPO ===== */
+
+/* Texto - altura estándar para líneas de texto */
+.text {
+  height: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Título - altura mayor para títulos */
+.title {
+  height: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Imagen - altura y ancho completo */
+.image {
+  height: 200px;
+  width: 100%;
+  border-radius: var(--border-radius-lg, 12px);
+}
+
+/* Botón - altura estándar para botones */
+.button {
+  height: 2.5rem;
+  width: 100%;
+  border-radius: var(--border-radius-md, 8px);
+}
+
+/* ===== ANCHOS PREDEFINIDOS ===== */
+.w25 { width: 25%; }
+.w50 { width: 50%; }
+.w75 { width: 75%; }
+.w100 { width: 100%; }
+
+/* ===== VARIANTES ===== */
+.rounded {
+  border-radius: 50%;
+}
+
+/* ===== CONTENEDORES ===== */
+
+/* Contenedor de skeletons (flex column) */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Grid de skeletons */
+.grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.grid2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* ===== ANIMACIÓN SHIMMER ===== */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 992px) {
+  .grid3,
+  .grid4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .grid2,
+  .grid3,
+  .grid4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .image {
+    height: 180px;
+  }
+  
+  .container {
+    gap: 0.5rem;
+  }
+  
+  .grid {
+    gap: 1rem;
+  }
+}
+
+/* ===== ACCESIBILIDAD: PREFERS-REDUCED-MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background: var(--color-neutral-200, #e8eaed);
+  }
+}
+

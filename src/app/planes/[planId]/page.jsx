@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getAllPlanes, getPlanPorId } from "../../../data/planes";
-import { getModelo } from "../../../data/modelos";
+import { getModelo, COLORES } from "../../../data/modelos";
 import { absoluteUrl } from "../../../lib/site-url";
 import { formatPrice } from "../../../utils/formatters";
+import { PlanImageDesktop } from "./PlanImageDesktop";
 import styles from "./plan-detalle.module.css";
 
 /**
@@ -59,6 +60,104 @@ function obtenerVersionDelPlan(plan) {
   }
 
   return "";
+}
+
+/**
+ * Función para obtener modeloSlug del plan
+ * @param {Object} plan - Objeto del plan
+ * @returns {string} - Slug del modelo (2008, 208, expert, partner)
+ */
+function obtenerModeloSlug(plan) {
+  const primerModelo = plan.modelos?.[0]?.toLowerCase() || "";
+  
+  if (primerModelo.includes("2008")) return "2008";
+  if (primerModelo.includes("208")) return "208";
+  if (primerModelo.includes("expert")) return "expert";
+  if (primerModelo.includes("partner")) return "partner";
+  
+  return "";
+}
+
+/**
+ * Función para obtener imagen del modelo (primera imagen del carrusel)
+ * @param {string} modeloSlug - Slug del modelo
+ * @returns {Object|null} - Objeto con { url, alt } o null
+ */
+function obtenerImagenPorModelo(modeloSlug) {
+  const modelo = getModelo(modeloSlug);
+  if (!modelo) {
+    return null;
+  }
+
+  // Si no hay versiones, usar imagenPrincipal como fallback
+  if (!modelo.versiones || modelo.versiones.length === 0) {
+    if (modelo.imagenPrincipal && modelo.imagenPrincipal.url) {
+      return {
+        url: modelo.imagenPrincipal.url,
+        alt: modelo.imagenPrincipal.alt || `Peugeot ${modelo.nombre}`,
+      };
+    }
+    return null;
+  }
+
+  // Obtener todos los colores disponibles de todas las versiones del modelo
+  const coloresDisponibles = new Set();
+  modelo.versiones.forEach((version) => {
+    if (version.coloresPermitidos) {
+      version.coloresPermitidos.forEach((colorKey) => {
+        coloresDisponibles.add(colorKey);
+      });
+    }
+  });
+
+  // Convertir a array y obtener objetos color
+  const coloresArray = Array.from(coloresDisponibles)
+    .map((colorKey) => COLORES[colorKey])
+    .filter(Boolean);
+
+  // Si no hay colores, usar imagenPrincipal como fallback
+  if (coloresArray.length === 0) {
+    if (modelo.imagenPrincipal && modelo.imagenPrincipal.url) {
+      return {
+        url: modelo.imagenPrincipal.url,
+        alt: modelo.imagenPrincipal.alt || `Peugeot ${modelo.nombre}`,
+      };
+    }
+    return null;
+  }
+
+  // Para 208: incluir todos los colores (blanco es el único disponible)
+  // Para otros modelos: excluir blanco
+  const coloresFiltrados =
+    modeloSlug === "208"
+      ? coloresArray
+      : coloresArray.filter((color) => {
+          const key = color.key.toLowerCase();
+          return !key.includes("blanco") && !key.includes("white");
+        });
+
+  // Si después de filtrar no hay colores, usar todos los disponibles
+  const coloresFinales =
+    coloresFiltrados.length > 0 ? coloresFiltrados : coloresArray;
+
+  // Usar el primer color (índice 0) como la primera imagen del carrusel
+  const colorSeleccionado = coloresFinales[0];
+
+  if (!colorSeleccionado || !colorSeleccionado.url) {
+    // Fallback a imagenPrincipal si el color no tiene URL
+    if (modelo.imagenPrincipal && modelo.imagenPrincipal.url) {
+      return {
+        url: modelo.imagenPrincipal.url,
+        alt: modelo.imagenPrincipal.alt || `Peugeot ${modelo.nombre}`,
+      };
+    }
+    return null;
+  }
+
+  return {
+    url: colorSeleccionado.url,
+    alt: `Peugeot ${modelo.nombre} ${colorSeleccionado.label}`,
+  };
 }
 
 /**
@@ -172,15 +271,21 @@ export default async function PlanDetallePage({ params }) {
     ? primerModelo.charAt(0).toUpperCase() + primerModelo.slice(1).split(" ")[0]
     : "";
 
+  // Obtener modeloSlug e imagen del modelo (para desktop)
+  const modeloSlug = obtenerModeloSlug(plan);
+  const imagenModelo = modeloSlug ? obtenerImagenPorModelo(modeloSlug) : null;
+
   return (
     <div className={styles.container}>
-      {/* Link de vuelta */}
-      <Link href="/planes" className={styles.backLink}>
-        ← Volver a planes
-      </Link>
+      {/* Botón de volver - Igual que usados */}
+      <div className={styles.backButton}>
+        <Link href="/planes" className={styles.backLink}>
+          Todos los planes
+        </Link>
+      </div>
 
-      {/* Card expandida - Mismo diseño visual que PlanCard pero adaptado al viewport */}
-      <div className={styles.planCard}>
+      {/* Sección de plan - Mismo diseño visual que PlanCard expandido al viewport, sin contenedor tipo card */}
+      <section className={styles.planSection}>
         {/* Header del plan - Alineado a la izquierda */}
         <div className={styles.planHeader}>
           <h1 className={styles.planTitle}>
@@ -198,33 +303,41 @@ export default async function PlanDetallePage({ params }) {
           </h1>
         </div>
 
-        {/* Información principal - Misma estructura que la card */}
-        <div className={styles.planContent}>
-          {/* Cuota desde - Grande, azul, con cuotas al lado */}
-          <div className={styles.cuotaDesdeContainer}>
-            <div className={styles.cuotaDesdeRow}>
-              <div className={styles.cuotaDesdeItem}>
-                <span className={styles.cuotaDesdeLabel}>Valor cuota</span>
-                <span className={styles.cuotaDesdeValue}>
-                  {formatPrice(cuotas_desde)}
-                </span>
-              </div>
-              {cuotasTotales && (
-                <div className={styles.cuotasTotalesItem}>
-                  <span className={styles.cuotasTotalesLabelKey}>Cantidad</span>
-                  <div className={styles.cuotasTotalesContainer}>
-                    <span className={styles.cuotasTotalesNumber}>
-                      {cuotasTotales}
-                    </span>
-                    <span className={styles.cuotasTotalesLabel}>cuotas</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
+        {/* Grid principal: imagen izquierda, info derecha (desktop) */}
+        <div className={styles.planMainGrid}>
+          {/* Columna izquierda: Imagen del auto (solo desktop - Client Component para evitar carga en mobile) */}
+          {imagenModelo && <PlanImageDesktop imagenModelo={imagenModelo} />}
 
-          {/* Características - Fila 1: Valor móvil, Fila 2: Tipo de plan y Adjudicación */}
-          <div className={styles.infoBottomRow}>
+          {/* Columna derecha: Información del plan */}
+          <div className={styles.planInfoColumn}>
+            {/* Prioridad 1: Cuotas + Valor cuota */}
+            <div className={styles.planKeyMetrics}>
+              <div className={styles.cuotaDesdeContainer}>
+                <div className={styles.cuotaDesdeRow}>
+                  <div className={styles.cuotaDesdeItem}>
+                    <span className={styles.cuotaDesdeLabel}>Valor cuota</span>
+                    <span className={styles.cuotaDesdeValue}>
+                      {formatPrice(cuotas_desde)}
+                    </span>
+                  </div>
+                  {cuotasTotales && (
+                    <div className={styles.cuotasTotalesItem}>
+                      <span className={styles.cuotasTotalesLabelKey}>Cantidad</span>
+                      <div className={styles.cuotasTotalesContainer}>
+                        <span className={styles.cuotasTotalesNumber}>
+                          {cuotasTotales}
+                        </span>
+                        <span className={styles.cuotasTotalesLabel}>cuotas</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Prioridad 2: 4 datos en grid 2x2 */}
+            <div className={styles.planSecondaryMetrics}>
+              <div className={styles.infoBottomRow}>
             {/* Fila 1: Valor móvil con y sin impuestos */}
             <div className={styles.infoBottomRowItem}>
               <div className={styles.infoBottomItem}>
@@ -267,10 +380,13 @@ export default async function PlanDetallePage({ params }) {
                 )}
             </div>
           </div>
+            </div>
+          </div>
+        </div>
 
-          {/* Información adicional del plan - Manteniendo la misma estética */}
-          {caracteristicas && (
-            <>
+        {/* Sección rectangular abajo: Todas las características adicionales */}
+        {caracteristicas && (
+          <div className={styles.planDetailsSection}>
               {/* Licitación mínima */}
               {caracteristicas.licitacion_minima && (
                 <div className={styles.additionalSection}>
@@ -374,28 +490,9 @@ export default async function PlanDetallePage({ params }) {
                   </div>
                 </div>
               )}
-            </>
-          )}
-
-          {/* Modelos aplicables */}
-          {plan.modelos && plan.modelos.length > 0 && (
-            <div className={styles.modelosSection}>
-              <div className={styles.modelosSectionHeader}>
-                <span className={styles.modelosSectionLabel}>
-                  Modelos aplicables
-                </span>
-              </div>
-              <div className={styles.modelosList}>
-                {plan.modelos.map((modelo, index) => (
-                  <div key={index} className={styles.modeloItem}>
-                    {modelo}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+          </div>
+        )}
+      </section>
     </div>
   );
 }

@@ -27,6 +27,7 @@ import {
 import { AnioIcon } from "../../../ui/icons/AnioIcon";
 import { KmIcon } from "../../../ui/icons/KmIcon";
 import { CajaIconDetalle } from "../../../ui/icons/CajaIconDetalle";
+import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import styles from "./CardSimilar.module.css";
 
 /**
@@ -50,9 +51,22 @@ export const CardSimilar = memo(({ auto }) => {
   // ✅ HANDLER: Click en toda la tarjeta para abrir detalle
   const handleCardClick = useCallback(() => {
     if (!vehicleId) {
-      console.error("[CardSimilar] ID del vehículo no válido");
+      if (process.env.NODE_ENV === 'development') {
+        console.error("[CardSimilar] ID del vehículo no válido");
+      }
       return;
     }
+    
+    // ✅ Guardar posición de scroll antes de navegar
+    if (typeof window !== "undefined") {
+      const scrollData = {
+        position: window.scrollY,
+        path: "/usados/vehiculos",
+        timestamp: Date.now(),
+      };
+      sessionStorage.setItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL, JSON.stringify(scrollData));
+    }
+    
     router.push(`/usados/${vehicleId}`);
   }, [vehicleId, router]);
 
@@ -182,4 +196,5 @@ export const CardSimilar = memo(({ auto }) => {
 CardSimilar.displayName = "CardSimilar";
 
 export default CardSimilar;
+
 

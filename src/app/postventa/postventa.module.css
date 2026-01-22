@@ -1,0 +1,199 @@
+/**
+ * Postventa.module.css - Diseño profesional con hero section
+ *
+ * Características:
+ * - Hero section con imagen de fondo y overlay
+ * - Service cards en layout horizontal
+ * - Mobile-first responsive design
+ *
+ * @author Indiana Usados
+ * @version 3.0.0 - Hero section implementation
+ */
+
+/* ===== PAGE CONTAINER ===== */
+.pageContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== HERO SECTION ===== */
+.hero {
+  position: relative;
+  padding: var(--section-padding-compact) 0;
+  background: transparent;
+}
+
+.hero :global(.container) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.heroBanner {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+  /* ✅ ANIMACIÓN: Fade-in del hero */
+  animation: fadeInHero 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  opacity: 0;
+}
+
+@keyframes fadeInHero {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.heroImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  min-height: 300px; /* Más rectangular - reducido de 400px */
+}
+
+.heroContent {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-4);
+  padding: clamp(2rem, 6vw, 4rem);
+  text-align: center;
+}
+
+.heroContent::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10, 13, 20, 0.4), rgba(10, 13, 20, 0.7));
+  z-index: 0;
+}
+
+.heroTitle {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: var(--color-text-inverse);
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 8vw, 4rem);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.heroDescription {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: var(--color-text-inverse);
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  line-height: 1.6;
+  max-width: 600px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== SERVICES SECTION ===== */
+.services {
+  /* Más espacio antes de la primera card */
+  padding: calc(var(--section-pad-y) + var(--spacing-6)) 0 var(--section-pad-y) 0;
+  background: var(--color-white);
+}
+
+/* ===== ESPACIADO MOBILE ESPECÍFICO ===== */
+@media (max-width: 767px) {
+  .hero {
+    padding-bottom: calc(var(--section-padding-compact) + var(--spacing-6)); /* Más espacio abajo en móvil */
+  }
+
+  .services {
+    padding-top: calc(var(--section-pad-y) + var(--spacing-8) + var(--spacing-4)); /* Aún más padding-top en móvil */
+  }
+
+  .servicesContainer {
+    padding: 0 64px; /* ✅ MISMO PADDING MÓVIL QUE CARDS DE USADOS */
+  }
+}
+
+.servicesContainer {
+  display: grid;
+  /* Columnas como en usados para evitar cards demasiado anchas */
+  grid-template-columns: repeat(auto-fill, minmax(300px, 340px));
+  justify-content: center;
+  gap: 24px; /* ✅ MISMO GAP QUE CARDS DE USADOS */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--spacing-6) 20px 0 20px; /* + top para separar la primera fila */
+  /* ✅ ANIMACIÓN: Fade-in de las cards con delay */
+  animation: fadeInServices 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s forwards;
+  opacity: 0;
+}
+
+@keyframes fadeInServices {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (min-width: 768px) {
+  .heroImage {
+    min-height: 350px; /* Más rectangular en tablet - reducido de 500px */
+  }
+
+  .servicesContainer {
+    grid-template-columns: repeat(3, 1fr) !important; /* FORZAR 3 COLUMNAS */
+    gap: 28px; /* ✅ MISMO GAP TABLET QUE CARDS DE USADOS */
+    padding: var(--spacing-6) 24px 0 24px; /* + top en tablet */
+  }
+}
+
+@media (min-width: 992px) {
+  .heroImage {
+    min-height: 400px; /* Más rectangular en desktop - reducido de 600px */
+  }
+
+  .servicesContainer {
+    grid-template-columns: repeat(3, 1fr) !important; /* FORZAR 3 COLUMNAS EN DESKTOP */
+    gap: 30px; /* ✅ MISMO GAP DESKTOP QUE CARDS DE USADOS */
+    padding: var(--spacing-8) 24px 0 24px; /* + top en desktop */
+  }
+}
+
+@media (min-width: 1200px) {
+  .servicesContainer {
+    gap: 32px; /* ✅ MISMO GAP DESKTOP XL QUE CARDS DE USADOS */
+    padding: var(--spacing-10) 32px 0 32px; /* + top en desktop XL */
+  }
+}
+
+/* ===== ACCESIBILIDAD ===== */
+@media (prefers-reduced-motion: reduce) {
+  .heroContent::before {
+    transition: none;
+  }
+
+  .heroBanner,
+  .servicesContainer {
+    animation: none;
+    opacity: 1;
+  }
+}
+

@@ -84,3 +84,4 @@ export function getBlurPlaceholder(imageUrl) {
   return generateSimpleBlurDataURL();
 }
 
+

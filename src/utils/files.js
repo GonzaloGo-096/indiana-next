@@ -26,3 +26,4 @@ export const filterValidFiles = (files, { maxBytes, acceptWebpOnly = true } = {}
   })
 }
 
+

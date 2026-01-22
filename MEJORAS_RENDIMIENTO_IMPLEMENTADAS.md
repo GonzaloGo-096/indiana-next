@@ -133,3 +133,4 @@ Si en el futuro se necesita más optimización:
 
 Pero por ahora, estas mejoras son suficientes y pragmáticas.
 
+

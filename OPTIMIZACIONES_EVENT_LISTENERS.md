@@ -160,3 +160,4 @@ body.menu-open {
 
 **Eliminación de ejecuciones excesivas** que causaban la sensación de pesadez. La página debería sentirse significativamente más fluida, especialmente durante scroll y resize.
 
+

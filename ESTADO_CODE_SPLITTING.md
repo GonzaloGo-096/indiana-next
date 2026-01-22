@@ -157,3 +157,4 @@ import AutosGrid from "../../../components/vehicles/List/ListAutos";
 
 **Recomendación**: Implementar lazy loading de `ScrollParallaxTransition` componentes.
 
+

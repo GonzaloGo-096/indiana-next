@@ -12,9 +12,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { vehiclesService } from "../lib/services/vehiclesApi";
 import { mapVehiclesPage } from "../lib/mappers/vehicleMapper";
-
-// Rango de precio: ±1 millón
-const PRICE_RANGE = 1000000;
+import { VEHICLE_CONSTANTS } from "../constants/vehicles";
 
 /**
  * Hook para obtener vehículos en rango de precio similar
@@ -38,9 +36,9 @@ export const usePriceRangeVehicles = (currentVehicle) => {
       return {};
     }
 
-    // Calcular rango: precio - 1M hasta precio + 1M
-    const minPrice = Math.max(0, currentPrice - PRICE_RANGE);
-    const maxPrice = currentPrice + PRICE_RANGE;
+    // Calcular rango: precio ± rango configurado
+    const minPrice = Math.max(0, currentPrice - VEHICLE_CONSTANTS.PRICE_RANGE);
+    const maxPrice = currentPrice + VEHICLE_CONSTANTS.PRICE_RANGE;
 
     return {
       precio: [minPrice, maxPrice],
@@ -51,8 +49,8 @@ export const usePriceRangeVehicles = (currentVehicle) => {
   const priceRange = useMemo(() => {
     if (!hasValidPrice) return null;
 
-    const minPrice = Math.max(0, currentPrice - PRICE_RANGE);
-    const maxPrice = currentPrice + PRICE_RANGE;
+    const minPrice = Math.max(0, currentPrice - VEHICLE_CONSTANTS.PRICE_RANGE);
+    const maxPrice = currentPrice + VEHICLE_CONSTANTS.PRICE_RANGE;
 
     return {
       min: minPrice,
@@ -87,10 +85,10 @@ export const usePriceRangeVehicles = (currentVehicle) => {
       setError(null);
 
       try {
-        // Pedir 6 para asegurar 5 después de excluir el actual
+        // Pedir más vehículos para asegurar el máximo después de excluir el actual
         const backendData = await vehiclesService.getVehicles({
           filters,
-          limit: 6,
+          limit: VEHICLE_CONSTANTS.SIMILAR_FETCH_LIMIT,
           cursor: 1,
         });
 
@@ -98,18 +96,20 @@ export const usePriceRangeVehicles = (currentVehicle) => {
 
         if (!isMounted) return;
 
-        // Excluir el vehículo actual y limitar a 5 máximo
+        // Excluir el vehículo actual y limitar al máximo permitido
         const filtered = mappedData.vehicles
           .filter((vehicle) => {
             const vehicleId = vehicle.id || vehicle._id;
             return vehicleId !== currentId;
           })
-          .slice(0, 5);
+          .slice(0, VEHICLE_CONSTANTS.SIMILAR_MAX_RESULTS);
 
         setVehicles(filtered);
       } catch (err) {
         if (!isMounted) return;
-        console.error("[usePriceRangeVehicles] Error:", err);
+        if (process.env.NODE_ENV === 'development') {
+          console.error("[usePriceRangeVehicles] Error:", err);
+        }
         setIsError(true);
         setError(err.message || "Error al cargar vehículos");
       } finally {
@@ -134,4 +134,5 @@ export const usePriceRangeVehicles = (currentVehicle) => {
     error,
   };
 };
+
 

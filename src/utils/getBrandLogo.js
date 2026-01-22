@@ -67,3 +67,4 @@ export const getBrandLogo = (marca) => {
   return logo || DEFAULT_BRAND_LOGO;
 };
 
+

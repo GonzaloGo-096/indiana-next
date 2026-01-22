@@ -31,6 +31,7 @@ import {
 } from "../../../../utils/formatters";
 import { getBrandLogo } from "../../../../utils/getBrandLogo";
 import { getBlurPlaceholder } from "../../../../utils/imageBlur";
+import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import styles from "./CardAuto.module.css";
 
 /**
@@ -57,15 +58,28 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
   }, [primaryImage]);
 
   // ✅ HANDLER: Click en toda la tarjeta para abrir detalle
-  const handleCardClick = useCallback(() => {
+  const handleCardClick = useCallback((e) => {
     if (!auto) return;
     const vehicleId = auto.id || auto._id;
     if (!vehicleId) {
-      console.error("[CardAuto] ID del vehículo no válido");
+      if (process.env.NODE_ENV === 'development') {
+        console.error("[CardAuto] ID del vehículo no válido");
+      }
       return;
     }
-    router.push(`/usados/${vehicleId}`);
-  }, [auto, router]);
+    
+    // ✅ Guardar posición de scroll antes de navegar
+    if (typeof window !== "undefined") {
+      const scrollData = {
+        position: window.scrollY,
+        path: "/usados/vehiculos",
+        timestamp: Date.now(),
+      };
+      sessionStorage.setItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL, JSON.stringify(scrollData));
+    }
+    
+    // Permitir que el Link navegue normalmente
+  }, [auto]);
 
   // ✅ MEMOIZAR DATOS FORMATEADOS
   const formattedData = useMemo(() => {
@@ -141,6 +155,7 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
       data-vehicle-id={vehicleId}
       role="button"
       tabIndex={0}
+      onClick={handleCardClick}
       aria-label={`Ver detalles de ${formattedData.brandModel}`}
     >
       {/* ===== IMAGEN PRINCIPAL ===== */}

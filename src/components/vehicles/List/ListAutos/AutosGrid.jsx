@@ -37,18 +37,65 @@ const ErrorMessage = memo(({ message, onRetry }) => (
 ErrorMessage.displayName = "ErrorMessage";
 
 /**
- * Skeleton loader simple
+ * Skeleton loader profesional - Estructura igual a CardAuto
+ * ✅ Mejorado: Accesibilidad y animación estandarizada
  */
 const ListAutosSkeleton = memo(() => (
-  <div className={styles.loadingContainer}>
+  <div 
+    className={styles.loadingContainer}
+    role="status"
+    aria-label="Cargando vehículos..."
+    aria-live="polite"
+  >
     <div className={styles.loading}>
       {[...Array(8)].map((_, index) => (
-        <div key={index} className={styles.skeletonCard}>
+        <div 
+          key={index} 
+          className={styles.skeletonCard}
+          aria-hidden="true"
+        >
+          {/* Imagen principal - aspect-ratio 16/9 igual a CardAuto */}
           <div className={styles.skeletonImage} />
-          <div className={styles.skeletonContent}>
-            <div className={styles.skeletonText} style={{ width: "60%" }} />
-            <div className={styles.skeletonText} style={{ width: "80%" }} />
-            <div className={styles.skeletonText} style={{ width: "50%" }} />
+          
+          {/* Body con estructura igual a CardAuto */}
+          <div className={styles.skeletonBody}>
+            {/* Container1: Logo + Datos */}
+            <div className={styles.skeletonContainer1}>
+              {/* Logo de marca (posición absoluta) */}
+              <div className={styles.skeletonLogo} />
+              
+              {/* Bloque de datos con padding para logo */}
+              <div className={styles.skeletonContainer1Right}>
+                {/* Fila 1: Marca | Modelo */}
+                <div className={styles.skeletonRow1}>
+                  <div className={styles.skeletonMarca} />
+                  <div className={styles.skeletonSeparator} />
+                  <div className={styles.skeletonModelo} />
+                </div>
+                
+                {/* Fila 3: Caja, Km, Año (3 columnas) */}
+                <div className={styles.skeletonRow3}>
+                  <div className={styles.skeletonDataItem}>
+                    <div className={styles.skeletonDataLabel} />
+                    <div className={styles.skeletonDataValue} />
+                  </div>
+                  <div className={styles.skeletonDataItem}>
+                    <div className={styles.skeletonDataLabel} />
+                    <div className={styles.skeletonDataValue} />
+                  </div>
+                  <div className={styles.skeletonDataItem}>
+                    <div className={styles.skeletonDataLabel} />
+                    <div className={styles.skeletonDataValue} />
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Container4: Precio con "desde:" */}
+            <div className={styles.skeletonPriceContainer}>
+              <div className={styles.skeletonPriceLabel} />
+              <div className={styles.skeletonPriceValue} />
+            </div>
           </div>
         </div>
       ))}

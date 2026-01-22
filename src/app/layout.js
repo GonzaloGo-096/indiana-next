@@ -4,6 +4,7 @@ import { getSiteUrl } from "../lib/site-url";
 import Nav from "../components/layout/Nav";
 import Footer from "../components/layout/Footer";
 import AnalyticsWrapper from "../components/layout/AnalyticsWrapper";
+import { ScrollToTopOnMount } from "../components/layout/ScrollToTopOnMount";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -56,6 +57,8 @@ export default function RootLayout({ children }) {
       <body
         className={`${poppins.variable} ${barlowCondensed.variable}`}
       >
+        {/* ✅ Scroll al top al cargar página - ANTES de cualquier contenido */}
+        <ScrollToTopOnMount />
         <Nav />
         <main className="main-content">
           {children}

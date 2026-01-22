@@ -12,6 +12,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { vehiclesService } from "../lib/services/vehiclesApi";
 import { mapVehiclesPage } from "../lib/mappers/vehicleMapper";
+import { VEHICLE_CONSTANTS } from "../constants/vehicles";
 
 /**
  * Hook para obtener vehículos similares por marca
@@ -53,10 +54,10 @@ export const useSimilarVehicles = (currentVehicle) => {
       setError(null);
 
       try {
-        // Pedir 6 para asegurar 5 después de excluir el actual
+        // Pedir más vehículos para asegurar el máximo después de excluir el actual
         const backendData = await vehiclesService.getVehicles({
           filters,
-          limit: 6,
+          limit: VEHICLE_CONSTANTS.SIMILAR_FETCH_LIMIT,
           cursor: 1,
         });
 
@@ -64,18 +65,20 @@ export const useSimilarVehicles = (currentVehicle) => {
 
         if (!isMounted) return;
 
-        // Excluir el vehículo actual y limitar a 5 máximo
+        // Excluir el vehículo actual y limitar al máximo permitido
         const filtered = mappedData.vehicles
           .filter((vehicle) => {
             const vehicleId = vehicle.id || vehicle._id;
             return vehicleId !== currentId;
           })
-          .slice(0, 5);
+          .slice(0, VEHICLE_CONSTANTS.SIMILAR_MAX_RESULTS);
 
         setVehicles(filtered);
       } catch (err) {
         if (!isMounted) return;
-        console.error("[useSimilarVehicles] Error:", err);
+        if (process.env.NODE_ENV === 'development') {
+          console.error("[useSimilarVehicles] Error:", err);
+        }
         setIsError(true);
         setError(err.message || "Error al cargar vehículos similares");
       } finally {
@@ -99,4 +102,5 @@ export const useSimilarVehicles = (currentVehicle) => {
     error,
   };
 };
+
 

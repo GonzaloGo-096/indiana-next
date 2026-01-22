@@ -255,37 +255,29 @@
   white-space: nowrap;
 }
 
-/* ===== FILA INFERIOR - Características en 2 filas (Fila 1: Valor móvil, Fila 2: Tipo de plan) ===== */
+/* ===== FILA INFERIOR - Grid 2x2: arriba valores móvil, abajo tipo plan y adjudicación ===== */
 .infoBottomRow {
-  --info-row-gap: var(--spacing-3);
+  --info-row-gap: var(--spacing-5);
   --info-row-margin-bottom: var(--spacing-2);
   
-  display: flex;
-  flex-direction: column; /* ✅ Layout de filas */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* ✅ Grid de 2 columnas */
   gap: var(--info-row-gap);
   margin-bottom: var(--info-row-margin-bottom);
   width: 100%;
+  align-items: start;
+  justify-items: center; /* ✅ Centra el contenedor de cada item */
 }
 
-/* Mantener 2 filas también en mobile */
 @media (max-width: 480px) {
   .infoBottomRow {
-    gap: var(--spacing-3);
+    gap: var(--spacing-4);
   }
 }
 
+/* Eliminar layout de grid de infoBottomRowItem para que sus hijos participen del grid padre */
 .infoBottomRowItem {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* ✅ Dos columnas iguales */
-  gap: var(--spacing-3);
-  align-items: stretch; /* ✅ Alineación vertical */
-  width: 100%;
-}
-
-@media (max-width: 480px) {
-  .infoBottomRowItem {
-    gap: var(--spacing-2);
-  }
+  display: contents; /* ✅ Sus hijos participan directamente del grid del padre */
 }
 
 .infoBottomItem {
@@ -296,24 +288,26 @@
   gap: var(--info-item-gap);
   width: 100%;
   min-width: 0;
-  justify-content: flex-start; /* ✅ Alineación vertical consistente */
+  align-items: center; /* ✅ Centrado horizontal */
+  text-align: center; /* ✅ Texto centrado */
+  justify-content: flex-start;
 }
 
-/* Fila 1: Valor móvil - Estilos específicos */
-.infoBottomRow > .infoBottomRowItem:first-child {
+/* Valor móvil (primeros 2 items del grid) - Estilos específicos */
+.infoBottomRow > .infoBottomRowItem:first-child > .infoBottomItem,
+.infoBottomRow > .infoBottomRowItem:first-child > .infoBottomItem:only-child {
   --valor-movil-label-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
   --valor-movil-value-size: clamp(1.125rem, 3vw, 1.5rem);
-}
-
-.infoBottomRow > .infoBottomRowItem:first-child .infoBottomItem {
   gap: var(--spacing-1);
 }
 
-.infoBottomRow > .infoBottomRowItem:first-child .infoBottomLabel {
+.infoBottomRow > .infoBottomRowItem:first-child > .infoBottomItem .infoBottomLabel,
+.infoBottomRow > .infoBottomRowItem:first-child > .infoBottomItem:only-child .infoBottomLabel {
   font-size: var(--valor-movil-label-size);
 }
 
-.infoBottomRow > .infoBottomRowItem:first-child .infoBottomValue {
+.infoBottomRow > .infoBottomRowItem:first-child > .infoBottomItem .infoBottomValue,
+.infoBottomRow > .infoBottomRowItem:first-child > .infoBottomItem:only-child .infoBottomValue {
   font-size: var(--valor-movil-value-size);
   font-weight: var(--font-weight-semibold);
   color: var(--color-neutral-700);

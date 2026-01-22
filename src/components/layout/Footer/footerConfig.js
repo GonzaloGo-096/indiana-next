@@ -175,3 +175,4 @@ export const footerIcons = {
   phone: 'svg', // Marcador especial para indicar que es SVG
 };
 
+

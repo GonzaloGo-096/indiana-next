@@ -36,6 +36,8 @@
     width: 100%; /* ✅ Ancho fijo para uniformidad */
     max-width: 320px; /* ✅ Ancho máximo fijo (un poco más pequeño que CardAuto) */
     min-width: 240px; /* Mínimo para mobile */
+    /* ✅ Ancho fijo en desktop para uniformidad profesional */
+    flex: 0 0 320px; /* Ancho fijo en desktop */
     
     /* Estilo visual */
     background: var(--color-white);
@@ -86,6 +88,11 @@
     width: 100%;
     aspect-ratio: 16 / 9; /* Más compacta que 16/10 */
     background: var(--color-neutral-50);
+    
+    /* ✅ Tamaño fijo de imagen para uniformidad profesional */
+    height: 180px; /* Altura fija en desktop */
+    min-height: 180px;
+    max-height: 180px;
     
     /* Optimización de performance */
     contain: layout style paint;
@@ -430,11 +437,20 @@
 @media (min-width: 768px) {
     .card {
         max-width: 320px; /* ✅ Ancho fijo en desktop */
-        min-width: 300px;
+        min-width: 320px; /* ✅ Ancho mínimo igual al máximo para uniformidad */
+        width: 320px; /* ✅ Ancho fijo absoluto */
+        flex: 0 0 320px; /* ✅ Ancho fijo en flexbox */
     }
     
     .card__body {
         --body-gap: var(--spacing-2);
+    }
+    
+    /* ✅ Tamaño fijo de imagen en desktop */
+    .card__image-container {
+        height: 180px;
+        min-height: 180px;
+        max-height: 180px;
     }
 }
 
@@ -449,4 +465,5 @@
         transform: none;
     }
 }
+
 

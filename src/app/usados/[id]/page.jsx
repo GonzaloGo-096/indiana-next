@@ -183,7 +183,9 @@ export default async function VehicleDetailPage({ params }) {
       </>
     );
   } catch (error) {
-    console.error("[VehicleDetailPage] Error:", error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error("[VehicleDetailPage] Error:", error);
+    }
 
     // Si es 404, usar notFound()
     if (

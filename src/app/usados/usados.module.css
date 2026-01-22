@@ -8,94 +8,109 @@
 .page {
   min-height: 100vh;
   background: var(--color-white);
+  padding-bottom: var(--spacing-6); /* ✅ Padding bottom mobile */
+  margin-bottom: var(--spacing-6); /* ✅ Margin bottom mobile */
 }
 
-/* ===== HEADER ===== */
-.header {
-  padding: clamp(2rem, 5vw, 4rem) 0;
-  background: linear-gradient(
-    135deg,
-    var(--color-neutral-50) 0%,
-    var(--color-white) 100%
-  );
-  border-bottom: 1px solid var(--color-neutral-200);
-}
-
-.headerContent {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 var(--container-padding-mobile);
-  text-align: center;
-}
-
-@media (min-width: 768px) {
-  .headerContent {
-    padding: 0 var(--container-padding-desktop);
+@media (min-width: 769px) {
+  .page {
+    padding-bottom: var(--spacing-8); /* ✅ Padding bottom desktop */
+    margin-bottom: var(--spacing-8); /* ✅ Margin bottom desktop */
   }
 }
 
-.title {
-  margin: 0 0 var(--spacing-3) 0;
-  font-family: var(--font-condensed);
-  font-size: clamp(2rem, 6vw, 3.5rem);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  line-height: 1.1;
-}
-
-.subtitle {
-  margin: 0;
-  font-family: var(--font-poppins);
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
-  line-height: 1.7;
-  color: var(--color-text-secondary);
-  max-width: 700px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* ===== SECCIÓN DE PROMOCIONES ===== */
-.promocionesSection {
+/* ===== SECCIÓN 1: VEHÍCULOS ===== */
+.vehiclesSection {
   padding: clamp(3rem, 6vw, 5rem) 0;
   background: var(--color-white);
 }
 
-/* ===== CTA SECTION ===== */
-.ctaSection {
-  padding: clamp(2rem, 4vw, 3rem) 0;
-  background: var(--color-neutral-50);
-  text-align: center;
+.vehiclesContainer {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding-mobile);
 }
 
-.ctaButton {
+@media (min-width: 768px) {
+  .vehiclesContainer {
+    padding: 0 var(--container-padding-desktop);
+  }
+}
+
+.vehiclesHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  margin-bottom: var(--spacing-5);
+  flex-wrap: wrap;
+}
+
+.vehiclesTitle {
+  margin: 0;
+  font-family: var(--font-condensed);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  text-align: left;
+}
+
+.verTodosButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-4) var(--spacing-6);
-  background: var(--color-brand-500);
-  color: var(--color-white);
+  padding: var(--spacing-2) var(--spacing-4);
+  margin-left: var(--spacing-3);
+  background: transparent;
+  border: 2px solid var(--color-brand-500);
+  color: var(--color-brand-500);
   text-decoration: none;
   font-family: var(--font-condensed);
-  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-size: clamp(0.875rem, 2vw, 1rem);
   font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.5px;
   border-radius: var(--border-radius-md);
   transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.verTodosButton:hover {
+  background: var(--color-brand-500);
+  color: var(--color-white);
+  transform: translateY(-1px);
   box-shadow: var(--shadow-md);
 }
 
-.ctaButton:hover {
-  background: var(--color-brand-600);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
-}
-
-.ctaButton:active {
+.verTodosButton:active {
   transform: translateY(0);
 }
+
+.verTodosButton:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+/* ===== SECCIÓN 2: PROMOCIONES ===== */
+.promocionesSection {
+  padding: clamp(3rem, 6vw, 5rem) 0;
+  background: var(--color-neutral-50);
+}
+
+.promocionesContainer {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding-mobile);
+}
+
+@media (min-width: 768px) {
+  .promocionesContainer {
+    padding: 0 var(--container-padding-desktop);
+  }
+}
+
 
 .promocionesTitle {
   margin: 0 0 var(--spacing-5) 0;
@@ -112,8 +127,6 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: var(--spacing-4);
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 @media (min-width: 768px) {

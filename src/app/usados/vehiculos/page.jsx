@@ -12,6 +12,7 @@
  */
 
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { vehiclesService } from "../../../lib/services/vehiclesApi.server";
 import { mapVehiclesPage } from "../../../lib/mappers/vehicleMapper";
 import { parseFilters } from "../../../utils/filters";
@@ -278,16 +279,21 @@ export default async function VehiculosPage({ searchParams }) {
             dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
           />
         )}
-        <VehiculosClient
-          initialData={mappedData}
-          initialFilters={filters}
-          initialPage={page}
-        />
+        {/* ✅ Suspense boundary para useSearchParams() */}
+        <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Cargando...</div>}>
+          <VehiculosClient
+            initialData={mappedData}
+            initialFilters={filters}
+            initialPage={page}
+          />
+        </Suspense>
       </>
     );
   } catch (error) {
     // Manejo de errores robusto
-    console.error("[VehiculosPage] Error:", error);
+    if (process.env.NODE_ENV === 'development') {
+      console.error("[VehiculosPage] Error:", error);
+    }
 
     // Si es error 404, usar notFound()
     if (error.message?.includes("not found") || error.message?.includes("404")) {
@@ -303,18 +309,21 @@ export default async function VehiculosPage({ searchParams }) {
     }
 
     // Para otros errores, pasar error a Client Component para manejo
+    // ✅ IMPORTANTE: Envolver en Suspense también en caso de error
     return (
-      <VehiculosClient
-        initialData={{
-          vehicles: [],
-          total: 0,
-          hasNextPage: false,
-          nextPage: null,
-        }}
-        initialFilters={parseFilters(resolvedSearchParams || {})}
-        initialPage={Number(resolvedSearchParams?.page) || 1}
-        error={errorMessage}
-      />
+      <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Cargando...</div>}>
+        <VehiculosClient
+          initialData={{
+            vehicles: [],
+            total: 0,
+            hasNextPage: false,
+            nextPage: null,
+          }}
+          initialFilters={parseFilters(resolvedSearchParams || {})}
+          initialPage={Number(resolvedSearchParams?.page) || 1}
+          error={errorMessage}
+        />
+      </Suspense>
     );
   }
 }

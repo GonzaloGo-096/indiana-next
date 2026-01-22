@@ -13,3 +13,4 @@ export const FORM_RULES = {
   SUPPORTED_TYPES: ['image/webp']
 }
 
+

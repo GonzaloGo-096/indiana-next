@@ -201,3 +201,4 @@ NEXT_PUBLIC_CACHE_TTL=31536000
 - [Web Vitals](https://web.dev/vitals/)
 - [Cloudinary Image Transformations](https://cloudinary.com/documentation/image_transformations)
 
+

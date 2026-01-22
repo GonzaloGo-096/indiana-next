@@ -12,6 +12,15 @@
   /* ✅ Migrado: Fondo principal → token semántico surface */
   background-color: var(--color-surface, #ffffff);
   min-height: 100vh;
+  padding-bottom: var(--spacing-6); /* ✅ Padding bottom mobile */
+  margin-bottom: var(--spacing-6); /* ✅ Margin bottom mobile */
+}
+
+@media (min-width: 769px) {
+  .page {
+    padding-bottom: var(--spacing-8); /* ✅ Padding bottom desktop */
+    margin-bottom: var(--spacing-8); /* ✅ Margin bottom desktop */
+  }
 }
 
 /* ===== TITLE CONTAINER ===== */
@@ -188,7 +197,7 @@
   max-width: var(--container-max-width, 1400px);
   margin: 0 auto;
   padding-top: 6px;
-  padding-bottom: 0;
+  padding-bottom: var(--spacing-6); /* ✅ Padding bottom mobile */
   padding-left: 15px;
   padding-right: 15px;
   width: 100%;
@@ -199,6 +208,12 @@
   align-items: center;
   justify-content: flex-start;
   overflow-x: hidden;
+}
+
+@media (min-width: 769px) {
+  .container {
+    padding-bottom: var(--spacing-8); /* ✅ Padding bottom desktop */
+  }
 }
 
 /* ===== VEHICLES GRID ===== */

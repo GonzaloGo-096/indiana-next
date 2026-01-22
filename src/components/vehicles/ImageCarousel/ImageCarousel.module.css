@@ -71,11 +71,12 @@
   }
 }
 
-/* Desktop: cover para llenar el espacio */
+/* Desktop: cover para llenar el espacio - ACHICADO para mejor performance */
 @media (min-width: 769px) {
   .mainImageContainer {
     aspect-ratio: 4 / 3; /* Desktop: más cuadrado */
-    min-height: 500px;
+    min-height: 400px; /* ✅ Reducido de 500px para cargar más rápido */
+    max-height: 450px; /* ✅ Limitar altura máxima */
   }
 
   .mainImage {
@@ -294,13 +295,13 @@
 @media (min-width: 992px) {
   /* ✅ Desktop: Achicar carrusel para mejor performance */
   .carouselContainer {
-    max-width: 700px; /* Limitar ancho del carrusel completo */
+    max-width: 600px; /* ✅ Reducido de 700px para cargar más rápido */
     margin: 0 auto;
   }
 
   .mainImageContainer {
-    min-height: 525px; /* Reducido de 600px para carrusel más compacto */
-    max-height: 525px; /* Limitar altura también */
+    min-height: 400px; /* ✅ Reducido de 525px para cargar más rápido */
+    max-height: 450px; /* ✅ Reducido de 525px */
   }
 
   .thumbnail {

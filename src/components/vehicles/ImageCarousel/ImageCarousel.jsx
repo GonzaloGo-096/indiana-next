@@ -173,12 +173,12 @@ export const ImageCarousel = ({
             key={currentIndex} // Key para reiniciar animación
             src={currentImage}
             alt={`${altText} ${currentIndex + 1} de ${allImages.length}`}
-            width={1200}
-            height={900}
+            width={800}
+            height={600}
             className={styles.mainImage}
             priority={currentIndex === 0} // ✅ LCP: Priorizar primera imagen above-the-fold
-            quality={currentIndex === 0 ? 80 : 75} // ✅ Performance: Capamos sizes para evitar w=3840 y acelerar la primera optimización local
-            sizes="(max-width: 768px) 100vw, 900px" // ✅ Performance: Capamos sizes para evitar w=3840 y acelerar la primera optimización local
+            quality={currentIndex === 0 ? 80 : 75} // ✅ Performance: Imagen más chica para cargar más rápido
+            sizes="(max-width: 768px) 100vw, 600px" // ✅ Performance: Imagen más chica (600px) para cargar más rápido en desktop
             loading={currentIndex === 0 ? "eager" : "lazy"}
             fetchPriority={currentIndex === 0 ? "high" : "auto"}
           />

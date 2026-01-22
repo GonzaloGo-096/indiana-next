@@ -17,7 +17,7 @@
  * @version 1.0.0 - Migración desde React
  */
 
-import { useState, useCallback, useMemo, useEffect, useRef, Suspense } from "react";
+import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { buildSearchParams, parseFilters, sortVehicles, hasAnyFilter } from "../../../utils/filters";
 import { vehiclesService } from "../../../lib/services/vehiclesApi";
@@ -27,7 +27,9 @@ import styles from "./vehiculos.module.css";
 import dynamic from "next/dynamic";
 import AutosGrid from "../../../components/vehicles/List/ListAutos";
 import FilterFormSimple from "../../../components/vehicles/Filters/FilterFormSimple";
-import SortDropdown from "../../../components/vehicles/Filters/SortDropdown";
+import ActionButtons from "../../../components/vehicles/ActionButtons/ActionButtons";
+import { STORAGE_KEYS } from "../../../constants/storageKeys";
+import { VEHICLE_CONSTANTS } from "../../../constants/vehicles";
 
 // ✅ Code splitting: BrandsCarousel solo se carga cuando es necesario
 const BrandsCarousel = dynamic(
@@ -64,20 +66,64 @@ export default function VehiculosClient({
   const filterFormRef = useRef(null);
   const sortButtonRef = useRef(null);
 
-  // Filtros actuales desde URL (única fuente de verdad)
-  const currentFilters = useMemo(() => {
-    return parseFilters(searchParams);
+  // ✅ OPTIMIZADO: Extraer todos los valores de searchParams en un solo useMemo
+  // Esto reduce múltiples re-renders y puede ayudar con el error de Suspense
+  const searchParamsData = useMemo(() => {
+    return {
+      filters: parseFilters(searchParams),
+      page: Number(searchParams.get("page")) || 1,
+      sort: searchParams.get("sort") || null,
+    };
   }, [searchParams]);
 
-  // Página actual desde URL
-  const currentPage = useMemo(() => {
-    return Number(searchParams.get("page")) || 1;
-  }, [searchParams]);
+  const currentFilters = searchParamsData.filters;
+  const currentPage = searchParamsData.page;
+  const currentSort = searchParamsData.sort;
 
-  // Sorting desde URL (opcional)
-  const currentSort = useMemo(() => {
-    return searchParams.get("sort") || null;
-  }, [searchParams]);
+  // ✅ Restaurar posición de scroll al volver desde detalle
+  // ✅ IMPORTANTE: Se ejecuta DESPUÉS de ScrollToTopOnMount
+  // Orden: Scroll al top → Skeleton → Contenido → Restaurar scroll (si aplica)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const restoreScroll = () => {
+        try {
+          const savedData = sessionStorage.getItem("scroll_vehicles-list");
+          if (savedData) {
+            const scrollData = JSON.parse(savedData);
+            // Solo restaurar si es la misma ruta y los datos no son muy antiguos
+            const isRecent = scrollData.timestamp && 
+              (Date.now() - scrollData.timestamp) < VEHICLE_CONSTANTS.SCROLL_DATA_MAX_AGE;
+            if (scrollData.path === "/usados/vehiculos" && isRecent) {
+              // ✅ Esperar a que el contenido se renderice completamente
+              // Delay mayor para asegurar que el contenido esté listo
+              setTimeout(() => {
+                window.scrollTo({
+                  top: scrollData.position,
+                  behavior: "instant", // Sin animación para evitar saltos
+                });
+                // Limpiar después de restaurar
+                sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
+              }, Math.max(VEHICLE_CONSTANTS.SCROLL_RESTORE_DELAY, 200)); // Mínimo 200ms
+            } else {
+              // Limpiar datos antiguos o inválidos
+              sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
+            }
+          }
+        } catch (error) {
+          if (process.env.NODE_ENV === 'development') {
+            console.error("Error al restaurar posición de scroll:", error);
+          }
+          sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
+        }
+      };
+
+      // ✅ NO restaurar inmediatamente - esperar a que el contenido se cargue
+      // El ScrollToTopOnMount ya hizo scroll al top, ahora esperamos a restaurar
+      const timeoutId = setTimeout(restoreScroll, VEHICLE_CONSTANTS.SCROLL_RESTORE_TIMEOUT);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, []); // Solo ejecutar una vez al montar
 
   // Sincronizar sorting con URL
   useEffect(() => {
@@ -146,7 +192,7 @@ export default function VehiculosClient({
       try {
         const backendData = await vehiclesService.getVehicles({
           filters: newFilters,
-          limit: 8,
+          limit: VEHICLE_CONSTANTS.LIST_PAGE_SIZE,
           cursor: 1,
         });
         const mappedData = mapVehiclesPage(backendData, 1);
@@ -154,7 +200,7 @@ export default function VehiculosClient({
         setData(mappedData);
         
         // ✅ Restaurar posición de scroll si hay una guardada (desde "Volver a lista principal")
-        const savedPosition = sessionStorage.getItem('vehiculos_scroll_position');
+        const savedPosition = sessionStorage.getItem(STORAGE_KEYS.VEHICLES_SCROLL_POSITION);
         if (savedPosition) {
           // ✅ Usar doble requestAnimationFrame para mejor sincronización con el DOM
           requestAnimationFrame(() => {
@@ -164,14 +210,16 @@ export default function VehiculosClient({
                 behavior: 'smooth'
               });
               // Limpiar después de restaurar
-              sessionStorage.removeItem('vehiculos_scroll_position');
+              sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_SCROLL_POSITION);
             });
           });
         }
       } catch (err) {
-        console.error("[VehiculosClient] Error fetching vehicles:", err);
+        if (process.env.NODE_ENV === 'development') {
+          console.error("[VehiculosClient] Error fetching vehicles:", err);
+        }
         // ✅ Limpiar sessionStorage en caso de error
-        sessionStorage.removeItem('vehiculos_scroll_position');
+        sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_SCROLL_POSITION);
         setError(err.message || "Error al cargar vehículos");
       } finally {
         setIsLoading(false);
@@ -218,7 +266,7 @@ export default function VehiculosClient({
       try {
         const backendData = await vehiclesService.getVehicles({
           filters: currentFilters,
-          limit: 8,
+          limit: VEHICLE_CONSTANTS.LIST_PAGE_SIZE,
           cursor: nextPage,
         });
         
@@ -246,9 +294,11 @@ export default function VehiculosClient({
           return newData;
         });
       } catch (err) {
-        console.error("[VehiculosClient] Error fetching more vehicles:", err);
+        if (process.env.NODE_ENV === 'development') {
+          console.error("[VehiculosClient] Error fetching more vehicles:", err);
+        }
         // ✅ Limpiar sessionStorage en caso de error
-        sessionStorage.removeItem('vehiculos_scroll_position');
+        sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_SCROLL_POSITION);
         setError(err.message || "Error al cargar más vehículos");
       } finally {
         setIsLoadingMore(false);
@@ -277,7 +327,7 @@ export default function VehiculosClient({
   const handleClearFilters = useCallback(() => {
     // ✅ Guardar posición de scroll actual antes de limpiar filtros
     const scrollPosition = window.scrollY || window.pageYOffset;
-    sessionStorage.setItem('vehiculos_scroll_position', String(scrollPosition));
+    sessionStorage.setItem(STORAGE_KEYS.VEHICLES_SCROLL_POSITION, String(scrollPosition));
     
     // Limpiar filtros (handleApplyFilters restaurará el scroll automáticamente)
     handleApplyFilters({});
@@ -339,17 +389,17 @@ export default function VehiculosClient({
 
       {/* Sección del carrusel y filtros */}
       <div className={styles.carouselSection}>
-        <Suspense fallback={<div style={{ minHeight: "80px" }} />}>
-          <BrandsCarousel
-            selectedBrands={selectedBrands}
-            onBrandSelect={handleBrandSelect}
-          />
-        </Suspense>
+        {/* ✅ BrandsCarousel usa dynamic() que ya maneja loading, no necesita Suspense adicional */}
+        <BrandsCarousel
+          selectedBrands={selectedBrands}
+          onBrandSelect={handleBrandSelect}
+        />
 
         {/* FilterFormSimple */}
         <div className={styles.filtersWrapper}>
           <FilterFormSimple
             ref={filterFormRef}
+            currentFilters={currentFilters} // ✅ FIX SUSPENSE: Pasar filtros como prop (elimina useSearchParams del hijo)
             onApplyFilters={handleApplyFilters}
             isLoading={isLoading}
             isError={!!error}
@@ -361,87 +411,18 @@ export default function VehiculosClient({
           />
         </div>
 
-        {/* Botones de acción - Mobile: dentro del carrusel */}
-        <div className={styles.actionButtons}>
-          <button
-            className={styles.actionButton}
-            onClick={handleFilterClick}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
-            </svg>
-            Filtrar
-          </button>
-
-          <div style={{ position: "relative" }}>
-            <button
-              ref={sortButtonRef}
-              className={`${styles.actionButton} ${selectedSort ? styles.active : ""}`}
-              onClick={handleSortClick}
-              disabled={isSortDisabled}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 6h18"></path>
-                <path d="M6 12h12"></path>
-                <path d="M9 18h6"></path>
-              </svg>
-              Ordenar
-            </button>
-
-            {/* SortDropdown */}
-            {isSortDropdownOpen && (
-              <SortDropdown
-                isOpen={isSortDropdownOpen}
-                selectedSort={selectedSort}
-                onSortChange={handleSortChange}
-                onClose={handleCloseSortDropdown}
-                disabled={isSortDisabled}
-                triggerRef={sortButtonRef}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Botones de acción - Desktop: fuera del carrusel */}
-      <div className={styles.actionButtonsDesktop}>
-        <button
-          className={styles.actionButton}
-          onClick={handleFilterClick}
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
-          </svg>
-          Filtrar
-        </button>
-
-        <div style={{ position: "relative" }}>
-          <button
-            ref={sortButtonRef}
-            className={`${styles.actionButton} ${selectedSort ? styles.active : ""}`}
-            onClick={handleSortClick}
-            disabled={isSortDisabled}
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M3 6h18"></path>
-              <path d="M6 12h12"></path>
-              <path d="M9 18h6"></path>
-            </svg>
-            Ordenar
-          </button>
-
-          {/* SortDropdown */}
-          {isSortDropdownOpen && (
-            <SortDropdown
-              isOpen={isSortDropdownOpen}
-              selectedSort={selectedSort}
-              onSortChange={handleSortChange}
-              onClose={handleCloseSortDropdown}
-              disabled={isSortDisabled}
-              triggerRef={sortButtonRef}
-            />
-          )}
-        </div>
+        {/* Botones de acción - dentro del carrusel */}
+        <ActionButtons
+          onFilterClick={handleFilterClick}
+          onSortClick={handleSortClick}
+          onSortChange={handleSortChange}
+          onCloseSortDropdown={handleCloseSortDropdown}
+          selectedSort={selectedSort}
+          isSortDisabled={isSortDisabled}
+          isSortDropdownOpen={isSortDropdownOpen}
+          sortButtonRef={sortButtonRef}
+          className={styles.actionButtons}
+        />
       </div>
 
       <div className={styles.container}>

@@ -53,3 +53,4 @@ export const PeugeotIcon = ({
 
 export default PeugeotIcon;
 
+

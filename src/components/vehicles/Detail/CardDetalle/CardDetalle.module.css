@@ -19,17 +19,23 @@
   width: 100%;
   max-width: 1600px;
   margin: 0 auto;
-  margin-bottom: var(--spacing-10);
+  margin-bottom: 4rem; /* ✅ Aumentado para más separación con carruseles (64px) */
   padding: 0 clamp(var(--container-padding-mobile), 5vw, var(--spacing-8));
   background: transparent;
   box-sizing: border-box;
+}
+
+@media (min-width: 769px) {
+  .cardContent {
+    margin-bottom: 6rem; /* ✅ Aún más separación en desktop (96px) */
+  }
 }
 
 /* ===== LAYOUT PRINCIPAL 50/50 ===== */
 .mainLayout {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-6);
+  gap: var(--spacing-4); /* ✅ Reducido de spacing-6 a spacing-4 */
   width: 100%;
   min-width: 0;
   min-height: 0;
@@ -103,7 +109,7 @@
 /* Contenedor de miniaturas: mismo ancho que la foto principal */
 .imageCarouselWrapper :global(.thumbnailsContainer) {
   width: 100%;
-  margin-top: var(--spacing-4);
+  margin-top: var(--spacing-2); /* ✅ Reducido de spacing-4 a spacing-2 */
   padding-left: 6px !important; /* ✅ Padding-left de 6px */
   padding-right: 0;
   padding-top: 0;
@@ -168,7 +174,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-6);
+  gap: var(--spacing-4); /* ✅ Reducido de spacing-6 a spacing-4 */
   order: 2;
   background: transparent;
   align-items: stretch;
@@ -500,7 +506,7 @@
 .price_display {
   --price-width: 70%;
   --price-padding-right: var(--spacing-3);
-
+  
   flex: 0 0 var(--price-width);
   display: flex;
   align-items: center;
@@ -509,6 +515,75 @@
   padding-top: var(--spacing-1);
   padding-right: var(--price-padding-right);
   background: transparent;
+}
+
+/* ===== WHATSAPP SECTION ===== */
+.whatsappSection {
+  width: 100%;
+  margin-top: var(--spacing-6);
+  padding-top: var(--spacing-4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.whatsappButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: clamp(0.75rem, 1.5vw, 0.875rem) clamp(1.5rem, 3vw, 2rem);
+  background: var(--color-white);
+  color: var(--color-text-primary);
+  border: 2px solid #25D366;
+  border-radius: var(--border-radius-md);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
+  font-size: clamp(0.9375rem, 2vw, 1rem);
+  line-height: 1.2;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.whatsappButton:hover {
+  background: #f0f0f0;
+  border-color: #128C7E;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
+}
+
+.whatsappButton:focus-visible {
+  outline: 2px solid #25D366;
+  outline-offset: 2px;
+}
+
+.whatsappButton:active {
+  transform: translateY(0);
+  background: #e5e5e5;
+}
+
+.whatsappIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-primary);
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .whatsappButton {
+    padding: clamp(0.75rem, 1.5vw, 0.875rem) clamp(1.5rem, 3vw, 2rem);
+    font-size: clamp(0.9375rem, 2vw, 1rem);
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .whatsappIcon {
+    width: 20px;
+    height: 20px;
+  }
 }
 
 .price_value {
@@ -594,7 +669,7 @@
   }
 
   .mainLayout {
-    gap: var(--spacing-5);
+    gap: var(--spacing-3); /* ✅ Reducido de spacing-5 a spacing-3 */
     align-items: stretch;
   }
 
@@ -768,7 +843,7 @@
 
   .mainLayout {
     flex-direction: row;
-    gap: clamp(2.5rem, 4vw, 3.5rem); /* ✅ Espacio entre secciones */
+    gap: 0; /* ✅ Gap intermedio eliminado en desktop */
     align-items: flex-start;
     justify-content: center; /* ✅ Centrado */
     width: 100%;
@@ -777,7 +852,7 @@
   }
 
   .carouselSection {
-    flex: 0 1 calc(50% - clamp(1.25rem, 2vw, 1.75rem)); /* ✅ 50% menos la mitad del gap */
+    flex: 0 1 50%; /* ✅ 50% ya que gap es 0 */
     min-width: 0;
     max-width: none;
     order: 1;
@@ -795,14 +870,14 @@
   }
 
   .dataSection {
-    flex: 0 1 calc(50% - clamp(1.25rem, 2vw, 1.75rem)); /* ✅ 50% menos la mitad del gap */
+    flex: 0 1 50%; /* ✅ 50% ya que gap es 0 */
     min-width: 0;
     max-width: none;
     order: 2;
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: var(--spacing-8); /* ✅ Más espacio entre elementos */
+    gap: var(--spacing-5); /* ✅ Reducido de spacing-8 a spacing-5 */
     padding-left: 6px !important; /* ✅ Padding-left de 6px */
     padding-right: 0;
     padding-top: 0;
@@ -908,7 +983,7 @@
   }
 
   .mainLayout {
-    gap: clamp(3rem, 5vw, 4rem); /* ✅ Espacio entre secciones */
+    gap: 0; /* ✅ Gap intermedio eliminado en desktop grande */
     align-items: flex-start;
     justify-content: center; /* ✅ Centrado */
     max-width: 100%; /* ✅ Usar todo el ancho disponible */
@@ -917,7 +992,7 @@
   }
 
   .carouselSection {
-    flex: 0 1 calc(50% - clamp(1.5rem, 2.5vw, 2rem)); /* ✅ 50% menos la mitad del gap */
+    flex: 0 1 50%; /* ✅ 50% ya que gap es 0 */
     max-width: none;
     min-width: 0;
     top: calc(77px + var(--spacing-8));
@@ -928,10 +1003,10 @@
   }
 
   .dataSection {
-    flex: 0 1 calc(50% - clamp(1.5rem, 2.5vw, 2rem)); /* ✅ 50% menos la mitad del gap */
+    flex: 0 1 50%; /* ✅ 50% ya que gap es 0 */
     max-width: none;
     min-width: 0;
-    gap: var(--spacing-10); /* ✅ Más espacio entre elementos en desktop */
+    gap: var(--spacing-6); /* ✅ Reducido de spacing-10 a spacing-6 */
     padding-left: 6px !important; /* ✅ Padding-left de 6px */
     padding-right: 0;
     padding-top: 0;
@@ -990,8 +1065,8 @@
 
   .imageCarouselWrapper :global(.mainImageContainer) {
     aspect-ratio: 4 / 3; /* ✅ Estándar de la industria */
-    min-height: 600px; /* ✅ Altura mínima estándar de la industria */
-    max-height: none; /* Permitir que fluya naturalmente */
+    min-height: 400px; /* ✅ Reducido de 600px para cargar más rápido */
+    max-height: 450px; /* ✅ Limitar altura máxima para mejor performance */
     width: 100%;
     overflow: hidden;
   }
@@ -1028,7 +1103,7 @@
   }
 
   .mainLayout {
-    gap: clamp(4rem, 6vw, 5rem); /* ✅ Espacio generoso */
+    gap: 0; /* ✅ Gap intermedio eliminado en pantallas muy grandes */
     align-items: flex-start;
     justify-content: center;
     max-width: 1600px; /* ✅ Limitar ancho para legibilidad */
@@ -1050,7 +1125,7 @@
     flex: 0 0 48%; /* ✅ Ancho fijo consistente */
     max-width: 48%;
     min-width: 0;
-    gap: var(--spacing-10); /* ✅ Espacio generoso */
+    gap: var(--spacing-6); /* ✅ Reducido de spacing-10 a spacing-6 */
     padding-left: 6px !important; /* ✅ Padding-left de 6px */
     padding-right: 0;
     padding-top: 0;

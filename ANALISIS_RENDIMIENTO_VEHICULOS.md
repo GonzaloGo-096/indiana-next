@@ -342,3 +342,4 @@ const ActionButtons = ({ onFilterClick, onSortClick, ... }) => (
 - No se encontraron fugas de memoria críticas
 - El rendimiento general es bueno, pero puede mejorarse con las optimizaciones sugeridas
 
+

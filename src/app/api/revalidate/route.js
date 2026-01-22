@@ -16,11 +16,11 @@
 
 import { revalidateTag } from 'next/cache'
 import { NextResponse } from 'next/server'
+import { getSiteUrl } from '@/lib/site-url'
 
 // ✅ CONFIGURACIÓN
 // ⚠️ REVALIDATE_SECRET solo en .env.local (NO usar NEXT_PUBLIC_)
 // ⚠️ SIN FALLBACK: Si no existe, el endpoint fallará explícitamente (seguridad)
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 const REVALIDATE_SECRET = process.env.REVALIDATE_SECRET // ⚠️ Sin fallback - debe estar configurado
 const MAX_WARMUP_IDS = 15
 const WARMUP_BATCH_SIZE = 5
@@ -158,16 +158,18 @@ export async function POST(request) {
     let warmedResult = { warmed: 0, total: 0 }
     
     if (warmup) {
+      // Usar getSiteUrl() como fuente única de verdad (soporta preview automáticamente)
+      const baseUrl = getSiteUrl()
       const urlsToWarmup = []
 
       // Agregar URL de lista (si revalidateList es true, incluso si vehicleIds está vacío)
       if (revalidateList) {
-        urlsToWarmup.push(`${BASE_URL}/usados/vehiculos`)
+        urlsToWarmup.push(`${baseUrl}/usados/vehiculos`)
       }
 
       // Agregar URLs de detalle (solo si hay IDs)
       for (const id of vehicleIds) {
-        urlsToWarmup.push(`${BASE_URL}/usados/${id}`)
+        urlsToWarmup.push(`${baseUrl}/usados/${id}`)
       }
 
       // Hacer warmup si hay URLs (lista o detalles)

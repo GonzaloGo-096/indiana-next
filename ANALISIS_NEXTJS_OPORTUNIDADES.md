@@ -906,3 +906,4 @@ Este análisis identifica oportunidades específicas para aprovechar mejor Next.
 
 **Principio clave:** Usar Server Components por defecto, y Client Components solo cuando sea absolutamente necesario para interactividad.
 
+

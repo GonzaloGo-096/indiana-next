@@ -45,3 +45,4 @@ export function scrollToChildIndex(container, index) {
   container.scrollTo({ left: child.offsetLeft, behavior: "smooth" });
 }
 
+

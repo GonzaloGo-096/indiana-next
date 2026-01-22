@@ -126,7 +126,10 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+    padding-top: 0; /* ✅ Sin padding-top */
     padding-bottom: 120px; /* ✅ 120px de espacio antes del footer (después del botón o última fila) */
+    margin-top: 0; /* ✅ Sin margin-top */
+    margin-bottom: 0; /* ✅ Sin margin-bottom */
     
     /* ✅ OPTIMIZACIÓN: Mejorar scroll performance */
     contain: layout style;
@@ -155,6 +158,12 @@
 @media (max-width: 768px) {
     .grid {
         justify-items: center; /* ✅ Centrar items del grid */
+        align-items: center; /* ✅ Centrar verticalmente */
+    }
+    
+    /* ✅ Skeleton: Mismo comportamiento que .grid en mobile */
+    .loading {
+        justify-items: center; /* ✅ Centrar items del skeleton */
         align-items: center; /* ✅ Centrar verticalmente */
     }
 }
@@ -242,89 +251,417 @@
 }
 
 /* ===== CONTENEDOR DE CARGA ===== */
+/* ✅ Estructura idéntica al grid real para que coincidan los márgenes verticales */
 .loadingContainer {
-    min-height: 200px;
+    position: relative;
+    width: 100%;
+    max-width: 100%;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    padding: 32px 0;
+    justify-content: flex-start;
+    padding-top: 0; /* ✅ Igual a gridContainer (sin padding-top) */
+    padding-bottom: 120px; /* ✅ Mismo padding-bottom que gridContainer */
+    margin-top: 0; /* ✅ Igual a gridContainer (sin margin-top) */
+    margin-bottom: 0; /* ✅ Igual a gridContainer (sin margin-bottom) */
+    
+    /* ✅ OPTIMIZACIÓN: Mejorar scroll performance */
+    contain: layout style;
 }
 
 .loading {
-    min-height: 300px;
     display: grid;
+    /* ✅ MOBILE: 1 columna, igual que .grid */
     grid-template-columns: 1fr;
-    gap: clamp(16px, 4vw, 32px);
-    width: 100%;
-    max-width: 100%;
+    gap: clamp(16px, 4vw, 32px); /* ✅ Gap exactamente igual a .grid */
+    min-height: 150px;
+    padding: 0; /* ✅ Padding igual a .grid */
+    margin: 0 auto; /* ✅ Centrado igual que .grid */
+    max-width: 100%; /* ✅ Max-width igual a .grid */
+    width: 100%; /* ✅ Width igual a .grid */
+    
+    /* ✅ OPTIMIZACIÓN: Mejorar scroll performance del grid */
+    contain: layout style;
+    
+    /* ✅ OPTIMIZACIÓN: Forzar capa de composición para scroll suave */
+    will-change: transform;
+    transform: translateZ(0);
 }
 
+/* ✅ Responsive igual que .grid para mantener consistencia */
+/* Tablet: 2 columnas flexibles (desde 768px hasta 991px) */
 @media (min-width: 768px) and (max-width: 991px) {
     .loading {
-        grid-template-columns: repeat(2, minmax(280px, 1fr));
+        grid-template-columns: repeat(2, minmax(280px, 1fr)); /* ✅ Igual que .grid en tablet */
+        gap: clamp(16px, 3vw, 24px); /* ✅ Gap igual a .grid en tablet */
+        justify-content: center;
+        padding: 0; /* ✅ Padding igual a .grid */
+        max-width: 100%; /* ✅ Max-width igual a .grid */
+        width: 100%; /* ✅ Width igual a .grid */
+        box-sizing: border-box;
     }
 }
 
+/* Desktop: Grid adaptativo - 2 o 3 columnas según espacio disponible (desde 992px) */
 @media (min-width: 992px) {
     .loading {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 380px));
+        /* ✅ Grid adaptativo: automáticamente ajusta entre 2 y 3 columnas según espacio */
+        grid-template-columns: repeat(auto-fit, minmax(280px, 380px)); /* ✅ Igual que .grid en desktop */
+        gap: clamp(24px, 4vw, 48px); /* ✅ Gap igual a .grid en desktop */
+        justify-content: center;
+        margin: 0 auto; /* ✅ Margin igual a .grid */
+        max-width: 100%; /* ✅ Max-width igual a .grid */
+        width: 100%; /* ✅ Width igual a .grid */
+        box-sizing: border-box;
     }
 }
 
+/* Desktop grande: Forzar 3 columnas cuando hay espacio suficiente (desde 1300px) */
 @media (min-width: 1300px) {
     .loading {
-        grid-template-columns: repeat(3, 380px);
+        grid-template-columns: repeat(3, 380px); /* ✅ Igual que .grid en desktop grande */
+        gap: clamp(24px, 4vw, 48px); /* ✅ Gap igual a .grid */
+        justify-content: center;
+        margin: 0 auto; /* ✅ Margin igual a .grid */
+        max-width: fit-content; /* ✅ Max-width igual a .grid */
+        width: fit-content; /* ✅ Width igual a .grid */
+        box-sizing: border-box;
     }
 }
 
-/* Skeleton Card */
+/* ===== SKELETON CARD - Estructura profesional igual a CardAuto ===== */
 .skeletonCard {
-    background: var(--color-white, #ffffff);
-    border-radius: var(--border-radius-lg, 12px);
+    /* ✅ Variables CSS iguales a CardAuto */
+    --card-padding-base: var(--spacing-3);
+    --card-border-width: 0.5px;
+    --card-border-opacity: 0.08;
+    --card-shadow-base: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06);
+    
+    /* Layout - igual a CardAuto */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    max-width: 360px; /* ✅ Ancho igual a CardAuto */
+    
+    /* Estilo visual - igual a CardAuto */
+    background: var(--color-white);
+    border-radius: var(--border-radius-lg);
+    border: var(--card-border-width) solid rgba(0, 0, 0, var(--card-border-opacity));
+    box-shadow: var(--card-shadow-base);
+    
+    /* Comportamiento - igual a CardAuto */
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    min-height: 350px;
+    position: relative;
+    margin: 0 auto;
+    min-height: 350px; /* ✅ Mínimo igual a cardWrapper */
 }
 
+/* Imagen - aspect-ratio 16/9 igual a CardAuto */
 .skeletonImage {
     width: 100%;
     aspect-ratio: 16 / 9;
+    min-height: 202.5px; /* ✅ Fallback igual a CardAuto */
+    /* ✅ Estandarizado: Usar misma paleta que otros skeletons */
     background: linear-gradient(
         90deg,
-        #f0f0f0 25%,
-        #e0e0e0 50%,
-        #f0f0f0 75%
+        var(--color-neutral-200, #e8eaed) 25%,
+        var(--color-neutral-100, #f1f3f4) 50%,
+        var(--color-neutral-200, #e8eaed) 75%
     );
     background-size: 200% 100%;
-    animation: skeleton-loading 1.5s ease-in-out infinite;
+    animation: shimmer 1.5s ease-in-out infinite;
+    flex-shrink: 0;
 }
 
-.skeletonContent {
-    padding: var(--spacing-3, 12px);
+/* Body - estructura igual a CardAuto */
+.skeletonBody {
+    /* ✅ Usar las mismas variables CSS que CardAuto para padding y gap */
+    --body-padding-y: var(--spacing-3);
+    --body-padding-x: var(--spacing-3);
+    --body-gap: var(--spacing-3);
+    
+    flex: 1;
+    min-height: 0;
+    
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-2, 8px);
+    gap: var(--body-gap); /* ✅ Gap igual a CardAuto */
+    padding: var(--body-padding-y) var(--body-padding-x); /* ✅ Padding vertical y horizontal igual a CardAuto */
+    background: var(--color-white);
+    justify-content: space-between;
 }
 
-.skeletonText {
-    height: 16px;
+/* Container1: Logo + Datos */
+.skeletonContainer1 {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    min-height: 0;
+}
+
+/* Logo de marca (posición absoluta igual a CardAuto) */
+.skeletonLogo {
+    position: absolute;
+    top: var(--spacing-1, 4px);
+    right: 0;
+    width: clamp(75px, 21vw, 110px); /* ✅ Tamaño igual a brand_logo */
+    height: clamp(75px, 21vw, 110px);
+    /* ✅ Estandarizado: Usar misma paleta que otros skeletons */
     background: linear-gradient(
         90deg,
-        #f0f0f0 25%,
-        #e0e0e0 50%,
-        #f0f0f0 75%
+        var(--color-neutral-200, #e8eaed) 25%,
+        var(--color-neutral-100, #f1f3f4) 50%,
+        var(--color-neutral-200, #e8eaed) 75%
     );
     background-size: 200% 100%;
-    animation: skeleton-loading 1.5s ease-in-out infinite;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 8px;
+    opacity: 0.6;
+    z-index: 1;
+}
+
+/* Bloque de datos con padding para logo */
+.skeletonContainer1Right {
+    flex: 1 1 auto;
+    width: 100%;
+    padding-right: clamp(75px, 21vw, 120px); /* ✅ Padding igual a container1_right */
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
+    z-index: 2;
+}
+
+/* Fila 1: Marca | Modelo */
+.skeletonRow1 {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-1, 4px);
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.skeletonMarca {
+    width: 60px; /* Marca corta */
+    height: clamp(1.5rem, 4.8vw, 1.75rem); /* ✅ Altura igual a marca_text */
+    /* ✅ Estandarizado: Usar misma paleta que otros skeletons */
+    background: linear-gradient(
+        90deg,
+        var(--color-neutral-200, #e8eaed) 25%,
+        var(--color-neutral-100, #f1f3f4) 50%,
+        var(--color-neutral-200, #e8eaed) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.skeletonSeparator {
+    width: 8px;
+    height: clamp(1.5rem, 4.8vw, 1.75rem);
+    background: var(--color-neutral-200, #e0e0e0);
+    flex-shrink: 0;
+    opacity: 0.3;
+}
+
+.skeletonModelo {
+    flex: 1;
+    height: clamp(1.4rem, 4.5vw, 1.65rem); /* ✅ Altura igual a modelo_title */
+    /* ✅ Estandarizado: Usar misma paleta que otros skeletons */
+    background: linear-gradient(
+        90deg,
+        var(--color-neutral-200, #e8eaed) 25%,
+        var(--color-neutral-100, #f1f3f4) 50%,
+        var(--color-neutral-200, #e8eaed) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 4px;
+    min-width: 0;
+}
+
+/* Fila 3: Caja, Km, Año (3 columnas) - igual a CardAuto.container1_row3 */
+.skeletonRow3 {
+    --data-item-padding-right: var(--spacing-3);
+    --data-margin-top: var(--spacing-2);
+    
+    display: flex;
+    justify-content: flex-start; /* ✅ Igual a container1_row3 */
+    align-items: flex-end; /* ✅ Igual a container1_row3 */
+    gap: 0; /* ✅ Igual a container1_row3 */
+    flex-wrap: nowrap;
+    width: 100%;
+    min-width: 0;
+    overflow: visible;
+    flex-shrink: 0;
+    margin-top: var(--data-margin-top); /* ✅ Margin igual a container1_row3 */
+    padding-top: 0;
+}
+
+.skeletonDataItem {
+    --data-item-padding-right: var(--spacing-3);
+    
+    display: flex;
+    align-items: flex-end; /* ✅ Igual a row2_data_item */
+    justify-content: flex-start; /* ✅ Igual a row2_data_item */
+    height: 100%;
+    flex: 0 0 auto; /* ✅ Igual a row2_data_item */
+    min-width: 0;
+    padding-right: var(--data-item-padding-right); /* ✅ Padding igual a row2_data_item */
+}
+
+.skeletonDataItem:first-child {
+    min-width: 0; /* ✅ Igual a row2_data_item:first-child */
+}
+
+.skeletonDataLabel {
+    width: 40px; /* Label corto (Caja, Km, Año) */
+    height: clamp(0.875rem, 2.5vw, 1rem); /* ✅ Altura igual a row2_data_label */
+    /* ✅ Estandarizado: Usar misma paleta que otros skeletons */
+    background: linear-gradient(
+        90deg,
+        var(--color-neutral-200, #e8eaed) 25%,
+        var(--color-neutral-100, #f1f3f4) 50%,
+        var(--color-neutral-200, #e8eaed) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
     border-radius: 4px;
 }
 
-@keyframes skeleton-loading {
+.skeletonDataValue {
+    width: 50px; /* Value corto */
+    height: clamp(1.375rem, 4vw, 1.625rem); /* ✅ Altura igual a row2_data_value */
+    /* ✅ Estandarizado: Usar misma paleta que otros skeletons */
+    background: linear-gradient(
+        90deg,
+        var(--color-neutral-200, #e8eaed) 25%,
+        var(--color-neutral-100, #f1f3f4) 50%,
+        var(--color-neutral-200, #e8eaed) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 4px;
+}
+
+/* Container4: Precio - igual a CardAuto.container4 */
+.skeletonPriceContainer {
+    --price-border-opacity: 0.05;
+    
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: var(--spacing-2);
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 1px solid var(--color-neutral-200); /* ✅ Border igual a container4 */
+    border-left: 1px solid rgba(0, 0, 0, var(--price-border-opacity));
+    border-radius: var(--border-radius-lg) 0 0 0;
+}
+
+.skeletonPriceLabel {
+    flex: 0 0 30%;
+    height: clamp(1rem, 2.5vw, 1.25rem); /* ✅ Altura igual a price_label */
+    width: 50px;
+    /* ✅ Estandarizado: Usar misma paleta que otros skeletons */
+    background: linear-gradient(
+        90deg,
+        var(--color-neutral-200, #e8eaed) 25%,
+        var(--color-neutral-100, #f1f3f4) 50%,
+        var(--color-neutral-200, #e8eaed) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 4px;
+}
+
+.skeletonPriceValue {
+    flex: 0 0 70%;
+    height: clamp(1.875rem, 5.2vw, 2.25rem); /* ✅ Altura igual a price_value */
+    width: 120px;
+    /* ✅ Estandarizado: Usar misma paleta que otros skeletons */
+    background: linear-gradient(
+        90deg,
+        var(--color-neutral-200, #e8eaed) 25%,
+        var(--color-neutral-100, #f1f3f4) 50%,
+        var(--color-neutral-200, #e8eaed) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 4px;
+    align-self: flex-end;
+}
+
+/* ✅ Estandarizado: Usar shimmer como todos los demás skeletons */
+@keyframes shimmer {
     0% {
-        background-position: 200% 0;
+        background-position: -200% 0;
     }
     100% {
-        background-position: -200% 0;
+        background-position: 200% 0;
+    }
+}
+
+/* ===== RESPONSIVE SKELETON - Igual a CardAuto ===== */
+/* Mobile: Espaciado más compacto */
+@media (max-width: 575px) {
+    .skeletonCard {
+        max-width: 340px; /* ✅ Igual a CardAuto en mobile */
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .skeletonBody {
+        --body-padding-y: var(--spacing-2); /* ✅ Igual a CardAuto en mobile */
+        --body-padding-x: var(--spacing-2);
+        --body-gap: var(--spacing-2);
+    }
+    
+    .skeletonRow3 {
+        --data-margin-top: var(--spacing-1); /* ✅ Igual a CardAuto en mobile */
+    }
+}
+
+/* Tablet: Espaciado medio */
+@media (min-width: 576px) {
+    .skeletonCard {
+        border-radius: var(--border-radius-lg);
+    }
+    
+    .skeletonBody {
+        --body-padding-y: var(--spacing-3);
+        --body-padding-x: var(--spacing-3);
+        --body-gap: var(--spacing-4);
+    }
+}
+
+/* Desktop: Espaciado generoso */
+@media (min-width: 768px) {
+    .skeletonCard {
+        border-radius: var(--border-radius-xl); /* ✅ Igual a CardAuto en desktop */
+    }
+    
+    .skeletonBody {
+        --body-gap: var(--spacing-2);
+    }
+}
+
+/* ===== ACCESIBILIDAD: PREFERS-REDUCED-MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+    .skeletonImage,
+    .skeletonLogo,
+    .skeletonMarca,
+    .skeletonModelo,
+    .skeletonDataLabel,
+    .skeletonDataValue,
+    .skeletonPriceLabel,
+    .skeletonPriceValue {
+        animation: none;
+        background: var(--color-neutral-200, #e8eaed);
     }
 }
 

@@ -122,7 +122,9 @@ export default function UsadosClient({
         const mappedData = mapVehiclesPage(backendData, 1);
         setData(mappedData);
       } catch (err) {
-        console.error("[UsadosClient] Error fetching vehicles:", err);
+        if (process.env.NODE_ENV === 'development') {
+          console.error("[UsadosClient] Error fetching vehicles:", err);
+        }
         setError(err.message || "Error al cargar vehículos");
       } finally {
         setIsLoading(false);
@@ -152,7 +154,9 @@ export default function UsadosClient({
         const mappedData = mapVehiclesPage(backendData, newPage);
         setData(mappedData);
       } catch (err) {
-        console.error("[UsadosClient] Error fetching vehicles:", err);
+        if (process.env.NODE_ENV === 'development') {
+          console.error("[UsadosClient] Error fetching vehicles:", err);
+        }
         setError(err.message || "Error al cargar vehículos");
       } finally {
         setIsLoading(false);

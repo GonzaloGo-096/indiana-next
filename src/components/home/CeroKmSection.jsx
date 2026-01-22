@@ -30,9 +30,7 @@ export function CeroKmSection() {
             PEUGEOT 0KM
           </h2>
           <p className={styles.description}>
-            Descubrí la gama completa de vehículos Peugeot 0km. Modelos nuevos
-            con garantía oficial, tecnología de vanguardia y las mejores
-            opciones de financiación.
+            Con 15 años de experiencia, Indiana Peugeot es tu concesionaria oficial en Tucumán. Gama completa de modelos 0km, garantía oficial Peugeot, servicio postventa certificado y opciones de financiación.
           </p>
           <div className={styles.buttonsContainer}>
             <Link href="/0km" className={styles.button}>

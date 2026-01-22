@@ -16,12 +16,11 @@
  */
 
 import { useState, useEffect, useCallback, useRef, forwardRef, memo, useImperativeHandle, useMemo } from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import RangeSlider from '../../ui/RangeSlider/RangeSlider'
 import MultiSelect from '../../ui/MultiSelect/MultiSelect'
 import { CloseIcon } from '../../ui/icons/CloseIcon'
 import { combustibles, cajas, FILTER_DEFAULTS } from '../../../constants/filterOptions'
-import { parseFilters } from '../../../utils/filters'
 import { useDevice } from '../../../hooks/useDevice'
 import styles from './FilterFormSimple.module.css'
 
@@ -43,6 +42,7 @@ const formatKilometers = (val) => {
 // ✅ COMPONENTE CON forwardRef
 const FilterFormSimpleComponent = forwardRef(({
   onApplyFilters,
+  currentFilters = {}, // ✅ NUEVO: Filtros actuales desde el padre (evita useSearchParams)
   isLoading = false,
   isError = false,
   error = null,
@@ -50,7 +50,6 @@ const FilterFormSimpleComponent = forwardRef(({
 }, ref) => {
   const { isMobile } = useDevice()
   const router = useRouter()
-  const searchParams = useSearchParams()
   
   // ✅ ESTADOS SIMPLES
   // Estado para visibilidad en desktop
@@ -116,19 +115,19 @@ const FilterFormSimpleComponent = forwardRef(({
     }
   }, [isDrawerOpen])
 
-  // ✅ SINCRONIZACIÓN CON URL
+  // ✅ SINCRONIZACIÓN CON FILTROS DEL PADRE (elimina necesidad de useSearchParams)
+  // ✅ FIX SUSPENSE: Usar prop en lugar de useSearchParams para evitar conflictos de boundaries
   useEffect(() => {
-    const urlFilters = parseFilters(searchParams)
     setFilters(prevFilters => ({
-      marca: urlFilters.marca || [],
-      caja: urlFilters.caja || [],
-      combustible: urlFilters.combustible || [],
-      año: urlFilters.año || [FILTER_DEFAULTS.AÑO.min, FILTER_DEFAULTS.AÑO.max],
-      precio: urlFilters.precio || [FILTER_DEFAULTS.PRECIO.min, FILTER_DEFAULTS.PRECIO.max],
-      kilometraje: urlFilters.kilometraje || [FILTER_DEFAULTS.KILOMETRAJE.min, FILTER_DEFAULTS.KILOMETRAJE.max]
+      marca: currentFilters.marca || [],
+      caja: currentFilters.caja || [],
+      combustible: currentFilters.combustible || [],
+      año: currentFilters.año || [FILTER_DEFAULTS.AÑO.min, FILTER_DEFAULTS.AÑO.max],
+      precio: currentFilters.precio || [FILTER_DEFAULTS.PRECIO.min, FILTER_DEFAULTS.PRECIO.max],
+      kilometraje: currentFilters.kilometraje || [FILTER_DEFAULTS.KILOMETRAJE.min, FILTER_DEFAULTS.KILOMETRAJE.max]
     }))
     // sort se maneja en la página Vehiculos
-  }, [searchParams])
+  }, [currentFilters])
 
 
   // ✅ HANDLERS UNIFICADOS (funcionan en ambos contextos)
@@ -192,7 +191,9 @@ const FilterFormSimpleComponent = forwardRef(({
       closeVisibility()
       await onApplyFilters(filters)
     } catch (error) {
-      console.error('[FilterFormSimple] Error applying filters:', error)
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[FilterFormSimple] Error applying filters:', error);
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -379,6 +380,7 @@ const FilterFormSimpleComponent = forwardRef(({
 FilterFormSimpleComponent.displayName = 'FilterFormSimple'
 
 // ✅ ENVOLVER CON memo PARA OPTIMIZACIÓN
+// FilterFormSimpleComponent ya está envuelto con forwardRef, solo agregamos memo
 const FilterFormSimple = memo(FilterFormSimpleComponent)
 FilterFormSimple.displayName = 'FilterFormSimple'
 

@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
 import dynamic from "next/dynamic";
-import NextImage from "next/image";
 import { getModelo, getModelosSlugs } from "../../../data/modelos";
 import { getPlanesPorModelo } from "../../../data/planes";
 import { absoluteUrl } from "../../../lib/site-url";
 import { ModeloDetalleClient } from "./ModeloDetalleClient";
+import { HeroImageDesktop } from "./HeroImageDesktop";
 import styles from "./0km-detalle.module.css";
 
 // ✅ Lazy loading de componentes condicionales para mejor code splitting
@@ -312,21 +312,9 @@ export default async function CeroKilometroDetallePage({ params }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      {/* Hero Image (solo desktop) - Al inicio - Crítica para LCP */}
+      {/* Hero Image (solo desktop) - Client Component para evitar carga en mobile */}
       {modelo.heroImage && (
-        <div className={styles.heroContainer}>
-          <div className={styles.heroBadge}>NUEVO {modelo.nombre}</div>
-          <NextImage
-            src={modelo.heroImage.url}
-            alt={modelo.heroImage.alt}
-            width={1920}
-            height={800}
-            className={styles.heroImage}
-            priority
-            quality={85}
-            sizes="(max-width: 768px) 100vw, 1200px"
-          />
-        </div>
+        <HeroImageDesktop heroImage={{ ...modelo.heroImage, modelName: modelo.nombre }} />
       )}
 
       {/* Header - Debajo del hero */}

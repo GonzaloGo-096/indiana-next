@@ -1,16 +1,19 @@
 /**
- * /usados - Página de promociones y formas de pago (Server Component)
+ * /usados - Página principal de usados (Server Component)
  * 
  * ✅ ARQUITECTURA:
- * - Solo muestra información de promociones y formas de pago
- * - Link a /usados/vehiculos para ver el catálogo completo
+ * - Sección 1: Título + botón "Ver todos" + carrusel de 8 autos
+ * - Sección 2: Promociones y formas de pago
  * 
  * @author Indiana Peugeot
- * @version 2.0.0 - Separada de lista de vehículos
+ * @version 3.0.0 - Restructurada con carrusel
  */
 
 import Link from "next/link";
 import { absoluteUrl } from "../../lib/site-url";
+import { vehiclesService } from "../../lib/services/vehiclesApi.server";
+import { mapVehiclesPage } from "../../lib/mappers/vehicleMapper";
+import UsadosCarousel from "../../components/usados/UsadosCarousel";
 import styles from "./usados.module.css";
 
 /**
@@ -53,25 +56,47 @@ export async function generateMetadata() {
 }
 
 /**
- * Página principal de usados (solo promociones)
+ * Página principal de usados
  */
-export default function UsadosPage() {
+export default async function UsadosPage() {
+  // Obtener los primeros 8 vehículos para el carrusel
+  let vehicles = [];
+  
+  try {
+    const backendData = await vehiclesService.getVehicles({
+      filters: {},
+      limit: 8,
+      cursor: 1,
+    });
+    
+    const mappedData = mapVehiclesPage(backendData, 1);
+    vehicles = mappedData.vehicles || [];
+  } catch (error) {
+    // En caso de error, mostrar carrusel vacío
+    if (process.env.NODE_ENV === 'development') {
+      console.error("[UsadosPage] Error fetching vehicles:", error);
+    }
+    vehicles = [];
+  }
+
   return (
     <div className={styles.page}>
-      {/* Header */}
-      <header className={styles.header}>
-        <div className={styles.headerContent}>
-          <h1 className={styles.title}>Vehículos Usados Multimarca</h1>
-          <p className={styles.subtitle}>
-            Amplia selección de vehículos usados con garantía, financiación
-            disponible y servicio postventa profesional.
-          </p>
+      {/* Sección 1: Título + Botón "Ver todos" + Carrusel */}
+      <section className={styles.vehiclesSection}>
+        <div className={styles.vehiclesContainer}>
+          <div className={styles.vehiclesHeader}>
+            <h1 className={styles.vehiclesTitle}>Vehículos Usados</h1>
+            <Link href="/usados/vehiculos" className={styles.verTodosButton}>
+              Ver todos
+            </Link>
+          </div>
+          <UsadosCarousel vehicles={vehicles} />
         </div>
-      </header>
+      </section>
 
-      {/* Sección de Promociones */}
+      {/* Sección 2: Promociones y Formas de Pago */}
       <section className={styles.promocionesSection}>
-        <div className="container">
+        <div className={styles.promocionesContainer}>
           <h2 className={styles.promocionesTitle}>
             Promociones y Formas de Pago
           </h2>
@@ -98,15 +123,6 @@ export default function UsadosPage() {
               </p>
             </div>
           </div>
-        </div>
-      </section>
-
-      {/* CTA para ver catálogo */}
-      <section className={styles.ctaSection}>
-        <div className="container">
-          <Link href="/usados/vehiculos" className={styles.ctaButton}>
-            Ver Catálogo Completo
-          </Link>
         </div>
       </section>
     </div>
