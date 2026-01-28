@@ -14,10 +14,11 @@ import styles from "./0km-detalle.module.css";
 // Nota: En Server Components, no podemos usar ssr: false, así que usamos ssr: true por defecto
 // Los componentes Client Components se hidratarán correctamente en el cliente
 
+// ✅ OPTIMIZADO: Dynamic imports corregidos para evitar errores de chunks
 // ModeloPlanes - Solo para modelos con planes (208, 2008, partner, expert)
-// Importar directamente el componente y extraer el default
+// Exporta como default, usar import directo
 const ModeloPlanes = dynamic(
-  () => import("../../../components/ceroKm/ModeloPlanes/ModeloPlanes").then((mod) => mod.default || mod),
+  () => import("../../../components/ceroKm/ModeloPlanes/ModeloPlanes"),
   {
     loading: () => (
       <div
@@ -37,8 +38,9 @@ const ModeloPlanes = dynamic(
 );
 
 // FeatureSection - Solo para modelos con features
+// Usar ruta directa al componente (evitar index.js que puede causar problemas)
 const FeatureSection = dynamic(
-  () => import("../../../components/ceroKm/FeatureSection"),
+  () => import("../../../components/ceroKm/FeatureSection/FeatureSection"),
   {
     loading: () => (
       <div
@@ -72,9 +74,9 @@ const FeatureSection = dynamic(
 );
 
 // ModelGallery - Solo para modelos con galería
-// ModelGallery se exporta como named export, necesitamos extraerlo
+// Ahora tiene default export, usar import directo
 const ModelGallery = dynamic(
-  () => import("../../../components/ceroKm/ModelGallery").then((mod) => ({ default: mod.ModelGallery })),
+  () => import("../../../components/ceroKm/ModelGallery"),
   {
     loading: () => (
       <div

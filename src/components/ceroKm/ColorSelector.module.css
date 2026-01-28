@@ -21,6 +21,7 @@
   cursor: pointer;
   transition: border-color var(--transition-fast),
     transform var(--transition-fast);
+  will-change: transform; /* ✅ Optimización: GPU acceleration para hover */
 }
 
 .colorButton:hover {
@@ -88,5 +89,6 @@
     gap: 8px;
   }
 }
+
 
 

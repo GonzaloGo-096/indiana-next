@@ -225,12 +225,16 @@ export const UsadosCarousel = ({ vehicles = [] }) => {
           </div>
         ) : (
           // Cards de vehículos
-          vehicles.map((vehicle) => (
+          // ✅ LCP: Priorizar primeras 2 imágenes (above the fold)
+          vehicles.map((vehicle, index) => (
             <div
               key={vehicle.id || vehicle._id}
               className={styles.cardWrapper}
             >
-              <CardSimilar auto={vehicle} />
+              <CardSimilar 
+                auto={vehicle} 
+                isPriority={index < 2}
+              />
             </div>
           ))
         )}

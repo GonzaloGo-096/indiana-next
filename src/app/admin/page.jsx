@@ -371,8 +371,18 @@ export default function DashboardPage() {
                       handleCreateVehicle(formData)
                     } else {
                       const vehicleId = modalState.initialData?._id || modalState.initialData?.id
+                      if (process.env.NODE_ENV === 'development') {
+                        console.debug('[admin] Update vehicle - ID extraído:', {
+                          vehicleId,
+                          initialData: modalState.initialData,
+                          has_id: !!modalState.initialData?._id,
+                          has_id_field: !!modalState.initialData?.id
+                        })
+                      }
                       if (vehicleId) {
                         handleUpdateVehicle(formData, vehicleId)
+                      } else {
+                        dispatch(setError('No se pudo obtener el ID del vehículo para actualizar'))
                       }
                     }
                   }}

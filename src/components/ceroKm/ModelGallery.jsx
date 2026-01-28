@@ -31,109 +31,60 @@ export function ModelGallery({ images, title = "Galería" }) {
   const [isDesktop, setIsDesktop] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  // ✅ Detectar breakpoint después de montar para evitar mismatch
   useEffect(() => {
     setIsMounted(true);
     const checkDesktop = () => {
-      setIsDesktop(window.matchMedia("(min-width: 768px)").matches);
+      setIsDesktop(window.innerWidth >= 768);
     };
-    
-    // Verificar inmediatamente
+
     checkDesktop();
-    
-    // Listener para cambios de tamaño
-    const mediaQuery = window.matchMedia("(min-width: 768px)");
-    const handleChange = (e) => setIsDesktop(e.matches);
-    
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener("change", handleChange);
-    } else {
-      mediaQuery.addListener(handleChange);
-    }
-    
-    return () => {
-      if (mediaQuery.removeEventListener) {
-        mediaQuery.removeEventListener("change", handleChange);
-      } else {
-        mediaQuery.removeListener(handleChange);
-      }
-    };
+    window.addEventListener("resize", checkDesktop);
+    return () => window.removeEventListener("resize", checkDesktop);
   }, []);
 
-  // ✅ Seleccionar imágenes según breakpoint (solo las necesarias)
-  const displayImages = useMemo(() => {
-    // Antes de montar o en mobile: usar mobile (consistente servidor/cliente)
-    if (!isMounted || !isDesktop) {
-      if (images.mobile) {
-        return images.mobile.slice(0, 4);
-      }
-      return (images.desktop || []).slice(0, 4);
-    }
-    
-    // Después de montar y en desktop: usar desktop
-    if (images.desktop) {
-      return images.desktop.slice(0, 6);
-    }
-    return (images.mobile || []).slice(0, 6);
-  }, [images, isDesktop, isMounted]);
+  // ✅ Memoizar imágenes según breakpoint
+  const imagesToShow = useMemo(() => {
+    if (!isMounted) return images.mobile || []; // Durante SSR, usar mobile
+    return isDesktop ? (images.desktop || images.mobile || []) : (images.mobile || []);
+  }, [isDesktop, isMounted, images]);
 
-  if (!displayImages.length) return null;
-
-  // Estado para trackear qué imágenes han cargado
-  const [loadedImages, setLoadedImages] = useState(new Set());
-
-  const handleImageLoad = (url) => {
-    setLoadedImages((prev) => new Set([...prev, url]));
-  };
-
-  // Determinar estrategia de carga: primeras 2 imágenes eager, resto lazy
-  const getLoadingStrategy = (index) => {
-    return index < 2 ? "eager" : "lazy";
-  };
-
-  const getFetchPriority = (index) => {
-    return index < 2 ? "high" : "auto";
-  };
+  if (!imagesToShow || imagesToShow.length === 0) return null;
 
   return (
-    <section className={styles.gallery} aria-label={`Galería de ${title}`}>
-      {title && <h2 className={styles.galleryTitle}>{title}</h2>}
+    <section className={styles.section} aria-labelledby="gallery-title">
+      <div className={styles.container}>
+        <h2 id="gallery-title" className={styles.title}>
+          {title}
+        </h2>
+        <div className={styles.grid}>
+          {imagesToShow.map((img, index) => {
+            if (!img || !img.url) return null;
 
-      <div className={styles.grid}>
-        {displayImages.map((image, index) => {
-          if (!image || !image.url) return null;
+            // ✅ Primeras 2-3 imágenes con loading="eager" para LCP
+            const isPriority = index < 3;
+            const isFirst = index === 0;
 
-          const isLoaded = loadedImages.has(image.url);
-          const isLoading = !isLoaded;
-
-          return (
-            <div key={image.url || index} className={styles.gridItem}>
-              {/* Skeleton/Placeholder mientras carga */}
-              {isLoading && (
-                <div className={styles.imageSkeleton} aria-hidden="true">
-                  <div className={styles.skeletonShimmer} />
-                </div>
-              )}
-              
-              <Image
-                src={image.url}
-                alt={image.alt || `${title} - Imagen ${index + 1}`}
-                width={600}
-                height={450}
-                className={`${styles.gridImage} ${isLoaded ? styles.loaded : styles.loading}`}
-                sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 400px"
-                quality={index < 2 ? 85 : 75}
-                loading={getLoadingStrategy(index)}
-                fetchPriority={getFetchPriority(index)}
-                onLoad={() => handleImageLoad(image.url)}
-                onError={() => handleImageLoad(image.url)}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-            </div>
-          );
-        })}
+            return (
+              <div key={img.url || index} className={styles.gridItem}>
+                <Image
+                  src={img.url}
+                  alt={img.alt || `${title} - Imagen ${index + 1}`}
+                  width={800}
+                  height={600}
+                  className={styles.gridImage}
+                  loading={isPriority ? "eager" : "lazy"}
+                  priority={isFirst}
+                  quality={85}
+                  sizes="(max-width: 768px) 50vw, 33vw"
+                />
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );
 }
 
+// ✅ Agregar default export para compatibilidad con dynamic imports
+export default ModelGallery;

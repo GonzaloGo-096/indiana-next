@@ -61,6 +61,7 @@
   white-space: nowrap;
   flex-shrink: 0;
   margin-right: var(--spacing-3); /* ✅ Espacio del logo blanco */
+  will-change: transform, box-shadow; /* ✅ Optimización: GPU acceleration para hover */
 }
 
 .verTodosButton:hover {
@@ -102,6 +103,8 @@
   -ms-overflow-style: none; /* IE/Edge */
   padding: var(--spacing-2) 0;
   scroll-padding: var(--spacing-2);
+  contain: layout style paint; /* ✅ Optimización: aislar repaints */
+  will-change: scroll-position; /* ✅ Optimización: GPU acceleration durante scroll */
 }
 
 .carouselTrack::-webkit-scrollbar {

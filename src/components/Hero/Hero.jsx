@@ -1,25 +1,21 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import styles from "./Hero.module.css";
 import { staticImages } from "../../config/cloudinaryStaticImages";
 
+/**
+ * Hero - Sección principal de la página de inicio
+ * 
+ * ✅ OPTIMIZADO: Convertido a Server Component
+ * ✅ Animación con CSS puro (sin JavaScript)
+ * ✅ Mejor performance: Sin hidratación innecesaria
+ * 
+ * @author Indiana Peugeot
+ * @version 2.0.0 - Server Component optimizado
+ */
 const Hero = () => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  // Fade-in al cargar
-  useEffect(() => {
-    // Pequeño delay para que la animación se note
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
     <section
-      className={`${styles.hero} ${isVisible ? styles.visible : ""}`}
+      className={styles.hero}
       aria-label="Sección principal"
     >
       {/* Imagen de fondo responsive con next/image - Crítica para LCP */}

@@ -3,14 +3,14 @@
 import { useModeloSelector } from "../../../components/ceroKm/useModeloSelector";
 import dynamic from "next/dynamic";
 import { VersionContent } from "../../../components/ceroKm/VersionContent";
-import { useIsDesktop } from "../../../hooks";
 import styles from "./0km-detalle.module.css";
 
 // ✅ Code splitting: VersionTabs solo se carga si hay múltiples versiones
 const VersionTabs = dynamic(
-  () => import("../../../components/ceroKm/VersionTabs").then((mod) => mod.VersionTabs),
+  () => import("../../../components/ceroKm/VersionTabs").then((mod) => ({ default: mod.VersionTabs })),
   {
     loading: () => <div style={{ minHeight: "60px" }} />, // Placeholder mínimo
+    ssr: false, // ✅ Client-only component
   }
 );
 

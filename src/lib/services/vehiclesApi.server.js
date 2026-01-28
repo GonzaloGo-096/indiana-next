@@ -158,8 +158,8 @@ export const vehiclesService = {
 
       const endpoint = `${baseURL}/photos/getallphotos?${searchParams.toString()}`;
 
-      // Logging detallado en desarrollo
-      if (process.env.NODE_ENV === "development") {
+      // Logging detallado en desarrollo (solo si hay problemas)
+      if (process.env.NODE_ENV === "development" && process.env.DEBUG_API === "true") {
         console.log("[API Server] ===== FETCH REQUEST =====");
         console.log("[API Server] Base URL:", baseURL);
         console.log("[API Server] Endpoint completo:", endpoint);
@@ -188,7 +188,7 @@ export const vehiclesService = {
       try {
         response = await fetchWithTimeout(endpoint, fetchOptions);
         
-        if (process.env.NODE_ENV === "development") {
+        if (process.env.NODE_ENV === "development" && process.env.DEBUG_API === "true") {
           console.log("[API Server] ✅ Response recibida:", response.status, response.statusText);
         }
       } catch (fetchError) {

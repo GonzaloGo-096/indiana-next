@@ -110,7 +110,7 @@
 
 /* ✅ Desktop: Botones fuera del carrusel */
 .actionButtonsDesktop {
-  display: none; /* Oculto en mobile */
+  display: none !important; /* Oculto en mobile - !important para sobrescribir estilos del módulo */
 }
 
 /* ✅ Mobile: Contenedores de botones (para dropdown) también ocupan 50% */
@@ -335,7 +335,7 @@
   
   /* ✅ Desktop: Mostrar botones fuera del carrusel */
   .actionButtonsDesktop {
-    display: flex;
+    display: flex !important;
     gap: 12px; /* ✅ Desktop: espacio entre botones */
     align-items: center;
     justify-content: flex-start; /* ✅ Alineados a la izquierda */

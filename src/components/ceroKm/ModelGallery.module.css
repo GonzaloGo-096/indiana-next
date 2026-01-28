@@ -44,6 +44,7 @@
   border-radius: 0;
   overflow: hidden;
   align-items: stretch; /* Asegurar que todos los items tengan la misma altura */
+  contain: layout style paint; /* ✅ Optimización: aislar repaints */
 }
 
 .gridItem {
@@ -69,6 +70,7 @@
   display: block; /* Eliminar espacio inline debajo */
   margin: 0;
   padding: 0;
+  will-change: transform; /* ✅ Optimización: GPU acceleration para hover */
 }
 
 .gridImage.loading {

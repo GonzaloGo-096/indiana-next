@@ -1,11 +1,14 @@
 "use client";
 
+import { memo } from "react";
 import Image from "next/image";
 import { ColorSelector } from "./ColorSelector";
 import styles from "./VersionContent.module.css";
 
 /**
  * VersionContent - Contenido de una versión (imagen, color, specs)
+ * 
+ * ✅ OPTIMIZADO: Memoizado para evitar re-renders innecesarios
  * 
  * @param {Object} props
  * @param {Object} props.version - Objeto versión activa
@@ -16,7 +19,7 @@ import styles from "./VersionContent.module.css";
  * @param {Object} props.imagenActual - { url, alt, hasImage }
  * @param {Function} props.onColorChange - Callback al cambiar color
  */
-export function VersionContent({
+export const VersionContent = memo(function VersionContent({
   version,
   modeloMarca = "",
   modeloNombre = "",
@@ -46,8 +49,8 @@ export function VersionContent({
               width={800}
               height={600}
               className={styles.image}
-              sizes="(max-width: 768px) 100vw, 50vw"
-              quality={80}
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+              quality={85}
               loading="lazy"
             />
           ) : (
@@ -98,7 +101,10 @@ export function VersionContent({
             )}
             <ul className={styles.equipamientoList}>
               {version.equipamiento.items.map((item, index) => (
-                <li key={index} className={styles.equipamientoItem}>
+                <li 
+                  key={`${version.id}-equip-${index}-${item.slice(0, 20).replace(/\s/g, '-')}`} 
+                  className={styles.equipamientoItem}
+                >
                   {item}
                 </li>
               ))}
@@ -120,8 +126,8 @@ export function VersionContent({
                 width={800}
                 height={600}
                 className={styles.image}
-                sizes="(max-width: 768px) 100vw, 50vw"
-                quality={80}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                quality={85}
                 loading="lazy"
               />
             ) : (
@@ -171,7 +177,10 @@ export function VersionContent({
               )}
               <ul className={styles.equipamientoList}>
                 {version.equipamiento.items.map((item, index) => (
-                  <li key={index} className={styles.equipamientoItem}>
+                  <li 
+                    key={`${version.id}-equip-${index}-${item.slice(0, 20).replace(/\s/g, '-')}`} 
+                    className={styles.equipamientoItem}
+                  >
                     {item}
                   </li>
                 ))}
@@ -183,5 +192,16 @@ export function VersionContent({
     </article>
     </>
   );
-}
+}, (prevProps, nextProps) => {
+  // ✅ Comparación personalizada para evitar re-renders innecesarios
+  return (
+    prevProps.version?.id === nextProps.version?.id &&
+    prevProps.colorActivo?.key === nextProps.colorActivo?.key &&
+    prevProps.imagenActual?.url === nextProps.imagenActual?.url &&
+    prevProps.modeloNombre === nextProps.modeloNombre &&
+    prevProps.modeloMarca === nextProps.modeloMarca
+  );
+});
+
+VersionContent.displayName = "VersionContent";
 

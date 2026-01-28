@@ -90,7 +90,8 @@ export const useCarMutation = () => {
       }
       
       const response = await vehiclesAdminService.createVehicle(formData)
-      return response.data
+      // ✅ response ya es el JSON parseado (no tiene .data)
+      return response
     },
     onSuccess: (data) => {
       if (process.env.NODE_ENV === 'development') {
@@ -139,7 +140,8 @@ export const useCarMutation = () => {
         })
       }
       const response = await vehiclesAdminService.updateVehicle(id, formData)
-      return response.data
+      // ✅ response ya es el JSON parseado (no tiene .data)
+      return response
     },
     onSuccess: (data, variables) => {
       if (process.env.NODE_ENV === 'development') {

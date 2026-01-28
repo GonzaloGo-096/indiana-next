@@ -12,7 +12,7 @@ import { useForm } from 'react-hook-form'
 import { useImageReducer, IMAGE_FIELDS } from '@/components/admin/hooks/useImageReducer'
 import styles from './CarFormRHF.module.css'
 import { FORM_RULES } from '@/constants/forms'
-import { isValidWebp, isUnderMaxSize, filterValidFiles } from '@/utils/files'
+import { isValidImage, filterValidFiles } from '@/utils/files'
 import { normalizeCilindrada } from '@/utils/formatters'
 
 // ✅ CONSTANTES
@@ -226,7 +226,7 @@ const CarFormRHF = ({
       <div className={styles.requiredFieldsSection}>
         <h4 className={styles.subsectionTitle}>
           <span className={styles.requiredBadge}>Fotos Obligatorias</span>
-          <span className={styles.subsectionHint}>Formato WebP · Máx {FORM_RULES.MAX_FILE_SIZE / 1024 / 1024}MB c/u</span>
+          <span className={styles.subsectionHint}>Formatos: JPG, PNG, WEBP · Se optimizarán automáticamente</span>
         </h4>
         
         <div className={styles.principalImagesGrid}>
@@ -264,20 +264,16 @@ const CarFormRHF = ({
                 <div className={styles.imageActions}>
                   <input
                     type="file"
-                    accept=".webp"
+                    accept="image/jpeg,image/png,image/webp"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
-                        const isValidType = isValidWebp(file)
-                        const isValidSize = isUnderMaxSize(file, FORM_RULES.MAX_FILE_SIZE)
+                        const isValidType = isValidImage(file)
                         if (!isValidType) {
-                          setError(field, { type: 'manual', message: 'Formato inválido. Solo .webp' })
+                          setError(field, { type: 'manual', message: 'Formato inválido. Solo JPG, PNG o WEBP' })
                           return
                         }
-                        if (!isValidSize) {
-                          setError(field, { type: 'manual', message: `La imagen supera ${FORM_RULES.MAX_FILE_SIZE / 1024 / 1024}MB` })
-                          return
-                        }
+                        // ✅ Validación de tamaño eliminada: Sharp optimizará las imágenes en la API Route
                         clearErrors(field)
                         setFile(field, file)
                       }
@@ -305,7 +301,7 @@ const CarFormRHF = ({
       <div className={styles.optionalFieldsSection}>
         <h4 className={styles.subsectionTitle}>
           <span className={styles.optionalBadge}>Fotos Opcionales</span>
-          <span className={styles.subsectionHint}>Hasta {FORM_RULES.MAX_EXTRA_PHOTOS} fotos · WebP · Máx {FORM_RULES.MAX_FILE_SIZE / 1024 / 1024}MB c/u</span>
+          <span className={styles.subsectionHint}>Hasta {FORM_RULES.MAX_EXTRA_PHOTOS} fotos · JPG, PNG, WEBP · Se optimizarán automáticamente</span>
         </h4>
         
         {/* ✅ FOTOS EXISTENTES (Solo en modo EDIT) */}
@@ -360,17 +356,18 @@ const CarFormRHF = ({
             <label className={styles.multipleInputLabel}>
               <input
                 type="file"
-                accept=".webp"
+                accept="image/jpeg,image/png,image/webp"
                 multiple
                 onChange={(e) => {
                   const files = e.target.files
                   if (files && files.length > 0) {
+                    // ✅ Validación de tamaño eliminada: Sharp optimizará las imágenes en la API Route
                     const validFiles = filterValidFiles(files, {
-                      maxBytes: FORM_RULES.MAX_FILE_SIZE,
-                      acceptWebpOnly: true
+                      maxBytes: null, // Sin límite de tamaño
+                      acceptWebpOnly: false
                     })
                     if (validFiles.length !== files.length) {
-                      setError('fotosExtra', { type: 'manual', message: 'Algunas fotos fueron descartadas (no .webp o >10MB)' })
+                      setError('fotosExtra', { type: 'manual', message: 'Algunas fotos fueron descartadas (solo se permiten JPG, PNG o WEBP)' })
                     } else {
                       clearErrors('fotosExtra')
                     }

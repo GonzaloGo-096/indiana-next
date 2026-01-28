@@ -1,3 +1,24 @@
+/* Media queries usan píxeles fijos: en CSS Modules var() puede no resolverse hasta que se carga globals. */
+/* Valores alineados con variables.css: --breakpoint-md 768, --breakpoint-lg 992, --navbar-backdrop-hide-min 769 */
+
+/* Backdrop del menú móvil (scroll-lock visual; body.menu-open en Nav/globals) */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+@media (min-width: 769px) {
+  .backdrop {
+    display: none;
+  }
+}
+
 .navbar {
   background: rgba(18, 18, 18, 0.8);
   backdrop-filter: blur(12px);
@@ -12,7 +33,7 @@
 }
 
 .navbar.navbarMenuOpen {
-  z-index: 1002;
+  z-index: 1002; /* Por encima del backdrop (1000) y navMobile (1001) */
 }
 
 .container {
@@ -23,6 +44,7 @@
   margin: 0;
   padding: 8px 24px 8px 0;
   position: relative;
+  z-index: 1;
 }
 
 .brand {
@@ -254,6 +276,7 @@
   display: flex;
 }
 
+/* Menú móvil y estilos asociados (≤768px) */
 @media (max-width: 768px) {
   .container {
     padding: 6px 16px 6px 0;
@@ -277,12 +300,10 @@
     display: flex;
   }
 
+  /* Panel full-viewport: cerrado fuera de vista, no debe capturar scroll/touch */
   .navMobile {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     width: 100vw !important;
     height: 100vh !important;
     max-width: 100vw !important;
@@ -302,13 +323,15 @@
     z-index: 1001;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    will-change: transform;
     overflow-x: hidden;
+    will-change: transform;
+    pointer-events: none; /* Crítico: cerrado no intercepta scroll ni touch */
   }
 
   .nav.open {
     transform: translateY(0);
     visibility: visible;
+    pointer-events: auto; /* Abierto: panel y enlaces reciben eventos */
   }
 
   .navList {
@@ -318,7 +341,6 @@
     align-items: flex-start;
   }
   
-  /* ✅ NUEVO: Dropdown responsive para mobile */
   .dropdown {
     width: auto;
     display: inline-block;
@@ -428,6 +450,7 @@
   }
 }
 
+/* Desktop: nav horizontal fijo, sin panel móvil (≥992px) */
 @media (min-width: 992px) {
   .navDesktop {
     position: absolute;
@@ -438,10 +461,11 @@
     box-shadow: none;
     display: flex;
   }
-  
+
   .navMobile {
     display: none !important;
   }
 }
+
 
 

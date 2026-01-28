@@ -1,3 +1,4 @@
+import { memo } from "react";
 import Image from "next/image";
 import styles from "./FeatureSection.module.css";
 
@@ -5,6 +6,7 @@ import styles from "./FeatureSection.module.css";
  * FeatureSection - Sección de características destacadas
  * 
  * ✅ Server Component - Solo renderiza contenido estático
+ * ✅ OPTIMIZADO: Memoizado para evitar re-renders innecesarios
  * 
  * Mobile-first:
  * - Mobile: altura automática, sin centrado vertical
@@ -20,7 +22,7 @@ import styles from "./FeatureSection.module.css";
  * @param {string} props.modeloNombre - Nombre del modelo (ej: '208')
  * @param {boolean} props.isLast - Indica si es la última FeatureSection
  */
-export function FeatureSection({
+export const FeatureSection = memo(function FeatureSection({
   feature,
   reverse = false,
   modeloNombre = "",
@@ -127,11 +129,14 @@ export function FeatureSection({
                 )}
                 {items && items.length > 0 && (
                   <ul className={styles.itemsList}>
-                    {items.map((item, index) => (
-                      <li key={index} className={styles.item}>
-                        {item}
-                      </li>
-                    ))}
+                {items.map((item, index) => (
+                  <li 
+                    key={`${feature.id}-item-${index}-${item.slice(0, 20).replace(/\s/g, '-')}`} 
+                    className={styles.item}
+                  >
+                    {item}
+                  </li>
+                ))}
                   </ul>
                 )}
               </div>
@@ -143,11 +148,14 @@ export function FeatureSection({
               )}
               {items && items.length > 0 && (
                 <ul className={styles.itemsList}>
-                  {items.map((item, index) => (
-                    <li key={index} className={styles.item}>
-                      {item}
-                    </li>
-                  ))}
+                {items.map((item, index) => (
+                  <li 
+                    key={`${feature.id}-item-${index}-${item.slice(0, 20).replace(/\s/g, '-')}`} 
+                    className={styles.item}
+                  >
+                    {item}
+                  </li>
+                ))}
                 </ul>
               )}
             </>
@@ -156,7 +164,17 @@ export function FeatureSection({
       </div>
     </section>
   );
-}
+}, (prevProps, nextProps) => {
+  // ✅ Comparación personalizada para evitar re-renders innecesarios
+  return (
+    prevProps.feature?.id === nextProps.feature?.id &&
+    prevProps.reverse === nextProps.reverse &&
+    prevProps.isLast === nextProps.isLast &&
+    prevProps.modeloNombre === nextProps.modeloNombre
+  );
+});
+
+FeatureSection.displayName = "FeatureSection";
 
 export default FeatureSection;
 

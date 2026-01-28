@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./Nav.module.css";
@@ -12,52 +12,84 @@ const Nav = () => {
 
   const isActive = (path) => pathname === path;
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const toggleMenu = useCallback(() => {
+    setIsMenuOpen((prev) => !prev);
+  }, []);
 
-  const closeMenu = () => {
+  const closeMenu = useCallback(() => {
     setIsMenuOpen(false);
     setIs0kmDropdownOpen(false);
-  };
+  }, []);
 
-  // ✅ OPTIMIZADO: Prevenir scroll del body sin causar reflow
+  const handleBackdropClick = useCallback(() => {
+    closeMenu();
+  }, [closeMenu]);
+
+  /* Scroll-lock: body.menu-open (globals.css) bloquea scroll; preservar/restaurar scrollY evita saltos */
   useEffect(() => {
     if (isMenuOpen) {
-      // ✅ Usar clase CSS en lugar de style directo (mejor performance)
+      const scrollY = typeof window !== "undefined" ? window.scrollY ?? window.pageYOffset : 0;
       document.body.classList.add("menu-open");
-    } else {
-      document.body.classList.remove("menu-open");
+      document.body.style.setProperty("top", `-${scrollY}px`);
+
+      return () => {
+        document.body.classList.remove("menu-open");
+        document.body.style.removeProperty("top");
+        if (typeof window !== "undefined") {
+          window.scrollTo(0, scrollY);
+        }
+      };
     }
-    return () => {
-      document.body.classList.remove("menu-open");
-    };
+
+    document.body.classList.remove("menu-open");
+    document.body.style.removeProperty("top");
+    return undefined;
   }, [isMenuOpen]);
 
-  const toggle0kmDropdown = (e) => {
+  /* Cerrar menú con tecla Escape */
+  useEffect(() => {
+    if (!isMenuOpen) return;
+
+    const handleEscape = (e) => {
+      if (e.key === "Escape") closeMenu();
+    };
+
+    window.addEventListener("keydown", handleEscape);
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [isMenuOpen, closeMenu]);
+
+  const toggle0kmDropdown = useCallback((e) => {
     e.preventDefault();
-    setIs0kmDropdownOpen(!is0kmDropdownOpen);
-  };
+    setIs0kmDropdownOpen((prev) => !prev);
+  }, []);
 
-  const handle0kmMouseEnter = () => {
+  const handle0kmMouseEnter = useCallback(() => {
     setIs0kmDropdownOpen(true);
-  };
+  }, []);
 
-  const handle0kmMouseLeave = () => {
+  const handle0kmMouseLeave = useCallback(() => {
     setIs0kmDropdownOpen(false);
-  };
+  }, []);
 
-  const handleScrollToFooter = (event) => {
+  const handleScrollToFooter = useCallback((event) => {
     event.preventDefault();
     const footerEl = document.getElementById("contacto");
     if (footerEl) {
       footerEl.scrollIntoView({ behavior: "smooth", block: "start" });
     }
     closeMenu();
-  };
+  }, [closeMenu]);
 
   return (
     <>
+      {isMenuOpen && (
+        <div
+          className={styles.backdrop}
+          onClick={handleBackdropClick}
+          aria-hidden="true"
+        />
+      )}
+
       <nav
         className={`${styles.navbar} ${isMenuOpen ? styles.navbarMenuOpen : ""}`}
       >
@@ -169,7 +201,6 @@ const Nav = () => {
         </div>
       </nav>
 
-      {/* Menú mobile fuera del nav para cubrir toda la pantalla */}
       <div
         className={`${styles.nav} ${styles.navMobile} ${isMenuOpen ? styles.open : ""}`}
       >

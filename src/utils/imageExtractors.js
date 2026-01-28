@@ -160,3 +160,4 @@ export const extractFirstImageUrl = (vehicle, fallback = DEFAULT_CAR_IMAGE) => {
 };
 
 
+

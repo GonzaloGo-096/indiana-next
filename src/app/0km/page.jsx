@@ -4,6 +4,7 @@ import { VehiculosCarouselClient } from "../../components/0km/VehiculosCarouselC
 import { UtilitariosCarouselClient } from "../../components/0km/UtilitariosCarouselClient";
 import { getSiteUrl, absoluteUrl } from "../../lib/site-url";
 import Image from "next/image";
+import Link from "next/link";
 import styles from "./0km.module.css";
 
 /**
@@ -165,7 +166,7 @@ export default function CeroKilometrosPage() {
             />
             <div className={styles.sectionLine}></div>
           </div>
-          <h2 className={styles.sectionTitle}>Gama Peugeot – Autos</h2>
+          <h2 className={styles.sectionTitle}>Gama de vehículos</h2>
         </div>
       </div>
       {/* ✅ Client Component para interactividad del carrusel */}
@@ -186,7 +187,7 @@ export default function CeroKilometrosPage() {
             />
             <div className={styles.sectionLine}></div>
           </div>
-          <h2 className={styles.sectionTitle}>Gama Peugeot – Utilitarios</h2>
+          <h2 className={styles.sectionTitle}>Gama de utilitarios</h2>
         </div>
       </div>
       {/* ✅ Client Component para interactividad del carrusel */}
@@ -199,19 +200,10 @@ export default function CeroKilometrosPage() {
             Consultá nuestros planes de financiación para modelos Peugeot 0km.
             Opciones flexibles adaptadas a tu necesidad.
           </p>
+          <Link href="/planes" className={styles.financingLink}>
+            Ver planes
+          </Link>
         </div>
-      </section>
-
-      <section className={styles.editorialClose}>
-        <h3 className={styles.editorialSubtitle}>
-          Concesionaria oficial Peugeot en Tucumán
-        </h3>
-        <p className={styles.editorialText}>
-          Con <span className={styles.highlightYears}>15 años</span> de
-          experiencia, Indiana Peugeot es tu concesionaria oficial en Tucumán.
-          Gama completa de modelos 0km, garantía oficial Peugeot, servicio
-          postventa certificado y opciones de financiación.
-        </p>
       </section>
 
       <section className={styles.ctaSection}>

@@ -32,8 +32,12 @@ import styles from "./CardSimilar.module.css";
 
 /**
  * Componente CardSimilar optimizado
+ * 
+ * @param {Object} props
+ * @param {Object} props.auto - Datos del vehículo
+ * @param {boolean} props.isPriority - Si es una de las primeras imágenes (LCP)
  */
-export const CardSimilar = memo(({ auto }) => {
+export const CardSimilar = memo(({ auto, isPriority = false }) => {
   const router = useRouter();
 
   // ✅ VALIDAR DATOS DEL VEHÍCULO
@@ -128,10 +132,11 @@ export const CardSimilar = memo(({ auto }) => {
           width={400}
           height={225}
           className={styles["card__image"]}
-          loading="lazy"
-          quality={80}
+          priority={isPriority}
+          loading={isPriority ? "eager" : "lazy"}
+          quality={isPriority ? 85 : 80}
           sizes="(max-width: 768px) 240px, 320px"
-          fetchPriority="auto"
+          fetchPriority={isPriority ? "high" : "auto"}
         />
       </div>
 

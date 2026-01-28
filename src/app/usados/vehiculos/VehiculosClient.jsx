@@ -65,6 +65,7 @@ export default function VehiculosClient({
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const filterFormRef = useRef(null);
   const sortButtonRef = useRef(null);
+  const sortButtonRefDesktop = useRef(null);
 
   // ✅ OPTIMIZADO: Extraer todos los valores de searchParams en un solo useMemo
   // Esto reduce múltiples re-renders y puede ayudar con el error de Suspense
@@ -411,7 +412,7 @@ export default function VehiculosClient({
           />
         </div>
 
-        {/* Botones de acción - dentro del carrusel */}
+        {/* Botones de acción - dentro del carrusel (mobile) */}
         <ActionButtons
           onFilterClick={handleFilterClick}
           onSortClick={handleSortClick}
@@ -424,6 +425,19 @@ export default function VehiculosClient({
           className={styles.actionButtons}
         />
       </div>
+
+      {/* Botones de acción - fuera del carrusel (desktop) */}
+      <ActionButtons
+        onFilterClick={handleFilterClick}
+        onSortClick={handleSortClick}
+        onSortChange={handleSortChange}
+        onCloseSortDropdown={handleCloseSortDropdown}
+        selectedSort={selectedSort}
+        isSortDisabled={isSortDisabled}
+        isSortDropdownOpen={isSortDropdownOpen}
+        sortButtonRef={sortButtonRefDesktop}
+        className={styles.actionButtonsDesktop}
+      />
 
       <div className={styles.container}>
         {/* Grid de vehículos */}

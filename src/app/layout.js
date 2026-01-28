@@ -1,10 +1,13 @@
 import { Poppins, Barlow_Condensed } from "next/font/google";
+import dynamic from "next/dynamic";
 import "./globals.css";
 import { getSiteUrl } from "../lib/site-url";
 import Nav from "../components/layout/Nav";
-import Footer from "../components/layout/Footer";
-import AnalyticsWrapper from "../components/layout/AnalyticsWrapper";
-import { ScrollToTopOnMount } from "../components/layout/ScrollToTopOnMount";
+import ClientOnlyComponents from "../components/layout/ClientOnlyComponents";
+
+const Footer = dynamic(() => import("../components/layout/Footer"), {
+  ssr: true,
+});
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -57,14 +60,12 @@ export default function RootLayout({ children }) {
       <body
         className={`${poppins.variable} ${barlowCondensed.variable}`}
       >
-        {/* ✅ Scroll al top al cargar página - ANTES de cualquier contenido */}
-        <ScrollToTopOnMount />
+        <ClientOnlyComponents />
         <Nav />
         <main className="main-content">
           {children}
         </main>
         <Footer />
-        <AnalyticsWrapper />
       </body>
     </html>
   );

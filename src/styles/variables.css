@@ -11,13 +11,15 @@
 :root {
     /* ===== VARIABLES DE FUENTES ===== */
     --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Inter', Arial, sans-serif;
-    /* Las variables --font-condensed y --font-poppins se definen en layout.js desde next/font */
-    --font-condensed: 'Barlow Condensed', var(--font-sans);
-    --font-poppins: 'Poppins', var(--font-sans);
-    /* Alias para compatibilidad */
-    --font-display: var(--font-condensed);
-    --font-family-primary: var(--font-condensed);
-    --font-family: var(--font-condensed);
+    /* NOTA: --font-condensed y --font-poppins se inyectan automáticamente desde layout.js con next/font */
+    /* Estas variables se aplican al body, no las redefinimos aquí para evitar conflictos */
+    /* Fallback para cuando las variables de next/font no estén disponibles */
+    --font-condensed-fallback: 'Barlow Condensed', var(--font-sans);
+    --font-poppins-fallback: 'Poppins', var(--font-sans);
+    /* Alias para compatibilidad - usar las variables inyectadas por next/font con fallback */
+    --font-display: var(--font-condensed, var(--font-condensed-fallback));
+    --font-family-primary: var(--font-condensed, var(--font-condensed-fallback));
+    --font-family: var(--font-condensed, var(--font-condensed-fallback));
 
     /* ===== VARIABLES DE ESPACIADO ===== */
     --spacing-1: 0.25rem;
@@ -250,6 +252,8 @@
     --mobile-max: 767px;
     --tablet-min: 768px;
     --desktop-min: 992px;
+    /* Nav: ocultar backdrop desde 769px para que en 768px (último px móvil) siga visible */
+    --navbar-backdrop-hide-min: 769px;
 
     --breakpoint-xs-value: 0;
     --breakpoint-sm-value: 576;
