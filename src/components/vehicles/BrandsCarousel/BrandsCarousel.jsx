@@ -21,13 +21,12 @@ import { BRAND_LOGOS } from "../../../config/brandLogos";
 import { ChevronIcon } from "../../ui/icons/ChevronIcon";
 import styles from "./BrandsCarousel.module.css";
 
-// Orden del carrusel: Volkswagen, Audi, Renault a la izquierda; Ford, Nissan, Honda a la derecha
+// Orden del carrusel: Volkswagen al final
 const CAROUSEL_ORDER = [
   "peugeot",
-  "volkswagen",
+  "fiat",
   "audi",
   "renault",
-  "fiat",
   "toyota",
   "citroen",
   "chevrolet",
@@ -38,6 +37,7 @@ const CAROUSEL_ORDER = [
   "ford",
   "nissan",
   "honda",
+  "volkswagen",
 ];
 
 const filterBrand = (brand) =>

@@ -184,9 +184,9 @@ export default function CeroKilometrosPage() {
       {/* ✅ Client Component para interactividad del carrusel */}
       <UtilitariosCarouselClient cards={utilitariosCards} />
 
-      <section className={styles.financingBridge}>
+      <section className={styles.financingBridge} aria-labelledby="financiacion-heading">
+        <h3 id="financiacion-heading" className={styles.financingTitle}>Financiación disponible</h3>
         <div className={styles.financingContent}>
-          <h3 className={styles.financingTitle}>Financiación disponible</h3>
           <p className={styles.financingText}>
             Consultá nuestros planes de financiación para modelos Peugeot 0km.
             Opciones flexibles adaptadas a tu necesidad.

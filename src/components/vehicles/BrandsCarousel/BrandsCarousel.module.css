@@ -173,12 +173,33 @@
   }
 
   .carouselTrack {
-    gap: 24px; /* ✅ Aumentado de 16px a 24px en mobile para más separación */
-    padding: 8px 12px; /* ✅ Reducido padding lateral de 24px a 12px */
+    gap: 18px; /* ✅ Mobile: más juntos que desktop */
+    padding: 8px 12px;
   }
 
   .brandItem {
-    padding: 0 6px; /* ✅ Aumentado de 4px a 6px para más separación */
+    height: 68px; /* ✅ Mobile: sutilmente más chico que 80px */
+    padding: 0 4px;
+  }
+
+  .brandLogo {
+    max-height: 68px;
+    max-width: 136px;
+  }
+
+  .brandLogoSmall {
+    max-height: 60px;
+    max-width: 120px;
+  }
+
+  .brandLogoLarge {
+    max-height: 80px;
+    max-width: 160px;
+  }
+
+  .brandLogoFord {
+    max-height: 60px;
+    max-width: 120px;
   }
 }
 

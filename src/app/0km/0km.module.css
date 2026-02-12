@@ -440,35 +440,27 @@
   }
 }
 
+/* Fondo blanco como si estuviera arriba del resto (sin relieve, capa superior) */
 .ctaSection {
   position: relative;
   text-align: center;
   padding: clamp(48px, 6vw, 64px) clamp(24px, 4vw, 48px);
   margin: clamp(48px, 6vw, 80px) auto 0;
   max-width: 800px;
-  background: linear-gradient(
-    135deg,
-    rgba(6, 27, 156, 0.03) 0%,
-    rgba(6, 27, 156, 0.01) 100%
-  );
-  border-radius: var(--border-radius-xl);
-  border: 1px solid var(--color-neutral-200);
-  box-shadow: 
-    0 4px 24px rgba(0, 0, 0, 0.04),
-    0 1px 4px rgba(0, 0, 0, 0.02);
+  background: var(--color-white);
   overflow: hidden;
 }
 
 .ctaSection::before {
   content: '';
   position: absolute;
-  top: -50%;
-  right: -20%;
-  width: 400px;
-  height: 400px;
+  top: -30%;
+  right: -15%;
+  width: 280px;
+  height: 280px;
   background: radial-gradient(
     circle,
-    rgba(6, 27, 156, 0.05) 0%,
+    rgba(6, 27, 156, 0.03) 0%,
     transparent 70%
   );
   border-radius: 50%;
@@ -548,28 +540,16 @@
   }
 }
 
+/* Título arriba; contenido dentro del bloque con relieve (bordes arriba/abajo, puntas semirredondeadas) */
 .financingBridge {
   position: relative;
   max-width: var(--container-max-width);
-  margin: clamp(48px, 6vw, 64px) auto 0;
-  padding: clamp(48px, 6vw, 64px) clamp(24px, 4vw, 48px);
-  background: linear-gradient(
-    135deg,
-    rgba(6, 27, 156, 0.02) 0%,
-    rgba(6, 27, 156, 0.01) 100%
-  );
-  border-top: 1px solid var(--color-neutral-200);
-  border-bottom: 1px solid var(--color-neutral-200);
-}
-
-.financingContent {
-  text-align: center;
-  max-width: 600px;
-  margin: 0 auto;
+  margin: clamp(64px, 10vw, 96px) auto 0;
+  padding: 0 clamp(24px, 4vw, 48px);
 }
 
 .financingTitle {
-  margin: 0 0 clamp(16px, 2.5vw, 20px) 0;
+  margin: 0 auto clamp(20px, 3vw, 28px);
   font-family: var(--font-condensed);
   font-size: clamp(2rem, 6vw, 3rem);
   font-weight: var(--font-weight-bold);
@@ -577,6 +557,51 @@
   text-transform: uppercase;
   letter-spacing: 2px;
   line-height: 1.1;
+  text-align: left;
+  max-width: 600px;
+}
+
+/* Bloque de contenido con relieve: bordes superior e inferior, esquinas semirredondeadas */
+.financingContent {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: clamp(40px, 6vw, 56px) clamp(24px, 4vw, 40px);
+  background: var(--color-neutral-50);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(0, 0, 0, 0.02),
+    inset 0 5px 12px -4px rgba(0, 0, 0, 0.06),
+    inset 0 -5px 12px -4px rgba(0, 0, 0, 0.06);
+}
+
+/* Mobile: bloque a todo el ancho del viewport, no cuadrado */
+@media (max-width: 767px) {
+  .financingBridge {
+    max-width: none;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .financingTitle {
+    padding-left: var(--container-padding-mobile);
+    padding-right: var(--container-padding-mobile);
+  }
+
+  .financingContent {
+    max-width: none;
+    width: 100%;
+    box-sizing: border-box;
+    padding: clamp(32px, 8vw, 48px) var(--container-padding-mobile);
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
 }
 
 .financingText {
@@ -689,7 +714,11 @@
   }
   
   .financingBridge {
-    padding: clamp(56px, 7vw, 72px) clamp(32px, 4vw, 48px);
+    padding: 0 clamp(32px, 4vw, 48px);
+  }
+  
+  .financingContent {
+    padding: clamp(40px, 6vw, 56px) clamp(32px, 4vw, 48px);
   }
   
   .sectionHeader {
@@ -741,7 +770,11 @@
   }
   
   .financingBridge {
-    padding: clamp(48px, 6vw, 56px) clamp(48px, 6vw, 64px);
+    padding: 0 clamp(48px, 6vw, 64px);
+  }
+  
+  .financingContent {
+    padding: clamp(48px, 6vw, 64px) clamp(48px, 6vw, 56px);
   }
   
   .editorialClose {
