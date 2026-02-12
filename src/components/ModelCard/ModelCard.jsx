@@ -11,6 +11,7 @@
 import { memo } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { PeugeotIcon } from "../ui/icons/PeugeotIcon";
 import styles from "./ModelCard.module.css";
 
 /**
@@ -40,7 +41,14 @@ function ModelCard({ src, alt, titulo, slug }) {
       </div>
 
       <div className={styles.content}>
-        <h3 className={styles.title}>{titulo}</h3>
+        <div className={styles.titleRow}>
+          <PeugeotIcon
+            className={styles.peugeotLogo}
+            size={44}
+            color="#ffffff"
+          />
+          <h3 className={styles.title}>{titulo}</h3>
+        </div>
       </div>
     </Link>
   );

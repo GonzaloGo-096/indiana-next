@@ -141,23 +141,15 @@ export default function CeroKilometrosPage() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      <header className={styles.header}>
-        <div className={styles.headerContent}>
-          <h1 className={styles.title}>Catálogo Peugeot 0km</h1>
-          <p className={styles.subtitle}>
-            Concesionaria oficial Peugeot en Tucumán. Gama completa de modelos
-            nuevos con garantía oficial y financiación disponible.
-          </p>
-        </div>
-      </header>
 
       <div className={styles.sectionHeader}>
         <div className={styles.sectionContent}>
+          <h2 className={styles.sectionTitle}>Vehículos</h2>
           <div className={styles.sectionLogoWrapper}>
             <div className={styles.sectionLine}></div>
             <Image
-              src="/assets/logos/logos-peugeot/Peugeot_logo_PNG8.webp"
-              alt="Logo Peugeot"
+              src="/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp"
+              alt="Logo Indiana Peugeot"
               width={150}
               height={150}
               className={styles.sectionLogo}
@@ -166,7 +158,6 @@ export default function CeroKilometrosPage() {
             />
             <div className={styles.sectionLine}></div>
           </div>
-          <h2 className={styles.sectionTitle}>Gama de vehículos</h2>
         </div>
       </div>
       {/* ✅ Client Component para interactividad del carrusel */}
@@ -174,11 +165,12 @@ export default function CeroKilometrosPage() {
 
       <div className={styles.sectionHeader}>
         <div className={styles.sectionContent}>
+          <h2 className={styles.sectionTitle}>Utilitarios</h2>
           <div className={styles.sectionLogoWrapper}>
             <div className={styles.sectionLine}></div>
             <Image
-              src="/assets/logos/logos-peugeot/Peugeot_logo_PNG8.webp"
-              alt="Logo Peugeot"
+              src="/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp"
+              alt="Logo Indiana Peugeot"
               width={150}
               height={150}
               className={styles.sectionLogo}
@@ -187,7 +179,6 @@ export default function CeroKilometrosPage() {
             />
             <div className={styles.sectionLine}></div>
           </div>
-          <h2 className={styles.sectionTitle}>Gama de utilitarios</h2>
         </div>
       </div>
       {/* ✅ Client Component para interactividad del carrusel */}

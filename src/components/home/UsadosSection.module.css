@@ -57,10 +57,11 @@
 }
 
 .titleLogo {
-  width: clamp(88px, 14vw, 128px);
+  width: clamp(100px, 16vw, 148px);
   height: auto;
   object-fit: contain;
   display: block;
+  margin-bottom: 10px; /* Un poco más de espacio hacia abajo, sutil */
 }
 
 .title {

@@ -12,24 +12,31 @@
  * @version 3.0.0 - Rediseño Premium
  */
 
-/* ===== CARD PRINCIPAL - Diseño Elegante ===== */
+/* ===== CARD PRINCIPAL - Blanco arriba, gradiente corto gris→blanco, negro fuerte abajo ===== */
 .card {
   position: relative;
   display: flex;
   flex-direction: column;
-  background: var(--color-white);
+  background: linear-gradient(
+    to bottom,
+    #ffffff 0%,
+    #ffffff 51%,
+    #f2f2f2 55%,
+    #4a4a4a 62%,
+    #2d2d2d 80%,
+    #1a1a1a 100%
+  );
   border-radius: var(--border-radius-xl);
   overflow: hidden;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
   
-  border: 1.5px solid var(--color-neutral-200);
+  border: none;
   
   transition: 
     transform var(--transition-smooth),
-    box-shadow var(--transition-smooth),
-    border-color var(--transition-smooth);
+    box-shadow var(--transition-smooth);
   
   min-width: clamp(260px, 30vw, 320px);
   max-width: clamp(260px, 30vw, 320px);
@@ -42,7 +49,6 @@
 
 .card:hover {
   transform: translateY(-8px) scale(1.02);
-  border-color: #000000;
   box-shadow: 
     0 16px 48px rgba(0, 0, 0, 0.15),
     0 8px 16px rgba(0, 0, 0, 0.1),
@@ -64,11 +70,13 @@
   width: 100%;
   aspect-ratio: 4 / 3;
   overflow: hidden;
+  /* Coherente con la card: intermedio entre más blanco y más gris */
   background: linear-gradient(
-    135deg,
-    var(--color-neutral-50) 0%,
-    var(--color-white) 50%,
-    var(--color-neutral-50) 100%
+    to bottom,
+    #ffffff 0%,
+    #ffffff 62%,
+    #f5f5f5 78%,
+    #d4d4d4 100%
   );
 }
 
@@ -124,12 +132,24 @@
   align-items: center;
   justify-content: center;
   padding: clamp(20px, 3vw, 28px) clamp(16px, 2vw, 24px) clamp(24px, 3vw, 32px);
-  background: linear-gradient(
-    to bottom,
-    var(--color-white) 0%,
-    var(--color-neutral-50) 100%
-  );
-  border-top: 1px solid var(--color-neutral-100);
+  /* Zona inferior: gris oscuro → negro (transparente para mostrar el gradiente de .card) */
+  background: transparent;
+  border-top: none;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 2vw, 14px);
+  flex-wrap: nowrap;
+}
+
+.peugeotLogo {
+  flex-shrink: 0;
+  width: clamp(38px, 5.5vw, 44px);
+  height: auto;
+  object-fit: contain;
 }
 
 .title {
@@ -137,18 +157,19 @@
   margin: 0;
   font-size: clamp(2rem, 4vw, 2.75rem);
   font-weight: var(--font-weight-extrabold);
-  color: var(--color-text-primary);
+  color: #ffffff;
   font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: clamp(2px, 0.4vw, 4px);
   text-align: center;
   line-height: 1.1;
-  transition: color var(--transition-smooth);
+  transition: color var(--transition-smooth), text-shadow var(--transition-smooth);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .card:hover .title {
-  color: var(--color-brand-500);
-  text-shadow: 0 2px 8px var(--color-brand-500-rgba-10);
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.4), 0 1px 2px rgba(0, 0, 0, 0.4);
 }
 
 @media (min-width: 768px) {

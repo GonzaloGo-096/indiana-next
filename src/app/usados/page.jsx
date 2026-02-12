@@ -110,14 +110,14 @@ export default async function UsadosPage() {
         </div>
       </section>
 
-      {/* Sección 2: Promociones — bloque título + texto + imagen (responsive) */}
+      {/* Sección 2: Promociones — título arriba del contenedor; contenido (texto + imagen) con padding importante */}
       <section className={styles.promocionesSection} aria-labelledby="promociones-heading">
+        <h2 id="promociones-heading" className={styles.promocionesSectionTitle}>
+          Promociones y Formas de Pago
+        </h2>
         <div className={styles.promocionesContainer}>
           <div className={styles.promocionesBlock}>
             <div className={styles.promocionesContent}>
-              <h2 id="promociones-heading" className={styles.promocionesBlockTitle}>
-                Promociones y Formas de Pago
-              </h2>
               <p className={styles.promocionesBlockText}>
                 Financiación con cuotas fijas, garantía incluida en todos los usados
                 y múltiples formas de pago. Consultá las opciones para tu vehículo.
@@ -131,8 +131,8 @@ export default async function UsadosPage() {
               >
                 <svg
                   className={styles.promocionesWhatsappIcon}
-                  width="20"
-                  height="20"
+                  width="24"
+                  height="24"
                   viewBox="0 0 24 24"
                   fill="currentColor"
                   aria-hidden

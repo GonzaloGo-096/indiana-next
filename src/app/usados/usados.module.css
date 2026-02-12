@@ -12,7 +12,10 @@
 
 /* ===== SECCIÓN 1: VEHÍCULOS ===== */
 .vehiclesSection {
-  padding: clamp(3rem, 6vw, 5rem) 0;
+  padding-top: clamp(3rem, 6vw, 5rem);
+  padding-bottom: clamp(1.5rem, 3vw, 2.5rem); /* Mitad del padding superior */
+  padding-left: 0;
+  padding-right: 0;
   background: var(--color-white);
 }
 
@@ -87,18 +90,51 @@
 /* ===== SECCIÓN 2: PROMOCIONES ===== */
 .promocionesSection {
   padding: clamp(3rem, 6vw, 5rem) 0;
-  background: var(--color-neutral-50);
 }
 
+/* Bloque del título: en sincronía con "Vehículos Usados" (mismo tamaño, alineado a la izquierda), más espacio sobre el contenedor */
+.promocionesSectionTitle {
+  margin: 0 auto;
+  padding: 0 var(--container-padding-mobile) clamp(2.5rem, 5vw, 3.5rem);
+  font-family: var(--font-condensed);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  text-align: left;
+  max-width: var(--container-max-width);
+  background: var(--color-white);
+}
+
+@media (min-width: 768px) {
+  .promocionesSectionTitle {
+    padding: 0 var(--container-padding-desktop) clamp(2.75rem, 5vw, 3.5rem);
+  }
+}
+
+/* Bloque de contenido: caja con bordes redondeados y mismo efecto de relieve en los cuatro lados */
 .promocionesContainer {
   max-width: var(--container-max-width);
   margin: 0 auto;
-  padding: 0 var(--container-padding-mobile);
+  padding: clamp(2rem, 6vw, 4rem) var(--container-padding-mobile);
+  padding-bottom: 3rem;
+  background: var(--color-neutral-50);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: var(--border-radius-lg);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(0, 0, 0, 0.02),
+    inset 0 5px 12px -4px rgba(0, 0, 0, 0.06),
+    inset 0 -5px 12px -4px rgba(0, 0, 0, 0.06),
+    inset 5px 0 12px -4px rgba(0, 0, 0, 0.06),
+    inset -5px 0 12px -4px rgba(0, 0, 0, 0.06);
 }
 
 @media (min-width: 768px) {
   .promocionesContainer {
-    padding: 0 var(--container-padding-desktop);
+    padding: clamp(2.5rem, 5vw, 4rem) clamp(3rem, 8vw, 5rem);
   }
 }
 
@@ -128,41 +164,39 @@
   min-width: 0;
 }
 
-.promocionesBlockTitle {
-  margin: 0;
-  font-family: var(--font-condensed);
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  line-height: 1.15;
-}
-
 .promocionesBlockText {
   margin: 0;
   font-family: var(--font-poppins);
-  font-size: clamp(0.9375rem, 2vw, 1.0625rem);
-  line-height: 1.6;
+  font-size: clamp(1.125rem, 3.5vw, 1.5rem);
+  line-height: 1.55;
   color: var(--color-text-secondary);
-  max-width: 42ch;
+  width: 100%;
+  max-width: 100%;
+}
+
+@media (min-width: 769px) {
+  .promocionesBlockText {
+    font-size: clamp(1.25rem, 2.2vw, 1.625rem);
+    max-width: 65ch;
+  }
 }
 
 .promocionesWhatsapp {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-2);
-  margin-top: var(--spacing-6);
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-5);
   margin-bottom: var(--spacing-2);
-  padding: var(--spacing-2) var(--spacing-4);
+  padding: clamp(0.875rem, 2.5vw, 1rem) clamp(1.5rem, 4vw, 2rem);
+  min-height: clamp(48px, 10vw, 56px);
   background: var(--color-white);
   color: var(--color-text-primary);
   border: 2px solid #25D366;
   border-radius: var(--border-radius-md);
   font-family: var(--font-poppins);
   font-weight: var(--font-weight-semibold);
-  font-size: clamp(0.9375rem, 1.8vw, 1rem);
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
   line-height: 1.2;
   text-decoration: none;
   white-space: nowrap;
@@ -190,8 +224,8 @@
 }
 
 .promocionesWhatsappIcon {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
   color: #25D366;
 }

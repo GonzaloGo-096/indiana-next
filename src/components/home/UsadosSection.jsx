@@ -24,7 +24,7 @@ export function UsadosSection() {
         <div className={styles.content}>
           <div className={styles.titleBlock}>
             <Image
-              src="/assets/logos/logos-indiana/desktop/indiana-chico-negro-desktop.webp"
+              src="/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp"
               alt="Logo Indiana"
               width={128}
               height={128}
