@@ -304,6 +304,10 @@
     max-height: 450px; /* ✅ Reducido de 525px */
   }
 
+  .thumbnails {
+    padding-left: 10px;
+  }
+
   .thumbnail {
     width: 110px; /* Reducido de 160px */
     height: 82px; /* Reducido de 120px, manteniendo proporción */

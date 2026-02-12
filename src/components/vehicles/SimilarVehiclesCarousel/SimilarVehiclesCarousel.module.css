@@ -422,7 +422,7 @@
   }
 
   .container {
-    padding: 0 clamp(var(--container-padding-tablet), 6vw, var(--spacing-10));
+    padding: 0 var(--spacing-6);
   }
 
   .header {
@@ -462,8 +462,9 @@
     padding-top: var(--spacing-6);
   }
 
+  /* Mismo margen horizontal que en mobile: título y carrusel con aire a los lados */
   .container {
-    padding: 0 clamp(var(--container-padding-desktop), 6vw, 5rem);
+    padding: 0 var(--spacing-6);
     margin: 0 auto;
     max-width: 1600px;
     width: 100%;

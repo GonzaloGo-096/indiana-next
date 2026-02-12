@@ -186,7 +186,7 @@
   padding-bottom: 0;
 }
 
-/* ===== HEADER: Logo | Título/Modelo + Especificaciones ===== */
+/* ===== HEADER: Logo + barra + bloque derecho (marca/modelo/versión + cilindrada/HP/tracción) ===== */
 .headerSection {
   display: flex;
   flex-direction: column;
@@ -197,28 +197,36 @@
   min-height: 0;
 }
 
-/* Nueva sección para Año, Km, Caja (fuera del headerSection) */
-.mainDataSection {
-  width: 100%;
-  padding-top: var(--spacing-2);
-  padding-bottom: var(--spacing-4);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+/* Contenedor principal: izquierda (logo + barra) | derecha (dos filas) */
+.headerBlock {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: stretch;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 0;
+  min-width: 0;
 }
 
-/* Logo: al lado del título, logo | título (centrado en la línea; marca/modelo/versión en baseline) */
+/* Izquierda: logo + barra vertical de altura del logo */
+.headerLeft {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--spacing-5); /* espacio entre logo y divisor */
+  flex-shrink: 0;
+}
+
 .logoContainer {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  align-self: center;
 }
 
 .brand_logo {
-  --logo-size-base: clamp(54px, 11vw, 72px);
+  --logo-size-base: clamp(62px, 12vw, 84px);
   --logo-opacity: 0.92;
 
   width: var(--logo-size-base);
@@ -230,53 +238,72 @@
 }
 
 .brand_logo_small {
-  --logo-size-base: clamp(48px, 9vw, 60px);
+  --logo-size-base: clamp(56px, 10vw, 72px);
   width: var(--logo-size-base);
   height: var(--logo-size-base);
 }
 
 .brand_logo_large {
-  --logo-size-base: clamp(58px, 12vw, 78px);
+  --logo-size-base: clamp(68px, 13vw, 88px);
   width: var(--logo-size-base);
   height: var(--logo-size-base);
 }
 
+/* Barra divisoria: misma altura que el logo (línea vertical) */
 .titleRowSeparator {
-  font-size: inherit;
-  font-weight: var(--font-weight-light);
-  font-family: var(--font-condensed);
-  color: var(--color-neutral-400);
-  opacity: 0.35;
-  padding: 0 var(--spacing-3);
-  margin: 0 var(--spacing-1);
+  width: 2px;
+  min-width: 2px;
+  align-self: stretch;
+  background: var(--color-neutral-300);
+  opacity: 0.5;
+  border-radius: 1px;
   flex-shrink: 0;
-  align-self: center;
 }
 
-.headerData {
+/* Derecha: dos filas — marca/modelo; versión + 3 datos (cilindrada, HP, tracción) en la misma línea */
+.headerRight {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0;
   justify-content: flex-start;
   align-items: flex-start;
+  gap: var(--spacing-2);
+  padding-left: var(--spacing-5); /* espacio entre divisor y contenido de datos */
 }
 
-/* Fila 1: Logo | Marca + Modelo + Versión — misma línea/base */
-.titleRow {
+.headerRightTop {
   display: flex;
   flex-direction: row;
   align-items: baseline;
   justify-content: flex-start;
-  width: 100%;
   flex-wrap: wrap;
-  gap: var(--spacing-2);
+  gap: var(--spacing-4); /* más separación entre marca, modelo y versión */
   min-width: 0;
-  margin-bottom: 0;
-  padding-bottom: 0;
-  max-width: 100%;
   line-height: 1.15;
+}
+
+/* Fila: versión + cilindrada | HP | tracción (misma línea) */
+.headerRightBottom {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: var(--spacing-3);
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Nueva sección para Año, Km, Caja (fuera del headerSection) — alineación izquierda */
+.mainDataSection {
+  width: 100%;
+  padding-top: 0;
+  padding-bottom: var(--spacing-4);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .marca_text {
@@ -328,9 +355,8 @@
   max-width: 100%;
 }
 
-/* Versión ahora está en titleRow, ajustar estilos */
-.titleRow .version_text {
-  margin-left: 0; /* ✅ Sin margen extra, usa gap del contenedor */
+.headerRightBottom .version_text {
+  margin-left: 0;
 }
 
 .versionSpec_value {
@@ -381,14 +407,14 @@
   vertical-align: baseline;
 }
 
-/* Fila Año, Km, Caja — mismo formato que los 4 de abajo: bloques uno al lado del otro, alineación izquierda, contenido centrado dentro de cada uno */
+/* Fila Año, Km, Caja — una sola fila, se achican los 3 proporcionalmente si no entra */
 .mainDataRow {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
-  align-items: stretch;
-  gap: var(--spacing-4) var(--spacing-6);
+  align-items: flex-start;
+  gap: var(--spacing-2) var(--spacing-4);
   width: 100%;
   min-width: 0;
   align-self: flex-start;
@@ -396,10 +422,9 @@
 
 .mainDataItem {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   flex: 0 0 auto;
-  min-width: 180px;
   padding: var(--spacing-3) var(--spacing-4);
   box-sizing: border-box;
 }
@@ -408,37 +433,15 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-1);
-  align-items: center;
-  justify-content: center;
-  text-align: center;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
   width: 100%;
   min-width: 0;
 }
 
-.mainDataLabelGroup {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-2);
-  justify-content: center;
-}
-
-.mainDataIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-neutral-600);
-  opacity: 0.8;
-  transition: all var(--transition-fast);
-  flex-shrink: 0;
-}
-
-.mainDataIcon svg {
-  width: 16px;
-  height: 16px;
-}
-
 .mainDataLabel {
-  --label-font-size: clamp(0.875rem, 2.3vw, 1.0625rem);
+  --label-font-size: clamp(1rem, 2.8vw, 1.25rem);
 
   font-size: var(--label-font-size);
   font-weight: var(--font-weight-medium);
@@ -447,10 +450,13 @@
   letter-spacing: 0.2px;
   text-transform: capitalize;
   white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .mainDataValue {
-  --value-font-size: clamp(1.75rem, 4.5vw, 2.25rem);
+  --value-font-size: clamp(2rem, 5.2vw, 2.5rem);
 
   font-size: var(--value-font-size);
   font-weight: var(--font-weight-light);
@@ -459,8 +465,11 @@
   line-height: 1.25;
   letter-spacing: -0.3px;
   width: 100%;
-  text-align: center;
+  min-width: 0;
+  text-align: left;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -634,7 +643,7 @@
 .infoContainer {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--spacing-4) var(--spacing-6);
+  gap: var(--spacing-2) var(--spacing-4);
   width: 100%;
   align-items: start;
   justify-content: flex-start;
@@ -645,7 +654,7 @@
   flex-direction: column;
   gap: var(--spacing-1);
   text-align: left;
-  min-width: 160px;
+  flex: 0 0 auto;
   padding: var(--spacing-3) var(--spacing-4);
   box-sizing: border-box;
 }
@@ -717,34 +726,45 @@
     min-width: 0;
   }
 
-  .headerData {
-    gap: 0;
-    flex: 1 1 auto;
-    width: 100%;
-    min-width: 0;
-    align-items: flex-start;
-  }
-
-  .brand_logo {
-    --logo-size-base: clamp(56px, 12vw, 74px);
-  }
-
-  .titleRow {
-    flex-direction: row;
+  .headerBlock {
     flex-wrap: wrap;
-    gap: var(--spacing-1);
-    align-items: baseline;
     min-width: 0;
   }
 
-  .titleRow .titleRowSeparator {
-    padding: 0 var(--spacing-1);
-    margin: 0;
+  .headerLeft {
+    gap: var(--spacing-5); /* más espacio entre logo y divisor en mobile */
   }
 
-  .titleRow .marca_text,
-  .titleRow .modelo_title,
-  .titleRow .version_text {
+  /* Mobile: logo más grande */
+  .brand_logo {
+    --logo-size-base: clamp(72px, 18vw, 92px);
+  }
+
+  .brand_logo_small {
+    --logo-size-base: clamp(66px, 16vw, 82px);
+  }
+
+  .brand_logo_large {
+    --logo-size-base: clamp(78px, 18vw, 98px);
+  }
+
+  .headerRight {
+    padding-left: var(--spacing-5); /* más espacio entre divisor y datos en mobile */
+    gap: var(--spacing-2);
+  }
+
+  .headerRightTop {
+    gap: var(--spacing-4);
+    min-width: 0;
+  }
+
+  .headerRightTop .marca_text,
+  .headerRightTop .modelo_title {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .headerRightBottom .version_text {
     min-width: 0;
     max-width: 100%;
   }
@@ -766,35 +786,40 @@
     font-size: var(--version-font-size);
   }
 
-  .versionSection {
-    padding-top: var(--spacing-3);
-  }
 
   .versionSpec_value {
     font-size: clamp(1.0625rem, 3vw, 1.25rem);
   }
 
-  /* Los 3 datos: una fila, más grandes */
+  /* Los 3 datos: una sola fila, se achican proporcionalmente */
   .mainDataRow {
-    flex-wrap: nowrap;
-    gap: var(--spacing-3);
-    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--spacing-2) var(--spacing-4);
+    justify-content: flex-start;
     min-width: 0;
   }
 
   .mainDataItem {
-    flex: 1 1 0%;
-    min-width: 0;
+    flex: 0 0 auto;
     padding: var(--spacing-4) var(--spacing-3);
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .mainDataContent {
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
   }
 
   .mainDataValue {
-    --value-font-size: clamp(1.75rem, 5.5vw, 2.25rem);
+    --value-font-size: clamp(2rem, 5.5vw, 2.5rem);
     font-size: var(--value-font-size);
+    text-align: left;
   }
 
   .mainDataLabel {
-    --label-font-size: clamp(1rem, 2.8vw, 1.125rem);
+    --label-font-size: clamp(1.0625rem, 3vw, 1.3125rem);
     font-size: var(--label-font-size);
   }
 
@@ -824,17 +849,17 @@
   .priceSection {
     width: 100%;
     min-width: 0;
-    padding: var(--spacing-3) var(--spacing-4);
+    padding: var(--spacing-4) var(--spacing-5);
     margin-top: var(--spacing-5);
     box-sizing: border-box;
   }
 
   .priceSection .price_value {
-    font-size: clamp(1.5rem, 5.5vw, 1.875rem);
+    font-size: clamp(1.75rem, 6.5vw, 2.25rem);
   }
 
   .priceSection .price_label {
-    font-size: clamp(1.0625rem, 2.8vw, 1.25rem);
+    font-size: clamp(1.1875rem, 3.2vw, 1.375rem);
   }
 
   .additionalInfoSection {
@@ -846,14 +871,13 @@
   /* Los 4 datos: una fila, más grandes */
   .infoContainer {
     width: 100%;
-    flex-wrap: nowrap;
-    gap: var(--spacing-3);
-    min-width: 0;
+    flex-wrap: wrap;
+    gap: var(--spacing-2) var(--spacing-4);
+    justify-content: flex-start;
   }
 
   .infoItem {
-    flex: 1 1 0%;
-    min-width: 0;
+    flex: 0 0 auto;
     padding: var(--spacing-4) var(--spacing-3);
   }
 
@@ -938,19 +962,18 @@
     padding-bottom: var(--spacing-8);
   }
 
-  .headerData {
+  .headerBlock {
     flex: 1;
     min-width: 0;
-    align-items: flex-start;
   }
 
   .mainDataSection {
-    padding-top: var(--spacing-4); /* ✅ Más espacio superior */
-    padding-bottom: var(--spacing-6); /* ✅ Más espacio inferior */
+    padding-top: 0;
+    padding-bottom: var(--spacing-6);
   }
 
   .mainDataRow {
-    gap: var(--spacing-4) var(--spacing-6);
+    gap: var(--spacing-2) var(--spacing-4);
     justify-content: flex-start;
   }
 
@@ -1042,12 +1065,12 @@
   }
 
   .mainDataSection {
-    padding-top: var(--spacing-5); /* ✅ Más espacio superior */
-    padding-bottom: var(--spacing-8); /* ✅ Más espacio inferior */
+    padding-top: 0;
+    padding-bottom: var(--spacing-8);
   }
 
   .mainDataRow {
-    gap: var(--spacing-4) var(--spacing-6);
+    gap: var(--spacing-2) var(--spacing-4);
     justify-content: flex-start;
   }
 
@@ -1063,7 +1086,8 @@
   }
 
   .infoContainer {
-    gap: var(--spacing-4) 0;
+    gap: var(--spacing-2) var(--spacing-4);
+    justify-content: flex-start;
   }
 
   .imageCarouselWrapper :global(.mainImageContainer) {
@@ -1139,7 +1163,7 @@
     gap: 0;
   }
 
-  .headerData {
+  .headerBlock {
     width: 100%;
   }
 
@@ -1177,7 +1201,6 @@
 /* ===== ACCESIBILIDAD: REDUCED MOTION ===== */
 @media (prefers-reduced-motion: reduce) {
   .brand_logo,
-  .mainDataIcon,
   .imageCarouselWrapper :global(.thumbnailItem) {
     transition: none;
   }

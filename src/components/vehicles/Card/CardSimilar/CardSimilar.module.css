@@ -48,7 +48,7 @@
     /* Comportamiento */
     overflow: hidden;
     position: relative;
-    margin: 0 auto;
+    margin: 0 10px; /* 10px left y right en todas las cards simplificadas */
     cursor: pointer;
     z-index: 10;
     
@@ -147,11 +147,10 @@
     min-height: 0;
 }
 
-/* FILA 1: Marca + Modelo + Versión - Mismo formato CardAuto, espacio reservado para versión */
+/* FILA 1: Marca + Modelo (versión va en fila aparte abajo, igual que CardAuto) */
 .container1_row1 {
     --row-line-height: 1.15;
     --row-gap: var(--spacing-1);
-    --row1-max-font: 1.75rem;
     
     display: flex;
     align-items: baseline;
@@ -164,7 +163,14 @@
     padding-bottom: 0;
     margin-bottom: 0;
     line-height: var(--row-line-height);
-    min-height: calc(2 * var(--row-line-height) * var(--row1-max-font));
+}
+
+/* FILA 2: Versión siempre debajo de marca/modelo (igual que CardAuto) */
+.container1_row_version {
+    width: 100%;
+    min-width: 0;
+    flex-shrink: 0;
+    margin-top: 2px;
 }
 
 /* Marca: Más grande */
@@ -213,22 +219,21 @@
     white-space: normal; /* ✅ Permite que se envuelva */
 }
 
-/* Versión: Mismo tamaño que modelo, en gris */
+/* Versión: debajo de marca/modelo, mismo criterio que CardAuto */
 .version_text {
-    --version-font-size: clamp(1.375rem, 4.8vw, 1.625rem); /* ✅ Mismo tamaño que modelo */
+    --version-font-size: clamp(1.15rem, 3.8vw, 1.4rem);
     
     font-size: var(--version-font-size);
     font-weight: var(--font-weight-semibold);
     font-family: var(--font-condensed);
-    color: var(--color-neutral-500); /* ✅ Gris */
-    line-height: var(--row-line-height);
+    color: var(--color-neutral-500);
+    line-height: 1.2;
     letter-spacing: -0.2px;
-    flex-shrink: 1;
+    display: block;
     min-width: 0;
-    overflow: visible; /* ✅ Permite que se vea completo */
-    text-overflow: clip; /* ✅ Sin ellipsis */
-    white-space: normal; /* ✅ Permite que se envuelva */
-    margin-left: var(--spacing-1); /* ✅ Espacio antes de la versión */
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
 }
 
 /* FILA 3: Caja, Km, Año - Mismo formato CardAuto (padding, alineación) */

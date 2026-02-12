@@ -18,8 +18,8 @@
 /* ===== BOTÓN DE VOLVER ===== */
 .backButton {
   margin-top: var(--spacing-4);
-  margin-bottom: var(--spacing-6);
-  padding: 0 var(--spacing-4);
+  margin-bottom: 0;
+  padding: 0 var(--spacing-4) var(--spacing-6); /* padding-bottom = espacio debajo del botón (evita colapso de márgenes) */
   width: 100%;
   box-sizing: border-box;
 }
@@ -28,8 +28,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-3) var(--spacing-5);
+  padding: var(--spacing-4) var(--spacing-6); /* más espacio entre texto y borde del botón */
   margin-left: var(--spacing-4);
+  margin-bottom: var(--spacing-4);
   background: transparent;
   color: var(--color-brand-500);
   text-decoration: none;
@@ -48,7 +49,7 @@
     color var(--transition-fast);
   width: fit-content;
   min-width: 180px;
-  min-height: 40px;
+  min-height: 44px;
 }
 
 .backLink:hover {
@@ -193,15 +194,14 @@
   }
 
   .backButton {
-    margin-bottom: var(--spacing-8);
-    padding: 0 var(--spacing-5);
+    padding: 0 var(--spacing-5) var(--spacing-8);
   }
 
   .backLink {
-    padding: var(--spacing-3) var(--spacing-6);
+    padding: var(--spacing-4) var(--spacing-6);
     margin-top: var(--spacing-5);
     margin-left: var(--spacing-5);
-    min-height: 42px;
+    min-height: 46px;
   }
 
   .content {
@@ -218,16 +218,15 @@
   }
 
   .backButton {
-    margin-bottom: var(--spacing-10);
-    padding: 0 var(--spacing-6);
+    padding: 0 var(--spacing-6) var(--spacing-10);
   }
 
   .backLink {
-    padding: var(--spacing-3) var(--spacing-6);
+    padding: var(--spacing-4) var(--spacing-6);
     margin-top: var(--spacing-6);
     margin-left: var(--spacing-6);
     font-size: 0.9375rem;
-    min-height: 42px;
+    min-height: 46px;
   }
 
   .content {
@@ -244,17 +243,16 @@
 
   .backButton {
     margin-top: var(--spacing-4);
-    margin-bottom: var(--spacing-5);
-    padding: 0 var(--spacing-2);
+    padding: 0 var(--spacing-2) var(--spacing-5);
   }
 
   .backLink {
-    padding: var(--spacing-2) var(--spacing-3);
+    padding: var(--spacing-3) var(--spacing-4);
     margin-left: 0;
     font-size: 0.8125rem;
     min-width: 120px;
     max-width: 100%;
-    min-height: 40px;
+    min-height: 44px;
     letter-spacing: 0.3px;
     box-sizing: border-box;
   }

@@ -72,6 +72,21 @@ export default async function UsadosPage() {
     
     const mappedData = mapVehiclesPage(backendData, 1);
     vehicles = mappedData.vehicles || [];
+
+    // Reordenar: Ford ↔ Renault, Nissan ↔ Volkswagen (por posición en el carrusel)
+    const norm = (m) => (m || "").trim().toLowerCase();
+    const list = [...vehicles];
+    const iFord = list.findIndex((v) => norm(v.marca) === "ford");
+    const iRenault = list.findIndex((v) => norm(v.marca) === "renault");
+    const iNissan = list.findIndex((v) => norm(v.marca) === "nissan");
+    const iVw = list.findIndex((v) => norm(v.marca) === "volkswagen");
+    if (iFord >= 0 && iRenault >= 0) {
+      [list[iFord], list[iRenault]] = [list[iRenault], list[iFord]];
+    }
+    if (iNissan >= 0 && iVw >= 0) {
+      [list[iNissan], list[iVw]] = [list[iVw], list[iNissan]];
+    }
+    vehicles = list;
   } catch (error) {
     // En caso de error, mostrar carrusel vacío
     if (process.env.NODE_ENV === 'development') {

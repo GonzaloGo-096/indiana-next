@@ -30,9 +30,6 @@ import { getBrandLogo } from "../../../../utils/getBrandLogo";
 import { getCarouselImages } from "../../../../utils/carouselImages";
 import { ImageCarousel } from "../../ImageCarousel/ImageCarousel";
 import { GalleryModal } from "../../GalleryModal/GalleryModal";
-import { AnioIcon } from "../../../ui/icons/AnioIcon";
-import { KmIcon } from "../../../ui/icons/KmIcon";
-import { CajaIconDetalle } from "../../../ui/icons/CajaIconDetalle";
 import styles from "./CardDetalle.module.css";
 
 /**
@@ -117,9 +114,9 @@ export const CardDetalle = memo(({ auto, contactInfo }) => {
   // Datos principales (Año, Km, Caja) — solo los que tienen valor, se acumulan a la izquierda
   const mainData = useMemo(() => {
     const items = [
-      { label: "Año", value: vehicleData.año, icon: AnioIcon },
-      { label: "Km", value: formatKilometraje(vehicleData.kms), icon: KmIcon },
-      { label: "Caja", value: vehicleData.caja ? formatCaja(vehicleData.caja) : "", icon: CajaIconDetalle },
+      { label: "Año", value: vehicleData.año },
+      { label: "Km", value: formatKilometraje(vehicleData.kms) },
+      { label: "Caja", value: vehicleData.caja ? formatCaja(vehicleData.caja) : "" },
     ];
     return items.filter((item) => item.value != null && item.value !== "" && item.value !== "-");
   }, [vehicleData.año, vehicleData.kms, vehicleData.caja]);
@@ -136,7 +133,7 @@ export const CardDetalle = memo(({ auto, contactInfo }) => {
     return items;
   }, [vehicleData.traccion, vehicleData.HP, vehicleData.cilindrada]);
 
-  // Información adicional — solo los que tienen valor, se acumulan a la izquierda
+  // Información adicional — solo los que tienen valor; los vacíos no se muestran
   const additionalInfo = useMemo(() => {
     const items = [
       { label: "Combustible", value: formatValue(vehicleData.combustible) },
@@ -168,46 +165,56 @@ export const CardDetalle = memo(({ auto, contactInfo }) => {
         <div className={styles.dataSection}>
           {/* CONTENEDOR 1: Título + Specs */}
           <div className={styles.headerSection}>
-            <div className={styles.headerData}>
-              {/* Fila 1: Logo | Marca + Modelo + Versión */}
-              <div className={styles.titleRow}>
+            <div className={styles.headerBlock}>
+              {/* Izquierda: Logo + barra divisoria (altura del logo) */}
+              <div className={styles.headerLeft}>
                 <div className={styles.logoContainer}>
                   <Image
                     src={brandLogo.src}
                     alt={brandLogo.alt}
-                    width={78}
-                    height={78}
+                    width={88}
+                    height={88}
                     className={`${styles.brand_logo} ${
                       brandLogo.size === "small" ? styles.brand_logo_small : ""
                     } ${brandLogo.size === "large" ? styles.brand_logo_large : ""}`}
                     loading="lazy"
                   />
                 </div>
-                <span className={styles.titleRowSeparator}>|</span>
-                {formatValue(vehicleData.marca) !== "-" && (
-                  <span className={styles.marca_text}>
-                    {formatValue(vehicleData.marca)}
-                  </span>
-                )}
-                <h1 className={styles.modelo_title}>{vehicleData.modelo}</h1>
-                {formatValue(vehicleData.version) !== "-" && (
-                  <span className={styles.version_text}>
-                    {formatValue(vehicleData.version)}
-                  </span>
+                <span className={styles.titleRowSeparator} aria-hidden="true" />
+              </div>
+              {/* Derecha: dos filas — marca/modelo arriba; versión + 3 datos (cilindrada, HP, tracción) abajo */}
+              <div className={styles.headerRight}>
+                <div className={styles.headerRightTop}>
+                  {formatValue(vehicleData.marca) !== "-" && (
+                    <span className={styles.marca_text}>
+                      {formatValue(vehicleData.marca)}
+                    </span>
+                  )}
+                  <h1 className={styles.modelo_title}>{vehicleData.modelo}</h1>
+                </div>
+                {(formatValue(vehicleData.version) !== "-" || versionSpecItems.length > 0) && (
+                  <div className={styles.headerRightBottom}>
+                    {formatValue(vehicleData.version) !== "-" && (
+                      <span className={styles.version_text}>
+                        {formatValue(vehicleData.version)}
+                      </span>
+                    )}
+                    {versionSpecItems.length > 0 && (
+                      <>
+                        {formatValue(vehicleData.version) !== "-" && (
+                          <span className={styles.versionSpec_separator_subtle}>|</span>
+                        )}
+                        {versionSpecItems.map((item, index) => (
+                          <span key={index}>
+                            {index > 0 && <span className={styles.versionSpec_separator_subtle}>|</span>}
+                            <span className={styles.versionSpec_value}>{item.value}</span>
+                          </span>
+                        ))}
+                      </>
+                    )}
+                  </div>
                 )}
               </div>
-
-              {/* Fila 1.5: Tracción, HP, Cilindrada — solo los que existen */}
-              {versionSpecItems.length > 0 && (
-                <div className={styles.versionSection}>
-                  {versionSpecItems.map((item, index) => (
-                    <span key={index}>
-                      {index > 0 && <span className={styles.versionSpec_separator_subtle}>|</span>}
-                      <span className={styles.versionSpec_value}>{item.value}</span>
-                    </span>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
 
@@ -215,27 +222,19 @@ export const CardDetalle = memo(({ auto, contactInfo }) => {
           {mainData.length > 0 && (
             <div className={styles.mainDataSection}>
               <div className={styles.mainDataRow}>
-                {mainData.map((item) => {
-                const IconComponent = item.icon;
-                return (
+                {mainData.map((item) => (
                   <div key={item.label} className={styles.mainDataItem}>
                     <div className={styles.mainDataContent}>
-                      <div className={styles.mainDataLabelGroup}>
-                        <div className={styles.mainDataIcon}>
-                          <IconComponent size={16} color="currentColor" />
-                        </div>
-                        <span className={styles.mainDataLabel}>{item.label}</span>
-                      </div>
+                      <span className={styles.mainDataLabel}>{item.label}</span>
                       <span className={styles.mainDataValue}>{item.value}</span>
                     </div>
                   </div>
-                );
-              })}
+                ))}
               </div>
             </div>
           )}
 
-          {/* Información adicional — solo ítems con valor, acumulados a la izquierda */}
+          {/* Información adicional — solo ítems con valor; los vacíos no se ven */}
           {additionalInfo.length > 0 && (
             <div className={styles.additionalInfoSection}>
               <div className={styles.infoContainer}>

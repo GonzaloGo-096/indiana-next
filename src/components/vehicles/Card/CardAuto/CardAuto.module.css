@@ -239,11 +239,10 @@
     z-index: 2;
 }
 
-/* FILA 1: Marca + Modelo + Versión - Espacio fijo para 2 líneas (Caja/Km/Año siempre abajo) */
+/* FILA 1: Marca + Modelo (versión va en fila aparte abajo) */
 .container1_row1 {
     --row-line-height: 1.15;
     --row-gap: var(--spacing-1);
-    --row1-max-font: 1.75rem;
     
     display: flex;
     align-items: baseline;
@@ -258,8 +257,16 @@
     line-height: var(--row-line-height);
     position: relative;
     z-index: 2;
-    /* Reserva siempre espacio para 2 líneas: versión puede bajar, Caja/Km/Año no se mueven */
-    min-height: calc(2 * var(--row-line-height) * var(--row1-max-font));
+}
+
+/* FILA 2: Versión siempre debajo de marca/modelo */
+.container1_row_version {
+    width: 100%;
+    min-width: 0;
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+    z-index: 2;
 }
 
 /* Marca: Más prominente y con mayor peso */
@@ -315,20 +322,19 @@
 }
 
 .version_text {
-    --version-font-size: clamp(1.4rem, 4.5vw, 1.65rem);
+    --version-font-size: clamp(1.15rem, 3.8vw, 1.4rem);
     
     font-size: var(--version-font-size);
     font-weight: var(--font-weight-semibold);
     font-family: var(--font-condensed);
     color: var(--color-neutral-500);
-    line-height: var(--row-line-height);
+    line-height: 1.2;
     letter-spacing: -0.2px;
-    flex-shrink: 1;
+    display: block;
     min-width: 0;
     overflow: visible;
     text-overflow: clip;
     white-space: normal;
-    margin-left: var(--spacing-1);
     position: relative;
     z-index: 2;
 }
@@ -506,7 +512,7 @@
 
 /* ===== RESPONSIVE - MOBILE FIRST ===== */
 
-/* Mobile: Espaciado más compacto */
+/* Mobile: Espaciado más compacto + logo más grande */
 @media (max-width: 575px) {
     .card {
         --card-hover-lift: var(--card-hover-lift-mobile);
@@ -523,6 +529,19 @@
     
     .container1 {
         gap: 0;
+        --logo-space: clamp(62px, 18vw, 90px);
+    }
+    
+    .brand_logo {
+        --logo-size-base: clamp(58px, 17vw, 78px);
+    }
+    
+    .brand_logo_small {
+        --logo-size-base: clamp(52px, 15vw, 72px);
+    }
+    
+    .brand_logo_large {
+        --logo-size-base: clamp(62px, 18vw, 84px);
     }
     
     .container1_row3 {

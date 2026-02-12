@@ -197,19 +197,23 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
         <div className={styles.container1}>
           {/* Bloque de datos primero */}
           <div className={styles.container1_right}>
-            {/* Fila 1: Marca + Modelo + Versión */}
+            {/* Fila 1: Marca + Modelo */}
             <div className={styles.container1_row1}>
               <span className={styles.marca_text}>{auto.marca}</span>
               <span className={styles.marca_modelo_separator}>|</span>
               <h3 className={styles.modelo_title}>{auto.modelo}</h3>
-              {formattedData.version && formattedData.version !== "-" && (
+            </div>
+
+            {/* Fila 2: Versión (siempre debajo de marca/modelo) */}
+            {formattedData.version && formattedData.version !== "-" && (
+              <div className={styles.container1_row_version}>
                 <span className={styles.version_text}>
                   {formattedData.version}
                 </span>
-              )}
-            </div>
+              </div>
+            )}
 
-            {/* Fila 2: Caja, Km, Año (sin separadores) */}
+            {/* Fila 3: Caja, Km, Año (sin separadores) */}
             <div
               className={`${styles.container1_row3} ${
                 isAutomatica ? styles.container1_row3_automatica : ""
