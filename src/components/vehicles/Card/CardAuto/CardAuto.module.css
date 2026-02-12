@@ -20,7 +20,7 @@
     --card-border-opacity: 0.08;
     --card-border-opacity-hover: 0.15;
     --card-shadow-base: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06);
-    --card-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.12), 0 12px 32px rgba(0, 0, 0, 0.08);
+    --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.04);
     --card-hover-lift: -6px;
     --card-hover-lift-mobile: -4px;
     --card-image-zoom: 1.04;
@@ -150,7 +150,7 @@
 .container1 {
     --container-border-opacity: 0.06;
     --container-border-radius-top: var(--border-radius-md);
-    --logo-space: clamp(75px, 21vw, 120px);
+    --logo-space: clamp(52px, 15vw, 88px);
     
     position: relative;
     display: flex;
@@ -178,8 +178,22 @@
     min-width: 0;
 }
 
+/* Wrapper para ajustes por marca (scale, offsetX, offsetY) vía CSS variables */
+.brand_logo_wrapper {
+    --logo-scale: 1;
+    --logo-offset-x: 0;
+    --logo-offset-y: 0;
+    display: block;
+    transition: transform var(--transition-fast);
+    transform: scale(var(--logo-scale)) translate(var(--logo-offset-x), var(--logo-offset-y));
+}
+
+.card:hover .brand_logo_wrapper {
+    transform: scale(calc(var(--logo-scale) * 1.02)) translate(var(--logo-offset-x), var(--logo-offset-y));
+}
+
 .brand_logo {
-    --logo-size-base: clamp(75px, 21vw, 110px);
+    --logo-size-base: clamp(52px, 15vw, 82px);
     --logo-opacity: 0.92;
     --logo-opacity-hover: 1;
     
@@ -188,29 +202,25 @@
     display: block;
     object-fit: contain;
     opacity: var(--logo-opacity);
-    transition: 
-        opacity var(--transition-smooth),
-        transform var(--transition-fast);
-    transform: scale(1);
+    transition: opacity var(--transition-smooth);
 }
 
 /* Variantes de tamaño de logo */
 .brand_logo_small {
-    --logo-size-base: clamp(65px, 18vw, 90px);
+    --logo-size-base: clamp(44px, 12vw, 68px);
     width: var(--logo-size-base);
     height: var(--logo-size-base);
 }
 
 .brand_logo_large {
-    --logo-size-base: clamp(78px, 21vw, 110px);
+    --logo-size-base: clamp(56px, 15vw, 82px);
     width: var(--logo-size-base);
     height: var(--logo-size-base);
 }
 
-/* Hover: Logo más visible y sutilmente más grande */
+/* Hover: Logo más visible */
 .card:hover .brand_logo {
     opacity: var(--logo-opacity-hover);
-    transform: scale(1.02);
 }
 
 /* Bloque de datos con padding para reservar espacio del logo */
@@ -229,10 +239,11 @@
     z-index: 2;
 }
 
-/* FILA 1: Marca + Modelo - Jerarquía mejorada */
+/* FILA 1: Marca + Modelo + Versión - Espacio fijo para 2 líneas (Caja/Km/Año siempre abajo) */
 .container1_row1 {
     --row-line-height: 1.15;
     --row-gap: var(--spacing-1);
+    --row1-max-font: 1.75rem;
     
     display: flex;
     align-items: baseline;
@@ -247,6 +258,8 @@
     line-height: var(--row-line-height);
     position: relative;
     z-index: 2;
+    /* Reserva siempre espacio para 2 líneas: versión puede bajar, Caja/Km/Año no se mueven */
+    min-height: calc(2 * var(--row-line-height) * var(--row1-max-font));
 }
 
 /* Marca: Más prominente y con mayor peso */
@@ -374,7 +387,7 @@
 
 /* Label: Más legible y con mejor contraste */
 .row2_data_label {
-    --label-font-size: clamp(0.8125rem, 2.1vw, 0.9375rem);
+    --label-font-size: clamp(0.875rem, 2.3vw, 1rem);
     --label-letter-spacing: 0.2px;
     
     font-size: var(--label-font-size);
@@ -391,7 +404,7 @@
 
 /* Value: Más legible, peso aumentado ligeramente */
 .row2_data_value {
-    --value-font-size: clamp(1.25rem, 3.5vw, 1.5rem);
+    --value-font-size: clamp(1.3125rem, 3.8vw, 1.625rem);
     --value-letter-spacing: -0.3px;
     --value-line-height: 1.25;
     --value-font-weight: 300;
@@ -415,84 +428,78 @@
     text-rendering: optimizeLegibility;
 }
 
-/* ===== PRECIO DIVIDIDO EN 2 CONTENEDORES ===== */
+/* ===== PRECIO: Sub-estilo tech, simple y moderno ===== */
 .container4 {
-    --price-border-opacity: 0.05;
-    --price-border-radius: var(--border-radius-lg);
+    /* Referencia: azul violáceo (#3F45C6 / #3A3FD0) */
+    --price-bg: #3F45C6;
+    --price-border: #3A3FD0;
+    --price-radius: var(--border-radius-lg);
     
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     gap: var(--spacing-2);
-    margin-top: 0;
-    padding-top: 0;
-    border-top: 1px solid var(--color-neutral-200);
-    border-left: 1px solid rgba(0, 0, 0, var(--price-border-opacity));
-    border-radius: var(--price-border-radius) 0 0 0;
+    margin-top: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    background: var(--price-bg);
+    border: 1px solid var(--price-border);
+    border-radius: var(--price-radius);
 }
 
-/* Contenedor izquierda: "Desde:" */
+/* Contenedor izquierda: "desde:" */
 .price_label_container {
     --label-width: 30%;
-    --label-padding-left: var(--spacing-2);
     
     flex: 0 0 var(--label-width);
     display: flex;
     align-items: center;
     justify-content: flex-start;
     padding: 0;
-    padding-left: var(--label-padding-left);
-    background: transparent;
 }
 
-/* Label "desde": Más legible y menos cursiva */
+/* Label "desde" */
 .price_label {
-    --label-font-size: clamp(1.125rem, 2.8vw, 1.375rem);
+    --label-font-size: clamp(0.9375rem, 2.4vw, 1.125rem);
     
     font-size: var(--label-font-size);
     font-weight: var(--font-weight-medium);
-    font-style: normal;
     font-family: var(--font-condensed);
-    color: var(--color-neutral-600);
+    color: var(--color-white);
     text-align: left;
     text-transform: lowercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
+    opacity: 0.95;
 }
 
 /* Contenedor derecha: Precio */
 .price_display {
     --price-width: 70%;
-    --price-padding-right: var(--spacing-3);
     
     flex: 0 0 var(--price-width);
     display: flex;
     align-items: center;
     justify-content: flex-end;
     padding: 0;
-    padding-top: var(--spacing-1);
-    padding-right: var(--price-padding-right);
-    background: transparent;
+    padding-right: var(--spacing-3);
 }
 
-/* Precio destacado: Más legible, menos cursiva */
+/* Precio: compacto, blanco, tech */
 .price_value {
-    --price-font-size: clamp(2.125rem, 5.8vw, 2.625rem);
-    --price-letter-spacing: -0.4px;
-    --price-line-height: 1.15;
-    --price-symbol-size: 0.7em;
+    --price-font-size: clamp(1.5rem, 4.2vw, 1.875rem);
+    --price-letter-spacing: -0.35px;
+    --price-line-height: 1.2;
+    --price-symbol-size: 0.72em;
     
     font-size: var(--price-font-size);
     font-weight: var(--font-weight-bold);
-    font-style: normal;
     font-family: var(--font-condensed);
-    color: var(--color-brand-500);
+    color: var(--color-white);
     line-height: var(--price-line-height);
     letter-spacing: var(--price-letter-spacing);
     text-align: right;
 }
 
-/* Signo de pesos más pequeño */
 .price_value::first-letter {
     font-size: var(--price-symbol-size);
 }
@@ -564,12 +571,17 @@
 @media (prefers-reduced-motion: reduce) {
     .card,
     .card__image,
-    .brand_logo {
+    .brand_logo,
+    .brand_logo_wrapper {
         transition: none;
     }
     
     .card:hover .card__image {
         transform: none;
+    }
+    
+    .card:hover .brand_logo_wrapper {
+        transform: scale(var(--logo-scale)) translate(var(--logo-offset-x), var(--logo-offset-y));
     }
     
     .card:hover {

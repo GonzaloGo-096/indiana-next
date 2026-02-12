@@ -24,13 +24,10 @@ import sharp from 'sharp'
 // ✅ Forzar runtime Node.js (requerido para Sharp)
 export const runtime = 'nodejs'
 
-// ✅ Configuración de optimización de imágenes
+// ✅ Configuración de optimización de imágenes (alineado con photos/create)
 const IMAGE_OPTIMIZATION = {
-  // Ancho máximo (no agrandar imágenes más pequeñas)
-  maxWidth: 1920,
-  // Calidad WebP (0-100)
+  maxWidth: 1200,
   webpQuality: 85,
-  // Eliminar metadata
   removeMetadata: true
 }
 

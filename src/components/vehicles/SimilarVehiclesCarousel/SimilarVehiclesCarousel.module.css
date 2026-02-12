@@ -12,23 +12,27 @@
 /* ===== SECCIÓN PRINCIPAL ===== */
 .section {
   width: 100%;
-  margin-top: 5rem !important; /* ✅ Margin-top aumentado (80px) */
-  padding: var(--spacing-6) 0;
-  padding-top: var(--spacing-8);
+  margin-top: 3rem !important;
+  padding: var(--spacing-4) 0;
+  padding-top: var(--spacing-6);
   background: var(--color-white);
 }
 
 @media (min-width: 769px) {
   .section {
-    margin-top: 7rem !important; /* ✅ Margin-top aumentado en desktop (112px) */
+    margin-top: 4rem !important;
+    padding: var(--spacing-5) 0;
+    padding-top: var(--spacing-6);
   }
 }
 
+/* Mismo margen horizontal que la sección de arriba (CardDetalle) */
 .container {
   width: 100%;
-  max-width: var(--container-max-width);
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 0 var(--container-padding-mobile);
+  padding: 0 clamp(var(--container-padding-mobile), 5vw, var(--spacing-8));
+  box-sizing: border-box;
 }
 
 /* ===== HEADER (Título y subtítulo) ===== */
@@ -76,6 +80,18 @@
   font-family: var(--font-condensed);
   letter-spacing: 0.5px;
   text-transform: uppercase;
+}
+
+/* Solo logo + "más" muy grande como título */
+.titleMas {
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin: 0;
+  font-family: var(--font-condensed);
+  letter-spacing: -0.02em;
+  text-transform: lowercase;
+  line-height: 1;
 }
 
 .subtitle {
@@ -400,13 +416,13 @@
 /* ===== RESPONSIVE: TABLET Y DESKTOP ===== */
 @media (min-width: 768px) {
   .section {
-    margin-top: 0;
-    padding: var(--spacing-8) 0;
-    padding-top: var(--spacing-10);
+    margin-top: 4rem !important;
+    padding: var(--spacing-5) 0;
+    padding-top: var(--spacing-6);
   }
 
   .container {
-    padding: 0 var(--container-padding-tablet);
+    padding: 0 clamp(var(--container-padding-tablet), 6vw, var(--spacing-10));
   }
 
   .header {
@@ -441,16 +457,17 @@
 
 @media (min-width: 992px) {
   .section {
-    margin-top: 7rem !important; /* ✅ Margin-top aumentado en desktop (112px) */
-    padding: var(--spacing-10) 0;
-    padding-top: var(--spacing-12);
+    margin-top: 4rem !important;
+    padding: var(--spacing-5) 0;
+    padding-top: var(--spacing-6);
   }
 
   .container {
-    padding: 0 var(--container-padding-desktop);
-    margin: 0; /* ✅ Sin márgenes centrados, alineado a la izquierda */
-    max-width: none; /* ✅ Sin límite de ancho máximo */
+    padding: 0 clamp(var(--container-padding-desktop), 6vw, 5rem);
+    margin: 0 auto;
+    max-width: 1600px;
     width: 100%;
+    box-sizing: border-box;
   }
 
   .carouselContainer {

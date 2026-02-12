@@ -114,26 +114,38 @@ export const CardDetalle = memo(({ auto, contactInfo }) => {
   // Validación
   if (!vehicleData) return null;
 
-  // Datos principales memoizados (Año, Km, Caja) - Segunda importancia
-  const mainData = useMemo(
-    () => [
+  // Datos principales (Año, Km, Caja) — solo los que tienen valor, se acumulan a la izquierda
+  const mainData = useMemo(() => {
+    const items = [
       { label: "Año", value: vehicleData.año, icon: AnioIcon },
       { label: "Km", value: formatKilometraje(vehicleData.kms), icon: KmIcon },
-      { label: "Caja", value: formatCaja(vehicleData.caja), icon: CajaIconDetalle },
-    ],
-    [vehicleData.año, vehicleData.kms, vehicleData.caja]
-  );
+      { label: "Caja", value: vehicleData.caja ? formatCaja(vehicleData.caja) : "", icon: CajaIconDetalle },
+    ];
+    return items.filter((item) => item.value != null && item.value !== "" && item.value !== "-");
+  }, [vehicleData.año, vehicleData.kms, vehicleData.caja]);
 
-  // Información adicional memoizada
-  const additionalInfo = useMemo(
-    () => [
+  // Tracción, HP, Cilindrada — solo los que tienen valor, se acumulan a la izquierda
+  const versionSpecItems = useMemo(() => {
+    const traccion = formatValue(vehicleData.traccion);
+    const hp = formatHPDisplay(vehicleData.HP);
+    const cilindrada = formatCilindradaDisplay(vehicleData.cilindrada);
+    const items = [];
+    if (traccion && traccion !== "-") items.push({ value: traccion });
+    if (hp && hp !== "") items.push({ value: hp });
+    if (cilindrada && cilindrada !== "") items.push({ value: cilindrada });
+    return items;
+  }, [vehicleData.traccion, vehicleData.HP, vehicleData.cilindrada]);
+
+  // Información adicional — solo los que tienen valor, se acumulan a la izquierda
+  const additionalInfo = useMemo(() => {
+    const items = [
       { label: "Combustible", value: formatValue(vehicleData.combustible) },
       { label: "Tapizado", value: formatValue(vehicleData.tapizado) },
       { label: "Color", value: formatValue(vehicleData.color) },
       { label: "Segmento", value: formatValue(vehicleData.categoria) },
-    ],
-    [vehicleData]
-  );
+    ];
+    return items.filter((item) => item.value != null && item.value !== "" && item.value !== "-");
+  }, [vehicleData]);
 
   return (
     <div className={styles.cardContent} data-testid="vehicle-detail">
@@ -156,59 +168,54 @@ export const CardDetalle = memo(({ auto, contactInfo }) => {
         <div className={styles.dataSection}>
           {/* CONTENEDOR 1: Título + Specs */}
           <div className={styles.headerSection}>
-            {/* Datos izquierda */}
             <div className={styles.headerData}>
-              {/* Fila 1: Marca + Modelo + Versión (si caben, en una línea; si no, bajan completos) */}
+              {/* Fila 1: Logo | Marca + Modelo + Versión */}
               <div className={styles.titleRow}>
+                <div className={styles.logoContainer}>
+                  <Image
+                    src={brandLogo.src}
+                    alt={brandLogo.alt}
+                    width={78}
+                    height={78}
+                    className={`${styles.brand_logo} ${
+                      brandLogo.size === "small" ? styles.brand_logo_small : ""
+                    } ${brandLogo.size === "large" ? styles.brand_logo_large : ""}`}
+                    loading="lazy"
+                  />
+                </div>
+                <span className={styles.titleRowSeparator}>|</span>
                 {formatValue(vehicleData.marca) !== "-" && (
                   <span className={styles.marca_text}>
                     {formatValue(vehicleData.marca)}
                   </span>
                 )}
                 <h1 className={styles.modelo_title}>{vehicleData.modelo}</h1>
-                <span className={styles.version_text}>
-                  {formatValue(vehicleData.version)}
-                </span>
+                {formatValue(vehicleData.version) !== "-" && (
+                  <span className={styles.version_text}>
+                    {formatValue(vehicleData.version)}
+                  </span>
+                )}
               </div>
 
-              {/* Fila 1.5: Tracción + HP + Cilindrada */}
-              <div className={styles.versionSection}>
-                <span className={styles.versionSpec_value}>
-                  {formatValue(vehicleData.traccion) !== "-"
-                    ? formatValue(vehicleData.traccion)
-                    : "-"}
-                </span>
-                <span className={styles.versionSpec_separator_subtle}>|</span>
-                <span className={styles.versionSpec_value}>
-                  {formatHPDisplay(vehicleData.HP) || "-"}
-                </span>
-                <span className={styles.versionSpec_separator_subtle}>|</span>
-                <span className={styles.versionSpec_value}>
-                  {formatCilindradaDisplay(vehicleData.cilindrada) || "-"}
-                </span>
-              </div>
-            </div>
-
-            {/* Logo a la derecha */}
-            <div className={styles.logoContainer}>
-              <Image
-                src={brandLogo.src}
-                alt={brandLogo.alt}
-                width={140}
-                height={140}
-                className={`${styles.brand_logo} ${
-                  brandLogo.size === "small" ? styles.brand_logo_small : ""
-                } ${brandLogo.size === "large" ? styles.brand_logo_large : ""}`}
-                loading="lazy"
-              />
+              {/* Fila 1.5: Tracción, HP, Cilindrada — solo los que existen */}
+              {versionSpecItems.length > 0 && (
+                <div className={styles.versionSection}>
+                  {versionSpecItems.map((item, index) => (
+                    <span key={index}>
+                      {index > 0 && <span className={styles.versionSpec_separator_subtle}>|</span>}
+                      <span className={styles.versionSpec_value}>{item.value}</span>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
-          {/* CONTENEDOR 3: Año, Km, Caja (SEGUNDA IMPORTANCIA) */}
-          <div className={styles.mainDataSection}>
-            {/* Fila 2: Año, Km, Caja (SEGUNDA IMPORTANCIA) */}
-            <div className={styles.mainDataRow}>
-              {mainData.map((item) => {
+          {/* CONTENEDOR: Año, Km, Caja — solo si hay datos, acumulados a la izquierda */}
+          {mainData.length > 0 && (
+            <div className={styles.mainDataSection}>
+              <div className={styles.mainDataRow}>
+                {mainData.map((item) => {
                 const IconComponent = item.icon;
                 return (
                   <div key={item.label} className={styles.mainDataItem}>
@@ -224,22 +231,25 @@ export const CardDetalle = memo(({ auto, contactInfo }) => {
                   </div>
                 );
               })}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* CONTENEDOR 2: Información adicional (grid) */}
-          <div className={styles.additionalInfoSection}>
-            <div className={styles.infoContainer}>
-              {additionalInfo.map((item) => (
-                <div key={item.label} className={styles.infoItem}>
-                  <span className={styles.infoKey}>{item.label}</span>
-                  <span className={styles.infoValue}>{item.value}</span>
-                </div>
-              ))}
+          {/* Información adicional — solo ítems con valor, acumulados a la izquierda */}
+          {additionalInfo.length > 0 && (
+            <div className={styles.additionalInfoSection}>
+              <div className={styles.infoContainer}>
+                {additionalInfo.map((item) => (
+                  <div key={item.label} className={styles.infoItem}>
+                    <span className={styles.infoKey}>{item.label}</span>
+                    <span className={styles.infoValue}>{item.value}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* CONTENEDOR 3: Precio (antes del contacto) - Estilo CardAuto */}
+          {/* Precio: mismo estilo que CardAuto (recuadro azul, tamaño adaptado) */}
           <div className={styles.priceSection}>
             {/* Contenedor izquierda: "Desde:" */}
             <div className={styles.price_label_container}>

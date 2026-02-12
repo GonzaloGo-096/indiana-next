@@ -147,22 +147,24 @@
     min-height: 0;
 }
 
-/* FILA 1: Marca + Modelo - Sin logo, más compacto */
+/* FILA 1: Marca + Modelo + Versión - Mismo formato CardAuto, espacio reservado para versión */
 .container1_row1 {
     --row-line-height: 1.15;
     --row-gap: var(--spacing-1);
+    --row1-max-font: 1.75rem;
     
     display: flex;
     align-items: baseline;
     justify-content: flex-start;
     gap: var(--row-gap);
     width: 100%;
-    flex-wrap: wrap; /* ✅ Permite que el texto se envuelva si es necesario */
+    flex-wrap: wrap;
     min-width: 0;
     flex-shrink: 0;
     padding-bottom: 0;
     margin-bottom: 0;
     line-height: var(--row-line-height);
+    min-height: calc(2 * var(--row-line-height) * var(--row1-max-font));
 }
 
 /* Marca: Más grande */
@@ -229,14 +231,15 @@
     margin-left: var(--spacing-1); /* ✅ Espacio antes de la versión */
 }
 
-/* FILA 3: Caja, Km, Año - Distribuidos en todo el ancho */
+/* FILA 3: Caja, Km, Año - Mismo formato CardAuto (padding, alineación) */
 .container1_row3 {
-    --data-margin-top: var(--spacing-3);
+    --data-item-padding-right: var(--spacing-3);
+    --data-margin-top: var(--spacing-2);
     
     display: flex;
-    justify-content: space-between; /* Distribuir en todo el ancho */
+    justify-content: flex-start;
     align-items: flex-end;
-    gap: var(--spacing-2);
+    gap: 0;
     flex-wrap: nowrap;
     width: 100%;
     min-width: 0;
@@ -251,37 +254,38 @@
 }
 
 .row2_data_item {
+    --data-item-padding-right: var(--spacing-3);
+    
     display: flex;
     align-items: flex-end;
-    justify-content: flex-start; /* Todos alineados a la izquierda */
+    justify-content: flex-start;
     height: 100%;
-    flex: 1 1 0; /* Distribuir equitativamente */
+    flex: 0 0 auto;
     min-width: 0;
-    padding: 0;
+    padding-right: var(--data-item-padding-right);
 }
 
-/* Padding right para Caja (primer elemento) */
 .row2_data_item:first-child {
-    padding-right: var(--spacing-3);
+    min-width: 0;
 }
 
 .row2_data_item_automatica {
-    /* Sin cambios */
+    padding-right: var(--data-item-padding-right);
 }
 
 .row2_data_content {
     display: flex;
     flex-direction: column;
     gap: 0;
-    align-items: flex-start; /* Todos alineados a la izquierda */
+    align-items: flex-start;
     justify-content: flex-end;
     text-align: left;
     width: 100%;
 }
 
-/* Label: Más grande y alineado a la izquierda */
+/* Label: Mismo estilo CardAuto */
 .row2_data_label {
-    --label-font-size: clamp(0.875rem, 2.5vw, 1rem);
+    --label-font-size: clamp(0.875rem, 2.3vw, 1rem);
     --label-letter-spacing: 0.2px;
     
     font-size: var(--label-font-size);
@@ -293,14 +297,12 @@
     white-space: nowrap;
     overflow: visible;
     text-overflow: clip;
-    margin-bottom: 4px;
-    text-align: left;
-    width: 100%;
+    margin-bottom: 2px;
 }
 
-/* Value: Más grande y alineado a la izquierda */
+/* Value: Mismo estilo CardAuto */
 .row2_data_value {
-    --value-font-size: clamp(1.375rem, 4vw, 1.625rem);
+    --value-font-size: clamp(1.3125rem, 3.8vw, 1.625rem);
     --value-letter-spacing: -0.3px;
     --value-line-height: 1.25;
     --value-font-weight: 300;
@@ -323,72 +325,68 @@
     text-rendering: optimizeLegibility;
 }
 
-/* ===== PRECIO ===== */
+/* ===== PRECIO: Mismo recuadro CardAuto (azul, blanco) ===== */
 .container4 {
-    --price-border-opacity: 0.05;
-    --price-border-radius: var(--border-radius-lg);
+    --price-bg: #3F45C6;
+    --price-border: #3A3FD0;
+    --price-radius: var(--border-radius-lg);
     
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
     gap: var(--spacing-2);
-    margin-top: 0;
-    padding-top: 0;
-    border-top: 1px solid var(--color-neutral-200);
+    margin-top: var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-3);
+    background: var(--price-bg);
+    border: 1px solid var(--price-border);
+    border-radius: var(--price-radius);
 }
 
 .price_label_container {
     --label-width: 30%;
-    --label-padding-left: var(--spacing-2);
     
     flex: 0 0 var(--label-width);
     display: flex;
     align-items: center;
     justify-content: flex-start;
     padding: 0;
-    padding-left: var(--label-padding-left);
-    background: transparent;
 }
 
 .price_label {
-    --label-font-size: clamp(1rem, 2.5vw, 1.25rem);
+    --label-font-size: clamp(0.9375rem, 2.4vw, 1.125rem);
     
     font-size: var(--label-font-size);
     font-weight: var(--font-weight-medium);
-    font-style: normal;
     font-family: var(--font-condensed);
-    color: var(--color-neutral-600);
+    color: var(--color-white);
     text-align: left;
     text-transform: lowercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
+    opacity: 0.95;
 }
 
 .price_display {
     --price-width: 70%;
-    --price-padding-right: var(--spacing-3);
     
     flex: 0 0 var(--price-width);
     display: flex;
     align-items: center;
     justify-content: flex-end;
     padding: 0;
-    padding-top: var(--spacing-1);
-    padding-right: var(--price-padding-right);
-    background: transparent;
+    padding-right: var(--spacing-3);
 }
 
 .price_value {
-    --price-font-size: clamp(1.875rem, 5.2vw, 2.25rem);
-    --price-letter-spacing: -0.4px;
-    --price-line-height: 1.15;
-    --price-symbol-size: 0.7em;
+    --price-font-size: clamp(1.5rem, 4.2vw, 1.875rem);
+    --price-letter-spacing: -0.35px;
+    --price-line-height: 1.2;
+    --price-symbol-size: 0.72em;
     
     font-size: var(--price-font-size);
     font-weight: var(--font-weight-bold);
-    font-style: normal;
     font-family: var(--font-condensed);
-    color: var(--color-brand-500);
+    color: var(--color-white);
     line-height: var(--price-line-height);
     letter-spacing: var(--price-letter-spacing);
     text-align: right;
@@ -400,11 +398,11 @@
 
 /* ===== RESPONSIVE - MOBILE FIRST ===== */
 
-/* Mobile: Espaciado más compacto */
+/* Mobile: Espaciado más compacto (igual lógica CardAuto) */
 @media (max-width: 575px) {
     .card {
         --card-hover-lift: var(--card-hover-lift-mobile);
-        max-width: 280px; /* ✅ Ancho fijo en mobile */
+        max-width: 280px;
         min-width: 240px;
     }
     

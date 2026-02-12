@@ -122,6 +122,23 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
     return getBrandLogo(auto?.marca || "");
   }, [auto]);
 
+  // ✅ Evitar crear objeto style en cada render (solo cuando hay ajustes por marca)
+  const logoWrapperStyle = useMemo(() => {
+    if (
+      brandLogo.scale == null &&
+      brandLogo.offsetY == null &&
+      brandLogo.offsetX == null
+    )
+      return undefined;
+    return {
+      "--logo-scale": brandLogo.scale ?? 1,
+      "--logo-offset-y":
+        brandLogo.offsetY != null ? `${brandLogo.offsetY}px` : "0px",
+      "--logo-offset-x":
+        brandLogo.offsetX != null ? `${brandLogo.offsetX}px` : "0px",
+    };
+  }, [brandLogo.scale, brandLogo.offsetY, brandLogo.offsetX]);
+
   // ✅ DATOS PRINCIPALES (Caja, Km, Año)
   const mainData = useMemo(
     () => [
@@ -223,18 +240,23 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
             </div>
           </div>
 
-          {/* Logo después de los datos */}
+          {/* Logo después de los datos (ajustes por marca vía CSS variables) */}
           <div className={styles.container1_left}>
-            <Image
-              src={brandLogo.src}
-              alt={brandLogo.alt}
-              width={60}
-              height={60}
-              className={`${styles.brand_logo} ${
-                brandLogo.size === "small" ? styles.brand_logo_small : ""
-              } ${brandLogo.size === "large" ? styles.brand_logo_large : ""}`}
-              loading="lazy"
-            />
+            <div
+              className={styles.brand_logo_wrapper}
+              style={logoWrapperStyle}
+            >
+              <Image
+                src={brandLogo.src}
+                alt={brandLogo.alt}
+                width={60}
+                height={60}
+                className={`${styles.brand_logo} ${
+                  brandLogo.size === "small" ? styles.brand_logo_small : ""
+                } ${brandLogo.size === "large" ? styles.brand_logo_large : ""}`}
+                loading="lazy"
+              />
+            </div>
           </div>
         </div>
 

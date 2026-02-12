@@ -74,7 +74,7 @@ export function UtilitariosCarouselClient({ cards }) {
 
   return (
     <section
-      className={styles.carouselSection}
+      className={`${styles.carouselSection} ${styles.utilitariosSection}`}
       aria-label="Gama de Utilitarios Peugeot"
     >
       <div className={styles.carouselWrapper}>

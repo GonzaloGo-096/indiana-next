@@ -12,14 +12,12 @@
   /* ✅ Migrado: Fondo principal → token semántico surface */
   background-color: var(--color-surface, #ffffff);
   min-height: 100vh;
-  padding-bottom: var(--spacing-6); /* ✅ Padding bottom mobile */
-  margin-bottom: var(--spacing-6); /* ✅ Margin bottom mobile */
+  padding-bottom: var(--spacing-6);
 }
 
 @media (min-width: 769px) {
   .page {
-    padding-bottom: var(--spacing-8); /* ✅ Padding bottom desktop */
-    margin-bottom: var(--spacing-8); /* ✅ Margin bottom desktop */
+    padding-bottom: var(--spacing-8);
   }
 }
 
@@ -333,42 +331,42 @@
     display: none;
   }
   
-  /* ✅ Desktop: Mostrar botones fuera del carrusel */
+  /* ✅ Desktop: Botones Filtrar y Ordenar ocupan todo el ancho */
   .actionButtonsDesktop {
     display: flex !important;
-    gap: 12px; /* ✅ Desktop: espacio entre botones */
-    align-items: center;
-    justify-content: flex-start; /* ✅ Alineados a la izquierda */
-    padding: 10px 24px 10px 15px; /* ✅ Padding: izquierda mínimo, derecha más */
-    margin-bottom: 32px; /* ✅ Separación de la lista */
-    margin-left: calc(-50vw + 50%); /* ✅ Breakout: salir del costado del viewport */
-    width: fit-content; /* ✅ Solo ancho del contenido */
-    background: #ffffff; /* ✅ Mismo fondo que el carrusel */
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02); /* ✅ Misma sombra */
-    border-radius: 0 0 12px 0; /* ✅ Border radius solo abajo a la derecha, arriba y derecha rectos */
+    gap: 0;
+    align-items: stretch;
+    padding: 0;
+    margin-bottom: 32px;
+    margin-left: 0;
+    width: 100%;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
+    border-radius: 0 0 12px 0;
   }
   
-  /* ✅ Desktop: Contenedores de botones no ocupan espacio extra */
   .actionButtonsDesktop > div {
-    flex: 0 1 auto;
-    width: auto;
+    flex: 1;
+    display: flex;
     position: relative;
   }
   
   .actionButtonsDesktop .actionButton {
-    /* ✅ Desktop: ancho natural (no flex: 1) */
-    flex: 0 1 auto;
-    width: auto; /* ✅ Desktop: ancho natural */
-    font-size: 0.9375rem; /* ✅ Desktop: tamaño estándar (15px) */
-    padding: 8px 16px; /* ✅ Desktop: menos padding */
-    min-height: auto; /* ✅ Desktop: sin restricción de altura */
-    border-radius: 6px; /* ✅ Desktop: bordes redondeados */
-    border-right: none; /* ✅ Desktop: sin borde entre botones */
-    gap: 8px; /* ✅ Desktop: más espacio entre icono y texto */
+    flex: 1;
+    width: 100%;
+    font-size: 0.9375rem;
+    padding: 10px 16px;
+    min-height: 48px;
+    border-radius: 0;
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
+    gap: 8px;
   }
   
-  /* ✅ Desktop: sin bordes entre botones */
   .actionButtonsDesktop > button:first-child {
+    border-right: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  
+  .actionButtonsDesktop > div:last-child .actionButton {
     border-right: none;
   }
   

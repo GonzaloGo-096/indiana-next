@@ -263,9 +263,9 @@
   align-items: center;
   max-width: var(--container-max-width);
   margin: 0 auto;
-  padding: 0 clamp(36px, calc(4vw + 20px), 68px); /* ✅ Padding lateral aumentado para espacio de flechas */
-  overflow: visible; /* ✅ Permite que las flechas salgan */
-  box-sizing: content-box; /* ✅ El padding no afecta el ancho total */
+  padding: 0 clamp(12px, 2vw, 20px); /* Mobile: padding lateral mínimo */
+  overflow: visible;
+  box-sizing: content-box;
 }
 
 .carousel {
@@ -349,19 +349,44 @@
     transform: translateY(-50%) scale(0.95);
   }
 
+  /* Solo mostrar la flecha que puede hacer scroll (la necesaria) */
   .scrollButton:disabled {
-    opacity: 0.25;
-    cursor: not-allowed;
+    visibility: hidden;
+    pointer-events: none;
   }
 
   .scrollButtonLeft {
-    left: -20px; /* ✅ Fuera del contenedor */
+    left: 8px; /* Posición absoluta sobre el borde, no ocupa espacio en el flujo */
   }
 
   .scrollButtonRight {
-    right: -20px !important; /* ✅ Fuera del contenedor */
+    right: 8px !important;
     left: auto !important;
     margin-left: 0;
+  }
+
+  /* Carrusel a ancho completo: flechas no restan espacio al contenedor */
+  .carouselWrapper {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+/* ===== UTILITARIOS: en desktop fila estática (3 entran), en mobile carrusel ===== */
+@media (min-width: 769px) {
+  .utilitariosSection .carouselWrapper {
+    justify-content: center;
+  }
+
+  .utilitariosSection .carousel {
+    overflow: visible;
+    scroll-snap-type: none;
+    justify-content: center;
+    flex-wrap: nowrap;
+  }
+
+  .utilitariosSection .scrollButton {
+    display: none;
   }
 }
 
@@ -659,7 +684,8 @@
   }
   
   .carouselWrapper {
-    padding: 0 clamp(32px, 5vw, 64px);
+    padding-left: 0;
+    padding-right: 0;
   }
   
   .carousel {
@@ -714,7 +740,8 @@
   }
   
   .carouselWrapper {
-    padding: 0 clamp(56px, 7vw, 80px);
+    padding-left: 0;
+    padding-right: 0;
   }
   
   .carousel {

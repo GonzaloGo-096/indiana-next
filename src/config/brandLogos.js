@@ -16,7 +16,12 @@
  * - sin espacios ni caracteres especiales
  * - normalizado (ej: "mercedes-benz" → "mercedesbenz")
  * 
- * @type {Object<string, {src: string, alt: string, size?: string}>}
+ * Ajustes opcionales por marca (solo CardAuto):
+ * - scale: número (ej. 1.08 = más grande, 0.92 = más chico)
+ * - offsetY: px (ej. -4 = más arriba, 2 = más abajo)
+ * - offsetX: px (ej. 6 = más derecha, -4 = más izquierda)
+ *
+ * @type {Object<string, {src: string, alt: string, size?: string, scale?: number, offsetY?: number, offsetX?: number}>}
  */
 export const BRAND_LOGOS = {
   // Marcas con logos disponibles
@@ -24,6 +29,7 @@ export const BRAND_LOGOS = {
     src: "/assets/logos/logos-peugeot/Peugeot_logo_PNG8.webp",
     alt: "Logo Peugeot",
     size: "small",
+    scale: 0.92,
   },
   "peugeot-vintage": {
     src: "/assets/logos/brands/Peugeot_logo_vintage.webp",
@@ -33,11 +39,13 @@ export const BRAND_LOGOS = {
     src: "/assets/logos/brands/Fiat-Logo-PNG.webp",
     alt: "Logo Fiat",
     size: "small",
+    scale: 0.92,
   },
   ford: {
     src: "/assets/logos/brands/Ford-logo-1.webp",
     alt: "Logo Ford",
-    size: "large", // Logo Ford más grande
+    size: "large",
+    offsetY: -16,
   },
   honda: {
     src: "/assets/logos/brands/Honda_logo_PNG5.webp",
@@ -51,6 +59,7 @@ export const BRAND_LOGOS = {
   renault: {
     src: "/assets/logos/brands/Renault-Logo-PNG.webp",
     alt: "Logo Renault",
+    scale: 0.92,
   },
   toyota: {
     src: "/assets/logos/brands/Toyota-logo-1.webp",
@@ -71,6 +80,7 @@ export const BRAND_LOGOS = {
   audi: {
     src: "/assets/logos/brands/Audi-Logo-PNG.webp",
     alt: "Logo Audi",
+    offsetY: -6,
   },
   jeep: {
     src: "/assets/logos/brands/Jeep_logo_PNG1-.webp",
@@ -115,6 +125,9 @@ export const BRAND_LOGOS = {
   volkswagen: {
     src: "/assets/logos/brands/Volkswagen_logo_PNG5.webp",
     alt: "Logo Volkswagen",
+    scale: 1.12,
+    offsetY: -14,
+    offsetX: 6,
   },
   volvo: {
     src: "/assets/logos/brands/logo-negro.webp",

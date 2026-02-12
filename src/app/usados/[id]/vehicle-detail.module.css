@@ -7,14 +7,17 @@
 
 .container {
   padding: var(--spacing-6) clamp(var(--container-padding-mobile), 5vw, var(--spacing-8));
-  min-height: auto; /* Dejar que el contenido determine la altura */
-  max-width: 100%; /* Permitir que CardDetalle controle su propio ancho */
+  min-height: auto;
+  max-width: 100%;
   margin: 0 auto;
   width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* ===== BOTÓN DE VOLVER ===== */
 .backButton {
+  margin-top: var(--spacing-4);
   margin-bottom: var(--spacing-6);
   padding: 0 var(--spacing-4);
   width: 100%;
@@ -26,7 +29,6 @@
   align-items: center;
   justify-content: center;
   padding: var(--spacing-3) var(--spacing-5);
-  margin-top: var(--spacing-4);
   margin-left: var(--spacing-4);
   background: transparent;
   color: var(--color-brand-500);
@@ -235,19 +237,26 @@
 }
 
 @media (max-width: 576px) {
+  .container {
+    padding-left: var(--spacing-3);
+    padding-right: var(--spacing-3);
+  }
+
   .backButton {
-    margin-bottom: var(--spacing-4);
-    padding: 0 var(--spacing-3);
+    margin-top: var(--spacing-4);
+    margin-bottom: var(--spacing-5);
+    padding: 0 var(--spacing-2);
   }
 
   .backLink {
     padding: var(--spacing-2) var(--spacing-3);
-    margin-top: var(--spacing-2);
-    margin-left: var(--spacing-2);
+    margin-left: 0;
     font-size: 0.8125rem;
     min-width: 120px;
-    min-height: 36px;
+    max-width: 100%;
+    min-height: 40px;
     letter-spacing: 0.3px;
+    box-sizing: border-box;
   }
 }
 

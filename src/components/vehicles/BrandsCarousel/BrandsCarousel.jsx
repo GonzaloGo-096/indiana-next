@@ -21,19 +21,20 @@ import { BRAND_LOGOS } from "../../../config/brandLogos";
 import { ChevronIcon } from "../../ui/icons/ChevronIcon";
 import styles from "./BrandsCarousel.module.css";
 
+// Lista filtrada de marcas (estática, se calcula una sola vez)
+const BRANDS_FOR_CAROUSEL = Object.values(BRAND_LOGOS).filter(
+  (brand) =>
+    !brand.src.includes("logo-negro.webp") &&
+    !brand.alt.includes("Indiana") &&
+    !brand.alt.includes("Peugeot Vintage")
+);
+
 const BrandsCarouselComponent = ({
   selectedBrands = [],
   onBrandSelect,
   isFiltersVisible = false,
 }) => {
-  // Obtener solo las marcas que tienen logos reales (no el logo genérico)
-  // Excluir logos de Indiana y Peugeot vintage del carrusel
-  const brands = Object.values(BRAND_LOGOS).filter(
-    (brand) =>
-      !brand.src.includes("logo-negro.webp") &&
-      !brand.alt.includes("Indiana") &&
-      !brand.alt.includes("Peugeot Vintage")
-  );
+  const brands = BRANDS_FOR_CAROUSEL;
 
   const scrollContainerRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -51,6 +52,12 @@ const BrandsCarouselComponent = ({
       setCanScrollLeft(scrollLeft > 0);
       setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
     }
+  }, []);
+
+  // ✅ Carrusel arranca a tope (scroll en 0) → flecha izquierda no se muestra de arranque
+  useEffect(() => {
+    const carousel = scrollContainerRef.current;
+    if (carousel) carousel.scrollLeft = 0;
   }, []);
 
   // ✅ Efecto para detectar scroll y resize

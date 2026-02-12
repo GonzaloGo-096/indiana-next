@@ -186,18 +186,15 @@
   padding-bottom: 0;
 }
 
-/* ===== HEADER: Logo + Título/Modelo + Especificaciones ===== */
+/* ===== HEADER: Logo | Título/Modelo + Especificaciones ===== */
 .headerSection {
   display: flex;
-  flex-direction: row;
-  gap: var(--spacing-5);
+  flex-direction: column;
   width: 100%;
   align-items: flex-start;
-  justify-content: space-between; /* ✅ En mobile: espacio entre datos y logo */
   padding-bottom: var(--spacing-6);
   border-bottom: 1px solid rgba(0, 0, 0, 0.04);
   min-height: 0;
-  position: relative; /* ✅ Para desktop: permitir logo absolute */
 }
 
 /* Nueva sección para Año, Km, Caja (fuera del headerSection) */
@@ -211,17 +208,17 @@
   align-items: stretch;
 }
 
-/* Logo: en mobile está en el headerSection, en desktop es absolute */
+/* Logo: al lado del título, logo | título (centrado en la línea; marca/modelo/versión en baseline) */
 .logoContainer {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  z-index: 10;
+  align-self: center;
 }
 
 .brand_logo {
-  --logo-size-base: clamp(100px, 20vw, 140px);
+  --logo-size-base: clamp(54px, 11vw, 72px);
   --logo-opacity: 0.92;
 
   width: var(--logo-size-base);
@@ -233,15 +230,27 @@
 }
 
 .brand_logo_small {
-  --logo-size-base: clamp(85px, 18vw, 120px);
+  --logo-size-base: clamp(48px, 9vw, 60px);
   width: var(--logo-size-base);
   height: var(--logo-size-base);
 }
 
 .brand_logo_large {
-  --logo-size-base: clamp(110px, 22vw, 160px);
+  --logo-size-base: clamp(58px, 12vw, 78px);
   width: var(--logo-size-base);
   height: var(--logo-size-base);
+}
+
+.titleRowSeparator {
+  font-size: inherit;
+  font-weight: var(--font-weight-light);
+  font-family: var(--font-condensed);
+  color: var(--color-neutral-400);
+  opacity: 0.35;
+  padding: 0 var(--spacing-3);
+  margin: 0 var(--spacing-1);
+  flex-shrink: 0;
+  align-self: center;
 }
 
 .headerData {
@@ -252,26 +261,26 @@
   gap: 0;
   justify-content: flex-start;
   align-items: flex-start;
-  order: 1;
 }
 
-/* FILA 1: Título/Modelo (MÁS IMPORTANTE) */
+/* Fila 1: Logo | Marca + Modelo + Versión — misma línea/base */
 .titleRow {
   display: flex;
   flex-direction: row;
   align-items: baseline;
   justify-content: flex-start;
   width: 100%;
-  flex-wrap: wrap; /* ✅ Si no caben todos, bajan completos */
-  gap: var(--spacing-2); /* ✅ Espacio entre marca, modelo y versión */
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
   min-width: 0;
   margin-bottom: 0;
   padding-bottom: 0;
-  max-width: 100%; /* ✅ Asegurar que respete el ancho disponible */
+  max-width: 100%;
+  line-height: 1.15;
 }
 
 .marca_text {
-  --marca-font-size: clamp(2rem, 5.5vw, 3rem);
+  --marca-font-size: clamp(2.25rem, 6vw, 3.5rem);
 
   font-size: var(--marca-font-size);
   font-weight: var(--font-weight-bold);
@@ -280,17 +289,17 @@
   line-height: 1.15;
   letter-spacing: -0.5px;
   display: inline-block;
-  white-space: nowrap; /* ✅ No se parte en 2 filas, baja completo si no cabe */
+  white-space: nowrap;
   flex-shrink: 0;
 }
 
 .modelo_title {
-  --modelo-font-size: clamp(2rem, 5.5vw, 3rem);
+  --modelo-font-size: clamp(2.25rem, 6vw, 3.5rem);
 
   font-size: var(--modelo-font-size);
-  font-weight: var(--font-weight-light); /* ✅ Fuente más fina/sutil */
+  font-weight: var(--font-weight-light);
   font-family: var(--font-condensed);
-  color: var(--color-neutral-600); /* ✅ Gris como en vehicle card */
+  color: var(--color-neutral-600);
   line-height: 1.15;
   letter-spacing: -0.5px;
   margin: 0;
@@ -299,7 +308,7 @@
   margin-bottom: 0;
   text-align: left;
   display: inline-block;
-  white-space: nowrap; /* ✅ No se parte en 2 filas, baja completo si no cabe */
+  white-space: nowrap;
   flex-shrink: 1;
   min-width: 0;
 }
@@ -356,7 +365,7 @@
 }
 
 .version_text {
-  --version-font-size: clamp(1.5rem, 4vw, 2rem);
+  --version-font-size: clamp(1.75rem, 4.5vw, 2.25rem);
 
   font-size: var(--version-font-size);
   font-weight: var(--font-weight-semibold);
@@ -365,20 +374,21 @@
   line-height: 1.15;
   letter-spacing: -0.3px;
   display: inline-block;
-  white-space: nowrap; /* ✅ No se parte en 2 filas, baja completo si no cabe */
+  white-space: nowrap;
   min-width: 0;
   flex-shrink: 1;
   max-width: 100%;
+  vertical-align: baseline;
 }
 
-/* FILA 2: Año, Km, Caja (SEGUNDA IMPORTANCIA) */
+/* Fila Año, Km, Caja — mismo formato que los 4 de abajo: bloques uno al lado del otro, alineación izquierda, contenido centrado dentro de cada uno */
 .mainDataRow {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: flex-start;
-  align-items: baseline;
-  gap: clamp(2rem, 4vw, 5rem);
-  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: var(--spacing-4) var(--spacing-6);
   width: 100%;
   min-width: 0;
   align-self: flex-start;
@@ -386,23 +396,21 @@
 
 .mainDataItem {
   display: flex;
-  align-items: baseline;
-  justify-content: flex-start;
-  flex: 1 1 0%;
-  min-width: 0;
-}
-
-.mainDataItem:first-child {
-  flex: 1 2 0%;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  min-width: 180px;
+  padding: var(--spacing-3) var(--spacing-4);
+  box-sizing: border-box;
 }
 
 .mainDataContent {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-1);
-  align-items: flex-start;
-  justify-content: flex-end;
-  text-align: left;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   width: 100%;
   min-width: 0;
 }
@@ -411,7 +419,7 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-2);
-  justify-content: flex-start;
+  justify-content: center;
 }
 
 .mainDataIcon {
@@ -430,7 +438,7 @@
 }
 
 .mainDataLabel {
-  --label-font-size: clamp(0.75rem, 2vw, 0.9375rem);
+  --label-font-size: clamp(0.875rem, 2.3vw, 1.0625rem);
 
   font-size: var(--label-font-size);
   font-weight: var(--font-weight-medium);
@@ -442,7 +450,7 @@
 }
 
 .mainDataValue {
-  --value-font-size: clamp(1.5rem, 4vw, 2rem);
+  --value-font-size: clamp(1.75rem, 4.5vw, 2.25rem);
 
   font-size: var(--value-font-size);
   font-weight: var(--font-weight-light);
@@ -451,7 +459,7 @@
   line-height: 1.25;
   letter-spacing: -0.3px;
   width: 100%;
-  text-align: left;
+  text-align: center;
   white-space: nowrap;
 
   -webkit-font-smoothing: antialiased;
@@ -459,62 +467,69 @@
   text-rendering: optimizeLegibility;
 }
 
-/* ===== SECCIÓN PRECIO ===== */
+/* ===== SECCIÓN PRECIO — Estilo CardAuto (recuadro azul, blanco), tamaño adaptado al detalle ===== */
 .priceSection {
-  --price-border-opacity: 0.05;
-  --price-border-radius: var(--border-radius-lg);
+  --price-bg: #3F45C6;
+  --price-border: #3A3FD0;
+  --price-radius: var(--border-radius-lg);
 
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   gap: var(--spacing-2);
-  margin-top: 0;
-  padding-top: var(--spacing-4);
-  padding-bottom: var(--spacing-4);
-  border-top: 1px solid rgba(0, 0, 0, 0.04);
-  border-left: 1px solid rgba(0, 0, 0, var(--price-border-opacity));
-  border-radius: var(--price-border-radius) 0 0 0;
+  margin-top: var(--spacing-4);
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--price-bg);
+  border: 1px solid var(--price-border);
+  border-radius: var(--price-radius);
 }
 
 .price_label_container {
   --label-width: 30%;
-  --label-padding-left: var(--spacing-2);
 
   flex: 0 0 var(--label-width);
   display: flex;
   align-items: center;
   justify-content: flex-start;
   padding: 0;
-  padding-left: var(--label-padding-left);
-  background: transparent;
 }
 
 .price_label {
-  --label-font-size: clamp(1.125rem, 2.8vw, 1.375rem);
+  --label-font-size: clamp(1rem, 2.5vw, 1.25rem);
 
   font-size: var(--label-font-size);
   font-weight: var(--font-weight-medium);
-  font-style: normal;
   font-family: var(--font-condensed);
-  color: var(--color-neutral-600);
+  color: var(--color-white);
   text-align: left;
   text-transform: lowercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
+  opacity: 0.95;
 }
 
 .price_display {
   --price-width: 70%;
-  --price-padding-right: var(--spacing-3);
-  
+
   flex: 0 0 var(--price-width);
   display: flex;
   align-items: center;
   justify-content: flex-end;
   padding: 0;
-  padding-top: var(--spacing-1);
-  padding-right: var(--price-padding-right);
-  background: transparent;
+  padding-right: var(--spacing-2);
+}
+
+.priceSection .price_value {
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  font-weight: var(--font-weight-bold);
+  font-family: var(--font-condensed);
+  color: var(--color-white);
+  line-height: 1.2;
+  letter-spacing: -0.35px;
+}
+
+.priceSection .price_value::first-letter {
+  font-size: 0.72em;
 }
 
 /* ===== WHATSAPP SECTION ===== */
@@ -617,18 +632,22 @@
 }
 
 .infoContainer {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: var(--spacing-4) 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-4) var(--spacing-6);
   width: 100%;
   align-items: start;
+  justify-content: flex-start;
 }
 
 .infoItem {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: var(--spacing-1);
   text-align: left;
+  min-width: 160px;
+  padding: var(--spacing-3) var(--spacing-4);
+  box-sizing: border-box;
 }
 
 .infoKey {
@@ -660,145 +679,137 @@
 
 /* ===== RESPONSIVE DESIGN - MOBILE FIRST ===== */
 
-/* Mobile: Stack vertical con alineación profesional */
+/* Mobile: todo un poco más grande, estructura estable */
 @media (max-width: 767px) {
   .cardContent {
-    padding: 0;
+    padding: 0 var(--spacing-4);
     min-width: 0;
     margin-bottom: var(--spacing-8);
+    overflow-x: hidden;
+    box-sizing: border-box;
   }
 
   .mainLayout {
-    gap: var(--spacing-3); /* ✅ Reducido de spacing-5 a spacing-3 */
+    gap: var(--spacing-5);
     align-items: stretch;
+    min-width: 0;
   }
 
   .carouselSection {
     width: 100%;
+    min-width: 0;
     align-items: stretch;
-    padding-left: 6px !important; /* ✅ Padding-left de 6px */
-    padding-right: 0;
-    padding-top: 0;
-    padding-bottom: 0;
+    padding: 0 !important;
   }
 
   .dataSection {
     width: 100%;
+    min-width: 0;
     align-items: stretch;
-    padding-left: 6px !important; /* ✅ Padding-left de 6px */
-    padding-right: 0;
-    padding-top: 0;
-    padding-bottom: 0;
+    padding: 0 !important;
   }
 
   .headerSection {
-    flex-direction: row;
-    gap: 2rem; /* ✅ Gap intermedio más grande (doble) */
-    padding-bottom: var(--spacing-4);
-    align-items: flex-start; /* ✅ Alineado arriba, con la marca */
-    justify-content: flex-start; /* Logo más cerca */
-    padding-right: 0; /* ✅ Sin padding-right en mobile */
-  }
-
-  .logoContainer {
-    position: static; /* ✅ Sin position absolute en mobile */
-    max-width: none;
-    flex-shrink: 0;
-    align-items: flex-start; /* ✅ Alineado arriba */
-    justify-content: flex-start; /* ✅ Arranca arriba */
-    order: 2; /* ✅ Logo a la derecha */
-    padding-top: var(--spacing-2); /* ✅ Padding top al logo */
-  }
-
-  .brand_logo {
-    --logo-size-base: clamp(120px, 30vw, 180px); /* ✅ Logo más grande en mobile */
-    width: var(--logo-size-base);
-    height: var(--logo-size-base);
-  }
-
-  .brand_logo_small {
-    --logo-size-base: clamp(100px, 28vw, 160px);
-    width: var(--logo-size-base);
-    height: var(--logo-size-base);
-  }
-
-  .brand_logo_large {
-    --logo-size-base: clamp(140px, 32vw, 200px);
-    width: var(--logo-size-base);
-    height: var(--logo-size-base);
+    flex-direction: column;
+    gap: 0;
+    padding-bottom: var(--spacing-5);
+    align-items: flex-start;
+    min-width: 0;
   }
 
   .headerData {
-    gap: var(--spacing-3);
-    flex: 0 0 auto; /* ✅ Ancho del contenido, no se expande */
-    width: fit-content; /* ✅ Ancho del contenido */
+    gap: 0;
+    flex: 1 1 auto;
+    width: 100%;
     min-width: 0;
     align-items: flex-start;
-    order: 1; /* ✅ Datos a la izquierda */
-    max-width: none; /* ✅ Sin limitación de ancho en mobile */
   }
 
-  .mainDataRow {
+  .brand_logo {
+    --logo-size-base: clamp(56px, 12vw, 74px);
+  }
+
+  .titleRow {
     flex-direction: row;
-    gap: clamp(1.5rem, 3vw, 2.5rem);
-    width: 100%;
-    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: var(--spacing-1);
     align-items: baseline;
+    min-width: 0;
+  }
+
+  .titleRow .titleRowSeparator {
+    padding: 0 var(--spacing-1);
+    margin: 0;
+  }
+
+  .titleRow .marca_text,
+  .titleRow .modelo_title,
+  .titleRow .version_text {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .marca_text {
+    --marca-font-size: clamp(2rem, 6.5vw, 2.75rem);
+    font-size: var(--marca-font-size);
+  }
+
+  .modelo_title {
+    --modelo-font-size: clamp(2rem, 6.5vw, 2.75rem);
+    font-size: var(--modelo-font-size);
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  .version_text {
+    --version-font-size: clamp(1.75rem, 5vw, 2.25rem);
+    font-size: var(--version-font-size);
+  }
+
+  .versionSection {
+    padding-top: var(--spacing-3);
+  }
+
+  .versionSpec_value {
+    font-size: clamp(1.0625rem, 3vw, 1.25rem);
+  }
+
+  /* Los 3 datos: una fila, más grandes */
+  .mainDataRow {
     flex-wrap: nowrap;
+    gap: var(--spacing-3);
+    justify-content: space-between;
+    min-width: 0;
   }
 
   .mainDataItem {
     flex: 1 1 0%;
     min-width: 0;
-  }
-
-  .mainDataItem:first-child {
-    flex: 1 2 0%;
-  }
-
-  .titleRow {
-    flex-direction: column; /* ✅ En mobile: marca, modelo, versión en columna */
-    flex-wrap: nowrap;
-    gap: var(--spacing-1); /* ✅ Menos espacio entre elementos en columna */
-    align-items: flex-start;
-  }
-
-  .marca_text {
-    --marca-font-size: clamp(2.5rem, 7vw, 3.5rem);
-    font-size: var(--marca-font-size);
-  }
-
-  .modelo_title {
-    --modelo-font-size: clamp(2.5rem, 7vw, 3.5rem);
-    font-size: var(--modelo-font-size);
-  }
-
-  .version_text {
-    --version-font-size: clamp(2rem, 5.5vw, 2.5rem);
-    font-size: var(--version-font-size);
+    padding: var(--spacing-4) var(--spacing-3);
   }
 
   .mainDataValue {
-    --value-font-size: clamp(1.75rem, 5vw, 2.25rem);
+    --value-font-size: clamp(1.75rem, 5.5vw, 2.25rem);
     font-size: var(--value-font-size);
   }
 
   .mainDataLabel {
-    --label-font-size: clamp(0.875rem, 2.5vw, 1rem);
+    --label-font-size: clamp(1rem, 2.8vw, 1.125rem);
     font-size: var(--label-font-size);
   }
 
   .imageCarouselWrapper {
     width: 100%;
+    min-width: 0;
   }
 
   .imageCarouselWrapper :global(.mainImageContainer) {
-    aspect-ratio: 16 / 9; /* ✅ Mobile: más ancho para vehículos */
-    min-height: 250px;
+    aspect-ratio: 16 / 9;
+    min-height: 260px;
   }
 
   .imageCarouselWrapper :global(.mainImageContainer .mainImage) {
-    object-fit: contain; /* ✅ CRÍTICO: contain para ver el auto completo */
+    object-fit: contain;
   }
 
   .imageCarouselWrapper :global(.thumbnail) {
@@ -807,29 +818,66 @@
   }
 
   .imageCarouselWrapper :global(.thumbnail.active) {
-    transform: scale(1.2) !important;
+    transform: scale(1.15) !important;
   }
 
-  .priceSection,
+  .priceSection {
+    width: 100%;
+    min-width: 0;
+    padding: var(--spacing-3) var(--spacing-4);
+    margin-top: var(--spacing-5);
+    box-sizing: border-box;
+  }
+
+  .priceSection .price_value {
+    font-size: clamp(1.5rem, 5.5vw, 1.875rem);
+  }
+
+  .priceSection .price_label {
+    font-size: clamp(1.0625rem, 2.8vw, 1.25rem);
+  }
+
   .additionalInfoSection {
     width: 100%;
-    align-items: stretch;
-    justify-content: center;
-    padding-top: var(--spacing-6);
+    min-width: 0;
+    padding-top: var(--spacing-5);
   }
 
-  .price_display {
-    justify-content: flex-end;
-  }
-
+  /* Los 4 datos: una fila, más grandes */
   .infoContainer {
     width: 100%;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--spacing-4) 0;
+    flex-wrap: nowrap;
+    gap: var(--spacing-3);
+    min-width: 0;
   }
 
-  .price_value {
-    --price-font-size: clamp(2.75rem, 7.5vw, 3.5rem);
+  .infoItem {
+    flex: 1 1 0%;
+    min-width: 0;
+    padding: var(--spacing-4) var(--spacing-3);
+  }
+
+  .infoKey {
+    font-size: clamp(1rem, 2.8vw, 1.125rem);
+  }
+
+  .infoValue {
+    font-size: clamp(1.3125rem, 4vw, 1.5625rem);
+  }
+
+  .whatsappSection {
+    margin-top: var(--spacing-5);
+    padding-top: var(--spacing-4);
+  }
+
+  .whatsappButton {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    padding: var(--spacing-4) var(--spacing-5);
+    font-size: clamp(1rem, 2.5vw, 1.0625rem);
+    white-space: normal;
+    text-align: center;
   }
 }
 
@@ -885,29 +933,15 @@
   }
 
   .headerSection {
-    gap: var(--spacing-6);
+    gap: 0;
     align-items: flex-start;
-    justify-content: flex-start;
-    padding-bottom: var(--spacing-8); /* ✅ Más espacio inferior */
-  }
-
-  .logoContainer {
-    position: absolute;
-    top: -1.3rem;
-    right: 21%;
-    z-index: 10;
-  }
-
-  .headerSection {
-    /* ✅ Padding-right calculado: logo máximo (160px) + margen (24px) = ~184px */
-    padding-right: clamp(140px, 25%, 180px);
+    padding-bottom: var(--spacing-8);
   }
 
   .headerData {
     flex: 1;
     min-width: 0;
     align-items: flex-start;
-    max-width: calc(100% - clamp(140px, 25%, 180px)); /* ✅ Limitar ancho para evitar superposición */
   }
 
   .mainDataSection {
@@ -916,20 +950,8 @@
   }
 
   .mainDataRow {
-    flex-direction: row;
+    gap: var(--spacing-4) var(--spacing-6);
     justify-content: flex-start;
-    align-items: baseline;
-    gap: clamp(3.5rem, 5vw, 5rem); /* ✅ Más espacio entre datos */
-    flex-wrap: nowrap;
-  }
-
-  .mainDataItem {
-    flex: 1 1 0%;
-    min-width: 0;
-  }
-
-  .mainDataItem:first-child {
-    flex: 1 2 0%;
   }
 
   .imageCarouselWrapper {
@@ -1025,27 +1047,8 @@
   }
 
   .mainDataRow {
-    gap: clamp(5rem, 6vw, 7rem); /* ✅ Más espacio entre datos en desktop grande */
+    gap: var(--spacing-4) var(--spacing-6);
     justify-content: flex-start;
-    align-items: baseline;
-    flex-wrap: nowrap;
-  }
-
-  .mainDataItem {
-    flex: 1 1 0%;
-    min-width: 0;
-  }
-
-  .mainDataItem:first-child {
-    flex: 1 2 0%;
-  }
-
-  .mainDataValue {
-    --value-font-size: clamp(1.5rem, 4vw, 2rem);
-  }
-
-  .mainDataLabel {
-    --label-font-size: clamp(0.75rem, 2vw, 0.9375rem);
   }
 
   .priceSection {
@@ -1133,24 +1136,11 @@
   }
 
   .headerSection {
-    gap: var(--spacing-8);
-  }
-
-  .logoContainer {
-    max-width: 160px;
-    position: absolute;
-    top: -1.5rem;
-    right: 24%;
-    z-index: 10;
-  }
-
-  .headerSection {
-    /* ✅ Padding-right calculado: logo máximo (160px) + margen (24px) = ~184px */
-    padding-right: clamp(140px, 25%, 180px);
+    gap: 0;
   }
 
   .headerData {
-    max-width: calc(100% - clamp(140px, 25%, 180px)); /* ✅ Limitar ancho para evitar superposición */
+    width: 100%;
   }
 
   .imageCarouselWrapper :global(.mainImageContainer) {

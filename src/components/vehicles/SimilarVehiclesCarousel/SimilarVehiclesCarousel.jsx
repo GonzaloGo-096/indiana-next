@@ -226,24 +226,22 @@ export const SimilarVehiclesCarousel = ({ currentVehicle }) => {
   return (
     <section className={styles.section} data-testid="similar-vehicles-carousel">
       <div className={styles.container}>
-        {/* Título de la sección con logo */}
+        {/* Título: solo logo de la marca + "más" grande */}
         <div className={styles.header}>
           <div className={styles.titleContainer}>
-            <h2 className={styles.title}>
-              Más vehículos {currentVehicle?.marca || ""}
-            </h2>
             {brandLogo && (
               <div className={styles.brandLogoWrapper}>
                 <Image
                   src={brandLogo.src}
                   alt={brandLogo.alt}
-                  width={60}
-                  height={60}
+                  width={80}
+                  height={80}
                   className={styles.brandLogo}
                   loading="lazy"
                 />
               </div>
             )}
+            <span className={styles.titleMas} aria-hidden="true">+</span>
           </div>
         </div>
 

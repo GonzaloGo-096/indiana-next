@@ -17,18 +17,20 @@ export function CeroKmSection() {
     <section className={styles.section} aria-labelledby="cero-km-title">
       <div className="container">
         <div className={styles.content}>
-          <h2 id="cero-km-title" className={styles.title}>
+          <div className={styles.titleBlock}>
             <Image
               src="/assets/logos/logos-peugeot/Peugeot_logo_PNG8.webp"
               alt="Logo Peugeot"
-              width={60}
-              height={60}
+              width={96}
+              height={96}
               className={styles.titleLogo}
               loading="lazy"
               quality={90}
             />
-            PEUGEOT 0KM
-          </h2>
+            <h2 id="cero-km-title" className={styles.title}>
+              PEUGEOT 0KM
+            </h2>
+          </div>
           <p className={styles.description}>
             Con 15 años de experiencia, Indiana Peugeot es tu concesionaria oficial en Tucumán. Gama completa de modelos 0km, garantía oficial Peugeot, servicio postventa certificado y opciones de financiación.
           </p>

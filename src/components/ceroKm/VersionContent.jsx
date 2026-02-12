@@ -1,9 +1,15 @@
 "use client";
 
 import { memo } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { ColorSelector } from "./ColorSelector";
 import styles from "./VersionContent.module.css";
+
+const VersionTabs = dynamic(
+  () => import("./VersionTabs").then((mod) => ({ default: mod.VersionTabs })),
+  { ssr: false, loading: () => <div style={{ minHeight: "50px" }} /> }
+);
 
 /**
  * VersionContent - Contenido de una versión (imagen, color, specs)
@@ -12,6 +18,8 @@ import styles from "./VersionContent.module.css";
  * 
  * @param {Object} props
  * @param {Object} props.version - Objeto versión activa
+ * @param {Array} props.versiones - Todas las versiones (para tabs)
+ * @param {Function} props.onVersionChange - Callback al cambiar versión
  * @param {string} props.modeloMarca - Marca del modelo (ej: 'Peugeot')
  * @param {string} props.modeloNombre - Nombre del modelo (ej: '2008')
  * @param {Object} props.colorActivo - Objeto color activo
@@ -21,6 +29,8 @@ import styles from "./VersionContent.module.css";
  */
 export const VersionContent = memo(function VersionContent({
   version,
+  versiones,
+  onVersionChange,
   modeloMarca = "",
   modeloNombre = "",
   colorActivo,
@@ -29,6 +39,8 @@ export const VersionContent = memo(function VersionContent({
   onColorChange,
 }) {
   if (!version) return null;
+
+  const hasMultipleVersions = versiones && versiones.length > 1;
 
   const imageUrl = imagenActual?.url || null;
   const imageAlt =
@@ -85,9 +97,24 @@ export const VersionContent = memo(function VersionContent({
           </div>
         )}
 
+        {/* Tabs de versiones: arriba de los datos, no del contenedor de la imagen */}
+        {hasMultipleVersions && (
+          <div className={styles.tabsAboveData}>
+            <VersionTabs
+              versiones={versiones}
+              versionActivaId={version?.id}
+              onVersionChange={onVersionChange}
+            />
+          </div>
+        )}
+
         {/* Info */}
         <div className={styles.infoSection}>
-          <h2 className={styles.versionTitle}>{version.nombre}</h2>
+          <h3 className={styles.modeloVersionLabel}>Modelo versión</h3>
+          <h2 className={styles.versionTitle}>
+            {modeloNombre && <>{modeloNombre} <span className={styles.titleSeparator}>|</span> </>}
+            {version.nombre}
+          </h2>
           <p className={styles.versionDescription}>{version.descripcion}</p>
         </div>
 
@@ -163,9 +190,22 @@ export const VersionContent = memo(function VersionContent({
           )}
         </div>
 
-        {/* Columna derecha: Info + Equipamiento */}
+        {/* Columna derecha: Tabs + Info + Equipamiento (tabs arriba de los datos) */}
         <div className={styles.rightColumn}>
-          <h2 className={styles.versionTitle}>{version.nombre}</h2>
+          {hasMultipleVersions && (
+            <div className={styles.tabsAboveData}>
+              <VersionTabs
+                versiones={versiones}
+                versionActivaId={version?.id}
+                onVersionChange={onVersionChange}
+              />
+            </div>
+          )}
+          <h3 className={styles.modeloVersionLabel}>Modelo versión</h3>
+          <h2 className={styles.versionTitle}>
+            {modeloNombre && <>{modeloNombre} <span className={styles.titleSeparator}>|</span> </>}
+            {version.nombre}
+          </h2>
           <p className={styles.versionDescription}>{version.descripcion}</p>
 
           {version.equipamiento && (
@@ -199,7 +239,8 @@ export const VersionContent = memo(function VersionContent({
     prevProps.colorActivo?.key === nextProps.colorActivo?.key &&
     prevProps.imagenActual?.url === nextProps.imagenActual?.url &&
     prevProps.modeloNombre === nextProps.modeloNombre &&
-    prevProps.modeloMarca === nextProps.modeloMarca
+    prevProps.modeloMarca === nextProps.modeloMarca &&
+    prevProps.versiones?.length === nextProps.versiones?.length
   );
 });
 

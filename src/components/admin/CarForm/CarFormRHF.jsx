@@ -264,7 +264,7 @@ const CarFormRHF = ({
                 <div className={styles.imageActions}>
                   <input
                     type="file"
-                    accept="image/jpeg,image/png,image/webp"
+                    accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
                     onChange={(e) => {
                       const file = e.target.files?.[0]
                       if (file) {
@@ -356,7 +356,7 @@ const CarFormRHF = ({
             <label className={styles.multipleInputLabel}>
               <input
                 type="file"
-                accept="image/jpeg,image/png,image/webp"
+                accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
                 multiple
                 onChange={(e) => {
                   const files = e.target.files

@@ -76,27 +76,21 @@
 /* ===== MÓDULO INDIVIDUAL ===== */
 .module {
   width: 100%;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.module:last-child {
-  border-bottom: none;
 }
 
 /* ===== HEADER DEL MÓDULO (CLICKABLE) ===== */
 .moduleHeader {
   display: flex;
   align-items: center;
-  justify-content: center; /* ✅ Centrado en mobile */
+  justify-content: center; /* Texto + flecha como un solo grupo centrado */
+  gap: var(--spacing-2); /* Flecha al lado del texto, sin ocupar espacio extra */
   width: 100%;
-  padding: var(--spacing-5) var(--spacing-2); /* ✅ Mismo padding que el título */
-  padding-right: calc(var(--spacing-2) + 24px); /* ✅ Padding derecho para espacio del chevron */
+  padding: var(--spacing-5) var(--spacing-2);
   background: transparent;
-  border: none; /* ✅ Sin border-top */
+  border: none;
   cursor: pointer;
-  text-align: center; /* ✅ Centrado en mobile */
+  text-align: center;
   -webkit-tap-highlight-color: transparent;
-  position: relative; /* ✅ Para posicionar el chevron de forma absoluta */
 }
 
 .moduleHeader:focus {
@@ -121,34 +115,27 @@
   line-height: 1.3;
 }
 
-/* ===== CHEVRON (FLECHA) ===== */
+/* ===== CHEVRON (FLECHA) - Al lado del texto, no ocupa espacio en el interlineado ===== */
 .chevron {
-  position: absolute; /* ✅ Position absolute para no afectar alineación */
-  right: var(--spacing-2); /* ✅ Posicionado a la derecha */
-  top: 50%; /* ✅ Centrado verticalmente */
-  transform: translateY(-50%); /* ✅ Centrado verticalmente */
   color: var(--color-neutral-400);
   transition: transform 0.25s ease;
   flex-shrink: 0;
-  z-index: 1;
 }
 
 /* Rotar chevron cuando está abierto (módulos principales) */
 .moduleOpen .moduleHeader .chevron {
-  transform: translateY(-50%) rotate(180deg); /* ✅ Mantener centrado vertical + rotación */
+  transform: rotate(180deg);
   color: var(--color-brand-500);
 }
 
-/* Chevron para sede - estado inicial (cerrado) apunta hacia abajo (igual que el padre) */
+/* Chevron para sede */
 .sede .sedeHeader .chevron {
-  transform: translateY(-50%) rotate(0deg); /* ✅ Mantener centrado vertical */
   transition: transform 0.25s ease;
   color: var(--color-neutral-400);
 }
 
-/* Chevron para sede - cuando está abierto, rota 180 grados (apunta hacia arriba) */
 .sedeOpen .sedeHeader .chevron {
-  transform: translateY(-50%) rotate(180deg); /* ✅ Mantener centrado vertical + rotación */
+  transform: rotate(180deg);
   color: var(--color-brand-500);
 }
 
@@ -186,27 +173,21 @@
 /* ===== SEDE INDIVIDUAL ===== */
 .sede {
   width: 100%;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.sede:last-child {
-  border-bottom: none;
-}
-
-/* ===== HEADER DE LA SEDE (CLICKABLE) ===== */
+/* ===== HEADER DE LA SEDE (CLICKABLE) - En mobile: texto + flecha como grupo centrado ===== */
 .sedeHeader {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
+  gap: var(--spacing-2);
   width: 100%;
   padding: var(--spacing-4) var(--spacing-3);
-  padding-right: calc(var(--spacing-3) + 24px); /* ✅ Padding derecho para espacio del chevron */
   background: transparent;
   border: none;
   cursor: pointer;
-  text-align: left;
+  text-align: center;
   -webkit-tap-highlight-color: transparent;
-  position: relative; /* ✅ Para posicionar el chevron de forma absoluta */
 }
 
 .sedeHeader:focus {
@@ -439,12 +420,17 @@
 
   .columnTitle {
     margin-bottom: var(--spacing-6);
-    text-align: left; /* ✅ Desktop: alineado a la izquierda */
+    text-align: left;
   }
-  
+
   .moduleHeader {
-    justify-content: flex-start; /* ✅ Desktop: alineado a la izquierda */
-    text-align: left; /* ✅ Desktop: alineado a la izquierda */
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .sedeHeader {
+    justify-content: flex-start;
+    text-align: left;
   }
   
   .iconsList {
@@ -467,7 +453,6 @@
   .moduleAccordion .moduleHeader {
     cursor: pointer;
     padding: var(--spacing-5) var(--spacing-2);
-    padding-right: calc(var(--spacing-2) + 24px); /* ✅ Mantener padding derecho para chevron */
   }
 
   /* Chevron visible para todas las secciones en desktop */
@@ -561,17 +546,8 @@
     padding: 0;
   }
 
-  .sede {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .sede:last-child {
-    border-bottom: none;
-  }
-
   .sedeHeader {
     padding: var(--spacing-4) var(--spacing-2);
-    padding-right: calc(var(--spacing-2) + 24px); /* ✅ Mantener padding derecho para chevron */
   }
 
   .sedeTitle {

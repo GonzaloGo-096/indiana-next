@@ -82,6 +82,9 @@ const createModuleItems = (whatsappNumber, message = '', instagramUser = '', pho
 
 // Crear módulos con mensajes, Instagram, teléfonos y ubicaciones personalizadas
 
+// Número de WhatsApp Indiana Usados (usado en /usados y en módulo Multimarca | Usados del footer)
+export const USADOS_WHATSAPP_NUMBER = "543816295959";
+
 // ✅ PEUGEOT: Ahora con 2 sedes separadas
 const peugeotSanMiguelItems = createModuleItems(
   '543816295959', 
@@ -99,7 +102,7 @@ const peugeotYerbabuenaItems = createModuleItems(
   'Av. Aconquija y Bascary, Yerba Buena'
 );
 
-const usadosItems = createModuleItems('543816295959', 'Hola, estoy interesado en autos usados', 'usadosindiana', '(0381) 231-3107', 'Santa Fe 2145, San Miguel de Tucumán');
+const usadosItems = createModuleItems(USADOS_WHATSAPP_NUMBER, 'Hola, estoy interesado en autos usados', 'usadosindiana', '(0381) 231-3107', 'Santa Fe 2145, San Miguel de Tucumán');
 const postventaItems = createModuleItems('543816295959', 'Hola, quiero información sobre servicios de postventa', 'peugeotindiana', '(0381) 434-7700', 'Italia 2945, San Miguel de Tucumán');
 
 // ✅ MÓDULO SITIO: Enlaces a páginas del sitio

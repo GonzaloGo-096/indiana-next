@@ -23,12 +23,10 @@ import sharp from 'sharp'
 export const runtime = 'nodejs'
 
 // ✅ Configuración de optimización de imágenes
+// maxWidth 1200: cards ~360px, detalle ~800px, hero 0km sizes=1200px → 1200 cubre todo con margen retina
 const IMAGE_OPTIMIZATION = {
-  // Ancho máximo (no agrandar imágenes más pequeñas)
-  maxWidth: 1920,
-  // Calidad WebP (0-100)
+  maxWidth: 1200,
   webpQuality: 85,
-  // Eliminar metadata
   removeMetadata: true
 }
 
