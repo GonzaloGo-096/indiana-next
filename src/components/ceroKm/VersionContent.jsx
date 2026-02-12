@@ -108,7 +108,7 @@ export const VersionContent = memo(function VersionContent({
           </div>
         )}
 
-        {/* Info */}
+        {/* Info: solo título y párrafo */}
         <div className={styles.infoSection}>
           <h3 className={styles.modeloVersionLabel}>Modelo versión</h3>
           <h2 className={styles.versionTitle}>
@@ -117,119 +117,80 @@ export const VersionContent = memo(function VersionContent({
           </h2>
           <p className={styles.versionDescription}>{version.descripcion}</p>
         </div>
-
-        {/* Equipamiento */}
-        {version.equipamiento && (
-          <div className={styles.equipamientoSection}>
-            {version.equipamiento.titulo && (
-              <h3 className={styles.equipamientoTitle}>
-                {version.equipamiento.titulo}
-              </h3>
-            )}
-            <ul className={styles.equipamientoList}>
-              {version.equipamiento.items.map((item, index) => (
-                <li 
-                  key={`${version.id}-equip-${index}-${item.slice(0, 20).replace(/\s/g, '-')}`} 
-                  className={styles.equipamientoItem}
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
       </article>
 
-      {/* Layout Desktop */}
+      {/* Layout Desktop: izquierda = foto fija; derecha = contenido + colores abajo, centrados */}
       <article className={styles.desktopWrapper}>
-      <div className={styles.desktopContainer}>
-        {/* Columna izquierda: Imagen + Color */}
-        <div className={styles.leftColumn}>
-          <div className={styles.imageContainer}>
-            {imageUrl ? (
-              <Image
-                src={imageUrl}
-                alt={imageAlt}
-                width={800}
-                height={600}
-                className={styles.image}
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                quality={85}
-                loading="lazy"
-              />
-            ) : (
-              <div
-                className={styles.imagePlaceholder}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "var(--color-neutral-400)",
-                  fontSize: "0.875rem",
-                }}
-              >
-                Imagen no disponible
+        <div className={styles.desktopContainer}>
+          {/* Columna izquierda: solo imagen */}
+          <div className={styles.leftColumn}>
+            <div className={styles.imageContainer}>
+              {imageUrl ? (
+                <Image
+                  src={imageUrl}
+                  alt={imageAlt}
+                  width={800}
+                  height={600}
+                  className={styles.image}
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                  quality={85}
+                  loading="lazy"
+                />
+              ) : (
+                <div
+                  className={styles.imagePlaceholder}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "var(--color-neutral-400)",
+                    fontSize: "0.875rem",
+                  }}
+                >
+                  Imagen no disponible
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Columna derecha: Tabs + Info + selector de colores abajo (centrado) */}
+          <div className={styles.rightColumn}>
+            {hasMultipleVersions && (
+              <div className={styles.tabsAboveData}>
+                <VersionTabs
+                  versiones={versiones}
+                  versionActivaId={version?.id}
+                  onVersionChange={onVersionChange}
+                />
+              </div>
+            )}
+            <h3 className={styles.modeloVersionLabel}>Modelo versión</h3>
+            <h2 className={styles.versionTitle}>
+              {modeloNombre && <>{modeloNombre} <span className={styles.titleSeparator}>|</span> </>}
+              {version.nombre}
+            </h2>
+            <p className={styles.versionDescription}>{version.descripcion}</p>
+
+            {/* Selector de colores: abajo del contenido, opciones un poco más chicas */}
+            {coloresDisponibles && coloresDisponibles.length > 0 && (
+              <div className={styles.colorSectionRight}>
+                <h3 className={styles.colorTitle}>Colores</h3>
+                <div className={styles.colorSelectorWrap}>
+                  <ColorSelector
+                    colores={coloresDisponibles}
+                    colorActivo={colorActivo?.key}
+                    onColorChange={onColorChange}
+                    size="md"
+                  />
+                </div>
+                {colorActivo && (
+                  <span className={styles.colorLabel}>{colorActivo.label}</span>
+                )}
               </div>
             )}
           </div>
-
-          {/* Selector de colores */}
-          {coloresDisponibles && coloresDisponibles.length > 0 && (
-            <div className={styles.colorSection}>
-              <h3 className={styles.colorTitle}>Colores</h3>
-              <ColorSelector
-                colores={coloresDisponibles}
-                colorActivo={colorActivo?.key}
-                onColorChange={onColorChange}
-                size="lg"
-              />
-              {colorActivo && (
-                <span className={styles.colorLabel}>{colorActivo.label}</span>
-              )}
-            </div>
-          )}
         </div>
-
-        {/* Columna derecha: Tabs + Info + Equipamiento (tabs arriba de los datos) */}
-        <div className={styles.rightColumn}>
-          {hasMultipleVersions && (
-            <div className={styles.tabsAboveData}>
-              <VersionTabs
-                versiones={versiones}
-                versionActivaId={version?.id}
-                onVersionChange={onVersionChange}
-              />
-            </div>
-          )}
-          <h3 className={styles.modeloVersionLabel}>Modelo versión</h3>
-          <h2 className={styles.versionTitle}>
-            {modeloNombre && <>{modeloNombre} <span className={styles.titleSeparator}>|</span> </>}
-            {version.nombre}
-          </h2>
-          <p className={styles.versionDescription}>{version.descripcion}</p>
-
-          {version.equipamiento && (
-            <div className={styles.equipamientoSection}>
-              {version.equipamiento.titulo && (
-                <h3 className={styles.equipamientoTitle}>
-                  {version.equipamiento.titulo}
-                </h3>
-              )}
-              <ul className={styles.equipamientoList}>
-                {version.equipamiento.items.map((item, index) => (
-                  <li 
-                    key={`${version.id}-equip-${index}-${item.slice(0, 20).replace(/\s/g, '-')}`} 
-                    className={styles.equipamientoItem}
-                  >
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      </div>
-    </article>
+      </article>
     </>
   );
 }, (prevProps, nextProps) => {

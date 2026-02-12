@@ -43,10 +43,10 @@
   grid-template-columns: 1fr 1fr;
   gap: 0;
   padding: 24px 0;
-  contain: layout style paint; /* ✅ Optimización: aislar repaints */
+  contain: layout style paint;
 }
 
-/* Desktop: contenedor de 2 columnas con márgenes laterales estándares */
+/* Desktop: contenedor altura fija para que no se mueva al cambiar contenido */
 @media (min-width: 768px) {
   .desktopContainer {
     max-width: var(--container-max-width);
@@ -54,22 +54,44 @@
     margin-right: auto;
     padding-left: clamp(24px, 4vw, 48px);
     padding-right: clamp(24px, 4vw, 48px);
+    min-height: 520px; /* Altura fija para estabilidad del layout */
   }
 }
 
 .leftColumn {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  align-items: flex-start; /* Contenedor del auto más a la izquierda */
+  align-items: flex-start;
 }
 
 .rightColumn {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-self: center;
+  justify-content: flex-start;
+  align-items: stretch;
   gap: 16px;
+}
+
+/* Selector de colores en la columna derecha: justo debajo del contenido, alineado a la izquierda */
+.colorSectionRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 24px;
+  width: 100%;
+}
+
+.colorSectionRight .colorSelectorWrap {
+  padding-top: 10px;
+}
+
+.colorSectionRight .colorTitle {
+  text-align: left;
+}
+
+.colorSectionRight .colorLabel {
+  text-align: left;
 }
 
 /* ===== IMAGEN ===== */
@@ -180,48 +202,6 @@
   color: var(--color-neutral-700);
 }
 
-/* ===== EQUIPAMIENTO SECTION ===== */
-.equipamientoSection {
-  margin-top: 8px;
-}
-
-.equipamientoTitle {
-  margin: 0 0 6px 0;
-  font-size: 1rem;
-  font-weight: var(--font-weight-semibold);
-  font-family: var(--font-poppins);
-  color: var(--color-neutral-700);
-  line-height: 1.5;
-  text-transform: uppercase;
-}
-
-.equipamientoList {
-  margin: 0;
-  padding-left: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.equipamientoItem {
-  position: relative;
-  padding-left: 20px;
-  font-size: 0.9375rem;
-  line-height: 1.4;
-  color: var(--color-neutral-700);
-}
-
-.equipamientoItem::before {
-  content: "•";
-  position: absolute;
-  left: 0;
-  color: var(--color-brand-500);
-  font-weight: var(--font-weight-bold);
-  font-size: 1.25rem;
-  line-height: 1.2;
-}
-
 /* ===== RESPONSIVE ===== */
 @media (min-width: 768px) {
   .mobileContainer {
@@ -240,16 +220,13 @@
 
 @media (min-width: 992px) {
   .desktopContainer {
-    grid-template-columns: 1.6fr 1fr;
-    gap: 40px;
+    grid-template-columns: 1.35fr 1.25fr; /* Columna derecha más ancha, contenido más junto a la foto */
+    gap: 24px;
     padding-top: 24px;
     padding-bottom: 24px;
+    min-height: 560px;
   }
 
-  /*
-   * Contenedor del auto: el triple (400×3 = 1200px). La columna lo limita a ~655px.
-   * overflow: hidden para que no se superponga con la columna de datos.
-   */
   .imageContainer {
     aspect-ratio: 4 / 3;
     width: 100%;
@@ -263,13 +240,16 @@
   }
 
   .leftColumn {
-    gap: 12px;
-    padding-right: 80px;
+    padding-right: 36px; /* Menos espacio a la derecha: contenido más pegado a la foto */
   }
 
   .rightColumn {
-    gap: 8px;
+    gap: 12px;
     padding-top: 0;
+  }
+
+  .colorSectionRight {
+    padding-top: 32px;
   }
 
   .colorTitle {
@@ -289,24 +269,6 @@
     font-size: 1.35rem;
     line-height: 1.3;
     margin-top: 8px;
-  }
-
-  .equipamientoSection {
-    margin-top: 12px;
-  }
-
-  .equipamientoTitle {
-    font-size: 1.125rem;
-    margin-bottom: 8px;
-  }
-
-  .equipamientoList {
-    gap: 6px;
-  }
-
-  .equipamientoItem {
-    font-size: 1.125rem;
-    line-height: 1.25;
   }
 }
 

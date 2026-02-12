@@ -10,17 +10,22 @@
 .carouselContainer {
   width: 100%;
   background: #ffffff; /* ✅ Fondo blanco */
-  padding: 16px 20px 8px 20px; /* ✅ Padding lateral para espacio de flechas sin afectar centrado */
+  padding: 16px 20px 18px 20px; /* ✅ Mismo aire arriba y abajo; padding-bottom ensancha el carrusel hacia abajo */
   position: relative;
   display: flex;
   align-items: center;
   gap: 16px;
   border-radius: 0; /* ✅ Bordes rectos */
   margin-bottom: 0; /* ✅ Sin margen inferior para que quede junto al contenedor negro */
-  /* ✅ Sombra ambiental sutil para crear sensación de profundidad y separación del fondo */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
+  /* ✅ Sombra ambiental + bordes con sombra interior (contenido “en el fondo”, algo por encima/abajo) */
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 1px 1px rgba(0, 0, 0, 0.02),
+    inset 0 5px 12px -4px rgba(0, 0, 0, 0.06),
+    inset 0 -5px 12px -4px rgba(0, 0, 0, 0.06);
   overflow: visible; /* ✅ Asegurar que las flechas no se oculten */
-  border: none; /* ✅ Sin borde */
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
   box-sizing: content-box; /* ✅ El padding no afecta el ancho total */
 }
 
@@ -163,7 +168,7 @@
   /* ✅ Mobile: bordes rectos */
   .carouselContainer {
     border-radius: 0; /* ✅ Bordes rectos */
-    padding-bottom: 0; /* ✅ Sin padding bottom para quedar pegado a los botones */
+    padding-bottom: 18px; /* ✅ Ensanchar hacia abajo también en mobile */
     margin-bottom: 0;
   }
 

@@ -13,7 +13,7 @@ import styles from "./ModelGallery.module.css";
  * 
  * Optimizaciones:
  * - Primeras 2-3 imágenes con loading="eager" para carga prioritaria
- * - Placeholder/skeleton mientras cargan
+ * - Next/Image con loading optimizado
  * - Mejor sizes para optimización de Next.js
  * - Renderiza solo las imágenes necesarias según breakpoint (evita descargar imágenes innecesarias)
  * - Usa estado inicial mobile para evitar hidratación mismatch

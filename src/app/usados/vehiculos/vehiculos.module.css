@@ -71,6 +71,7 @@
   background: transparent; /* ✅ Sin fondo para evitar doble borde */
   padding: 0; /* ✅ Sin padding para evitar doble borde */
   position: relative;
+  z-index: 20; /* ✅ Por encima de los botones para que los dropdowns de los selects se vean arriba */
   display: flex;
   flex-direction: column;
   gap: 0; /* ✅ Sin gap para evitar espacios */
@@ -90,12 +91,13 @@
   gap: 0; /* ✅ Mobile: sin gap, pegados entre sí */
   align-items: stretch; /* ✅ Mobile: estirar para ocupar toda la altura */
   position: relative;
+  z-index: 1; /* ✅ Por debajo del carouselSection para que los dropdowns de los selects queden arriba */
   border: none;
   border-radius: 0; /* ✅ Bordes rectos */
   /* ✅ Mobile: ancho completo */
   width: 100%;
-  /* ✅ Mismo fondo y sombra que el carrusel para efecto sobresalido */
-  background: #ffffff;
+  /* ✅ Mismo color de fondo que la página (no blanco del carrusel) */
+  background: var(--color-surface, #ffffff);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
   margin-top: 0; /* ✅ Pegado al carrusel */
   margin-bottom: 24px; /* ✅ Separación de la lista */
@@ -122,54 +124,61 @@
   /* ✅ Mobile: ocupa exactamente 50% del espacio (flex: 1 en su contenedor) */
   flex: 1;
   width: 100%; /* ✅ Ancho completo del contenedor */
-  background: transparent;
-  border: none;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   font-size: 0.875rem; /* ✅ Mobile: tamaño más pequeño para mejor legibilidad */
   font-weight: var(--font-weight-semibold);
-  /* ✅ Migrado: Texto principal oscuro → text-primary */
   color: var(--color-text-primary);
-  text-transform: none; /* ✅ Sin mayúsculas forzadas */
-  letter-spacing: 0.3px;
+  text-transform: none;
+  letter-spacing: 0.4px;
   cursor: pointer;
-  padding: 12px 8px; /* ✅ Mobile: padding touch-friendly, menos lateral para aprovechar espacio */
-  min-height: 48px; /* ✅ Mobile: altura mínima touch-friendly aumentada */
-  border-radius: 0; /* ✅ Sin bordes redondeados en mobile para que quede pegado */
-  /* ✅ Mobile: borde derecho para separar visualmente los botones */
+  padding: 12px 8px;
+  min-height: 48px;
+  border-radius: 8px;
   border-right: 1px solid rgba(0, 0, 0, 0.08);
-  /* ✅ Optimizado: solo transicionar propiedades específicas (mejor rendimiento) */
+  /* ✅ Sombra sutil para elegancia y profundidad */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+              color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
-  justify-content: center; /* ✅ Mobile: centrar contenido */
-  gap: 6px; /* ✅ Espaciado entre icono y texto reducido para mobile */
+  justify-content: center;
+  gap: 6px;
   font-family: var(--font-display);
-  white-space: nowrap; /* ✅ Evitar que el texto se parta */
+  white-space: nowrap;
 }
 
-/* ✅ Eliminar borde del contenedor del último botón */
-.actionButtons > div:last-child .actionButton {
+/* ✅ Radio en borde externo de cada botón (pegados en el centro) */
+.actionButtons > div:first-child .actionButton,
+.actionButtons > button:first-child {
+  border-radius: 8px 0 0 8px;
+}
+.actionButtons > div:last-child .actionButton,
+.actionButtons > button:last-child {
   border-right: none;
+  border-radius: 0 8px 8px 0;
 }
 
-/* ✅ También aplicar a botones directos (sin contenedor) */
+/* ✅ Botones directos (sin contenedor): borde y radius */
 .actionButtons > button:first-child {
   border-right: 1px solid rgba(0, 0, 0, 0.08);
 }
-
 .actionButtons > button:last-child {
   border-right: none;
 }
 
 .actionButton:hover {
-  background-color: var(--color-brand-500-rgba-10); /* ✅ Fondo sutil al hover */
+  background-color: var(--color-brand-500-rgba-10);
   color: var(--color-brand-600);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 
 .actionButton.active {
-  /* ✅ Simplificación: se elimina color-mix(), se conserva valor visual (equivalente a --color-brand-500 con 15% opacidad) */
   background: var(--color-brand-500-rgba-15);
   color: var(--color-brand-600);
+  border-color: rgba(0, 102, 204, 0.25);
+  box-shadow: 0 1px 3px rgba(0, 102, 204, 0.12);
 }
 
 .actionButton svg {
@@ -194,7 +203,7 @@
 .container {
   max-width: var(--container-max-width, 1400px);
   margin: 0 auto;
-  padding-top: 6px;
+  padding-top: 40px; /* ✅ Bastante más espacio arriba (mobile) */
   padding-bottom: var(--spacing-6); /* ✅ Padding bottom mobile */
   padding-left: 15px;
   padding-right: 15px;
@@ -303,7 +312,7 @@
 /* Ambos deben usar 769px para mantener sincronización de botones y drawer */
 @media (min-width: 992px) {
   .container {
-    padding-top: 6px;
+    padding-top: 48px; /* ✅ Bastante más espacio arriba (desktop) */
     padding-bottom: 0;
   }
   
@@ -331,7 +340,7 @@
     display: none;
   }
   
-  /* ✅ Desktop: Botones Filtrar y Ordenar ocupan todo el ancho */
+  /* ✅ Desktop: Botones Filtrar y Ordenar con estilo coherente al carrusel */
   .actionButtonsDesktop {
     display: flex !important;
     gap: 0;
@@ -340,9 +349,13 @@
     margin-bottom: 32px;
     margin-left: 0;
     width: 100%;
-    background: #ffffff;
+    position: relative;
+    z-index: 1; /* ✅ Por debajo del carouselSection para que los dropdowns de los selects queden arriba */
+    background: var(--color-surface, #ffffff);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
     border-radius: 0 0 12px 0;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
   }
   
   .actionButtonsDesktop > div {
@@ -355,19 +368,27 @@
     flex: 1;
     width: 100%;
     font-size: 0.9375rem;
-    padding: 10px 16px;
-    min-height: 48px;
-    border-radius: 0;
+    padding: 12px 20px;
+    min-height: 52px;
     border-right: 1px solid rgba(0, 0, 0, 0.08);
     gap: 8px;
+    letter-spacing: 0.5px;
+  }
+  
+  .actionButtonsDesktop > div:first-child .actionButton,
+  .actionButtonsDesktop > button:first-child {
+    border-radius: 8px 0 0 8px;
+  }
+  
+  .actionButtonsDesktop .actionButton:last-child,
+  .actionButtonsDesktop > div:last-child .actionButton,
+  .actionButtonsDesktop > button:last-child {
+    border-right: none;
+    border-radius: 0 8px 8px 0;
   }
   
   .actionButtonsDesktop > button:first-child {
     border-right: 1px solid rgba(0, 0, 0, 0.08);
-  }
-  
-  .actionButtonsDesktop > div:last-child .actionButton {
-    border-right: none;
   }
   
   /* ✅ Desktop: Sin gap entre carrusel y botones */

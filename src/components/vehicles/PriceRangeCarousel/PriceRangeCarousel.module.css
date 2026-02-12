@@ -13,14 +13,16 @@
 .section {
   width: 100%;
   margin-top: 2rem !important;
-  padding: var(--spacing-4) 0;
+  padding-top: 0;
+  padding-bottom: 46px;
   background: var(--color-white);
 }
 
 @media (min-width: 769px) {
   .section {
     margin-top: 2.5rem !important;
-    padding: var(--spacing-5) 0;
+    padding-top: 0;
+    padding-bottom: 46px;
   }
 }
 
@@ -382,7 +384,8 @@
 @media (min-width: 768px) {
   .section {
     margin-top: 0;
-    padding: var(--spacing-8) 0;
+    padding-top: 0;
+    padding-bottom: 46px;
   }
 
   /* Mismo margen horizontal que en mobile: título y carrusel con aire a los lados */
@@ -423,7 +426,8 @@
 @media (min-width: 992px) {
   .section {
     margin-top: 2.5rem !important;
-    padding: var(--spacing-5) 0;
+    padding-top: 0;
+    padding-bottom: 46px;
   }
 
   /* Mismo margen horizontal que en mobile: título y carrusel con aire a los lados */
@@ -483,7 +487,8 @@
 @media (max-width: 576px) {
   .section {
     margin-top: 0;
-    padding: var(--spacing-4) 0;
+    padding-top: 0;
+    padding-bottom: 46px;
   }
 
   .container {

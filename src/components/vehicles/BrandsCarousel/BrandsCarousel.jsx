@@ -21,13 +21,36 @@ import { BRAND_LOGOS } from "../../../config/brandLogos";
 import { ChevronIcon } from "../../ui/icons/ChevronIcon";
 import styles from "./BrandsCarousel.module.css";
 
-// Lista filtrada de marcas (estática, se calcula una sola vez)
-const BRANDS_FOR_CAROUSEL = Object.values(BRAND_LOGOS).filter(
-  (brand) =>
-    !brand.src.includes("logo-negro.webp") &&
-    !brand.alt.includes("Indiana") &&
-    !brand.alt.includes("Peugeot Vintage")
-);
+// Orden del carrusel: Volkswagen, Audi, Renault a la izquierda; Ford, Nissan, Honda a la derecha
+const CAROUSEL_ORDER = [
+  "peugeot",
+  "volkswagen",
+  "audi",
+  "renault",
+  "fiat",
+  "toyota",
+  "citroen",
+  "chevrolet",
+  "bmw",
+  "jeep",
+  "hyundai",
+  "mercedesbenz",
+  "ford",
+  "nissan",
+  "honda",
+];
+
+const filterBrand = (brand) =>
+  brand &&
+  !brand.src.includes("logo-negro.webp") &&
+  !brand.alt.includes("Indiana") &&
+  !brand.alt.includes("Peugeot Vintage");
+
+// Lista filtrada y ordenada (estática, se calcula una sola vez)
+const BRANDS_FOR_CAROUSEL = CAROUSEL_ORDER.filter((key) => {
+  const brand = BRAND_LOGOS[key];
+  return brand && filterBrand(brand);
+}).map((key) => BRAND_LOGOS[key]);
 
 const BrandsCarouselComponent = ({
   selectedBrands = [],

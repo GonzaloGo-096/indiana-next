@@ -275,16 +275,6 @@ const FilterFormSimpleComponent = forwardRef(({
           {/* MultiSelects - Primero los selects */}
           {/* ✅ ELIMINADO: Input de marca - ahora se usa el carrusel de marcas */}
           <div className={styles.selectsSection}>
-            {/* ✅ Botones dentro del grid ocupando el espacio del input faltante */}
-            <div className={styles.desktopButtons}>
-              <button type="button" onClick={handleClear} className={styles.clearButton} disabled={isLoading || isSubmitting}>
-                Limpiar
-              </button>
-              <button type="submit" className={styles.applyButton} disabled={isLoading || isSubmitting}>
-                {isSubmitting ? 'Aplicando...' : 'Aplicar'}
-              </button>
-            </div>
-            
             <div className={styles.formGroup}>
               <MultiSelect
                 label="Caja"
@@ -341,6 +331,16 @@ const FilterFormSimpleComponent = forwardRef(({
                 formatValue={formatKilometers}
               />
             </div>
+          </div>
+
+          {/* ✅ Botones desktop: al final de la fila; mobile: dentro de mobileButtons */}
+          <div className={styles.desktopButtons}>
+            <button type="button" onClick={handleClear} className={styles.clearButton} disabled={isLoading || isSubmitting}>
+              Limpiar
+            </button>
+            <button type="submit" className={styles.applyButton} disabled={isLoading || isSubmitting}>
+              {isSubmitting ? 'Aplicando...' : 'Aplicar'}
+            </button>
           </div>
 
           {/* ✅ Botones - Al final del formulario en mobile */}

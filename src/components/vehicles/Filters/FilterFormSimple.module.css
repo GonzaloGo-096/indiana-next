@@ -94,7 +94,7 @@
   position: relative;
   width: 95%;
   max-width: 700px;
-  background: #ffffff;
+  background: var(--color-surface, #ffffff);
   border-radius: 0.5rem;
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
   border: 1px solid #e5e7eb;
@@ -218,8 +218,8 @@
   position: relative;
 }
 
-.selectsSection .formGroup:nth-child(2) { z-index: 103; } /* Caja - Mayor z-index porque está arriba */
-.selectsSection .formGroup:nth-child(3) { z-index: 102; } /* Combustible - Menor z-index porque está abajo */
+.selectsSection .formGroup:nth-child(1) { z-index: 103; } /* Caja - Mayor z-index porque está arriba */
+.selectsSection .formGroup:nth-child(2) { z-index: 102; } /* Combustible - Menor z-index porque está abajo */
 
 .formGroup {
   display: flex;
@@ -252,11 +252,13 @@
   padding: 0; 
 }
 
-/* ✅ Reducir tamaño visual de inputs (select y range) - Desktop */
+/* ✅ Desktop: inputs más chicos en ancho; altura igual o un poco más */
 .formGroup .multiSelect .trigger { 
-  padding: 5px 8px !important; /* ✅ Tamaño más compacto */
-  min-height: 32px !important; /* ✅ Tamaño más compacto */
-  font-size: 0.875rem !important; /* ✅ 14px - más pequeño */
+  padding: 6px 10px !important; /* ✅ Un poco más alto verticalmente */
+  min-height: 36px !important; /* ✅ Altura cómoda */
+  font-size: 0.875rem !important; /* ✅ 14px */
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* ✅ Tamaño reducido de texto en MultiSelect - Desktop */
@@ -433,31 +435,62 @@
 /* ===== RESPONSIVE ===== */
 /* ⚠️ Breakpoint 768px sincronizado con Vehiculos.jsx */
 @media (min-width: 769px) {
-  .rangesSection,
-  .selectsSection { 
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2.5rem; /* ✅ Más separación entre inputs */
+  /* ✅ Una sola fila en desktop que reparte el ancho del viewport */
+  .form {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 2rem;
+    align-items: flex-start;
+    width: 100%;
   }
-  
-  /* ✅ Aumentar distancia entre la fila de arriba (botones + caja + combustible) y la de abajo (año + km + precio) */
+
+  /* ✅ selectsSection: 2 columnas (Caja, Combustible) más chicas en ancho; el resto del espacio para rangos */
   .selectsSection {
-    margin-bottom: 3rem !important; /* ✅ Más espacio entre las dos filas */
+    flex: 0 0 auto;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 200px) minmax(0, 200px);
+    gap: 2.5rem 2.5rem;
+    justify-content: flex-start;
+    align-items: start;
+    margin-bottom: 0 !important;
+    margin-right: 0;
   }
-  
+
   .rangesSection {
-    margin-top: 0 !important; /* ✅ Asegurar que no haya margin-top adicional */
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem 2.5rem;
+    justify-content: stretch;
+    align-items: start;
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  /* ✅ Botones al final de la fila: no crecen, alineados al inicio */
+  .form .desktopButtons {
+    flex: 0 0 auto;
+    align-self: flex-start;
   }
   .formWrapper { 
     width: 100%; /* ✅ Ancho completo del contenedor padre */
     max-width: none; /* ✅ Sin límite */
     margin: 0; /* ✅ Sin márgenes */
-    /* ✅ Mismo fondo blanco y sombra que el carrusel */
-    background: #ffffff;
+    /* ✅ Mismo color de fondo que la página (no blanco del carrusel) */
+    background: var(--color-surface, #ffffff);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
     border-radius: 0;
     border: none;
-    padding: 16px 24px; /* ✅ Padding lateral para contenido */
+    padding: 28px 24px; /* ✅ Más padding top y bottom para separación */
     box-sizing: border-box; /* ✅ Incluir padding en el ancho */
+  }
+
+  /* ✅ Más separación vertical arriba y abajo de cada input en desktop */
+  .formGroup {
+    padding-top: var(--spacing-2, 0.5rem);
+    padding-bottom: var(--spacing-2, 0.5rem);
   }
   .filterContainer { 
     margin-top: 0;
@@ -476,6 +509,11 @@
   }
   
   .closeButtonMobile {
+    display: none;
+  }
+
+  /* ✅ En una sola fila no mostramos el título (es solo para mobile) */
+  .formTitle {
     display: none;
   }
 }
@@ -509,7 +547,7 @@
     transform: translateY(100%); /* ✅ Oculto hacia abajo */
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 16px 16px 0 0; /* ✅ Redondeado arriba */
-    background: #ffffff;
+    background: var(--color-surface, #ffffff);
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
@@ -593,11 +631,11 @@
     z-index: 500 !important; /* ✅ Z-index base muy alto para todos los selects */
   }
   
-  .selectsSection .formGroup:nth-child(2) { 
+  .selectsSection .formGroup:nth-child(1) { 
     z-index: 502 !important; /* Caja - Mayor z-index porque está arriba */
   }
   
-  .selectsSection .formGroup:nth-child(3) { 
+  .selectsSection .formGroup:nth-child(2) { 
     z-index: 501 !important; /* Combustible - Menor z-index porque está abajo */
   }
   
@@ -777,7 +815,7 @@
     gap: 0.625rem;
     padding: 0.75rem; /* ✅ Padding reducido */
     margin-top: auto; /* ✅ Empujar al final */
-    background: #ffffff;
+    background: var(--color-surface, #ffffff);
     border-top: 1px solid #e5e7eb;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
     z-index: 10;

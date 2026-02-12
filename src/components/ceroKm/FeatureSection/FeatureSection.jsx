@@ -17,7 +17,7 @@ import styles from "./FeatureSection.module.css";
  * @param {string} props.feature.title - Título de la característica
  * @param {string} props.feature.description - Descripción
  * @param {Object} props.feature.images - { mobile, desktop } con URLs completas
- * @param {Array} props.feature.items - Array de items (opcional)
+ * (items/listas de características ya no se muestran; solo título y párrafo)
  * @param {boolean} props.reverse - Invertir orden imagen/texto en desktop
  * @param {string} props.modeloNombre - Nombre del modelo (ej: '208')
  * @param {boolean} props.isLast - Indica si es la última FeatureSection
@@ -30,7 +30,7 @@ export const FeatureSection = memo(function FeatureSection({
 }) {
   if (!feature) return null;
 
-  const { title, description, images, items } = feature;
+  const { title, description, images } = feature;
 
   // Verificar si es la sección de Realidad Aumentada del 208 o 2008
   const isRealidadAumentada =
@@ -122,22 +122,10 @@ export const FeatureSection = memo(function FeatureSection({
                   <span>Explorar en 3D</span>
                 </a>
               </div>
-              {/* Contenido normal (solo visible en desktop) */}
+              {/* Contenido normal (solo visible en desktop): solo párrafo */}
               <div className={styles.normalContent}>
                 {description && (
                   <p className={styles.description}>{description}</p>
-                )}
-                {items && items.length > 0 && (
-                  <ul className={styles.itemsList}>
-                {items.map((item, index) => (
-                  <li 
-                    key={`${feature.id}-item-${index}-${item.slice(0, 20).replace(/\s/g, '-')}`} 
-                    className={styles.item}
-                  >
-                    {item}
-                  </li>
-                ))}
-                  </ul>
                 )}
               </div>
             </>
@@ -145,18 +133,6 @@ export const FeatureSection = memo(function FeatureSection({
             <>
               {description && (
                 <p className={styles.description}>{description}</p>
-              )}
-              {items && items.length > 0 && (
-                <ul className={styles.itemsList}>
-                {items.map((item, index) => (
-                  <li 
-                    key={`${feature.id}-item-${index}-${item.slice(0, 20).replace(/\s/g, '-')}`} 
-                    className={styles.item}
-                  >
-                    {item}
-                  </li>
-                ))}
-                </ul>
               )}
             </>
           )}
