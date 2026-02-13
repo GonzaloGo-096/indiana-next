@@ -117,6 +117,21 @@
   padding: 16px;
 }
 
+/* Mobile: auto más grande sin cambiar el contenedor (levemente más chica que antes) */
+@media (max-width: 767px) {
+  .mobileContainer .imageContainer .image {
+    padding: 0;
+    transform: scale(1.32);
+    transform-origin: center center;
+  }
+  /* 208 y 2008: sutilmente más hacia la izquierda */
+  .mobileContainer .imageContainer[data-model-slug="208"] .image,
+  .mobileContainer .imageContainer[data-model-slug="2008"] .image {
+    transform: scale(1.32) translateX(-5%);
+    transform-origin: center center;
+  }
+}
+
 /* Desktop: auto más grande sin agrandar el contenedor (foto sin fondo) */
 @media (min-width: 768px) {
   .desktopWrapper .imageContainer .image {

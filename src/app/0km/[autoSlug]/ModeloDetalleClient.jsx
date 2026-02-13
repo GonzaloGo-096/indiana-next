@@ -29,6 +29,7 @@ export function ModeloDetalleClient({ autoSlug, modelo }) {
       coloresDisponibles={coloresDisponibles}
       imagenActual={imagenActual}
       onColorChange={cambiarColor}
+      modelSlug={autoSlug}
     />
   );
 }

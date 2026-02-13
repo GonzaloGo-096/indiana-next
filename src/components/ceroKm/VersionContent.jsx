@@ -26,6 +26,7 @@ const VersionTabs = dynamic(
  * @param {Array} props.coloresDisponibles - Array de colores disponibles
  * @param {Object} props.imagenActual - { url, alt, hasImage }
  * @param {Function} props.onColorChange - Callback al cambiar color
+ * @param {string} [props.modelSlug] - Slug del modelo (ej. '208', '2008') para ajustes de posición de imagen
  */
 export const VersionContent = memo(function VersionContent({
   version,
@@ -37,6 +38,7 @@ export const VersionContent = memo(function VersionContent({
   coloresDisponibles,
   imagenActual,
   onColorChange,
+  modelSlug,
 }) {
   if (!version) return null;
 
@@ -53,7 +55,7 @@ export const VersionContent = memo(function VersionContent({
       {/* Layout Mobile */}
       <article className={styles.mobileContainer}>
         {/* Imagen */}
-        <div className={styles.imageContainer}>
+        <div className={styles.imageContainer} data-model-slug={modelSlug || undefined}>
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -143,7 +145,7 @@ export const VersionContent = memo(function VersionContent({
         <div className={styles.desktopContainer}>
           {/* Columna izquierda: solo imagen */}
           <div className={styles.leftColumn}>
-            <div className={styles.imageContainer}>
+            <div className={styles.imageContainer} data-model-slug={modelSlug || undefined}>
               {imageUrl ? (
                 <Image
                   src={imageUrl}
