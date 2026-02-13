@@ -79,6 +79,18 @@ function obtenerModeloSlug(plan) {
 }
 
 /**
+ * Formatea clave de rango (ej. cuotas_1_12 → "cuotas 1 a 12", cuotas_19_42 → "cuotas 19 a 42")
+ */
+function formatearRangoCuotas(rango) {
+  const conEspacios = rango.replace(/_/g, " ");
+  const match = conEspacios.match(/^cuotas\s+(\d+)\s+(\d+)$/);
+  if (match) {
+    return `cuotas ${match[1]} a ${match[2]}`;
+  }
+  return conEspacios;
+}
+
+/**
  * Función para obtener imagen del modelo (primera imagen del carrusel)
  * @param {string} modeloSlug - Slug del modelo
  * @returns {Object|null} - Objeto con { url, alt } o null
@@ -338,14 +350,8 @@ export default async function PlanDetallePage({ params }) {
             {/* Prioridad 2: 4 datos en grid 2x2 */}
             <div className={styles.planSecondaryMetrics}>
               <div className={styles.infoBottomRow}>
-            {/* Fila 1: Valor móvil con y sin impuestos */}
+            {/* Fila 1: Valor móvil y Valor móvil + imp. */}
             <div className={styles.infoBottomRowItem}>
-              <div className={styles.infoBottomItem}>
-                <span className={styles.infoBottomLabel}>Valor móvil + imp.</span>
-                <span className={styles.infoBottomValue}>
-                  {formatPrice(valor_movil_con_imp)}
-                </span>
-              </div>
               {valor_movil_sin_imp && (
                 <div className={styles.infoBottomItem}>
                   <span className={styles.infoBottomLabel}>Valor móvil</span>
@@ -354,6 +360,12 @@ export default async function PlanDetallePage({ params }) {
                   </span>
                 </div>
               )}
+              <div className={styles.infoBottomItem}>
+                <span className={styles.infoBottomLabel}>Valor móvil + imp.</span>
+                <span className={styles.infoBottomValue}>
+                  {formatPrice(valor_movil_con_imp)}
+                </span>
+              </div>
             </div>
 
             {/* Fila 2: Tipo de plan y Adjudicación pactada */}
@@ -384,18 +396,18 @@ export default async function PlanDetallePage({ params }) {
           </div>
         </div>
 
-        {/* Sección rectangular abajo: Todas las características adicionales */}
+        {/* Una sola fila de cubículos: todos los datos distribuidos en el ancho */}
         {caracteristicas && (
           <div className={styles.planDetailsSection}>
               {/* Licitación mínima */}
               {caracteristicas.licitacion_minima && (
-                <div className={styles.additionalSection}>
+                <div className={`${styles.detailCubicle} ${styles.detailCubicleWide}`}>
                   <div className={styles.additionalSectionHeader}>
                     <span className={styles.additionalSectionLabel}>
                       Licitación mínima
                     </span>
                   </div>
-                  <div className={styles.additionalSectionContent}>
+                  <div className={`${styles.additionalSectionContent} ${styles.hasMultipleItems}`}>
                     {Object.entries(caracteristicas.licitacion_minima).map(
                       ([cuota, porcentaje]) => (
                         <div key={cuota} className={styles.additionalItem}>
@@ -412,38 +424,45 @@ export default async function PlanDetallePage({ params }) {
                 </div>
               )}
 
-              {/* Derecho inscripción y Sellado prorrateado */}
-              {(caracteristicas.derecho_inscripcion_prorrateado ||
-                caracteristicas.sellado_prorrateado) && (
-                <div className={styles.infoBottomRow}>
-                  <div className={styles.infoBottomRowItem}>
-                    {caracteristicas.derecho_inscripcion_prorrateado && (
-                      <div className={styles.infoBottomItem}>
-                        <span className={styles.infoBottomLabel}>
-                          Derecho inscripción prorrateado
-                        </span>
-                        <span className={styles.infoBottomValue}>
-                          {caracteristicas.derecho_inscripcion_prorrateado} cuotas
-                        </span>
-                      </div>
-                    )}
-                    {caracteristicas.sellado_prorrateado && (
-                      <div className={styles.infoBottomItem}>
-                        <span className={styles.infoBottomLabel}>
-                          Sellado prorrateado
-                        </span>
-                        <span className={styles.infoBottomValue}>
-                          {caracteristicas.sellado_prorrateado} cuotas
-                        </span>
-                      </div>
-                    )}
+              {/* Derecho inscripción prorrateado */}
+              {caracteristicas.derecho_inscripcion_prorrateado && (
+                <div className={styles.detailCubicle}>
+                  <div className={styles.additionalSectionHeader}>
+                    <span className={styles.additionalSectionLabel}>
+                      Inscripción prorrateado
+                    </span>
+                  </div>
+                  <div className={styles.additionalSectionContent}>
+                    <div className={styles.additionalItem}>
+                      <span className={styles.additionalItemValue}>
+                        {caracteristicas.derecho_inscripcion_prorrateado} cuotas
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Sellado prorrateado */}
+              {caracteristicas.sellado_prorrateado && (
+                <div className={styles.detailCubicle}>
+                  <div className={styles.additionalSectionHeader}>
+                    <span className={styles.additionalSectionLabel}>
+                      Sellado prorrateado
+                    </span>
+                  </div>
+                  <div className={styles.additionalSectionContent}>
+                    <div className={styles.additionalItem}>
+                      <span className={styles.additionalItemValue}>
+                        {caracteristicas.sellado_prorrateado} cuotas
+                      </span>
+                    </div>
                   </div>
                 </div>
               )}
 
               {/* Diferimiento comercial */}
               {caracteristicas.diferimiento_comercial && (
-                <div className={styles.additionalSection}>
+                <div className={styles.detailCubicle}>
                   <div className={styles.additionalSectionHeader}>
                     <span className={styles.additionalSectionLabel}>
                       Diferimiento comercial
@@ -454,7 +473,7 @@ export default async function PlanDetallePage({ params }) {
                       ([rango, porcentaje]) => (
                         <div key={rango} className={styles.additionalItem}>
                           <span className={styles.additionalItemLabel}>
-                            {rango.replace(/_/g, " ")}
+                            {formatearRangoCuotas(rango)}
                           </span>
                           <span className={styles.additionalItemValue}>
                             {porcentaje}
@@ -468,7 +487,7 @@ export default async function PlanDetallePage({ params }) {
 
               {/* Recupero diferimiento */}
               {caracteristicas.recupero_diferimiento && (
-                <div className={styles.additionalSection}>
+                <div className={styles.detailCubicle}>
                   <div className={styles.additionalSectionHeader}>
                     <span className={styles.additionalSectionLabel}>
                       Recupero diferimiento
@@ -479,7 +498,7 @@ export default async function PlanDetallePage({ params }) {
                       ([rango, porcentaje]) => (
                         <div key={rango} className={styles.additionalItem}>
                           <span className={styles.additionalItemLabel}>
-                            {rango.replace(/_/g, " ")}
+                            {formatearRangoCuotas(rango)}
                           </span>
                           <span className={styles.additionalItemValue}>
                             {porcentaje}
@@ -492,6 +511,31 @@ export default async function PlanDetallePage({ params }) {
               )}
           </div>
         )}
+      </section>
+
+      {/* Botón de contacto por WhatsApp */}
+      <section className={styles.contactSection}>
+        <a
+          href={`https://wa.me/543816295959?text=${encodeURIComponent(
+            `Hola! Quiero consultar sobre el Plan ${plan.plan} - financiación Peugeot`
+          )}`}
+          className={styles.contactButton}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Consultar por WhatsApp"
+        >
+          <svg
+            className={styles.whatsappIcon}
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            aria-hidden
+          >
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z" />
+          </svg>
+          <span>Consultar por WhatsApp</span>
+        </a>
       </section>
     </div>
   );

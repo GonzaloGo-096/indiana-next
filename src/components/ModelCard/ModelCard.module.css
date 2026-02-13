@@ -22,9 +22,9 @@
     #ffffff 0%,
     #ffffff 51%,
     #f2f2f2 55%,
-    #4a4a4a 62%,
-    #2d2d2d 80%,
-    #1a1a1a 100%
+    rgba(74, 74, 74, 0.92) 62%,
+    rgba(45, 45, 45, 0.88) 80%,
+    rgba(26, 26, 26, 0.85) 100%
   );
   border-radius: var(--border-radius-xl);
   overflow: hidden;
