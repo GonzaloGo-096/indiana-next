@@ -10,16 +10,17 @@
 .header {
   text-align: center;
   margin-top: clamp(48px, 5vw, 64px);
-  margin-bottom: clamp(64px, 8vw, 96px);
-  padding: clamp(160px, 15vw, 200px) 0 var(--spacing-10) 0;
-  min-height: 200px;
+  margin-bottom: 0;
+  padding: 0 0 var(--spacing-2) 0;
+  min-height: auto;
 }
 
 @media (max-width: 768px) {
   .header {
     margin-top: clamp(32px, 4vw, 48px);
-    padding: clamp(120px, 12vw, 160px) 0 var(--spacing-8) 0;
-    min-height: 180px;
+    margin-bottom: 0;
+    padding: 0 0 var(--spacing-6) 0;
+    min-height: auto;
   }
 }
 
@@ -36,8 +37,11 @@
 .subtitle {
   font-size: clamp(1rem, 2.5vw, 1.25rem);
   color: var(--color-text-secondary);
-  margin: 0 0 var(--spacing-6) 0;
+  margin: 0 auto var(--spacing-3);
   font-weight: var(--font-weight-medium);
+  max-width: 45ch;
+  line-height: 1.5;
+  text-align: center;
 }
 
 /* ===== BOTONES DE MODELOS ===== */
@@ -101,7 +105,12 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: clamp(3rem, 6vw, 5rem);
+  gap: clamp(0.75rem, 1.5vw, 1.25rem);
+}
+
+/* Ancla de scroll: al hacer scroll a una sección, deja espacio arriba para que el título se vea */
+.modeloSectionAnchor {
+  scroll-margin-top: clamp(4rem, 10vw, 6rem);
 }
 
 /* ===== BLOQUE DE CONFIANZA / VALOR AGREGADO ===== */

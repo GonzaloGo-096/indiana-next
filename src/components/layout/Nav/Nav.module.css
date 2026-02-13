@@ -154,8 +154,8 @@
   font-weight: 500;
   font-size: 18px;
   font-family: var(--font-condensed);
-  transition: background-color 0.2s, transform 0.2s;
-  border: none;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+  border: 1px solid transparent;
   white-space: nowrap;
   cursor: pointer;
   display: flex;
@@ -165,20 +165,25 @@
 
 .dropdownToggle:hover {
   color: white;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(32, 32, 32, 0.96);
+  border-color: rgba(255, 255, 255, 0.15);
   transform: translateY(-0.5px);
 }
 
 .dropdownToggle.active {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(32, 32, 32, 0.96);
+  border-color: rgba(255, 255, 255, 0.15);
   font-weight: 600;
 }
 
 .dropdownArrow {
-  font-size: 12px;
+  font-size: 10px;
   transition: transform 0.3s ease;
   display: inline-block;
+  margin-left: 5px;
+  margin-top: 3px;
+  vertical-align: middle;
 }
 
 .dropdownArrowOpen {
@@ -189,7 +194,7 @@
   position: absolute;
   top: 100%;
   left: 0;
-  background: rgba(18, 18, 18, 0.95);
+  background: rgba(32, 32, 32, 0.96);
   backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 0 0 8px 8px;
@@ -219,6 +224,11 @@
   font-family: var(--font-condensed);
   transition: all 0.2s ease;
   white-space: nowrap;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dropdownItem:last-child {
+  border-bottom: none;
 }
 
 .dropdownItem:hover {
@@ -300,16 +310,15 @@
     display: flex;
   }
 
-  /* Panel full-viewport: cerrado fuera de vista, no debe capturar scroll/touch */
+  /* Panel: mismo fondo que el nav (mismo negro), se despliega hacia abajo */
   .navMobile {
     position: fixed;
     inset: 0;
-    width: 100vw !important;
-    height: 100vh !important;
-    max-width: 100vw !important;
-    max-height: 100vh !important;
+    width: 100%;
+    height: 100%;
+    min-width: 100%;
     margin: 0 !important;
-    background: rgba(18, 18, 18, 0.98);
+    background: rgba(18, 18, 18, 0.8);
     backdrop-filter: blur(12px);
     border: none;
     box-shadow: none;
@@ -319,13 +328,15 @@
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s;
     flex-direction: column;
     justify-content: flex-start;
-    padding: 120px 32px 32px 32px;
+    align-items: stretch;
+    padding: 120px 24px 32px 24px;
     z-index: 1001;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    overflow-x: hidden;
+    overflow-x: auto;
+    box-sizing: border-box;
     will-change: transform;
-    pointer-events: none; /* Crítico: cerrado no intercepta scroll ni touch */
+    pointer-events: none;
   }
 
   .nav.open {
@@ -336,21 +347,29 @@
 
   .navList {
     flex-direction: column;
-    gap: 8px;
+    gap: 0;
     width: 100%;
-    align-items: flex-start;
+    align-items: stretch;
+  }
+
+  .navList > *:last-child {
+    border-bottom: none;
   }
   
   .dropdown {
-    width: auto;
-    display: inline-block;
+    width: 100%;
+    display: block;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
   
   .dropdownToggle {
-    width: auto;
-    justify-content: space-between;
-    padding: 18px 24px;
+    width: 100%;
+    justify-content: flex-start;
+    padding: 18px 0;
     font-size: 22px;
+    text-align: left;
+    border: none;
+    border-radius: 0;
   }
   
   .dropdownMenu {
@@ -378,12 +397,19 @@
   }
   
   .dropdownItem {
-    padding: 18px 28px 18px 48px;
+    display: block;
+    padding: 14px 0 14px 24px;
     font-size: 20px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  
+  .dropdownItem:last-child {
+    border-bottom: none;
   }
   
   .dropdownItem:hover {
-    padding-left: 52px;
+    padding-left: 28px;
   }
 
   .divider {
@@ -395,13 +421,15 @@
 
   .navLink {
     display: block;
-    padding: 18px 24px;
-    border-radius: 6px;
-    margin-bottom: 12px;
+    padding: 18px 0;
+    border-radius: 0;
+    margin-bottom: 0;
     font-size: 22px;
-    width: auto;
+    width: 100%;
     text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     transition: background-color 0.2s, transform 0.2s;
+    box-sizing: border-box;
   }
 
   .navLink:hover {
@@ -419,15 +447,18 @@
     background: white;
     color: #121212;
     display: block;
-    padding: 18px 24px;
-    border-radius: 6px;
-    margin-bottom: 12px;
+    padding: 18px 0;
+    border-radius: 0;
+    margin-bottom: 0;
+    margin-top: 8px;
     font-size: 22px;
     font-weight: 600;
-    width: auto;
+    width: 100%;
     text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
   }
 
   .indianaButton:hover {

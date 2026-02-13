@@ -1,8 +1,8 @@
 /* ===== SECCIÓN POR MODELO ===== */
 .modeloSection {
   width: 100%;
-  margin-bottom: clamp(2rem, 4vw, 3rem);
-  padding-top: clamp(3rem, 6vw, 4.5rem); /* ✅ Padding superior para alejar del borde */
+  margin-bottom: clamp(0.5rem, 1vw, 0.75rem);
+  padding-top: clamp(0.75rem, 1.5vw, 1rem);
 }
 
 .modeloTitle {

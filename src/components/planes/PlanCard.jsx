@@ -119,49 +119,22 @@ const PlanCardComponent = ({ plan, modelo }) => {
           </div>
         </div>
 
-        {/* Características - Fila 1: Valor móvil, Fila 2: Tipo de plan y Adjudicación */}
+        {/* Valor móvil: solo estos dos datos, más visibles */}
         <div className={styles.infoBottomRow}>
-          {/* Fila 1: Valor móvil con y sin impuestos */}
-          <div className={styles.infoBottomRowItem}>
+          <div className={styles.infoBottomItem}>
+            <span className={styles.infoBottomLabel}>Valor móvil + imp.</span>
+            <span className={styles.infoBottomValue}>
+              {formatPrice(valor_movil_con_imp)}
+            </span>
+          </div>
+          {valor_movil_sin_imp && (
             <div className={styles.infoBottomItem}>
-              <span className={styles.infoBottomLabel}>Valor móvil + imp.</span>
+              <span className={styles.infoBottomLabel}>Valor móvil</span>
               <span className={styles.infoBottomValue}>
-                {formatPrice(valor_movil_con_imp)}
+                {formatPrice(valor_movil_sin_imp)}
               </span>
             </div>
-            {valor_movil_sin_imp && (
-              <div className={styles.infoBottomItem}>
-                <span className={styles.infoBottomLabel}>Valor móvil</span>
-                <span className={styles.infoBottomValue}>
-                  {formatPrice(valor_movil_sin_imp)}
-                </span>
-              </div>
-            )}
-          </div>
-
-          {/* Fila 2: Tipo de plan y Adjudicación pactada */}
-          <div className={styles.infoBottomRowItem}>
-            {caracteristicas?.tipo_plan && (
-              <div className={styles.infoBottomItem}>
-                <span className={styles.infoBottomLabel}>Tipo de plan</span>
-                <span className={styles.infoBottomValue}>
-                  {caracteristicas.tipo_plan}
-                </span>
-              </div>
-            )}
-
-            {caracteristicas?.adjudicacion_pactada &&
-              caracteristicas.adjudicacion_pactada.length > 0 && (
-                <div className={styles.infoBottomItem}>
-                  <span className={styles.infoBottomLabel}>
-                    Adjudicación pactada
-                  </span>
-                  <span className={styles.infoBottomValue}>
-                    Cuota {caracteristicas.adjudicacion_pactada.join(", ")}
-                  </span>
-                </div>
-              )}
-          </div>
+          )}
         </div>
 
         {/* Botones de acción */}

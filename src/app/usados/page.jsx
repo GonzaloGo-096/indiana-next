@@ -157,6 +157,7 @@ export default async function UsadosPage() {
                   alt="Feria de usados Indiana Peugeot — promociones y formas de pago"
                   loading="lazy"
                   decoding="async"
+                  fetchPriority="low"
                   className={styles.promocionesImage}
                 />
               </picture>

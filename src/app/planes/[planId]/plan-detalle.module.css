@@ -629,8 +629,16 @@
 
 /* ===== MOBILE: fuentes más grandes en toda la página ===== */
 @media (max-width: 767px) {
+  .backButton {
+    padding: 0 var(--spacing-1);
+    margin-bottom: var(--spacing-3);
+  }
+
   .backLink {
-    font-size: 1rem;
+    font-size: 0.875rem;
+    padding: var(--spacing-2) var(--spacing-3);
+    margin-top: var(--spacing-1);
+    margin-left: var(--spacing-1);
   }
 
   .planTitle {

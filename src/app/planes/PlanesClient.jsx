@@ -47,6 +47,7 @@ export function PlanesClient({ planesPorModelo }) {
         {Object.entries(planesPorModelo).map(([modelo, planes]) => (
           <div
             key={modelo}
+            className={styles.modeloSectionAnchor}
             ref={(el) => {
               if (el) {
                 modeloRefs.current[modelo] = el;
