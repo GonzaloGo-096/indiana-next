@@ -74,8 +74,7 @@
     #e5e5e5 100%
   );
   /* Línea continua “víbora”: top → right → bottom (seam) */
-  border-top: 1px solid var(--color-brand-500);
-  border-right: 1px solid var(--color-brand-500);
+  /* Víbora: solo seam (sin borde derecho en la parte de arriba) */
   border-bottom: 1px solid var(--color-brand-500);
   border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
 }

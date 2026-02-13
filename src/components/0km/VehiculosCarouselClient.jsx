@@ -6,10 +6,10 @@ import styles from "../../app/0km/0km.module.css";
 
 /**
  * VehiculosCarouselClient - Client Component para carrusel de vehículos
- * 
+ *
  * ✅ Responsabilidad: Solo interactividad del carrusel (scroll, botones)
  * ✅ Recibe: Lista de cards ya preparada desde Server Component
- * 
+ *
  * @param {Object} props
  * @param {Array} props.cards - Array de cards con { key, src, alt, titulo, slug }
  */
@@ -31,10 +31,8 @@ export function VehiculosCarouselClient({ cards }) {
     const carousel = carouselRef.current;
     if (!carousel) return;
 
-    // Verificar estado inicial
     checkScrollButtons();
-    
-    // ✅ OPTIMIZADO: Usar requestAnimationFrame para scroll (más eficiente)
+
     let rafId = null;
     const onScroll = () => {
       if (rafId) return;
@@ -43,8 +41,7 @@ export function VehiculosCarouselClient({ cards }) {
         rafId = null;
       });
     };
-    
-    // ✅ OPTIMIZADO: Debounce para resize (evita ejecuciones excesivas)
+
     let resizeTimeout = null;
     const onResize = () => {
       if (resizeTimeout) clearTimeout(resizeTimeout);
@@ -52,7 +49,7 @@ export function VehiculosCarouselClient({ cards }) {
         checkScrollButtons();
       }, 150);
     };
-    
+
     carousel.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize, { passive: true });
 
@@ -74,7 +71,7 @@ export function VehiculosCarouselClient({ cards }) {
 
   return (
     <section
-      className={styles.carouselSection}
+      className={`${styles.carouselSection} ${styles.vehiculosSection}`}
       aria-label="Gama de Vehículos Peugeot 0km"
     >
       <div className={styles.carouselWrapper}>
@@ -82,7 +79,7 @@ export function VehiculosCarouselClient({ cards }) {
           className={`${styles.scrollButton} ${styles.scrollButtonLeft}`}
           onClick={() => scroll("left")}
           disabled={!canScrollLeft}
-          aria-label="Ver modelos anteriores"
+          aria-label="Ver vehículos anteriores"
         >
           <svg
             width="20"
@@ -118,7 +115,7 @@ export function VehiculosCarouselClient({ cards }) {
           className={`${styles.scrollButton} ${styles.scrollButtonRight}`}
           onClick={() => scroll("right")}
           disabled={!canScrollRight}
-          aria-label="Ver más modelos"
+          aria-label="Ver más vehículos"
         >
           <svg
             width="20"
@@ -135,6 +132,3 @@ export function VehiculosCarouselClient({ cards }) {
     </section>
   );
 }
-
-
-

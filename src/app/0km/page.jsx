@@ -97,7 +97,6 @@ export default function CeroKilometrosPage() {
     (m) => !utilitariosKeys.includes(lower(m.slug))
   );
 
-  // ✅ Preparar cards en Server (sin useMemo, solo procesamiento)
   const vehiculosCards = veh.map((modelo) => {
     const staticImage = staticImages.ceroKm.modelos[modelo.slug];
     const imageSrc = staticImage?.src || modelo.heroImage?.url || "";
@@ -160,7 +159,6 @@ export default function CeroKilometrosPage() {
           </div>
         </div>
       </div>
-      {/* ✅ Client Component para interactividad del carrusel */}
       <VehiculosCarouselClient cards={vehiculosCards} />
 
       <div className={styles.sectionHeader}>

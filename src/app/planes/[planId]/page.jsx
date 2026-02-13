@@ -79,13 +79,15 @@ function obtenerModeloSlug(plan) {
 }
 
 /**
- * Formatea clave de rango (ej. cuotas_1_12 → "cuotas 1 a 12", cuotas_19_42 → "cuotas 19 a 42")
+ * Formatea clave de rango (ej. cuotas_1_12 → "cuotas 1 a 12" o "Cts. 1 a 12")
+ * @param {string} rango - Clave del rango (ej. cuotas_1_12)
+ * @param {boolean} useCts - Si true, usa "Cts." en lugar de "cuotas"
  */
-function formatearRangoCuotas(rango) {
+function formatearRangoCuotas(rango, useCts = false) {
   const conEspacios = rango.replace(/_/g, " ");
   const match = conEspacios.match(/^cuotas\s+(\d+)\s+(\d+)$/);
   if (match) {
-    return `cuotas ${match[1]} a ${match[2]}`;
+    return useCts ? `Cts. ${match[1]} a ${match[2]}` : `cuotas ${match[1]} a ${match[2]}`;
   }
   return conEspacios;
 }
@@ -471,10 +473,11 @@ export default async function PlanDetallePage({ params }) {
                   <div className={styles.additionalSectionContent}>
                     {Object.entries(caracteristicas.diferimiento_comercial).map(
                       ([rango, porcentaje]) => (
-                        <div key={rango} className={styles.additionalItem}>
+                        <div key={rango} className={styles.additionalItemRow}>
                           <span className={styles.additionalItemLabel}>
-                            {formatearRangoCuotas(rango)}
+                            {formatearRangoCuotas(rango, true)}
                           </span>
+                          <span className={styles.additionalItemSeparator}>|</span>
                           <span className={styles.additionalItemValue}>
                             {porcentaje}
                           </span>
@@ -496,10 +499,11 @@ export default async function PlanDetallePage({ params }) {
                   <div className={styles.additionalSectionContent}>
                     {Object.entries(caracteristicas.recupero_diferimiento).map(
                       ([rango, porcentaje]) => (
-                        <div key={rango} className={styles.additionalItem}>
+                        <div key={rango} className={styles.additionalItemRow}>
                           <span className={styles.additionalItemLabel}>
-                            {formatearRangoCuotas(rango)}
+                            {formatearRangoCuotas(rango, true)}
                           </span>
+                          <span className={styles.additionalItemSeparator}>|</span>
                           <span className={styles.additionalItemValue}>
                             {porcentaje}
                           </span>

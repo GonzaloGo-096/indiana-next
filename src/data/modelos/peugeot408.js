@@ -27,21 +27,21 @@ export const PEUGEOT_408 = {
     alt: 'Peugeot 408'
   },
   
-  // Galería de imágenes (fija por modelo, no por versión)
+  // Galería: posición 1 = i-Cockpit, posición 3 = i-Connect Advanced (reemplazo, no suma)
   galeria: {
     mobile: [
-      { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/408-galeria-2-mobile_lddxv4.webp', alt: 'Peugeot 408 - Vista exterior' },
-      { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/408-galeria-3-mobile_flepzo.webp', alt: 'Peugeot 408 - Interior i-Cockpit' },
-      { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/408-galeria-4-mobile_zhqnov.webp', alt: 'Peugeot 408 - Detalle frontal' },
+      { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767216291/408-emocion-2-dk_x3ltsh.webp', alt: 'Peugeot 408 - Nuevo Peugeot i-Cockpit' },
+      { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/408-galeria-3-mobile_flepzo.webp', alt: 'Peugeot 408 - Interior' },
+      { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767216275/408-emocion-1-dk_bsafuu.webp', alt: 'Peugeot 408 - Peugeot i-Connect Advanced' },
       { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/408-galeria-5-mobile_srnsqt.webp', alt: 'Peugeot 408 - Vista trasera' }
     ],
     desktop: [
-      { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/408-galeria-1-desktop_obmjrm.webp', alt: 'Peugeot 408 - Vista exterior' },
-      { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/408-galeria-2-desktop_a1fsgw.webp', alt: 'Peugeot 408 - Interior i-Cockpit' },
+      { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767216241/408-emocion-2-dk_x6zv6y.webp', alt: 'Peugeot 408 - Nuevo Peugeot i-Cockpit' },
+      { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/408-galeria-2-desktop_a1fsgw.webp', alt: 'Peugeot 408 - Interior' },
+      { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767216225/408-emocion-1-dk_uiatzj.webp', alt: 'Peugeot 408 - Peugeot i-Connect Advanced' },
       { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/408-galeria-3-desktop_wo7lyj.webp', alt: 'Peugeot 408 - Detalle frontal' },
       { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/408-galeria-4-desktop_eswlmd.webp', alt: 'Peugeot 408 - Vista trasera' },
-      { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/408-galeria-5-desktop_jqaay6.webp', alt: 'Peugeot 408 - Detalles interiores' },
-      { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/408-galeria-6-desktop_rubyvw.webp', alt: 'Peugeot 408 - Tecnología a bordo' }
+      { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/408-galeria-5-desktop_jqaay6.webp', alt: 'Peugeot 408 - Detalles interiores' }
     ]
   },
   
@@ -83,32 +83,8 @@ export const PEUGEOT_408 = {
     }
   ],
   
-  // Secciones de características destacadas
-  features: [
-    {
-      id: 'i-cockpit',
-      title: 'NUEVO PEUGEOT I-COCKPIT®',
-      description: 'Viví tu experiencia de conducción al máximo con el nuevo Peugeot i-Cockpit®.',
-      items: [
-        'Pantalla multimedia táctil de 10".',
-        'Volante compacto con control táctil para optimizar y facilitar el acceso a funciones.',
-        'Los i-Toggles táctiles personalizables y configurables te ofrecen acceso rápido a sus funciones favoritas para un manejo intuitivo.'
-      ],
-      images: {
-        mobile: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767216291/408-emocion-2-dk_x3ltsh.webp',
-        desktop: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767216241/408-emocion-2-dk_x6zv6y.webp'
-      }
-    },
-    {
-      id: 'i-connect-advanced',
-      title: 'PEUGEOT I-CONNECT® ADVANCED',
-      description: 'El sistema de entretenimiento i-Connect® Advanced con reconocimiento de voz y ergonomía similar a la de un teléfono inteligente te brinda acceso a navegación conectada.',
-      images: {
-        mobile: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767216275/408-emocion-1-dk_bsafuu.webp',
-        desktop: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767216225/408-emocion-1-dk_uiatzj.webp'
-      }
-    }
-  ],
+  // Sin secciones de características (fotos incorporadas a la galería)
+  features: [],
   
   // Configuración SEO
   seo: {

@@ -36,6 +36,7 @@
     background: var(--color-white);
     border-radius: var(--border-radius-lg);
     border: var(--card-border-width) solid rgba(0, 0, 0, var(--card-border-opacity));
+    border-right: none;
     box-shadow: var(--card-shadow-base);
     
     /* Comportamiento */

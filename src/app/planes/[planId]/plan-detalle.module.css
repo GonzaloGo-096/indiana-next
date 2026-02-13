@@ -554,6 +554,23 @@
   padding: var(--spacing-3);
 }
 
+/* Misma línea: label | porcentaje (diferimiento / recupero) */
+.additionalItemRow {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: var(--spacing-3);
+}
+
+.additionalItemSeparator {
+  color: var(--color-neutral-400);
+  font-size: 0.9em;
+  font-weight: 300;
+  user-select: none;
+  opacity: 0.8;
+}
+
 .additionalItemLabel {
   --additional-item-label-font-size: clamp(0.75rem, 1.6vw, 0.875rem);
   --additional-item-label-letter-spacing: 0.4px;
