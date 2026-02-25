@@ -52,6 +52,16 @@ export const PEUGEOT_5008 = {
       nombre: 'GT',
       nombreCorto: 'GT',
       descripcion: 'La versión GT es la máxima expresión del nuevo 5008. Cuenta con detalles de diseño únicos y equipamientos exclusivos tanto en el exterior como en el interior, que lo convierten en un verdadero GT.',
+      itemsImage: {
+        desktop: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948963/5008-GT-desktop_leqxek.webp',
+          publicId: '5008-GT-desktop_leqxek'
+        },
+        mobile: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948939/5008-gt-mobile_iftjda.webp',
+          publicId: '5008-gt-mobile_iftjda'
+        }
+      },
       coloresPermitidos: [
         '5008-blanco-okenite',
         '5008-azul-ingaro',
@@ -85,32 +95,8 @@ export const PEUGEOT_5008 = {
     }
   ],
   
-  // Secciones de características destacadas
-  features: [
-    {
-      id: 'i-cockpit-panoramico',
-      title: 'NUEVO I-COCKPIT® PANORÁMICO',
-      description: 'Revolucioná tu experiencia de conducción con el nuevo i-Cockpit® panorámico de Peugeot.',
-      items: [
-        'Pantalla panorámica flotante y curva de 21" que se integra perfectamente en el tablero para una ergonomía óptima.',
-        'Nuevo volante compacto totalmente equipado con control táctil para una experiencia de conducción óptima y una comodidad incomparable.',
-        'Los i-Toggles personalizables te ofrecen acceso rápido a sus 10 funciones favoritas para un manejo intuitivo.'
-      ],
-      images: {
-        mobile: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767214427/d8_hlprgn.webp',
-        desktop: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767213846/d8_p6ze72.webp'
-      }
-    },
-    {
-      id: '7-plazas',
-      title: '7 PLAZAS',
-      description: 'El nuevo 5008 ofrece 7 plazas para mayor comodidad y flexibilidad en tus viajes, disfrutá del espacio y confort en cada trayecto.',
-      images: {
-        mobile: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767214411/7-plazas-1dk_akauw6.webp',
-        desktop: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767213862/7-plazas-1dk_ybqpmg.webp'
-      }
-    }
-  ],
+  // Sin secciones de características (fotos incorporadas a la galería)
+  features: [],
   
   // Configuración SEO
   seo: {

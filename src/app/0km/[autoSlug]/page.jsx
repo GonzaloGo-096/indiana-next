@@ -5,6 +5,8 @@ import { getPlanesPorModelo } from "../../../data/planes";
 import { absoluteUrl } from "../../../lib/site-url";
 import { ModeloDetalleClient } from "./ModeloDetalleClient";
 import { HeroImageDesktop } from "./HeroImageDesktop";
+import { ModeloSelectorProvider } from "../../../components/ceroKm/ModeloSelectorContext";
+import { VersionItemsImageDesktop } from "../../../components/ceroKm/VersionItemsImageDesktop";
 import styles from "./0km-detalle.module.css";
 
 // ✅ Lazy loading de componentes condicionales para mejor code splitting
@@ -327,8 +329,15 @@ export default async function CeroKilometroDetallePage({ params }) {
         </h1>
       </header>
 
-      {/* Client Component: Tabs, VersionContent, Gallery */}
-      <ModeloDetalleClient autoSlug={autoSlug} modelo={modelo} />
+      {/* Estado de versión/color compartido: tabs y foto por versión usan la misma versión activa */}
+      <ModeloSelectorProvider modeloSlug={autoSlug}>
+        <ModeloDetalleClient autoSlug={autoSlug} modelo={modelo} />
+
+        {/* Imagen por versión (desktop) - debajo de carrusel/colores/datos; cambia al elegir Active, Allure, GT, etc. */}
+        {modelo.versiones?.some((v) => v.itemsImage?.desktop?.url) && (
+          <VersionItemsImageDesktop modeloNombre={modelo.nombre} />
+        )}
+      </ModeloSelectorProvider>
 
       {/* Secciones de características destacadas (si el modelo las tiene) */}
       {modelo.features && modelo.features.length > 0 && (

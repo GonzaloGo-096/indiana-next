@@ -52,6 +52,16 @@ export const PEUGEOT_2008 = {
       nombre: 'ACTIVE',
       nombreCorto: 'ACTIVE',
       descripcion: 'Ingresá al mundo 2008 con la versión ACTIVE, con un gran nivel de equipamiento.',
+      itemsImage: {
+        desktop: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771947104/active-desktop_blyvpp.webp',
+          publicId: 'active-desktop_blyvpp'
+        },
+        mobile: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771947123/INDIANA_web__01-2008-Active-TM-am24-mobile_cbzywe.webp',
+          publicId: 'INDIANA_web__01-2008-Active-TM-am24-mobile_cbzywe'
+        }
+      },
       coloresPermitidos: ['blanco-nacre', 'gris-artense', 'negro', 'gris-selenium'],
       colorDefault: 'blanco-nacre',
       equipamiento: {
@@ -79,6 +89,16 @@ export const PEUGEOT_2008 = {
       nombre: 'ALLURE',
       nombreCorto: 'ALLURE',
       descripcion: 'La versión Allure se destaca por su elevado nivel de equipamiento de tecnología, confort y seguridad.',
+      itemsImage: {
+        desktop: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771947105/allure-desktop_dww6hr.webp',
+          publicId: 'allure-desktop_dww6hr'
+        },
+        mobile: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771947122/INDIANA_web__01-2008-Allure-T200-AM26-mobile_pi1rc0.webp',
+          publicId: 'INDIANA_web__01-2008-Allure-T200-AM26-mobile_pi1rc0'
+        }
+      },
       coloresPermitidos: ['blanco-nacre', 'gris-artense', 'negro', 'gris-selenium'],
       colorDefault: 'gris-selenium',
       equipamiento: {
@@ -105,6 +125,16 @@ export const PEUGEOT_2008 = {
       nombre: 'GT',
       nombreCorto: 'GT',
       descripcion: 'La versión GT es la máxima expresión del nuevo Peugeot 2008. Cuenta con destalles de diseño únicos y equipamientos exclusivos tanto en el exterior como en el interior, que lo convierten en un verdadero GT.',
+      itemsImage: {
+        desktop: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771947102/gt-desktop_j3pf8u.webp',
+          publicId: 'gt-desktop_j3pf8u'
+        },
+        mobile: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771947120/INDIANA_web__06-2008-GT-T200-AM24-mobile_bevomp.webp',
+          publicId: 'INDIANA_web__06-2008-GT-T200-AM24-mobile_bevomp'
+        }
+      },
       coloresPermitidos: ['negro', 'gris-selenium', 'blanco-nacre'],
       colorDefault: 'negro',
       equipamiento: {
@@ -130,27 +160,8 @@ export const PEUGEOT_2008 = {
     }
   ],
   
-  // Secciones de características destacadas
-  features: [
-    {
-      id: 'conectividad-avanzada',
-      title: 'CONECTIVIDAD AVANZADA',
-      description: 'Una nueva pantalla multimedia de 10", que cuenta con una gran definición y fluidez, además de conexión inalámbrica para para espejar las funciones del celular como música o navegación.',
-      images: {
-        mobile: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767212686/excelencia2-dk_nvbjlk.webp',
-        desktop: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767212621/excelencia2-dk_i58rib.webp'
-      }
-    },
-    {
-      id: 'realidad-aumentada',
-      title: 'REALIDAD AUMENTADA 3D',
-      description: 'Escaneá el QR y conocé de una manera distinta el 2008 a través de la realidad aumentada / 3D.',
-      images: {
-        mobile: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767212011/2008car6_tpics6.webp',
-        desktop: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767212039/laion-ra-4_yrpunt.webp'
-      }
-    }
-  ],
+  // Sin secciones de características (fotos incorporadas a la galería)
+  features: [],
   
   // Configuración SEO
   seo: {

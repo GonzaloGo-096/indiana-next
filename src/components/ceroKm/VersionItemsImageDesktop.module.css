@@ -1,0 +1,33 @@
+/**
+ * VersionItemsImageDesktop.module.css - Imagen items 0km (solo desktop)
+ * Se muestra debajo de datos + carrusel en desktop
+ */
+
+.itemsImageDesktop {
+  display: none; /* Oculto en mobile */
+  width: 100vw;
+  max-width: none;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  margin-top: -20px;
+  margin-bottom: 0;
+  padding: 0 0 clamp(32px, 4vw, 48px);
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .itemsImageDesktop {
+    display: block;
+  }
+}
+
+/* Foto por versión: tamaño natural, sin zoom ni deformación */
+.itemsImage {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  display: block;
+  object-fit: contain;
+  object-position: center top;
+  border-radius: var(--border-radius-lg);
+}

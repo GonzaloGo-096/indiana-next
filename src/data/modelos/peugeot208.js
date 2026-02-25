@@ -52,6 +52,16 @@ export const PEUGEOT_208 = {
       nombre: 'ACTIVE',
       nombreCorto: 'ACTIVE',
       descripcion: 'Entrá en el universo PEUGEOT con la versión Active, que se destaca por su equilibrio entre rendimiento y eficiencia.',
+      itemsImage: {
+        desktop: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948195/208-active-desktop_knwtpv.webp',
+          publicId: '208-active-desktop_knwtpv'
+        },
+        mobile: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948089/208-active-mobile_a7wmum.webp',
+          publicId: '208-active-mobile_a7wmum'
+        }
+      },
       coloresPermitidos: ['208-blanco-nacre', '208-gris-artense', '208-negro-perla'],
       colorDefault: '208-blanco-nacre',
       equipamiento: {
@@ -79,6 +89,16 @@ export const PEUGEOT_208 = {
       nombre: 'ALLURE',
       nombreCorto: 'ALLURE',
       descripcion: 'La versión Allure cuenta con un gran nivel de equipamiento que lo convierte en un vehículo completo.',
+      itemsImage: {
+        desktop: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948189/208-allure-desktop_qgnnmo.webp',
+          publicId: '208-allure-desktop_qgnnmo'
+        },
+        mobile: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948091/208-allure-mobile_pruby6.webp',
+          publicId: '208-allure-mobile_pruby6'
+        }
+      },
       coloresPermitidos: ['208-blanco-nacre', '208-gris-artense', '208-negro-perla'],
       colorDefault: '208-gris-artense',
       equipamiento: {
@@ -107,6 +127,16 @@ export const PEUGEOT_208 = {
       nombre: 'ALLURE PK',
       nombreCorto: 'ALLURE PK',
       descripcion: 'La versión Allure Pk se destaca por su elevado nivel de confort y tecnología.',
+      itemsImage: {
+        desktop: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948191/208-allure-pk-desktop_mlsegf.webp',
+          publicId: '208-allure-pk-desktop_mlsegf'
+        },
+        mobile: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948086/208-allure-pk-mobile_ajymng.webp',
+          publicId: '208-allure-pk-mobile_ajymng'
+        }
+      },
       coloresPermitidos: ['208-blanco-nacre', '208-gris-artense', '208-negro-perla'],
       colorDefault: '208-blanco-nacre',
       equipamiento: {
@@ -133,6 +163,16 @@ export const PEUGEOT_208 = {
       nombre: 'GT',
       nombreCorto: 'GT',
       descripcion: 'La versión GT es la nueva máxima expresión del Peugeot 208. Cuenta con detalles estéticos únicos, tecnología de punta, máxima seguridad posible y la identidad visual de un verdadero GT.',
+      itemsImage: {
+        desktop: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948193/208-gt-desktop_mwpjex.webp',
+          publicId: '208-gt-desktop_mwpjex'
+        },
+        mobile: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948087/208-gt-mobile_zsgdry.webp',
+          publicId: '208-gt-mobile_zsgdry'
+        }
+      },
       coloresPermitidos: ['208-negro-perla', '208-blanco-nacre', '208-gris-artense'],
       colorDefault: '208-negro-perla',
       equipamiento: {
@@ -162,6 +202,10 @@ export const PEUGEOT_208 = {
       nombre: 'ALLURE PK T200',
       nombreCorto: 'ALLURE PK T200',
       descripcion: 'La versión Allure Pk es la mejor expresión de equipamiento y performance con detalles de confort únicos.',
+      itemsImage: {
+        desktop: { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948191/208-allure-pk-desktop_mlsegf.webp', publicId: '208-allure-pk-desktop_mlsegf' },
+        mobile: { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948086/208-allure-pk-mobile_ajymng.webp', publicId: '208-allure-pk-mobile_ajymng' }
+      },
       coloresPermitidos: ['208-blanco-nacre', '208-gris-artense', '208-negro-perla'],
       colorDefault: '208-negro-perla',
       equipamiento: null,
@@ -179,6 +223,10 @@ export const PEUGEOT_208 = {
       nombre: 'ALLURE AT',
       nombreCorto: 'ALLURE AT',
       descripcion: 'La versión Allure cuenta con un gran nivel de equipamiento de serie que lo vuelve un vehículo muy completo.',
+      itemsImage: {
+        desktop: { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948189/208-allure-desktop_qgnnmo.webp', publicId: '208-allure-desktop_qgnnmo' },
+        mobile: { url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948091/208-allure-mobile_pruby6.webp', publicId: '208-allure-mobile_pruby6' }
+      },
       coloresPermitidos: ['208-blanco-nacre', '208-gris-artense', '208-negro-perla'],
       colorDefault: '208-blanco-nacre',
       equipamiento: null,
@@ -193,27 +241,8 @@ export const PEUGEOT_208 = {
     }
   ],
   
-  // Secciones de características destacadas
-  features: [
-    {
-      id: 'display-conductor',
-      title: 'DISPLAY DE CONDUCTOR',
-      description: 'Obtené información clave de conducción en un instante con el panel de instrumentos digital configurable, disponible como pantalla 2D o 3D.',
-      images: {
-        mobile: 'https://res.cloudinary.com/drbeomhcu/image/upload/208n5.webp_pbbxu3.webp',
-        desktop: 'https://res.cloudinary.com/drbeomhcu/image/upload/excelencia1dk2_anz3an.webp'
-      }
-    },
-    {
-      id: 'realidad-aumentada',
-      title: 'REALIDAD AUMENTADA 3D',
-      description: 'Escaneá el QR y conocé de una manera distinta el 208 a través de la realidad aumentada / 3D.',
-      images: {
-        mobile: 'https://res.cloudinary.com/drbeomhcu/image/upload/ec5dk.jpg_prsxiy.webp',
-        desktop: 'https://res.cloudinary.com/drbeomhcu/image/upload/laion-ra-208-dk2_enmble.webp'
-      }
-    }
-  ],
+  // Sin secciones de características (fotos incorporadas a la galería)
+  features: [],
   
   // Configuración SEO
   seo: {

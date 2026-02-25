@@ -52,6 +52,16 @@ export const PEUGEOT_3008 = {
       nombre: 'GT',
       nombreCorto: 'GT',
       descripcion: 'La versión GT es la máxima expresión del nuevo 3008. Cuenta con detalles de diseño únicos y equipamientos exclusivos tanto en el exterior como en el interior, que lo convierten en un verdadero GT.',
+      itemsImage: {
+        desktop: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948634/3008-gt-desktop_az93s4.webp',
+          publicId: '3008-gt-desktop_az93s4'
+        },
+        mobile: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948612/3008-gt-mobile_w9fqbk.webp',
+          publicId: '3008-gt-mobile_w9fqbk'
+        }
+      },
       coloresPermitidos: [
         '3008-azul-ingaro',
         '3008-gris-titanium', 
@@ -84,32 +94,8 @@ export const PEUGEOT_3008 = {
     }
   ],
   
-  // Secciones de características destacadas
-  features: [
-    {
-      id: 'i-cockpit-panoramico',
-      title: 'NUEVO I-COCKPIT® PANORÁMICO',
-      description: 'Revolucioná tu experiencia de conducción con el nuevo i-Cockpit® panorámico de Peugeot.',
-      items: [
-        'Pantalla panorámica flotante y curva de 21" que se integra perfectamente en el tablero para una ergonomía óptima.',
-        'Nuevo volante compacto totalmente equipado con control táctil para una experiencia de conducción óptima y una comodidad incomparable.',
-        'Los i-Toggles personalizables te ofrecen acceso rápido a sus 10 funciones favoritas para un manejo intuitivo.'
-      ],
-      images: {
-        mobile: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767217559/D_Showroom_3008_7_1_dnumjb.webp',
-        desktop: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767217210/D_Showroom_3008_7_1_qcgpji.webp'
-      }
-    },
-    {
-      id: 'i-connect-advanced',
-      title: 'PEUGEOT I-CONNECT® ADVANCED',
-      description: 'El sistema de entretenimiento i-Connect® Advanced con reconocimiento de voz y ergonomía similar a la de un teléfono inteligente te brinda acceso a navegación 3D conectada y actualizaciones "Over The Air".',
-      images: {
-        mobile: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767217522/D_Showroom_3008_7_2_eqtm8f.webp',
-        desktop: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767217228/D_Showroom_3008_7_2_mys7rj.webp'
-      }
-    }
-  ],
+  // Sin secciones de características (fotos incorporadas a la galería)
+  features: [],
   
   // Configuración SEO
   seo: {

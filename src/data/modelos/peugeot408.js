@@ -52,6 +52,16 @@ export const PEUGEOT_408 = {
       nombre: 'GT',
       nombreCorto: 'GT',
       descripcion: 'La versión GT es la máxima expresión del nuevo 408. Cuenta con detalles de diseño únicos y equipamientos exclusivos tanto en el exterior como en el interior, que lo convierten en un verdadero GT.',
+      itemsImage: {
+        desktop: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948763/4008-gt_mwucs6.webp',
+          publicId: '4008-gt_mwucs6'
+        },
+        mobile: {
+          url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1771948812/408-gt-mobile_wk58gq.webp',
+          publicId: '408-gt-mobile_wk58gq'
+        }
+      },
       coloresPermitidos: [
         '408-blanco-okenite',
         '408-azul-obsession',

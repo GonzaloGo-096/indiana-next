@@ -44,6 +44,7 @@ export const VersionContent = memo(function VersionContent({
 
   const hasMultipleVersions = versiones && versiones.length > 1;
 
+  // Imagen principal: siempre la del color seleccionado (carrusel de colores)
   const imageUrl = imagenActual?.url || null;
   const imageAlt =
     imagenActual?.alt || `${modeloNombre} ${version.nombre}`;
@@ -52,9 +53,8 @@ export const VersionContent = memo(function VersionContent({
   // CSS se encarga de mostrar/ocultar según breakpoint
   return (
     <>
-      {/* Layout Mobile */}
+      {/* Layout Mobile: imagen del auto por color */}
       <article className={styles.mobileContainer}>
-        {/* Imagen */}
         <div className={styles.imageContainer} data-model-slug={modelSlug || undefined}>
           {imageUrl ? (
             <Image
@@ -138,9 +138,25 @@ export const VersionContent = memo(function VersionContent({
           </div>
           <p className={styles.versionDescription}>{version.descripcion}</p>
         </div>
+
+        {/* Foto por versión (mobile): debajo de los datos, tamaño natural sin deformar */}
+        {version.itemsImage?.mobile?.url && (
+          <div className={styles.itemsImageMobile}>
+            <Image
+              src={version.itemsImage.mobile.url}
+              alt={`Peugeot ${modeloNombre} ${version.nombre}`}
+              width={800}
+              height={600}
+              className={styles.itemsImage}
+              sizes="100vw"
+              quality={85}
+              loading="lazy"
+            />
+          </div>
+        )}
       </article>
 
-      {/* Layout Desktop: izquierda = foto fija; derecha = contenido + colores abajo, centrados */}
+      {/* Layout Desktop: imagen del auto por color; derecha = contenido + colores */}
       <article className={styles.desktopWrapper}>
         <div className={styles.desktopContainer}>
           {/* Columna izquierda: solo imagen */}
