@@ -189,6 +189,14 @@ const Nav = () => {
               >
                 Postventa
               </Link>
+              <Link
+                className={`${styles.navLink} ${isActive("/trabaja-con-nosotros") ? styles.active : ""}`}
+                href="/trabaja-con-nosotros"
+                aria-current={isActive("/trabaja-con-nosotros") ? "page" : undefined}
+                onClick={closeMenu}
+              >
+                Trabaja con nosotros
+              </Link>
               <a
                 className={styles.navLink}
                 href="#contacto"
@@ -269,6 +277,14 @@ const Nav = () => {
             onClick={closeMenu}
           >
             Postventa
+          </Link>
+          <Link
+            className={`${styles.navLink} ${isActive("/trabaja-con-nosotros") ? styles.active : ""}`}
+            href="/trabaja-con-nosotros"
+            aria-current={isActive("/trabaja-con-nosotros") ? "page" : undefined}
+            onClick={closeMenu}
+          >
+            Trabaja con nosotros
           </Link>
           <a
             className={styles.navLink}

@@ -127,6 +127,11 @@ const sitioItems = [
     text: 'Postventa',
     href: '/postventa',
   },
+  {
+    type: 'text-link',
+    text: 'Trabaja con nosotros',
+    href: '/trabaja-con-nosotros',
+  },
 ];
 
 // ✅ COLUMNA 1: CONTACTO - Módulos de redes

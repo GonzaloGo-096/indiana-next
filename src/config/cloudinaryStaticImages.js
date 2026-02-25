@@ -63,6 +63,13 @@ export const staticImages = {
     },
   },
 
+  careers: {
+    hero: {
+      src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1766082648/hero-postventa_imjehq.webp",
+      alt: "Trabajá con nosotros en Indiana Peugeot",
+    },
+  },
+
   ceroKm: {
     modelos: {
       "208": {

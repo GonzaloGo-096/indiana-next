@@ -1,0 +1,9 @@
+/**
+ * trabaja-con-nosotros.module.css - Página de reclutamiento
+ */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
