@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useMemo, useCallback } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { getModelo, COLORES } from "../../data/modelos";
 import { PlanCard } from "./PlanCard";
@@ -98,6 +99,39 @@ const obtenerImagenPorModelo = (modeloSlug, planIndex = 0) => {
 };
 
 /**
+ * Obtener una sola foto del modelo (de sus colores disponibles)
+ * Para usar como primer elemento del carrusel
+ * @param {string} modeloSlug - Slug del modelo
+ * @returns {Array} - Array con un solo objeto { url, alt } (o vacío)
+ */
+const obtenerFotoColorModelo = (modeloSlug) => {
+  const modelo = getModelo(modeloSlug);
+  if (!modelo || !modelo.versiones?.length) {
+    if (modelo?.imagenPrincipal?.url) {
+      return [{ url: modelo.imagenPrincipal.url, alt: modelo.imagenPrincipal.alt || `Peugeot ${modelo.nombre}` }];
+    }
+    return [];
+  }
+
+  const coloresSet = new Set();
+  modelo.versiones.forEach((v) => {
+    v.coloresPermitidos?.forEach((key) => coloresSet.add(key));
+  });
+
+  const coloresArray = Array.from(coloresSet)
+    .map((key) => COLORES[key])
+    .filter((c) => c?.url);
+
+  if (coloresArray.length === 0 && modelo.imagenPrincipal?.url) {
+    return [{ url: modelo.imagenPrincipal.url, alt: modelo.imagenPrincipal.alt || `Peugeot ${modelo.nombre}` }];
+  }
+
+  // Solo una foto: el primer color disponible
+  const color = coloresArray[0];
+  return color ? [{ url: color.url, alt: `Peugeot ${modelo.nombre} ${color.label}` }] : [];
+};
+
+/**
  * Componente para mostrar planes de un modelo específico en un carrusel
  */
 export const ModeloSection = ({ modelo, planes }) => {
@@ -106,7 +140,32 @@ export const ModeloSection = ({ modelo, planes }) => {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  // Memoizar la lista de planes para evitar re-renders innecesarios
+  // Una foto del auto (de colores) como primer elemento del carrusel
+  const fotosColores = useMemo(() => obtenerFotoColorModelo(modelo), [modelo]);
+
+  const fotosCards = useMemo(
+    () =>
+      fotosColores.map((foto, i) => (
+        <div key={`foto-${modelo}-${i}`} className={styles.modeloImageCard}>
+          <Image
+            src={foto.url}
+            alt={foto.alt}
+            width={580}
+            height={400}
+            className={styles.modeloImage}
+            sizes="(max-width: 768px) 380px, 500px"
+          />
+          <div className={styles.modeloImageButtonContainer}>
+            <Link href={`/0km/${modelo}`} className={styles.modeloImageButton}>
+              Ver modelo
+            </Link>
+          </div>
+        </div>
+      )),
+    [fotosColores, modelo]
+  );
+
+  // Cards de planes
   const planesCards = useMemo(
     () =>
       planes.map((plan) => (
@@ -133,8 +192,8 @@ export const ModeloSection = ({ modelo, planes }) => {
     setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10); // 10px de tolerancia
   };
 
-  // Indicador por ÍTEM (no por página)
-  const itemCount = planes?.length || 0;
+  // Indicador por ÍTEM (fotos + planes)
+  const itemCount = (fotosColores?.length || 0) + (planes?.length || 0);
   const [activeItem, setActiveItem] = useState(0);
   const checkActiveItem = () => {
     if (!scrollContainerRef.current) return;
@@ -176,7 +235,7 @@ export const ModeloSection = ({ modelo, planes }) => {
         if (resizeTimeout) clearTimeout(resizeTimeout);
       };
     }
-  }, [planes]);
+  }, [planes, fotosColores]);
 
   const scrollLeft = () => {
     if (scrollContainerRef.current) {
@@ -218,7 +277,9 @@ export const ModeloSection = ({ modelo, planes }) => {
 
         {/* Contenedor de cards con scroll */}
         <div ref={scrollContainerRef} className={styles.carouselTrack}>
-          {/* Cards de planes - Memoizado para mejor performance */}
+          {/* Primero: una foto del auto */}
+          {fotosCards}
+          {/* Luego: cards de planes */}
           {planesCards}
         </div>
 

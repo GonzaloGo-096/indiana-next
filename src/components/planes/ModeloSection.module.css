@@ -41,6 +41,7 @@
 .carouselTrack {
   flex: 1;
   display: flex;
+  align-items: stretch;
   gap: var(--spacing-5);
   overflow-x: auto;
   scroll-behavior: smooth;
@@ -99,30 +100,29 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-3) var(--spacing-5);
-  background: transparent;
+  padding: var(--spacing-2) var(--spacing-4);
+  background: var(--color-white);
   color: var(--color-brand-500);
   text-decoration: none;
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  font-weight: var(--font-weight-semibold);
+  font-size: clamp(0.8125rem, 1.8vw, 0.9375rem);
+  font-weight: var(--font-weight-medium);
   font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border-radius: 4px;
-  transition: background-color var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast);
-  border: 2px solid var(--color-brand-500);
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  border: 1px solid rgba(6, 27, 156, 0.35);
   cursor: pointer;
 }
 
 .modeloImageButton:hover {
-  background: var(--color-brand-500-rgba-10);
+  background: rgba(6, 27, 156, 0.04);
   color: var(--color-brand-600);
-  border-color: var(--color-brand-600);
-  transform: translateY(-1px);
+  border-color: var(--color-brand-500);
 }
 
 .modeloImageButton:active {
-  transform: translateY(0);
+  background: rgba(6, 27, 156, 0.08);
 }
 
 @media (max-width: 768px) {

@@ -97,27 +97,14 @@ export default async function UsadosPage() {
 
   return (
     <div className={styles.page}>
-      {/* Sección 1: Título + Botón "Ver todos" + Carrusel */}
-      <section className={styles.vehiclesSection}>
-        <div className={styles.vehiclesContainer}>
-          <div className={styles.vehiclesHeader}>
-            <h1 className={styles.vehiclesTitle}>Vehículos Usados</h1>
-            <Link href="/usados/vehiculos" className={styles.verTodosButton}>
-              Ver todos
-            </Link>
-          </div>
-          <UsadosCarousel vehicles={vehicles} />
-        </div>
-      </section>
-
-      {/* Sección 2: Promociones — título arriba del contenedor; contenido (texto + imagen) con padding importante */}
+      {/* Sección 1: Promociones (arriba) */}
       <section className={styles.promocionesSection} aria-labelledby="promociones-heading">
-        <h2 id="promociones-heading" className={styles.promocionesSectionTitle}>
-          Promociones y Formas de Pago
-        </h2>
         <div className={styles.promocionesContainer}>
           <div className={styles.promocionesBlock}>
             <div className={styles.promocionesContent}>
+              <h2 id="promociones-heading" className={styles.promocionesSectionTitle}>
+                Promociones y Formas de Pago
+              </h2>
               <p className={styles.promocionesBlockText}>
                 Financiación con cuotas fijas, garantía incluida en todos los usados
                 y múltiples formas de pago. Consultá las opciones para tu vehículo.
@@ -163,6 +150,19 @@ export default async function UsadosPage() {
               </picture>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Sección 2: Título + Botón "Ver todos" + Carrusel (abajo) */}
+      <section className={styles.vehiclesSection}>
+        <div className={styles.vehiclesContainer}>
+          <div className={styles.vehiclesHeader}>
+            <h1 className={styles.vehiclesTitle}>Vehículos Usados</h1>
+            <Link href="/usados/vehiculos" className={styles.verTodosButton}>
+              Ver todos
+            </Link>
+          </div>
+          <UsadosCarousel vehicles={vehicles} />
         </div>
       </section>
     </div>

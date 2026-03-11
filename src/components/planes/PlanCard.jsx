@@ -93,9 +93,9 @@ const PlanCardComponent = ({ plan, modelo }) => {
         </h3>
       </div>
 
-      {/* Información principal */}
+      {/* Información principal - flex:1 para que el botón quede abajo */}
       <div className={styles.planContent}>
-
+        <div className={styles.planContentInner}>
         {/* Cuota desde - Grande, azul, cursiva, con cuotas al lado */}
         <div className={styles.cuotaDesdeContainer}>
           <div className={styles.cuotaDesdeRow}>
@@ -106,14 +106,9 @@ const PlanCardComponent = ({ plan, modelo }) => {
               </span>
             </div>
             {cuotasTotales && (
-              <div className={styles.cuotasTotalesItem}>
-                <span className={styles.cuotasTotalesLabelKey}>Cantidad</span>
-                <div className={styles.cuotasTotalesContainer}>
-                  <span className={styles.cuotasTotalesNumber}>
-                    {cuotasTotales}
-                  </span>
-                  <span className={styles.cuotasTotalesLabel}>cuotas</span>
-                </div>
+              <div className={styles.cuotaDesdeItem}>
+                <span className={styles.cuotaDesdeLabel}>Cantidad de cuotas</span>
+                <span className={styles.cuotaDesdeValue}>{cuotasTotales}</span>
               </div>
             )}
           </div>
@@ -136,8 +131,9 @@ const PlanCardComponent = ({ plan, modelo }) => {
             </div>
           )}
         </div>
+        </div>
 
-        {/* Botones de acción */}
+        {/* Botones de acción - siempre abajo con margin-top: auto */}
         <div className={styles.planActions}>
           <Link href={`/planes/${plan.id}`} className={styles.actionButton}>
             Ver plan

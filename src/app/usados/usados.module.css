@@ -87,63 +87,59 @@
   outline-offset: 2px;
 }
 
-/* ===== SECCIÓN 2: PROMOCIONES (compacta, estilo profesional) ===== */
+/* ===== SECCIÓN PROMOCIONES — minimalista, mismo fondo que la página ===== */
 .promocionesSection {
-  padding: clamp(2.5rem, 6vw, 4rem) 0;
-}
-
-.promocionesSectionTitle {
-  margin: 0 auto;
-  padding: 0 var(--container-padding-mobile) clamp(1.5rem, 4vw, 2.5rem);
-  font-family: var(--font-condensed);
-  font-size: clamp(1.5rem, 4vw, 2rem);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  line-height: 1.2;
-  text-align: left;
-  max-width: var(--container-max-width);
+  padding: clamp(2rem, 5vw, 3.5rem) 0;
   background: var(--color-white);
 }
 
-@media (min-width: 768px) {
+.promocionesSectionTitle {
+  margin: 0;
+  font-family: var(--font-condensed);
+  font-size: clamp(1.375rem, 3.5vw, 1.75rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  text-align: center;
+  align-self: center;
+}
+
+@media (min-width: 769px) {
   .promocionesSectionTitle {
-    padding: 0 var(--container-padding-desktop) clamp(2rem, 4vw, 2.75rem);
+    margin: 0 0 var(--spacing-4) 0;
+    font-size: clamp(1.75rem, 4vw, 2.25rem); /* desktop: más grande */
+    text-align: left;
+    align-self: flex-start;
   }
 }
 
 .promocionesContainer {
   max-width: var(--container-max-width);
   margin: 0 auto;
-  padding: clamp(2rem, 5vw, 3rem) var(--container-padding-mobile);
-  padding-bottom: clamp(2rem, 5vw, 3rem);
-  background: var(--color-neutral-50);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  border-radius: var(--border-radius-md);
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.04),
-    0 1px 1px rgba(0, 0, 0, 0.02);
+  padding: 0 var(--container-padding-mobile);
+  background: transparent;
 }
 
 @media (min-width: 768px) {
   .promocionesContainer {
-    padding: clamp(2.5rem, 5vw, 3.5rem) clamp(2.5rem, 7vw, 4rem);
+    padding: 0 var(--container-padding-desktop);
   }
 }
 
 .promocionesBlock {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 3rem; /* mobile: más separados */
   width: 100%;
 }
 
 @media (min-width: 769px) {
   .promocionesBlock {
     flex-direction: row;
-    align-items: center;
-    gap: clamp(2.5rem, 6vw, 4.5rem);
+    align-items: flex-start; /* bloque alineado arriba */
+    gap: 0.25rem; /* desktop: más juntos */
   }
 }
 
@@ -151,26 +147,34 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: var(--spacing-2);
+  align-items: flex-start;
+  text-align: left;
+  gap: var(--spacing-4); /* espacio texto–botón (mobile: título–texto reducido con margin del título) */
   min-width: 0;
+}
+
+@media (min-width: 769px) {
+  .promocionesContent {
+    align-items: flex-start;
+    text-align: left;
+  }
 }
 
 .promocionesBlockText {
   margin: 0;
+  margin-top: -0.5rem; /* mobile: achica brecha título–texto, botón mantiene lugar */
   font-family: var(--font-poppins);
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
-  line-height: 1.55;
+  font-size: clamp(0.9375rem, 2vw, 1.0625rem);
+  line-height: 1.6;
   color: var(--color-text-secondary);
-  width: 100%;
-  max-width: 100%;
+  max-width: 48ch;
 }
 
 @media (min-width: 769px) {
   .promocionesBlockText {
-    font-size: clamp(1.0625rem, 2vw, 1.25rem);
-    max-width: 58ch;
+    margin-top: 0;
+    font-size: clamp(1.0625rem, 2.2vw, 1.25rem); /* desktop: más grande */
+    max-width: 56ch;
   }
 }
 
@@ -178,33 +182,28 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--spacing-3);
-  margin-top: var(--spacing-4);
-  margin-bottom: 0;
-  padding: 0.75rem 1.5rem;
-  min-height: 48px;
-  background: var(--color-white);
+  gap: var(--spacing-2);
+  padding: 0.625rem 1.25rem;
+  align-self: center;
+  margin-top: var(--spacing-2); /* más separación del texto (mobile + desktop) */
+  min-height: 44px;
+  background: transparent;
   color: var(--color-text-primary);
-  border: 2px solid #25D366;
+  border: 1.5px solid #25D366;
   border-radius: var(--border-radius-md);
   font-family: var(--font-poppins);
   font-weight: var(--font-weight-semibold);
-  font-size: 1rem;
+  font-size: 0.9375rem;
   line-height: 1.2;
   text-decoration: none;
   white-space: nowrap;
-  transition:
-    background var(--transition-fast),
-    border-color var(--transition-fast),
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast);
+  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
 }
 
 .promocionesWhatsapp:hover {
-  background: #f0fdf4;
+  background: rgba(37, 211, 102, 0.06);
   border-color: #128C7E;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(37, 211, 102, 0.18);
+  color: #128C7E;
 }
 
 .promocionesWhatsapp:focus-visible {
@@ -212,15 +211,15 @@
   outline-offset: 2px;
 }
 
-.promocionesWhatsapp:active {
-  transform: translateY(0);
-}
-
 .promocionesWhatsappIcon {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
   color: #25D366;
+}
+
+.promocionesWhatsapp:hover .promocionesWhatsappIcon {
+  color: #128C7E;
 }
 
 .promocionesImageWrap {
@@ -232,10 +231,8 @@
 
 @media (min-width: 769px) {
   .promocionesImageWrap {
-    width: min(52%, 540px);
-    min-height: 320px;
+    width: min(45%, 420px);
     height: auto;
-    border-radius: var(--border-radius-md);
   }
 }
 
