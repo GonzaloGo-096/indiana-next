@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronIcon } from "../../ui/icons/ChevronIcon";
 import { PhoneIcon } from "../../ui/icons/PhoneIcon";
-import { contactoModules, sitioModule, footerIcons } from "./footerConfig";
+import { contactoModules, sitioModule, vehiculosModule, footerIcons } from "./footerConfig";
 import styles from "./FooterModules.module.css";
 
 /**
@@ -197,7 +197,7 @@ const FooterModules = () => {
           </div>
         </div>
 
-        {/* COLUMNA 2: SITIO (DEL MEDIO) */}
+        {/* COLUMNA 2: SITIO */}
         <div className={styles.column}>
           <h3 className={styles.columnTitle}>Sitio</h3>
           <div className={styles.columnContent}>
@@ -209,8 +209,17 @@ const FooterModules = () => {
           </div>
         </div>
 
-        {/* COLUMNA 3: ESPACIO RESERVADO */}
-        <div className={styles.column}></div>
+        {/* COLUMNA 3: VEHÍCULOS */}
+        <div className={styles.column}>
+          <h3 className={styles.columnTitle}>{vehiculosModule.title}</h3>
+          <div className={styles.columnContent}>
+            <ul className={styles.textLinksList}>
+              {vehiculosModule.items.map((item, index) => (
+                <FooterTextLink key={`${vehiculosModule.id}-${index}`} item={item} />
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );

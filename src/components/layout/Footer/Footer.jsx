@@ -21,7 +21,7 @@ const Footer = () => {
 
   return (
     <footer className={styles.footer} id="contacto" tabIndex={-1}>
-      <div className={styles.container}>
+      <div className={styles.footerContainer}>
         {/* ✅ LOGO ENCABEZADO */}
         <div className={styles.header}>
           <img

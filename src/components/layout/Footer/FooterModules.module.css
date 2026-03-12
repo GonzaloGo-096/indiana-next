@@ -16,7 +16,7 @@
 .modulesWrapper {
   width: 100%;
   margin-bottom: var(--spacing-6);
-  padding-top: clamp(3rem, 8vw, 5rem); /* ✅ Padding-top considerable en mobile y desktop */
+  padding-top: 2rem;
 }
 
 /* ===== TÍTULO DE SECCIÓN "CONTACTO" ===== */
@@ -57,7 +57,7 @@
   font-weight: var(--font-weight-bold);
   color: #ffffff; /* ✅ Color blanco resaltado */
   margin: 0;
-  padding: var(--spacing-5) var(--spacing-2); /* ✅ Mismo padding que las opciones */
+  padding: var(--spacing-3) var(--spacing-2); /* ✅ Mismo padding que las opciones */
   padding-right: calc(var(--spacing-2) + 24px); /* ✅ Mismo padding derecho que las opciones */
   text-transform: uppercase;
   letter-spacing: 2px;
@@ -73,6 +73,18 @@
   gap: 0;
 }
 
+/* Contacto: separar los 3 sliders, sin margen left en título ni opciones */
+.column:first-child .columnContent {
+  gap: var(--spacing-3);
+}
+
+.column:first-child .columnTitle,
+.column:first-child .moduleHeader,
+.column:first-child .sedeHeader,
+.column:first-child .iconsList {
+  padding-left: 0;
+}
+
 /* ===== MÓDULO INDIVIDUAL ===== */
 .module {
   width: 100%;
@@ -85,7 +97,7 @@
   justify-content: center; /* Texto + flecha como un solo grupo centrado */
   gap: var(--spacing-2); /* Flecha al lado del texto, sin ocupar espacio extra */
   width: 100%;
-  padding: var(--spacing-5) var(--spacing-2);
+  padding: var(--spacing-3) var(--spacing-2);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -122,13 +134,13 @@
   flex-shrink: 0;
 }
 
-/* Rotar chevron cuando está abierto (módulos principales) */
+/* Rotar chevron cuando está abierto (módulos principales) - mantiene color neutro */
 .moduleOpen .moduleHeader .chevron {
   transform: rotate(180deg);
-  color: var(--color-brand-500);
+  color: var(--color-neutral-400);
 }
 
-/* Chevron para sede */
+/* Chevron para sede - mantiene color neutro */
 .sede .sedeHeader .chevron {
   transition: transform 0.25s ease;
   color: var(--color-neutral-400);
@@ -136,7 +148,7 @@
 
 .sedeOpen .sedeHeader .chevron {
   transform: rotate(180deg);
-  color: var(--color-brand-500);
+  color: var(--color-neutral-400);
 }
 
 /* ===== CONTENIDO COLAPSABLE ===== */
@@ -148,7 +160,7 @@
 
 /* Contenido abierto */
 .moduleOpen .moduleContent {
-  max-height: 500px;
+  max-height: 800px;
   transition: max-height 0.35s ease-in;
 }
 
@@ -182,7 +194,7 @@
   justify-content: center;
   gap: var(--spacing-2);
   width: 100%;
-  padding: var(--spacing-4) var(--spacing-3);
+  padding: var(--spacing-2) var(--spacing-2);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -221,7 +233,7 @@
 
 /* Contenido abierto */
 .sedeOpen .sedeContent {
-  max-height: 300px;
+  max-height: 400px;
   transition: max-height 0.35s ease-in;
 }
 
@@ -229,7 +241,7 @@
 .iconsList {
   list-style: none;
   margin: 0;
-  padding: var(--spacing-3) var(--spacing-2) var(--spacing-4) var(--spacing-2);
+  padding: var(--spacing-1) var(--spacing-2) var(--spacing-3) var(--spacing-2);
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -242,11 +254,11 @@
 .textLinksList {
   list-style: none;
   margin: 0;
-  padding: var(--spacing-3) var(--spacing-2) var(--spacing-4) var(--spacing-2); /* ✅ Mismo padding horizontal que las opciones */
+  padding: var(--spacing-1) var(--spacing-2) var(--spacing-3) var(--spacing-2); /* ✅ Mismo padding horizontal que las opciones */
   padding-right: calc(var(--spacing-2) + 24px); /* ✅ Mismo padding derecho que las opciones para alineación */
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-3); /* ✅ Más espacio entre elementos en mobile */
+  gap: var(--spacing-2); /* Espacio entre elementos */
   align-items: center; /* ✅ Centrado en mobile */
 }
 
@@ -261,7 +273,7 @@
   font-family: var(--font-condensed);
   font-size: clamp(1rem, 3vw, 1.125rem); /* ✅ Tamaño más grande en mobile */
   font-weight: var(--font-weight-normal);
-  padding: var(--spacing-3) 0; /* ✅ Más padding vertical para mejor legibilidad */
+  padding: var(--spacing-1) 0;
   transition: color var(--transition-fast);
   line-height: 1.6; /* ✅ Mejor espaciado entre líneas */
   text-transform: capitalize;
@@ -409,17 +421,20 @@
 
   .modulesGrid {
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    gap: var(--spacing-8);
+    grid-template-columns: 1.2fr 1fr 0.9fr;
+    gap: 2rem 1.5rem;
   }
 
   .column {
     margin-bottom: 0;
-    text-align: left; /* ✅ Desktop: alineado a la izquierda */
+    text-align: left;
   }
 
   .columnTitle {
-    margin-bottom: var(--spacing-6);
+    margin-bottom: var(--spacing-2);
+    padding: 0;
+    font-size: 1.125rem;
+    letter-spacing: 1.5px;
     text-align: left;
   }
 
@@ -449,10 +464,35 @@
     align-self: start;
   }
 
-  /* Todas las secciones son accordion en desktop */
+  .iconImage {
+    width: 44px;
+    height: 44px;
+  }
+
+  .iconImageInstagram {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .iconImageMaps {
+    width: 56px;
+    height: 56px;
+  }
+
+  .iconSvg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .itemContent,
+  .itemLink {
+    padding: var(--spacing-1) 0;
+  }
+
+  /* Todas las secciones son accordion en tablet */
   .moduleAccordion .moduleHeader {
     cursor: pointer;
-    padding: var(--spacing-5) var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-2);
   }
 
   /* Chevron visible para todas las secciones en desktop */
@@ -467,114 +507,75 @@
   }
 
   .moduleAccordion.moduleOpen .moduleContent {
-    max-height: 500px;
+    max-height: 800px;
     overflow: visible;
   }
+}
 
-  /* En desktop también mostrar iconos horizontalmente */
-  .iconsList {
-    padding: var(--spacing-4) 0 0 0;
+/* Desktop ≥992px: accordion sigue funcionando (cerrado por defecto, abre al clic) */
+@media (min-width: 992px) {
+  .modulesWrapper {
+    padding-top: 0;
   }
 
-  .moduleTitle {
-    font-size: 1rem;
-    letter-spacing: 0.5px;
-  }
-
-  .moduleList {
-    padding: 0;
-    gap: var(--spacing-2);
+  .module {
+    padding-right: 0;
   }
 
   .iconsList {
-    padding: var(--spacing-4) 0 0 0;
+    padding: var(--spacing-1) 0 0;
     gap: var(--spacing-3);
-    justify-content: flex-start;
   }
 
-  .itemContent,
-  .itemLink {
-    padding: var(--spacing-1) 0;
-  }
-
-  .itemText {
-    text-transform: none;
-    letter-spacing: 0.3px;
-  }
-
-  .iconImage {
-    width: 55px;
-    height: 55px;
-  }
-
-  /* ✅ Instagram más pequeño en desktop */
-  .iconImageInstagram {
-    width: 46px !important;
-    height: 46px !important;
-  }
-
-  .iconImageMaps {
-    width: 68.75px;
-    height: 68.75px;
-  }
-
-  .iconSvg {
-    width: 46px;
-    height: 46px;
-  }
-
-  .iconLink {
-    padding: var(--spacing-2);
-  }
-
-  /* ===== ENLACES DE TEXTO EN DESKTOP ===== */
   .textLinksList {
-    padding: var(--spacing-4) var(--spacing-2) 0 var(--spacing-2); /* ✅ Mismo padding horizontal que las opciones */
-    padding-right: calc(var(--spacing-2) + 24px); /* ✅ Mismo padding derecho para alineación */
-    gap: var(--spacing-2);
+    padding: var(--spacing-1) 0 0;
+    gap: var(--spacing-1);
   }
 
-  .textLink {
-    font-size: var(--font-size-base);
-    padding: var(--spacing-1) 0;
-    text-transform: none;
-    letter-spacing: 0.2px;
+  .columnTitle {
+    margin-bottom: var(--spacing-2);
   }
 
-  /* ===== SEDES EN DESKTOP ===== */
+  .iconsList {
+    padding: var(--spacing-1) 0 0;
+    gap: var(--spacing-3);
+  }
+
   .sedesWrapper {
     padding: 0;
   }
 
   .sedeHeader {
-    padding: var(--spacing-4) var(--spacing-2);
+    padding: var(--spacing-2) var(--spacing-2) var(--spacing-1);
+  }
+
+  .sedeTitle {
+    font-size: 0.875rem;
+    letter-spacing: 0.4px;
+  }
+
+  .modulesGrid {
+    gap: 2rem 2rem;
+  }
+
+  .columnTitle {
+    font-size: 1.625rem;
+  }
+
+  .moduleTitle {
+    font-size: 1.125rem;
   }
 
   .sedeTitle {
     font-size: 0.9375rem;
-    letter-spacing: 0.4px;
   }
 
-  .sedeContent {
-    padding: 0;
+  .textLink {
+    font-size: 1rem;
   }
 
-  .sedeOpen .sedeContent {
-    max-height: 300px;
-    overflow: visible;
-  }
-}
-
-@media (min-width: 992px) {
-  .modulesGrid {
-    gap: var(--spacing-10);
-    max-width: 1200px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .module {
-    max-width: none;
+  .itemText {
+    font-size: var(--font-size-base);
   }
 }
 

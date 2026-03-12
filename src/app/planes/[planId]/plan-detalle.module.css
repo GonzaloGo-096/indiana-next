@@ -157,15 +157,30 @@
   }
 }
 
-/* ===== COLUMNA IZQUIERDA: Imagen del auto (solo desktop) ===== */
+/* ===== COLUMNA IZQUIERDA: Imagen del auto ===== */
 .planImageColumn {
-  display: none;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Mobile: imagen más compacta, arriba del contenido */
+@media (max-width: 1023px) {
+  .planImageColumn {
+    order: -1;
+    max-width: 320px;
+    margin: 0 auto var(--spacing-4);
+  }
+
+  .planImage {
+    max-width: 280px;
+  }
 }
 
 @media (min-width: 1024px) {
   .planImageColumn {
     display: block;
-    width: 100%;
   }
 }
 
@@ -174,6 +189,12 @@
   height: auto;
   object-fit: contain;
   max-width: 600px;
+}
+
+@media (min-width: 1024px) {
+  .planImage {
+    max-width: 720px;
+  }
 }
 
 /* ===== COLUMNA DERECHA: Información del plan ===== */
@@ -187,6 +208,7 @@
 /* ===== PRIORIDAD 1: Cuotas + Valor cuota ===== */
 .planKeyMetrics {
   width: 100%;
+  margin-top: var(--spacing-2);
 }
 
 /* ===== PRIORIDAD 2: 4 datos en grid 2x2 ===== */
@@ -194,6 +216,7 @@
   width: 100%;
   padding-top: var(--spacing-2);
   margin-top: calc(-1 * var(--spacing-2));
+  margin-bottom: var(--spacing-2);
 }
 
 /* ===== UNA FILA DE CUBÍCULOS: Licitación mínima + resto. Separación clara del bloque superior ===== */
@@ -213,6 +236,8 @@
     display: grid;
     grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
     align-items: start;
+    padding-top: 3rem;
+    margin-top: 1.5rem;
   }
 
   .planDetailsSection .detailCubicle {
@@ -222,7 +247,8 @@
 
 @media (min-width: 1024px) {
   .planDetailsSection {
-    padding-top: var(--spacing-12);
+    padding-top: 3.5rem;
+    margin-top: 2rem;
   }
 }
 
@@ -324,69 +350,6 @@
   text-rendering: optimizeLegibility;
 }
 
-.cuotasTotalesItem {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-1);
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.cuotasTotalesLabelKey {
-  --cuotas-label-key-font-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
-  --cuotas-label-key-letter-spacing: 0.5px;
-  
-  font-size: var(--cuotas-label-key-font-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-white);
-  text-transform: capitalize;
-  letter-spacing: var(--cuotas-label-key-letter-spacing);
-  font-family: var(--font-display);
-  line-height: 1.4;
-}
-
-.cuotasTotalesContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 0.375rem;
-  width: 100%;
-}
-
-.cuotasTotalesNumber {
-  --cuotas-totales-font-size: clamp(2.25rem, 6vw, 3.25rem);
-  --cuotas-totales-line-height: 1.15;
-  --cuotas-totales-letter-spacing: -0.2px;
-  
-  font-size: var(--cuotas-totales-font-size);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-white);
-  font-family: var(--font-condensed);
-  display: block;
-  line-height: var(--cuotas-totales-line-height);
-  letter-spacing: var(--cuotas-totales-letter-spacing);
-  white-space: nowrap;
-  align-self: center;
-  
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-.cuotasTotalesLabel {
-  --cuotas-label-font-size: clamp(0.9375rem, 2.5vw, 1.25rem);
-  --cuotas-label-line-height: 1.3;
-  
-  font-size: var(--cuotas-label-font-size);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-white);
-  font-family: var(--font-condensed);
-  text-transform: lowercase;
-  line-height: var(--cuotas-label-line-height);
-  white-space: nowrap;
-}
-
 /* ===== FILA INFERIOR - Grid 2x2: arriba valores móvil, abajo tipo plan y adjudicación (igual que PlanCard) ===== */
 .infoBottomRow {
   --info-row-gap: var(--spacing-5);
@@ -425,9 +388,9 @@
   justify-content: flex-start;
 }
 
-/* Los 4 ítems con el mismo tamaño de fuente (más grandes) */
+/* Los 4 ítems: igual que card pero más grande, mismo weight */
 .planSecondaryMetrics .infoBottomLabel {
-  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  font-size: clamp(0.875rem, 2vw, 1rem);
   font-weight: var(--font-weight-medium);
   color: var(--color-neutral-500);
   text-transform: capitalize;
@@ -437,11 +400,11 @@
 }
 
 .planSecondaryMetrics .infoBottomValue {
-  font-size: clamp(1.0625rem, 2.4vw, 1.25rem);
+  font-size: clamp(1.5rem, 4.5vw, 2.25rem);
   font-weight: var(--font-weight-normal);
-  color: var(--color-neutral-700);
+  color: var(--color-neutral-600);
   font-family: var(--font-condensed);
-  line-height: 1.35;
+  line-height: 1.3;
 }
 
 .infoBottomLabel {
@@ -670,18 +633,6 @@
     font-size: 2.75rem;
   }
 
-  .cuotasTotalesLabelKey {
-    font-size: 0.8125rem;
-  }
-
-  .cuotasTotalesNumber {
-    font-size: 2.5rem;
-  }
-
-  .cuotasTotalesLabel {
-    font-size: 1.0625rem;
-  }
-
   .infoBottomLabel {
     font-size: 0.9375rem;
   }
@@ -691,11 +642,11 @@
   }
 
   .planSecondaryMetrics .infoBottomLabel {
-    font-size: 1.125rem;
+    font-size: 1rem;
   }
 
   .planSecondaryMetrics .infoBottomValue {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
   }
 
   .detailCubicle .additionalSectionLabel {

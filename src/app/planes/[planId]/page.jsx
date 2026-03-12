@@ -335,14 +335,11 @@ export default async function PlanDetallePage({ params }) {
                     </span>
                   </div>
                   {cuotasTotales && (
-                    <div className={styles.cuotasTotalesItem}>
-                      <span className={styles.cuotasTotalesLabelKey}>Cantidad</span>
-                      <div className={styles.cuotasTotalesContainer}>
-                        <span className={styles.cuotasTotalesNumber}>
-                          {cuotasTotales}
-                        </span>
-                        <span className={styles.cuotasTotalesLabel}>cuotas</span>
-                      </div>
+                    <div className={styles.cuotaDesdeItem}>
+                      <span className={styles.cuotaDesdeLabel}>Cantidad de cuotas</span>
+                      <span className={styles.cuotaDesdeValue}>
+                        {cuotasTotales}
+                      </span>
                     </div>
                   )}
                 </div>

@@ -74,13 +74,16 @@ const PlanCardComponent = ({ plan, modelo }) => {
   // Solo mostrar modelo en el título si es 208
   const mostrarModeloEnVersion = modeloLower === "208";
 
+  // Para 2008: no mostrar la versión al final del título
+  const mostrarVersion = modeloLower !== "2008";
+
   return (
     <div className={styles.planCard}>
       {/* Header del plan - Alineado a la izquierda */}
       <div className={styles.planHeader}>
         <h3 className={styles.planTitle}>
           Plan {nombrePlan}
-          {version && (
+          {mostrarVersion && version && (
             <>
               {" - "}
               {mostrarModeloEnVersion && modeloDisplay}

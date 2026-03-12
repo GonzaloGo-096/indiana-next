@@ -55,10 +55,11 @@
 }
 
 .modeloButton {
+  --modelo-btn-violet: #3F45C6;
   padding: var(--spacing-3) var(--spacing-5);
   background: #ffffff;
-  color: var(--color-brand-500);
-  border: 2px solid var(--color-brand-500);
+  color: var(--modelo-btn-violet);
+  border: 2px solid var(--modelo-btn-violet);
   border-radius: var(--border-radius-md);
   font-size: clamp(0.875rem, 2vw, 1rem);
   font-weight: var(--font-weight-semibold);
@@ -71,7 +72,7 @@
 }
 
 .modeloButton:hover {
-  background: var(--color-brand-500);
+  background: var(--modelo-btn-violet);
   color: var(--color-white);
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
@@ -83,7 +84,7 @@
 }
 
 .modeloButton:focus-visible {
-  outline: 2px solid var(--color-brand-500);
+  outline: 2px solid var(--modelo-btn-violet);
   outline-offset: 2px;
 }
 

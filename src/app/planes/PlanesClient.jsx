@@ -12,11 +12,11 @@ export function PlanesClient({ planesPorModelo }) {
   // Refs para las secciones de modelos
   const modeloRefs = useRef({});
 
-  // Función para hacer scroll a una sección de modelo
+  // Función para hacer scroll a una sección de modelo (centrada en la pantalla)
   const scrollToModelo = (modelo) => {
     const elemento = modeloRefs.current[modelo];
     if (elemento) {
-      elemento.scrollIntoView({ behavior: "smooth", block: "start" });
+      elemento.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   };
 
@@ -58,18 +58,6 @@ export function PlanesClient({ planesPorModelo }) {
           </div>
         ))}
       </div>
-
-      {/* Bloque de Confianza / Valor Agregado */}
-      <section className={styles.trustSection}>
-        <div className={styles.trustContent}>
-          <h3 className={styles.trustTitle}>Concesionaria oficial Peugeot</h3>
-          <p className={styles.trustText}>
-            Planes de financiación oficiales con garantía Peugeot. Asesoramiento
-            personalizado, documentación simplificada y seguimiento durante todo el
-            proceso.
-          </p>
-        </div>
-      </section>
 
       {/* Contacto al Final */}
       <section className={styles.contactSection}>

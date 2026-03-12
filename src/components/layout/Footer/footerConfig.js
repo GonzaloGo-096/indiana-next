@@ -173,6 +173,17 @@ export const sitioModule = {
   isTextLinks: true,
 };
 
+// ✅ COLUMNA 3: VEHÍCULOS - Enlaces directos a catálogos
+export const vehiculosModule = {
+  id: 'vehiculos',
+  title: 'Vehículos',
+  items: [
+    { type: 'text-link', text: 'Usados', href: '/usados/vehiculos' },
+    { type: 'text-link', text: 'Peugeot | 0km', href: '/0km' },
+  ],
+  isTextLinks: true,
+};
+
 // ✅ MAPEO DE ÍCONOS - Usa imágenes desde public/assets/redes + SVG para teléfono
 export const footerIcons = {
   whatsapp: '/assets/redes/Whatsapp_logo_PNG8.webp',

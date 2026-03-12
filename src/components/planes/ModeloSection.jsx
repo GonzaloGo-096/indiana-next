@@ -194,6 +194,8 @@ export const ModeloSection = ({ modelo, planes }) => {
 
   // Indicador por ÍTEM (fotos + planes)
   const itemCount = (fotosColores?.length || 0) + (planes?.length || 0);
+  // Flechas solo en desktop cuando hay 4 o más ítems en el carrusel
+  const showArrows = itemCount >= 4;
   const [activeItem, setActiveItem] = useState(0);
   const checkActiveItem = () => {
     if (!scrollContainerRef.current) return;
@@ -264,8 +266,8 @@ export const ModeloSection = ({ modelo, planes }) => {
 
       {/* Carrusel de cards */}
       <div className={styles.carouselContainer}>
-        {/* Flecha izquierda */}
-        {canScrollLeft && (
+        {/* Flecha izquierda - solo desktop, 3+ items */}
+        {showArrows && canScrollLeft && (
           <button
             className={styles.arrowButton}
             onClick={scrollLeft}
@@ -283,8 +285,8 @@ export const ModeloSection = ({ modelo, planes }) => {
           {planesCards}
         </div>
 
-        {/* Flecha derecha */}
-        {canScrollRight && (
+        {/* Flecha derecha - solo desktop, 3+ items */}
+        {showArrows && canScrollRight && (
           <button
             className={`${styles.arrowButton} ${styles.arrowRight}`}
             onClick={scrollRight}

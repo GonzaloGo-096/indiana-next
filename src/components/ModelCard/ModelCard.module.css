@@ -12,34 +12,25 @@
  * @version 3.0.0 - Rediseño Premium
  */
 
-/* ===== CARD PRINCIPAL - Blanco arriba, gradiente gris suave, parte inferior blanca brillante + borde sutil ===== */
+/* ===== CARD PRINCIPAL - Fondo blanco, borde gris sutil en toda la card ===== */
 .card {
   position: relative;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(
-    to bottom,
-    #ffffff 0%,
-    #ffffff 51%,
-    #f5f5f5 60%,
-    #fafafa 75%,
-    #ffffff 100%
-  );
+  background: var(--color-white);
   border-radius: var(--border-radius-xl);
   overflow: hidden;
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-  border: none;
+  border: 1px solid var(--color-neutral-200);
   transition:
     transform var(--transition-smooth),
     box-shadow var(--transition-smooth);
   min-width: clamp(260px, 30vw, 320px);
   max-width: clamp(260px, 30vw, 320px);
   flex-shrink: 0;
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.04),
-    0 1px 2px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
 .card:hover {
@@ -65,41 +56,9 @@
   width: 100%;
   aspect-ratio: 4 / 3;
   overflow: hidden;
-  background: linear-gradient(
-    to bottom,
-    #ffffff 0%,
-    #ffffff 55%,
-    #f2f2f2 70%,
-    #ebebeb 85%,
-    #e5e5e5 100%
-  );
-  /* Línea continua “víbora”: top → right → bottom (seam) */
-  /* Víbora: solo seam, más sutil */
-  border-bottom: 1px solid rgba(0, 82, 155, 0.35);
+  background: var(--color-neutral-50);
   border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
-}
-
-.imageContainer::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(6, 27, 156, 0.01) 50%,
-    transparent 100%
-  );
-  opacity: 0;
-  transition: opacity var(--transition-smooth);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.card:hover .imageContainer::after {
-  opacity: 1;
+  border-bottom: 1px solid var(--color-neutral-200);
 }
 
 .image {
@@ -112,11 +71,6 @@
     transform var(--transition-smooth),
     filter var(--transition-smooth);
   z-index: 0;
-}
-
-/* next/image necesita que el contenedor tenga position: relative */
-.imageContainer {
-  position: relative;
 }
 
 .card:hover .image {
@@ -132,9 +86,6 @@
   justify-content: center;
   padding: clamp(8px, 1.5vw, 14px) clamp(16px, 2vw, 24px) clamp(10px, 1.5vw, 16px);
   background: transparent;
-  /* Línea continua “víbora”: left → bottom (el “cruce” es el border-bottom del imageContainer) */
-  border-left: 1px solid rgba(0, 82, 155, 0.35);
-  border-bottom: 1px solid rgba(0, 82, 155, 0.25);
   border-radius: 0 0 var(--border-radius-xl) var(--border-radius-xl);
 }
 
@@ -163,7 +114,7 @@
   color: var(--color-brand-500);
   font-family: var(--font-display);
   text-transform: uppercase;
-  letter-spacing: clamp(2px, 0.4vw, 4px);
+  letter-spacing: 0.5px;
   text-align: center;
   line-height: 1.1;
   transition: color var(--transition-smooth), filter var(--transition-smooth);
@@ -190,7 +141,7 @@
   
   .title {
     font-size: 2.3rem;
-    letter-spacing: 2.5px;
+    letter-spacing: 0.5px;
   }
 }
 
@@ -210,7 +161,7 @@
   
   .title {
     font-size: 2.3rem;
-    letter-spacing: 3px;
+    letter-spacing: 0.5px;
   }
 }
 

@@ -65,8 +65,8 @@ export const staticImages = {
 
   careers: {
     hero: {
-      src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1766082648/hero-postventa_imjehq.webp",
-      alt: "Trabajá con nosotros en Indiana Peugeot",
+      src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1772030637/RRHH-desktop_ik9yap.webp",
+      alt: "Trabajá con nosotros en Indiana Peugeot - Concesionaria oficial Peugeot",
     },
   },
 

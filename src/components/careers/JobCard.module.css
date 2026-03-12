@@ -1,39 +1,106 @@
 /**
- * JobCard.module.css - Estilos de card de búsqueda activa
+ * JobCard.module.css - Cards de búsqueda activa
+ * Diseño renovado: proporcional, elegante, con acentos de marca
  */
 
 .card {
-  background: var(--color-white);
-  border-radius: var(--border-radius-lg);
-  box-shadow: var(--shadow-md);
-  padding: var(--spacing-6);
+  --card-accent: var(--color-brand-500);
+  --card-bg: var(--color-white);
+  --card-border: 1px solid rgba(6, 27, 156, 0.06);
+  --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --card-shadow-hover: 0 12px 28px rgba(6, 27, 156, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --card-radius: var(--border-radius-xl);
+  --card-padding: clamp(1.25rem, 4vw, 1.75rem);
+  --section-gap: clamp(1rem, 2.5vw, 1.25rem);
+  
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-5);
-  border: 1px solid var(--color-border-subtle);
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  border: var(--card-border);
+  box-shadow: var(--card-shadow);
+  padding: var(--card-padding);
+  overflow: hidden;
+  min-height: 0;
+  flex-shrink: 0;
+  width: 100%;
+  min-width: 280px;
+  max-width: min(420px, 100%);
+  transition: 
+    transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s ease;
+}
+
+/* Banda decorativa superior - acento de marca */
+.card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-brand-500) 0%, var(--color-brand-400) 100%);
+  border-radius: var(--card-radius) var(--card-radius) 0 0;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: rgba(6, 27, 156, 0.12);
 }
 
 .cardTitle {
-  margin: 0;
+  margin: 0 0 var(--section-gap) 0;
+  padding: 0;
   font-family: var(--font-display);
-  font-size: var(--font-size-xl);
+  font-size: clamp(1.125rem, 2.8vw, 1.375rem);
   font-weight: var(--font-weight-bold);
   color: var(--color-brand-600);
-  padding-bottom: var(--spacing-3);
-  border-bottom: 2px solid var(--color-brand-100);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.25;
 }
 
 .section {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-2);
+  padding: var(--spacing-3) 0;
+  border-bottom: 1px solid var(--color-neutral-100);
+}
+
+.section:last-of-type {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.section:first-of-type {
+  padding-top: 0;
 }
 
 .sectionTitle {
   margin: 0;
-  font-size: var(--font-size-base);
+  font-family: var(--font-display);
+  font-size: clamp(0.8125rem, 2vw, 0.9375rem);
   font-weight: var(--font-weight-semibold);
-  color: var(--color-text-primary);
+  color: var(--color-neutral-800);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+/* Icono sutil antes del título de sección */
+.sectionTitle::before {
+  content: "";
+  display: inline-block;
+  width: 4px;
+  height: 1em;
+  background: linear-gradient(180deg, var(--color-brand-500), var(--color-brand-300));
+  border-radius: 2px;
 }
 
 .bulletList {
@@ -41,7 +108,7 @@
   padding-left: var(--spacing-5);
   list-style: disc;
   color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
+  font-size: clamp(0.8125rem, 1.8vw, 0.9375rem);
   line-height: 1.6;
 }
 
@@ -51,4 +118,13 @@
 
 .bulletList li:last-child {
   margin-bottom: 0;
+}
+
+/* Mobile: cards más compactas en el carrusel */
+@media (max-width: 767px) {
+  .card {
+    min-width: 300px;
+    max-width: 340px;
+    padding: clamp(1rem, 4vw, 1.25rem);
+  }
 }

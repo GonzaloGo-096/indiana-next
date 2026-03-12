@@ -2,102 +2,14 @@
 
 import React, { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { getPlanesPorModelo } from "../../../data/planes";
-import { getModelo, COLORES } from "../../../data/modelos";
+import { getModelo } from "../../../data/modelos";
 import { PlanCard } from "../../planes/PlanCard";
 import { CarouselDots } from "../../ui/CarouselDots/CarouselDots";
 import { ChevronIcon } from "../../ui/icons/ChevronIcon";
 import { PeugeotIcon } from "../../ui/icons/PeugeotIcon";
 import { getClosestChildIndex, scrollToChildIndex } from "../../../utils/carouselActiveIndex";
 import styles from "./ModeloPlanes.module.css";
-
-/**
- * Obtener imagen para un modelo específico
- * - Para 208: incluir blanco (es el único color disponible)
- * - Para otros modelos: excluir blanco y variar entre los demás colores
- * - Si no hay colores disponibles, usar imagenPrincipal del modelo
- * @param {string} modeloSlug - Slug del modelo (2008, 208, expert, partner)
- * @param {number} planIndex - Índice del plan para variar el color
- * @returns {Object|null} - Objeto con { url, alt } o null
- */
-const obtenerImagenPorModelo = (modeloSlug, planIndex = 0) => {
-  const modelo = getModelo(modeloSlug);
-  if (!modelo) {
-    return null;
-  }
-
-  // Si no hay versiones, usar imagenPrincipal como fallback
-  if (!modelo.versiones || modelo.versiones.length === 0) {
-    if (modelo.imagenPrincipal && modelo.imagenPrincipal.url) {
-      return {
-        url: modelo.imagenPrincipal.url,
-        alt: modelo.imagenPrincipal.alt || `Peugeot ${modelo.nombre}`,
-      };
-    }
-    return null;
-  }
-
-  // Obtener todos los colores disponibles de todas las versiones del modelo
-  const coloresDisponibles = new Set();
-  modelo.versiones.forEach((version) => {
-    if (version.coloresPermitidos) {
-      version.coloresPermitidos.forEach((colorKey) => {
-        coloresDisponibles.add(colorKey);
-      });
-    }
-  });
-
-  // Convertir a array y obtener objetos color
-  const coloresArray = Array.from(coloresDisponibles)
-    .map((colorKey) => COLORES[colorKey])
-    .filter(Boolean);
-
-  // Si no hay colores, usar imagenPrincipal como fallback
-  if (coloresArray.length === 0) {
-    if (modelo.imagenPrincipal && modelo.imagenPrincipal.url) {
-      return {
-        url: modelo.imagenPrincipal.url,
-        alt: modelo.imagenPrincipal.alt || `Peugeot ${modelo.nombre}`,
-      };
-    }
-    return null;
-  }
-
-  // Para 208: incluir todos los colores (blanco es el único disponible)
-  // Para otros modelos: excluir blanco
-  const coloresFiltrados =
-    modeloSlug === "208"
-      ? coloresArray
-      : coloresArray.filter((color) => {
-          const key = color.key.toLowerCase();
-          return !key.includes("blanco") && !key.includes("white");
-        });
-
-  // Si después de filtrar no hay colores, usar todos los disponibles
-  const coloresFinales =
-    coloresFiltrados.length > 0 ? coloresFiltrados : coloresArray;
-
-  // Seleccionar color basado en el índice del plan (para variar entre planes)
-  const indiceColor = planIndex % coloresFinales.length;
-  const colorSeleccionado = coloresFinales[indiceColor];
-
-  if (!colorSeleccionado || !colorSeleccionado.url) {
-    // Fallback a imagenPrincipal si el color no tiene URL
-    if (modelo.imagenPrincipal && modelo.imagenPrincipal.url) {
-      return {
-        url: modelo.imagenPrincipal.url,
-        alt: modelo.imagenPrincipal.alt || `Peugeot ${modelo.nombre}`,
-      };
-    }
-    return null;
-  }
-
-  return {
-    url: colorSeleccionado.url,
-    alt: `Peugeot ${modelo.nombre} ${colorSeleccionado.label}`,
-  };
-};
 
 /**
  * Función para obtener versión del plan basándose en el nombre del plan y los modelos
@@ -181,6 +93,8 @@ const ModeloPlanes = ({ modeloSlug }) => {
 
   // Indicador por ÍTEM (no por página)
   const itemCount = planes?.length || 0;
+  // Flechas solo en desktop cuando hay 4 o más cards
+  const showArrows = itemCount >= 4;
   const [activeItem, setActiveItem] = useState(0);
   const checkActiveItem = useCallback(() => {
     if (!scrollContainerRef.current) return;
@@ -262,6 +176,7 @@ const ModeloPlanes = ({ modeloSlug }) => {
 
   return (
     <section className={styles.modeloPlanes}>
+      <div className={styles.planesContent}>
       <div className={styles.modeloTitleContainer}>
         <h2 className={styles.modeloTitle}>
           <PeugeotIcon className={styles.modeloTitleIcon} size={48} color="#000000" />
@@ -274,8 +189,8 @@ const ModeloPlanes = ({ modeloSlug }) => {
 
       {/* Carrusel de cards */}
       <div className={styles.carouselContainer}>
-        {/* Flecha izquierda */}
-        {canScrollLeft && (
+        {/* Flecha izquierda - solo desktop, 4+ cards */}
+        {showArrows && canScrollLeft && (
           <button
             className={styles.arrowButton}
             onClick={scrollLeft}
@@ -291,8 +206,8 @@ const ModeloPlanes = ({ modeloSlug }) => {
           {planesCards}
         </div>
 
-        {/* Flecha derecha */}
-        {canScrollRight && (
+        {/* Flecha derecha - solo desktop, 4+ cards */}
+        {showArrows && canScrollRight && (
           <button
             className={`${styles.arrowButton} ${styles.arrowRight}`}
             onClick={scrollRight}
@@ -311,6 +226,7 @@ const ModeloPlanes = ({ modeloSlug }) => {
           variant="autocity"
           onDotClick={handleDotClick}
         />
+      </div>
       </div>
     </section>
   );
