@@ -1,20 +1,17 @@
 import Link from "next/link";
 import Image from "next/image";
+import UsadosCarousel from "../usados/UsadosCarousel";
 import styles from "./UsadosSection.module.css";
 
 /**
  * UsadosSection - Sección de Usados Multimarca en la página de inicio
- * 
- * Diseño: Fondo claro, logo Indiana (chico negro), título, texto y botón que lleva a /usados.
- * Misma estructura que CeroKmSection (logo arriba del título).
- * 
- * ✅ Server Component: Sin interactividad, solo renderizado estático
- * ✅ Prefetch: Next.js maneja prefetch automático de <Link>
- * 
+ *
+ * Incluye carrusel de hasta 6 vehículos usados entre descripción y CTA.
+ *
  * @author Indiana Peugeot
- * @version 2.0.0 - Convertido a Server Component
+ * @version 3.0.0 - Carrusel de usados
  */
-export function UsadosSection() {
+export function UsadosSection({ vehicles = [] }) {
   return (
     <section
       className={styles.section}
@@ -38,12 +35,21 @@ export function UsadosSection() {
           </div>
           <p className={styles.description}>
             Amplia selección de vehículos usados de todas las marcas. Garantía
-            incluida, financiación disponible y servicio postventa profesional.
-            Encontrá el auto que buscás al mejor precio.
+            incluida, financiación disponible. Encontrá el auto que buscás al mejor precio.
           </p>
-          <Link href="/usados" className={styles.button}>
-            Ver todos los usados
-          </Link>
+          {vehicles.length > 0 && (
+            <div className={styles.carouselSlot}>
+              <UsadosCarousel vehicles={vehicles} compact viewportClip />
+            </div>
+          )}
+          <div className={styles.buttonsContainer}>
+            <Link href="/usados" className={styles.button}>
+              Ver todos los usados
+            </Link>
+            <Link href="/usados#promociones" className={styles.button}>
+              Ver promociones
+            </Link>
+          </div>
         </div>
       </div>
     </section>

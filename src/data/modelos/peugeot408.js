@@ -23,7 +23,8 @@ export const PEUGEOT_408 = {
   
   // Hero image (solo desktop)
   heroImage: {
-    url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767294182/408-portada-dk_tk8367.avif',
+    url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1773412804/hero-408-desktop_noo7eb.webp',
+    publicId: 'hero-408-desktop_noo7eb',
     alt: 'Peugeot 408'
   },
   

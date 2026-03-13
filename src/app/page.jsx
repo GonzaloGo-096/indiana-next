@@ -4,6 +4,8 @@ import { CeroKmSection } from "../components/home/CeroKmSection";
 import { UsadosSection } from "../components/home/UsadosSection";
 import { staticImages } from "../config/cloudinaryStaticImages";
 import { getSiteUrl } from "../lib/site-url";
+import { vehiclesService } from "../lib/services/vehiclesApi.server";
+import { mapVehiclesPage } from "../lib/mappers/vehicleMapper";
 import styles from "./page.module.css";
 
 // Structured Data: Organization + LocalBusiness + AutomotiveBusiness
@@ -86,8 +88,23 @@ export const metadata = {
   },
 };
 
-export default function Home() {
+export default async function Home() {
   const structuredData = getStructuredData();
+
+  let usadosVehicles = [];
+  try {
+    const backendData = await vehiclesService.getVehicles({
+      filters: {},
+      limit: 6,
+      cursor: 1,
+    });
+    const mappedData = mapVehiclesPage(backendData, 1);
+    usadosVehicles = mappedData.vehicles || [];
+  } catch (error) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("[Home] Error fetching usados:", error);
+    }
+  }
 
   return (
     <>
@@ -103,7 +120,7 @@ export default function Home() {
         <CeroKmSection />
 
         {/* Sección C: Usados Multimarca */}
-        <UsadosSection />
+        <UsadosSection vehicles={usadosVehicles} />
 
         {/* Sección D: Banner Postventa */}
         <section

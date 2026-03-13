@@ -12,8 +12,10 @@ import styles from "../../app/0km/0km.module.css";
  *
  * @param {Object} props
  * @param {Array} props.cards - Array de cards con { key, src, alt, titulo, slug }
+ * @param {string} props.variant - 'default' | 'dark' - Variante para fondos claros u oscuros (botones)
+ * @param {boolean} props.compact - Cards más pequeñas (para home)
  */
-export function VehiculosCarouselClient({ cards }) {
+export function VehiculosCarouselClient({ cards, variant = "default", compact = false }) {
   const carouselRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -69,9 +71,14 @@ export function VehiculosCarouselClient({ cards }) {
     carousel.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
 
+  const sectionClass =
+    variant === "dark"
+      ? `${styles.carouselSection} ${styles.vehiculosSection} ${styles.carouselSectionDark}`
+      : `${styles.carouselSection} ${styles.vehiculosSection}`;
+
   return (
     <section
-      className={`${styles.carouselSection} ${styles.vehiculosSection}`}
+      className={sectionClass}
       aria-label="Gama de Vehículos Peugeot 0km"
     >
       <div className={styles.carouselWrapper}>
@@ -106,6 +113,7 @@ export function VehiculosCarouselClient({ cards }) {
                 alt={card.alt}
                 titulo={card.titulo}
                 slug={card.slug}
+                compact={compact}
               />
             </div>
           ))}

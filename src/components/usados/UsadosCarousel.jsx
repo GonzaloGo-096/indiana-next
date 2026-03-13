@@ -61,8 +61,10 @@ const SkeletonCard = () => (
 
 /**
  * Componente principal del carrusel
+ * @param {boolean} compact - Cards más pequeñas (para home)
+ * @param {boolean} viewportClip - Clipping en borde del viewport; primera card alineada con layout (solo home)
  */
-export const UsadosCarousel = ({ vehicles = [] }) => {
+export const UsadosCarousel = ({ vehicles = [], compact = false, viewportClip = false }) => {
   const carouselRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -203,9 +205,24 @@ export const UsadosCarousel = ({ vehicles = [] }) => {
     return null;
   }
 
-  return (
-    <div className={styles.carouselWrapper}>
-      {/* Flecha izquierda - Solo aparece si el usuario ha scrolleado */}
+  const carouselContent = (
+    <div ref={carouselRef} className={styles.carouselContainer}>
+      {vehicles.length === 0 ? (
+        <div className={styles.emptyState}>
+          <p>No hay vehículos disponibles</p>
+        </div>
+      ) : (
+        vehicles.map((vehicle, index) => (
+          <div key={vehicle.id || vehicle._id} className={styles.cardWrapper}>
+            <CardSimilar auto={vehicle} isPriority={index < 2} />
+          </div>
+        ))
+      )}
+    </div>
+  );
+
+  const carouselInner = (
+    <>
       {canScrollLeft && (
         <button
           className={styles.arrowButton}
@@ -216,33 +233,9 @@ export const UsadosCarousel = ({ vehicles = [] }) => {
           <ChevronIcon direction="left" size={20} />
         </button>
       )}
-
-      <div ref={carouselRef} className={styles.carouselContainer}>
-        {vehicles.length === 0 ? (
-          // Empty state
-          <div className={styles.emptyState}>
-            <p>No hay vehículos disponibles</p>
-          </div>
-        ) : (
-          // Cards de vehículos
-          // ✅ LCP: Priorizar primeras 2 imágenes (above the fold)
-          vehicles.map((vehicle, index) => (
-            <div
-              key={vehicle.id || vehicle._id}
-              className={styles.cardWrapper}
-            >
-              <CardSimilar 
-                auto={vehicle} 
-                isPriority={index < 2}
-              />
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* Flecha derecha - Siempre visible en desktop, deshabilitada si no hay scroll */}
+      {carouselContent}
       <button
-        className={`${styles.arrowButton} ${styles.arrowButtonRight} ${!canScrollRight ? styles.arrowButtonDisabled : ''}`}
+        className={`${styles.arrowButton} ${styles.arrowButtonRight} ${!canScrollRight ? styles.arrowButtonDisabled : ""}`}
         onClick={scrollRight}
         aria-label="Desplazar hacia la derecha"
         type="button"
@@ -250,7 +243,17 @@ export const UsadosCarousel = ({ vehicles = [] }) => {
       >
         <ChevronIcon direction="right" size={20} />
       </button>
+    </>
+  );
+
+  const wrapperClassName = `${styles.carouselWrapper} ${compact ? styles.carouselCompact : ""} ${viewportClip ? styles.carouselViewportClip : ""}`;
+
+  return viewportClip ? (
+    <div className={styles.viewportClip}>
+      <div className={wrapperClassName}>{carouselInner}</div>
     </div>
+  ) : (
+    <div className={wrapperClassName}>{carouselInner}</div>
   );
 };
 

@@ -9,26 +9,34 @@
  * @version 1.0.0
  */
 
-/* ===== CARRUSEL WRAPPER ===== */
+/* ===== VIEWPORT CLIP - Recorte en borde del viewport (solo home) ===== */
+.viewportClip {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+/* ===== CARRUSEL WRAPPER - Flechas fuera del contenedor ===== */
 .carouselWrapper {
   position: relative;
   width: 100%;
   overflow: visible;
-  padding: 0 20px;
+  padding: 0 48px; /* Espacio para flechas fuera del carrusel */
   box-sizing: content-box;
 }
 
-/* ===== FLECHAS DE NAVEGACIÓN - Estilo unificado ===== */
+/* ===== FLECHAS - Sutiles, absolute, fuera del contenedor ===== */
 .arrowButton {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  left: -20px;
-  width: 40px;
-  height: 40px;
-  background: var(--color-neutral-900);
-  color: var(--color-white);
-  border: none;
+  left: 0;
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.06);
+  color: var(--color-neutral-600);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 50%;
   display: none;
   align-items: center;
@@ -39,11 +47,13 @@
 }
 
 .arrowButton:hover {
-  background: var(--color-brand-500);
+  background: rgba(0, 0, 0, 0.1);
+  color: var(--color-neutral-900);
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
 .arrowButton:active {
-  transform: translateY(-50%) scale(0.98);
+  transform: translateY(-50%) scale(0.96);
 }
 
 .arrowButton:focus-visible {
@@ -52,24 +62,24 @@
 }
 
 .arrowButton svg {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   stroke-width: 2;
 }
 
 .arrowButtonRight {
   left: auto;
-  right: -20px;
+  right: 0;
 }
 
 .arrowButtonDisabled {
-  opacity: 0.3;
+  opacity: 0.25;
   cursor: not-allowed;
   pointer-events: none;
 }
 
 .arrowButtonDisabled:hover {
-  background: var(--color-neutral-900);
+  background: rgba(0, 0, 0, 0.06);
   transform: translateY(-50%);
 }
 
@@ -89,6 +99,43 @@
   overscroll-behavior-x: contain;
 }
 
+/* viewportClip: padding horizontal = container (alinea primera card), wrapper sin padding lateral */
+.carouselViewportClip {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Flechas ligeramente insettadas para no pegar al borde del viewport */
+.viewportClip .arrowButton {
+  left: 12px;
+}
+
+.viewportClip .arrowButtonRight {
+  left: auto;
+  right: 12px;
+}
+
+/* Mobile: primera card sutilmente más centrada (padding izquierdo un poco mayor) */
+.carouselViewportClip .carouselContainer {
+  padding-left: calc(var(--container-padding-mobile) + 0.25rem);
+  padding-right: var(--container-padding-mobile);
+}
+
+@media (min-width: 768px) {
+  .carouselViewportClip .carouselContainer {
+    padding-left: var(--container-padding-tablet);
+    padding-right: var(--container-padding-tablet);
+  }
+}
+
+/* Desktop: menos espacio lateral, más ancho horizontal (similar a antes pero más amplio) */
+@media (min-width: 992px) {
+  .carouselViewportClip .carouselContainer {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
 .carouselContainer::-webkit-scrollbar {
   display: none;
 }
@@ -100,11 +147,26 @@
   max-width: 300px;
   scroll-snap-align: start;
   scroll-snap-stop: always;
+  margin: 0 0.35rem; /* Mobile: menos separadas */
 }
 
 .cardWrapper :global(.card) {
   width: 100%;
   min-width: 240px;
+}
+
+/* Compact: cards más pequeñas (home), espaciado igual o mayor entre ellas */
+.carouselCompact .carouselContainer {
+  gap: 2.5rem;
+}
+
+.carouselCompact .cardWrapper {
+  min-width: 200px;
+  max-width: 260px;
+}
+
+.carouselCompact .cardWrapper :global(.card) {
+  min-width: 200px;
 }
 
 /* ===== SKELETON LOADING ===== */
@@ -312,13 +374,27 @@
 /* ===== RESPONSIVE: TABLET Y DESKTOP ===== */
 @media (min-width: 768px) {
   .carouselContainer {
-    gap: 2rem; /* ✅ Espacio lateral entre cards */
+    gap: 2rem;
     padding: var(--spacing-4) var(--spacing-4) var(--spacing-6) var(--spacing-4);
   }
 
   .cardWrapper {
     min-width: 260px;
     max-width: 320px;
+    margin: 0 1rem; /* Tablet/desktop: más separadas */
+  }
+
+  .carouselCompact .cardWrapper {
+    min-width: 220px;
+    max-width: 260px;
+  }
+
+  .carouselCompact .cardWrapper :global(.card) {
+    min-width: 220px;
+  }
+
+  .carouselCompact .carouselContainer {
+    gap: 2.5rem;
   }
 
   .skeletonCard {
@@ -337,15 +413,14 @@
 
 @media (min-width: 992px) {
   .carouselContainer {
-    gap: 2rem; /* ✅ Espacio lateral entre cards */
+    gap: 2rem;
     padding: var(--spacing-4) var(--spacing-4) var(--spacing-6) var(--spacing-4);
   }
 
-  /* ✅ Mostrar flechas en desktop cuando están renderizadas */
   .arrowButton {
     display: flex !important;
   }
-  
+
   .arrowButtonRight {
     display: flex !important;
   }
@@ -355,6 +430,22 @@
     max-width: 320px;
     width: 320px;
     flex: 0 0 320px;
+    margin: 0 1.25rem; /* Desktop: más separadas */
+  }
+
+  .carouselCompact .cardWrapper {
+    min-width: 240px;
+    max-width: 260px;
+    width: 260px;
+    flex: 0 0 260px;
+  }
+
+  .carouselCompact .cardWrapper :global(.card) {
+    min-width: 240px;
+  }
+
+  .carouselCompact .carouselContainer {
+    gap: 2.5rem;
   }
 
   .skeletonCard {
@@ -374,13 +465,26 @@
 /* ===== MOBILE: Ajustes específicos para pantallas pequeñas ===== */
 @media (max-width: 576px) {
   .carouselContainer {
-    gap: 1.5rem; /* ✅ Espacio lateral entre cards en mobile */
+    gap: 0.75rem;
     padding: var(--spacing-2) var(--spacing-2) var(--spacing-3) var(--spacing-2);
   }
 
   .cardWrapper {
     min-width: 220px;
     max-width: 280px;
+  }
+
+  .carouselCompact .cardWrapper {
+    min-width: 180px;
+    max-width: 240px;
+  }
+
+  .carouselCompact .cardWrapper :global(.card) {
+    min-width: 180px;
+  }
+
+  .carouselCompact .carouselContainer {
+    gap: 0.75rem;
   }
 
   .skeletonCard {

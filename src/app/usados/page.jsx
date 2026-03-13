@@ -98,7 +98,7 @@ export default async function UsadosPage() {
   return (
     <div className={styles.page}>
       {/* Sección 1: Promociones (arriba) */}
-      <section className={styles.promocionesSection} aria-labelledby="promociones-heading">
+      <section id="promociones" className={styles.promocionesSection} aria-labelledby="promociones-heading">
         <div className={styles.promocionesContainer}>
           <div className={styles.promocionesBlock}>
             <div className={styles.promocionesContent}>

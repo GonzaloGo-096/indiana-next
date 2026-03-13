@@ -288,26 +288,26 @@
   scroll-snap-align: start;
 }
 
-/* ===== SCROLL BUTTONS - Estilo unificado con planes ===== */
+/* ===== SCROLL BUTTONS - Sutiles, absolute, fuera del contenedor ===== */
 .scrollButton {
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: none;
-  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.06);
   display: none;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  color: #333;
+  color: var(--color-neutral-600);
   z-index: 10;
 }
 
 .scrollButton svg {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   stroke-width: 2;
 }
 
@@ -326,7 +326,7 @@
   }
 }
 
-/* Desktop: flechas con position absolute */
+/* Desktop: flechas con position absolute, fuera del carrusel */
 @media (min-width: 769px) {
   .scrollButton {
     position: absolute;
@@ -334,56 +334,56 @@
     transform: translateY(-50%);
     margin-left: 0;
     margin-right: 0;
-    background: var(--color-neutral-900);
-    color: var(--color-white);
     z-index: 20;
     display: flex;
   }
 
   .scrollButton:hover:not(:disabled) {
-    background: var(--color-neutral-800);
-    transform: translateY(-50%) scale(1.1);
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--color-neutral-900);
+    border-color: rgba(0, 0, 0, 0.12);
+    transform: translateY(-50%) scale(1.05);
   }
 
   .scrollButton:active:not(:disabled) {
-    transform: translateY(-50%) scale(0.95);
+    transform: translateY(-50%) scale(0.96);
   }
 
-  /* Solo mostrar la flecha que puede hacer scroll (la necesaria) */
   .scrollButton:disabled {
     visibility: hidden;
     pointer-events: none;
   }
 
-  .scrollButtonLeft {
-    left: 8px; /* Posición absoluta sobre el borde, no ocupa espacio en el flujo */
-  }
-
-  .scrollButtonRight {
-    right: 8px !important;
-    left: auto !important;
-    margin-left: 0;
-  }
-
-  /* Vehículos: flechas afuera del contenedor de cartas (más abiertas) */
+  /* Flechas fuera del contenedor del carrusel (en el padding) */
   .carouselSection:not(.utilitariosSection) .carouselWrapper {
-    padding-left: 60px;
-    padding-right: 60px;
+    padding-left: 48px;
+    padding-right: 48px;
   }
 
   .carouselSection:not(.utilitariosSection) .scrollButtonLeft {
-    left: 4px;
+    left: 0;
   }
 
   .carouselSection:not(.utilitariosSection) .scrollButtonRight {
-    right: 4px !important;
+    right: 0 !important;
     left: auto !important;
   }
 
-  /* Utilitarios: sin padding extra (sin flechas en desktop) */
   .utilitariosSection .carouselWrapper {
     padding-left: 0;
     padding-right: 0;
+  }
+
+  /* Variante dark (home): flechas claras sutiles sobre fondo oscuro */
+  .carouselSectionDark .scrollButton {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--color-white);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .carouselSectionDark .scrollButton:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.22);
+    border-color: rgba(255, 255, 255, 0.35);
   }
 }
 

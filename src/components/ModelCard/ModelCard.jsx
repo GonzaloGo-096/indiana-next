@@ -16,16 +16,17 @@ import styles from "./ModelCard.module.css";
 /**
  * Componente ModelCard
  * Optimizado con React.memo para evitar re-renders innecesarios en listas
- * 
+ *
  * @param {Object} props - Propiedades del componente
  * @param {string} props.src - URL de la imagen
  * @param {string} props.alt - Texto alternativo
  * @param {string} props.titulo - Nombre del modelo
  * @param {string} props.slug - Slug para la URL (ej: "208", "2008")
+ * @param {boolean} props.compact - Versión más pequeña (para home)
  */
-function ModelCard({ src, alt, titulo, slug }) {
+function ModelCard({ src, alt, titulo, slug, compact = false }) {
   return (
-    <Link href={`/0km/${slug}`} className={styles.card}>
+    <Link href={`/0km/${slug}`} className={`${styles.card} ${compact ? styles.compact : ""}`}>
       <div className={styles.imageContainer}>
         <Image
           src={src}

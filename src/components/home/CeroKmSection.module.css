@@ -73,12 +73,24 @@
   text-align: center;
 }
 
+.titleSeparator {
+  color: var(--color-neutral-500);
+  margin: 0 0.15em;
+  font-weight: var(--font-weight-normal);
+  opacity: 0.85;
+}
+
 .description {
   margin: 0;
   font-family: var(--font-poppins);
   font-size: clamp(1rem, 2.5vw, 1.125rem);
   line-height: 1.7;
   color: var(--color-neutral-200);
+}
+
+.carouselSlot {
+  width: 100%;
+  margin: var(--spacing-2) 0;
 }
 
 .buttonsContainer {
@@ -93,23 +105,23 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-3) var(--spacing-6);
-  min-width: clamp(160px, 25vw, 200px); /* ✅ Ancho mínimo para simetría */
-  height: clamp(44px, 6vw, 48px); /* ✅ Altura fija para simetría */
+  padding: var(--spacing-4) var(--spacing-8);
+  min-width: clamp(200px, 32vw, 280px);
+  height: clamp(52px, 8vw, 60px);
   background: var(--color-white);
   color: var(--color-neutral-900);
   border: 2px solid var(--color-white);
   border-radius: var(--border-radius-md);
   text-decoration: none;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.5px;
   font-family: var(--font-condensed);
   font-weight: var(--font-weight-bold);
-  font-size: clamp(0.875rem, 2vw, 1rem);
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
   line-height: 1;
   transition: all var(--transition-fast);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  white-space: nowrap; /* ✅ Evitar que el texto se divida en líneas */
+  white-space: nowrap;
 }
 
 .button:hover {
@@ -128,4 +140,25 @@
   outline-offset: 2px;
 }
 
+/* Mobile: menos espacio arriba del logo, botones en fila ocupando todo el ancho del vp */
+@media (max-width: 767px) {
+  .section {
+    padding-top: clamp(2rem, 5vw, 2.5rem);
+    overflow-x: hidden;
+  }
 
+  .buttonsContainer {
+    flex-wrap: nowrap;
+    gap: var(--spacing-2);
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    padding: 0 var(--container-padding-mobile);
+    box-sizing: border-box;
+  }
+
+  .button {
+    min-width: 0;
+    flex: 1;
+  }
+}
