@@ -23,7 +23,7 @@ export const PEUGEOT_3008 = {
   
   // Hero image (solo desktop)
   heroImage: {
-    url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767296132/3008-dk_eiblpq.avif',
+    url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1773673979/3008-hero-desktop_pzou9c.webp',
     alt: 'Peugeot 3008'
   },
   

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Poppins, Barlow_Condensed } from "next/font/google";
 import dynamic from "next/dynamic";
 import "./globals.css";
@@ -54,18 +55,27 @@ export const metadata = {
   },
 };
 
+/** Fallback mínimo durante navegación para evitar error de "async info / Suspense boundary" (React DevTools + Next) */
+function PageFallback() {
+  return <div style={{ minHeight: "50vh" }} aria-hidden />;
+}
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="es">
+    <html lang="es" data-scroll-behavior="smooth">
       <body
         className={`${poppins.variable} ${barlowCondensed.variable}`}
       >
         <ClientOnlyComponents />
         <Nav />
         <main className="main-content">
-          {children}
+          <Suspense fallback={<PageFallback />}>
+            {children}
+          </Suspense>
         </main>
-        <Footer />
+        <Suspense fallback={null}>
+          <Footer />
+        </Suspense>
       </body>
     </html>
   );

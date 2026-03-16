@@ -152,6 +152,7 @@ export default function CeroKilometrosPage() {
               width={150}
               height={150}
               className={styles.sectionLogo}
+              style={{ width: "auto", height: "auto" }}
               sizes="(max-width: 768px) 100px, 150px"
               priority
             />
@@ -172,6 +173,7 @@ export default function CeroKilometrosPage() {
               width={150}
               height={150}
               className={styles.sectionLogo}
+              style={{ width: "auto", height: "auto" }}
               sizes="(max-width: 768px) 100px, 150px"
               loading="lazy"
             />

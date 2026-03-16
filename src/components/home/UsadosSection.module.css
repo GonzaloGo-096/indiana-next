@@ -56,12 +56,16 @@
   text-align: center;
 }
 
-.titleLogo {
+/* Wrapper con tamaño fijo; la imagen rellena con 100% width para evitar aviso de Next/Image */
+.titleLogoWrap {
   width: clamp(100px, 16vw, 148px);
-  height: auto;
-  object-fit: contain;
+  margin: 2px 0;
   display: block;
-  margin: 2px 0; /* Comprimido: poco espacio arriba y abajo del logo */
+}
+
+.titleLogoImg {
+  display: block;
+  object-fit: contain;
 }
 
 .title {

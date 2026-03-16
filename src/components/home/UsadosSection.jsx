@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import UsadosCarousel from "../usados/UsadosCarousel";
+import { HomeUsadosCarousel } from "./HomeUsadosCarousel";
 import styles from "./UsadosSection.module.css";
 
 /**
@@ -20,15 +20,18 @@ export function UsadosSection({ vehicles = [] }) {
       <div className="container">
         <div className={styles.content}>
           <div className={styles.titleBlock}>
-            <Image
-              src="/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp"
-              alt="Logo Indiana"
-              width={128}
-              height={128}
-              className={styles.titleLogo}
-              loading="lazy"
-              quality={90}
-            />
+            <div className={styles.titleLogoWrap}>
+              <Image
+                src="/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp"
+                alt="Logo Indiana"
+                width={128}
+                height={128}
+                className={styles.titleLogoImg}
+                style={{ width: "100%", height: "auto", objectFit: "contain" }}
+                loading="lazy"
+                quality={90}
+              />
+            </div>
             <h2 id="usados-title" className={styles.title}>
               USADOS MULTIMARCA
             </h2>
@@ -39,7 +42,7 @@ export function UsadosSection({ vehicles = [] }) {
           </p>
           {vehicles.length > 0 && (
             <div className={styles.carouselSlot}>
-              <UsadosCarousel vehicles={vehicles} compact viewportClip />
+              <HomeUsadosCarousel vehicles={vehicles} />
             </div>
           )}
           <div className={styles.buttonsContainer}>

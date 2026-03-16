@@ -13,7 +13,7 @@ import Link from "next/link";
 import { absoluteUrl } from "../../lib/site-url";
 import { vehiclesService } from "../../lib/services/vehiclesApi.server";
 import { mapVehiclesPage } from "../../lib/mappers/vehicleMapper";
-import UsadosCarousel from "../../components/usados/UsadosCarousel";
+import UsadosPageCarousel from "./UsadosPageCarousel";
 import { USADOS_WHATSAPP_NUMBER } from "../../components/layout/Footer/footerConfig";
 import styles from "./usados.module.css";
 
@@ -162,7 +162,7 @@ export default async function UsadosPage() {
               Ver todos
             </Link>
           </div>
-          <UsadosCarousel vehicles={vehicles} />
+          <UsadosPageCarousel vehicles={vehicles} />
         </div>
       </section>
     </div>

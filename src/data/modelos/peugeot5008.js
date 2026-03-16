@@ -23,7 +23,7 @@ export const PEUGEOT_5008 = {
   
   // Hero image (solo desktop)
   heroImage: {
-    url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1767295001/banner-principal-peugeot-5008-2880x1235_vlawib.avif',
+    url: 'https://res.cloudinary.com/drbeomhcu/image/upload/v1773672892/PEUGEOT_5008_HYBRID_2412STYP_163_FR-desktop_tkyew4.webp',
     alt: 'Peugeot 5008'
   },
   

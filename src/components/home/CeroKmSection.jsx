@@ -45,6 +45,7 @@ export function CeroKmSection() {
               width={96}
               height={96}
               className={styles.titleLogo}
+              style={{ width: "auto", height: "auto" }}
               loading="lazy"
               quality={90}
             />

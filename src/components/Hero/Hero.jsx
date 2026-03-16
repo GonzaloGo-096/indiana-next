@@ -26,7 +26,7 @@ const Hero = () => {
           fill
           priority
           quality={85}
-          sizes="100vw"
+          sizes="(min-width: 769px) 100vw, 0vw"
           className={`${styles.backgroundImage} ${styles.backgroundImageDesktop}`}
         />
         <Image
@@ -35,7 +35,7 @@ const Hero = () => {
           fill
           priority
           quality={85}
-          sizes="100vw"
+          sizes="(max-width: 768px) 100vw, 0vw"
           className={`${styles.backgroundImage} ${styles.backgroundImageMobile}`}
         />
       </div>

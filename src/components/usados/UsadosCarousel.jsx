@@ -61,8 +61,8 @@ const SkeletonCard = () => (
 
 /**
  * Componente principal del carrusel
- * @param {boolean} compact - Cards más pequeñas (para home)
- * @param {boolean} viewportClip - Clipping en borde del viewport; primera card alineada con layout (solo home)
+ * @param {boolean} compact - Cards más pequeñas (para home mobile / usados mobile)
+ * @param {boolean} viewportClip - Clipping en borde del viewport (solo mobile en inicio y en /usados)
  */
 export const UsadosCarousel = ({ vehicles = [], compact = false, viewportClip = false }) => {
   const carouselRef = useRef(null);
@@ -212,11 +212,20 @@ export const UsadosCarousel = ({ vehicles = [], compact = false, viewportClip = 
           <p>No hay vehículos disponibles</p>
         </div>
       ) : (
-        vehicles.map((vehicle, index) => (
-          <div key={vehicle.id || vehicle._id} className={styles.cardWrapper}>
-            <CardSimilar auto={vehicle} isPriority={index < 2} />
-          </div>
-        ))
+        <>
+          {viewportClip && (
+            <div
+              className={styles.carouselLeadSpacer}
+              aria-hidden
+              style={{ flexShrink: 0, minWidth: "2rem" }}
+            />
+          )}
+          {vehicles.map((vehicle, index) => (
+            <div key={vehicle.id || vehicle._id} className={styles.cardWrapper}>
+              <CardSimilar auto={vehicle} isPriority={index < 2} />
+            </div>
+          ))}
+        </>
       )}
     </div>
   );
