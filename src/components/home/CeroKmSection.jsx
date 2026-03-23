@@ -6,15 +6,25 @@ import { VehiculosCarouselClient } from "../0km/VehiculosCarouselClient";
 import styles from "./CeroKmSection.module.css";
 
 const UTILITARIOS_KEYS = ["partner", "expert", "boxer"];
-const MAX_CARDS_HOME = 6;
+
+const toCard = (modelo) => {
+  const staticImage = staticImages.ceroKm.modelos[modelo.slug];
+  return {
+    key: modelo.slug,
+    src: staticImage?.src || modelo.heroImage?.url || "",
+    alt: staticImage?.alt || modelo.heroImage?.alt || modelo.nombre,
+    titulo: staticImage?.titulo || modelo.nombre,
+    slug: modelo.slug,
+  };
+};
 
 /**
  * CeroKmSection - Sección de Peugeot 0km en la página de inicio
  *
- * Incluye carrusel de hasta 6 modelos 0km (solo vehículos, sin utilitarios)
+ * Carrusel: vehículos primero, luego utilitarios (seguiditos)
  *
  * @author Indiana Peugeot
- * @version 3.0.0 - Carrusel de modelos 0km
+ * @version 3.1.0 - Vehículos + utilitarios en un solo carrusel
  */
 export function CeroKmSection() {
   const allModelos = getAllModelos();
@@ -22,17 +32,13 @@ export function CeroKmSection() {
   const vehiculos = allModelos.filter(
     (m) => !UTILITARIOS_KEYS.includes(lower(m.slug))
   );
+  const utilitarios = allModelos.filter((m) =>
+    UTILITARIOS_KEYS.includes(lower(m.slug))
+  );
 
-  const vehiculosCards = vehiculos.slice(0, MAX_CARDS_HOME).map((modelo) => {
-    const staticImage = staticImages.ceroKm.modelos[modelo.slug];
-    return {
-      key: modelo.slug,
-      src: staticImage?.src || modelo.heroImage?.url || "",
-      alt: staticImage?.alt || modelo.heroImage?.alt || modelo.nombre,
-      titulo: staticImage?.titulo || modelo.nombre,
-      slug: modelo.slug,
-    };
-  });
+  const vehiculosCards = vehiculos.map(toCard);
+  const utilitariosCards = utilitarios.map(toCard);
+  const allCards = [...vehiculosCards, ...utilitariosCards];
 
   return (
     <section className={styles.section} aria-labelledby="cero-km-title">
@@ -54,11 +60,11 @@ export function CeroKmSection() {
             </h2>
           </div>
           <p className={styles.description}>
-            Con 15 años de experiencia, Indiana Peugeot es tu concesionaria oficial en Tucumán. Gama completa de modelos 0km, garantía oficial Peugeot y opciones de financiación.
+            Con 60 años de experiencia, Indiana Peugeot es tu concesionaria oficial en Tucumán. Gama completa de modelos 0km, garantía oficial Peugeot y opciones de financiación.
           </p>
-          {vehiculosCards.length > 0 && (
+          {allCards.length > 0 && (
             <div className={styles.carouselSlot}>
-              <VehiculosCarouselClient cards={vehiculosCards} variant="dark" compact />
+              <VehiculosCarouselClient cards={allCards} variant="dark" compact />
             </div>
           )}
           <div className={styles.buttonsContainer}>
