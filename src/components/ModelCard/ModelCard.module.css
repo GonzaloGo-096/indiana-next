@@ -39,6 +39,12 @@
   max-width: clamp(200px, 26vw, 260px) !important;
 }
 
+/* Compact: autos más grandes dentro de la card (menos padding en la imagen) */
+.compact .image {
+  padding: clamp(8px, 1.5vw, 12px);
+  object-fit: contain;
+}
+
 .card:hover {
   transform: translateY(-8px) scale(1.02);
   box-shadow: 
