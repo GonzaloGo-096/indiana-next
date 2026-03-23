@@ -118,12 +118,13 @@ const CareersForm = () => {
                 disabled={formState === FORM_STATE.sending}
                 aria-invalid={!!errors.puesto}
               >
-                <option value="">Seleccioná un puesto</option>
+                <option value="" disabled hidden>Seleccioná un puesto</option>
                 {jobPositions.map((p) => (
                   <option key={p.value} value={p.value}>
                     {p.label}
                   </option>
                 ))}
+                <option value="otro">Otro</option>
               </select>
               {errors.puesto && (
                 <span className={styles.error}>{errors.puesto.message}</span>
@@ -231,7 +232,7 @@ const CareersForm = () => {
             className={styles.submitButton}
             disabled={formState === FORM_STATE.sending}
           >
-            {formState === FORM_STATE.sending ? "Enviando…" : "Enviar postulación"}
+            {formState === FORM_STATE.sending ? "Enviando…" : "Enviar solicitud"}
           </button>
         </form>
       </div>

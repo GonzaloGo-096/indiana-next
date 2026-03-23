@@ -203,9 +203,9 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
         {offerData.hasOffer && (
           <span
             className={styles.discount_badge}
-            aria-label={`Descuento del ${offerData.descuento}%`}
+            aria-label="Oportunidad de oferta"
           >
-            -{offerData.descuento}%
+            Oportunidad
           </span>
         )}
         <Image
