@@ -27,6 +27,16 @@ export function toAdminListItem(vehicle = {}) {
   // ID seguro (prioridad: _id > id)
   const id = v._id || v.id || null
 
+  // Oferta: boolean (backend puede enviar true/false)
+  const oferta = v.oferta === true || v.oferta === 'true'
+  const rawDescuento = v.descuento ?? 0
+  const descuento = Math.min(100, Math.max(0, Number(rawDescuento) || 0))
+  const precioOferta = oferta && descuento > 0
+    ? (v.precioOferta != null && !isNaN(Number(v.precioOferta))
+        ? Number(v.precioOferta)
+        : Math.round(precio * (1 - descuento / 100)))
+    : null
+
   return {
     id,
     marca: String(v.marca || '').trim(),
@@ -35,7 +45,10 @@ export function toAdminListItem(vehicle = {}) {
     anio,
     kilometraje,
     precio,
+    precioOferta,
     firstImageUrl,
+    oferta,
+    descuento: oferta ? descuento : 0,
     // Preservar original para operaciones que requieren datos completos
     _original: v
   }

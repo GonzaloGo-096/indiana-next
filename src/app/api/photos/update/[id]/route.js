@@ -20,6 +20,7 @@
 
 import { NextResponse } from 'next/server'
 import sharp from 'sharp'
+import { getApiBaseUrl } from '@/lib/config/api'
 
 // ✅ Forzar runtime Node.js (requerido para Sharp)
 export const runtime = 'nodejs'
@@ -29,18 +30,6 @@ const IMAGE_OPTIMIZATION = {
   maxWidth: 1200,
   webpQuality: 85,
   removeMetadata: true
-}
-
-/**
- * Obtener base URL del backend externo
- * Prioridad: API_URL (server-only) > NEXT_PUBLIC_API_URL
- */
-function getBackendBaseURL() {
-  return (
-    process.env.API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    'http://localhost:3001'
-  )
 }
 
 /**
@@ -286,7 +275,7 @@ export async function PUT(request, { params }) {
     // ✅ NO setear Content-Type manualmente - fetch lo hace automáticamente para FormData
     
     // ✅ Construir URL del backend externo
-    const backendBaseURL = getBackendBaseURL()
+    const backendBaseURL = getApiBaseUrl()
     const backendURL = `${backendBaseURL}/photos/updatephoto/${id}`
     
     console.log(`[photos/update] Reenviando a backend: ${backendURL}`)

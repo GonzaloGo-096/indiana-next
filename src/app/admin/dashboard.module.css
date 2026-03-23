@@ -97,33 +97,47 @@
 /* Vehicles List */
 .vehiclesList h2 {
   margin: 0 0 15px 0;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 700;
   color: #333;
 }
 
-.vehicleItem {
-  background: white;
-  border: 1px solid #dee2e6;
-  border-radius: 4px;
-  padding: 15px;
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: space-between;
+.vehicleListHeader {
+  display: grid;
+  grid-template-columns: 110px minmax(140px, auto) 90px 110px 100px minmax(160px, auto) min-content;
+  gap: 24px;
   align-items: center;
+  padding: 14px 20px;
+  margin-bottom: 8px;
+  background: #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #495057;
 }
 
-.vehicleInfo {
-  display: flex;
+.headerCell {
+  min-width: 0;
+}
+
+.vehicleItem {
+  display: grid;
+  grid-template-columns: 110px minmax(140px, auto) 90px 110px 100px minmax(160px, auto) min-content;
+  gap: 24px;
   align-items: center;
-  gap: 15px;
-  flex: 1;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-bottom: 12px;
 }
 
 .vehicleImage {
-  width: 70px;
-  height: 50px;
-  border-radius: 4px;
+  width: 110px;
+  height: 76px;
+  border-radius: 6px;
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -134,31 +148,78 @@
   object-fit: cover;
 }
 
-.vehicleDetails h3 {
-  margin: 0 0 5px 0;
-  font-size: 14px;
-  font-weight: 600;
+.vehicleCell {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cellLabel {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+}
+
+.cellValue {
+  font-size: 18px;
+  font-weight: 700;
   color: #333;
 }
 
-.vehicleDetails p {
-  margin: 0 0 2px 0;
-  font-size: 12px;
-  color: #666;
+.priceBlock {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.priceOriginal {
+  font-size: 16px;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.priceOffer {
+  font-size: 18px;
+  font-weight: 700;
+  color: #28a745;
+}
+
+.ofertaBadge {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 10px;
+  background: rgba(40, 167, 69, 0.2);
+  color: #28a745;
+  border-radius: 4px;
+}
+
+.ofertaSi {
+  font-size: 17px;
+  font-weight: 700;
+  color: #28a745;
+}
+
+.ofertaNo {
+  font-size: 17px;
+  font-weight: 500;
+  color: #6c757d;
 }
 
 .vehicleActions {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   flex-shrink: 0;
 }
 
 .editButton, .deleteButton {
-  padding: 6px 12px;
+  padding: 14px 24px;
   border: none;
-  border-radius: 3px;
-  font-size: 11px;
-  font-weight: 500;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
   cursor: pointer;
 }
 
@@ -251,6 +312,23 @@
 }
 
 /* Responsive */
+@media (max-width: 992px) {
+  .vehicleListHeader {
+    grid-template-columns: 100px minmax(120px, auto) 80px 90px 90px minmax(140px, auto) min-content;
+    gap: 16px;
+  }
+  
+  .vehicleItem {
+    grid-template-columns: 100px minmax(120px, auto) 80px 90px 90px minmax(140px, auto) min-content;
+    gap: 16px;
+  }
+  
+  .vehicleImage {
+    width: 100px;
+    height: 68px;
+  }
+}
+
 @media (max-width: 768px) {
   .headerContent {
     flex-direction: column;
@@ -262,19 +340,34 @@
     flex-direction: column;
   }
   
+  .vehicleListHeader {
+    display: none;
+  }
+  
   .vehicleItem {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 12px;
   }
   
-  .vehicleInfo {
+  .vehicleImage {
     width: 100%;
+    height: 120px;
+    grid-column: 1;
   }
   
-  .vehicleActions {
-    width: 100%;
-    justify-content: flex-end;
+  .vehicleItem .vehicleCell,
+  .vehicleItem .vehicleActions {
+    grid-column: 1;
+  }
+  
+  .vehicleItem .vehicleCell {
+    flex-direction: row;
+    gap: 8px;
+  }
+  
+  .vehicleItem .vehicleCell .cellLabel {
+    min-width: 70px;
   }
 
   .modal {

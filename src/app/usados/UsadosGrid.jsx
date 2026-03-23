@@ -10,6 +10,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { formatPrice } from "../../utils/formatters";
+import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
 import styles from "./usados.module.css";
 
 /**
@@ -25,7 +26,7 @@ function VehicleCard({ vehicle, isPriority = false }) {
     : "Vehículo usado";
 
   return (
-    <Link href={`/usados/${vehicle.id}`} className={styles.vehicleCard}>
+    <Link href={buildVehicleDetailUrl(vehicle)} className={styles.vehicleCard}>
       <div className={styles.vehicleCardImage}>
         {imageUrl ? (
           <Image

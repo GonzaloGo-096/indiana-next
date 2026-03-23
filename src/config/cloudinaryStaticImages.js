@@ -19,12 +19,12 @@
 export const staticImages = {
   home: {
     heroDesktop: {
-      src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1766081803/indiana-hero-1-desktop_simhmy.webp",
-      alt: "Vehículos de calidad en Indiana Usados",
+      src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1773959191/408-inicio-desktop_h8rzgp.webp",
+      alt: "Peugeot 408 - Indiana Peugeot",
     },
     heroMobile: {
-      src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1766081806/indiana-hero-1-mobile_bjl5pz.webp",
-      alt: "Vehículos de calidad en Indiana Usados",
+      src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1773959192/408-inicio-mobile_zqscbs.webp",
+      alt: "Peugeot 408 - Indiana Peugeot",
     },
   },
 

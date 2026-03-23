@@ -2,7 +2,7 @@ import styles from "../../loading.module.css";
 
 /**
  * Loading State para página de detalle de vehículo
- * 
+ *
  * Se muestra mientras Next.js está cargando la página del vehículo.
  * Usa spinner en lugar de skeleton.
  */
@@ -18,4 +18,3 @@ export default function Loading() {
     </div>
   );
 }
-

@@ -40,9 +40,6 @@ const Hero = () => {
         />
       </div>
 
-      {/* Overlay oscuro */}
-      <div className={styles.overlay} />
-
       {/* Contenido */}
       <div className={styles.content}>
         <h1 className={styles.title}>

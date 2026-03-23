@@ -112,12 +112,6 @@ export const buildSearchParams = (filters = {}) => {
 };
 
 /**
- * Alias para compatibilidad con código existente
- * @deprecated Usar buildSearchParams() en su lugar
- */
-export const buildFiltersForBackend = buildSearchParams;
-
-/**
  * Parsea URLSearchParams a objeto de filtros del frontend
  * 
  * ✅ ÚNICA FUNCIÓN para parsear searchParams a filtros

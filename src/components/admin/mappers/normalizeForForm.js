@@ -65,6 +65,11 @@ export const normalizeDetailToFormInitialData = (rawDetail) => {
     }
   })
 
+  // Oferta: boolean y descuento 0-100
+  const oferta = d.oferta === true || d.oferta === 'true'
+  const rawDescuento = d.descuento ?? 0
+  const descuento = oferta ? Math.min(100, Math.max(0, Number(rawDescuento) || 0)) : 0
+
   return {
     _id: d._id || d.id || '',
     marca: d.marca || d.brand || '',
@@ -87,6 +92,8 @@ export const normalizeDetailToFormInitialData = (rawDetail) => {
     llantas: d.llantas || '',
     HP: d.HP ?? d.hp ?? '',
     detalle: d.detalle || d.description || '',
+    oferta,
+    descuento,
     urls
   }
 }

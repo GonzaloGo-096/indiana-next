@@ -8,7 +8,7 @@
 'use client'
 
 import { useEffect, useCallback } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useWatch } from 'react-hook-form'
 import { useImageReducer, IMAGE_FIELDS } from '@/components/admin/hooks/useImageReducer'
 import styles from './CarFormRHF.module.css'
 import { FORM_RULES } from '@/constants/forms'
@@ -23,6 +23,9 @@ const MODE = {
 
 // ✅ CAMPOS NUMÉRICOS (para coerción automática)
 const NUMERIC_FIELDS = ['precio', 'anio', 'kilometraje']
+
+// ✅ CAMPOS QUE NO SE ENVÍAN AL BACKEND
+const EXCLUDED_FROM_FORMDATA = ['urls', 'precioOferta']
 
 // ✅ PROPS DEL COMPONENTE
 const CarFormRHF = ({ 
@@ -56,7 +59,8 @@ const CarFormRHF = ({
     setValue,
     setError,
     clearErrors,
-    reset
+    reset,
+    control
   } = useForm({
     defaultValues: {
       marca: '',
@@ -71,16 +75,21 @@ const CarFormRHF = ({
       combustible: '',
       kilometraje: '',
       traccion: '',
-      HP: ''
+      HP: '',
+      oferta: false,
+      descuento: 0
     }
   })
+
+  const ofertaValue = useWatch({ control, name: 'oferta', defaultValue: false })
 
   // ✅ INICIALIZAR FORMULARIO CON DATOS INICIALES
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0) {
       const formData = { ...initialData }
       delete formData.urls // Los URLs se manejan por separado
-      
+      if ('precioOferta' in formData) delete formData.precioOferta
+
       reset(formData)
       initImageState(mode, initialData)
     }
@@ -136,7 +145,15 @@ const CarFormRHF = ({
         errors[field] = `${field.charAt(0).toUpperCase() + field.slice(1)} debe ser un número válido`
       }
     })
-    
+
+    // ✅ VALIDAR OFERTA / DESCUENTO
+    if (data.oferta === true || data.oferta === 'true') {
+      const desc = Number(data.descuento)
+      if (isNaN(desc) || desc < 0 || desc > 100) {
+        errors.descuento = 'Descuento debe ser un número entre 0 y 100'
+      }
+    }
+
     // ✅ VALIDAR IMÁGENES SEGÚN MODO
     const imageErrors = validateImages(mode)
     Object.assign(errors, imageErrors)
@@ -146,9 +163,12 @@ const CarFormRHF = ({
   // ✅ CONSTRUIR FORMDATA SEGÚN MODO
   const buildVehicleFormData = useCallback((data) => {
     const formData = new FormData()
-    
+    const oferta = data.oferta === true || data.oferta === 'true'
+
     // ✅ AGREGAR CAMPOS DE DATOS PRIMITIVOS
     Object.entries(data).forEach(([key, value]) => {
+      if (EXCLUDED_FROM_FORMDATA.includes(key) || key === 'oferta' || key === 'descuento') return
+
       if (NUMERIC_FIELDS.includes(key)) {
         const numValue = Number(value).toString()
         formData.append(key, numValue)
@@ -161,6 +181,10 @@ const CarFormRHF = ({
         formData.append(key, value)
       }
     })
+
+    // ✅ OFERTA Y DESCUENTO (siempre enviar; inputs disabled pueden no estar en data)
+    formData.append('oferta', oferta ? 'true' : 'false')
+    formData.append('descuento', oferta ? String(Math.min(100, Math.max(0, Number(data.descuento) || 0))) : '0')
     
     // ✅ AGREGAR IMÁGENES SEGÚN ESTADO
     buildImageFormData(formData)
@@ -587,6 +611,46 @@ const CarFormRHF = ({
             </div>
           </div>
         </div>
+      </div>
+
+      {/* ✅ SECCIÓN OFERTA - Separada visualmente de los datos */}
+      <div className={styles.offerSection}>
+        <h4 className={styles.offerSectionTitle}>Oferta</h4>
+        <div className={styles.offerRow}>
+          <label className={styles.offerCheckboxLabel}>
+            <input
+              type="checkbox"
+              {...register('oferta', {
+                onChange: (e) => {
+                  if (!e.target.checked) setValue('descuento', 0)
+                }
+              })}
+              className={styles.offerCheckbox}
+            />
+            <span className={styles.offerCheckboxText}>En oferta</span>
+          </label>
+          <div className={styles.offerInputWrap}>
+            <label className={styles.offerInputLabel}>Descuento (%)</label>
+            <input
+              type="number"
+              min={0}
+              max={100}
+              step={1}
+              disabled={!ofertaValue}
+              {...register('descuento', {
+                min: { value: 0, message: 'Mínimo 0' },
+                max: { value: 100, message: 'Máximo 100' },
+                valueAsNumber: true
+              })}
+              className={!ofertaValue ? `${styles.offerInput} ${styles.offerInputDisabled}` : styles.offerInput}
+            />
+          </div>
+        </div>
+        {errors.descuento && (
+          <div className={styles.offerError}>
+            <span className={styles.error}>{errors.descuento.message}</span>
+          </div>
+        )}
       </div>
 
       {/* ✅ BOTONES DE ACCIÓN */}

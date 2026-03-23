@@ -17,6 +17,7 @@ import { vehiclesService } from "../../../lib/services/vehiclesApi.server";
 import { mapVehiclesPage } from "../../../lib/mappers/vehicleMapper";
 import { parseFilters } from "../../../utils/filters";
 import { absoluteUrl } from "../../../lib/site-url";
+import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
 import VehiculosClient from "./VehiculosClient";
 
 /**
@@ -159,10 +160,18 @@ function getVehiclesListJsonLd(vehicles) {
       : vehicle.marca || vehicle.modelo || "Vehículo usado";
     const vehicleYear = vehicle.anio ? ` ${vehicle.anio}` : "";
 
+    const detailPath = (() => {
+      try {
+        return buildVehicleDetailUrl(vehicle);
+      } catch {
+        return `/usados/${vehicle.id || ""}`;
+      }
+    })();
+
     return {
       "@type": "ListItem",
       position: index + 1,
-      url: absoluteUrl(`/usados/${vehicle.id}`),
+      url: absoluteUrl(detailPath),
       name: `${vehicleName}${vehicleYear}`,
     };
   });

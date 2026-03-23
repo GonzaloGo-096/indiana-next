@@ -32,6 +32,7 @@ import {
 import { getBrandLogo } from "../../../../utils/getBrandLogo";
 import { getBlurPlaceholder } from "../../../../utils/imageBlur";
 import { STORAGE_KEYS } from "../../../../constants/storageKeys";
+import { buildVehicleDetailUrl } from "../../../../utils/vehicleSlug";
 import styles from "./CardAuto.module.css";
 
 /**
@@ -79,6 +80,27 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
     }
     
     // Permitir que el Link navegue normalmente
+  }, [auto]);
+
+  // ✅ MEMOIZAR DATOS DE OFERTA
+  const offerData = useMemo(() => {
+    if (!auto) return { hasOffer: false, descuento: 0, priceOriginal: "", priceOffer: "" };
+    const oferta = auto.oferta === true || auto.oferta === "true";
+    if (!oferta) return { hasOffer: false, descuento: 0, priceOriginal: "", priceOffer: "" };
+
+    const precio = Number(auto.precio) || 0;
+    const descuento = Math.min(100, Math.max(0, Number(auto.descuento) || 0));
+    const precioOferta =
+      auto.precioOferta != null && !isNaN(Number(auto.precioOferta))
+        ? Number(auto.precioOferta)
+        : Math.round(precio * (1 - descuento / 100));
+
+    return {
+      hasOffer: true,
+      descuento,
+      priceOriginal: formatPrice(precio),
+      priceOffer: formatPrice(precioOferta),
+    };
   }, [auto]);
 
   // ✅ MEMOIZAR DATOS FORMATEADOS
@@ -163,10 +185,11 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
   }
 
   const vehicleId = auto.id || auto._id;
+  const detailUrl = buildVehicleDetailUrl(auto);
 
   return (
     <Link
-      href={`/usados/${vehicleId}`}
+      href={detailUrl}
       className={styles.card}
       data-testid="vehicle-card"
       data-vehicle-id={vehicleId}
@@ -177,6 +200,14 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
     >
       {/* ===== IMAGEN PRINCIPAL ===== */}
       <div className={styles["card__image-container"]}>
+        {offerData.hasOffer && (
+          <span
+            className={styles.discount_badge}
+            aria-label={`Descuento del ${offerData.descuento}%`}
+          >
+            -{offerData.descuento}%
+          </span>
+        )}
         <Image
           src={primaryImage}
           alt={altText}
@@ -264,16 +295,24 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
           </div>
         </div>
 
-        {/* CONTENEDOR 4: Precio dividido en 2 contenedores */}
+        {/* CONTENEDOR 4: Precio */}
         <div className={styles.container4}>
-          {/* Contenedor izquierda: "Desde:" con contenido futuro */}
           <div className={styles.price_label_container}>
             <span className={styles.price_label}>desde:</span>
           </div>
-
-          {/* Contenedor derecha: Precio alineado a la derecha */}
           <div className={styles.price_display}>
-            <span className={styles.price_value}>{formattedData.price}</span>
+            {offerData.hasOffer ? (
+              <>
+                <span className={styles.price_original}>
+                  {offerData.priceOriginal}
+                </span>
+                <span className={styles.price_value}>
+                  {offerData.priceOffer}
+                </span>
+              </>
+            ) : (
+              <span className={styles.price_value}>{formattedData.price}</span>
+            )}
           </div>
         </div>
       </div>

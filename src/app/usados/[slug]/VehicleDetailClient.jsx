@@ -2,11 +2,11 @@
 
 /**
  * VehicleDetailClient - Client Component para detalle de vehículo
- * 
+ *
  * ✅ MIGRADO: Usa CardDetalle profesional con mejoras mobile
  * ✅ INTEGRADO: Carruseles de vehículos similares (marca y precio)
  * ✅ PRESERVA SCROLL: Guarda posición antes de navegar y la restaura al volver
- * 
+ *
  * @author Indiana Peugeot
  * @version 3.1.0 - Preservación de scroll implementada
  */
@@ -28,8 +28,6 @@ export default function VehicleDetailClient({ vehicle }) {
 
   // ✅ Función para volver preservando scroll
   const handleBack = useCallback(() => {
-    // La posición ya está guardada cuando se hizo clic en la card
-    // Solo navegar de vuelta
     router.push("/usados/vehiculos");
   }, [router]);
 
@@ -53,10 +51,8 @@ export default function VehicleDetailClient({ vehicle }) {
         <CardDetalle auto={vehicle} />
       </div>
 
-      {/* Carruseles de vehículos similares */}
       <SimilarVehiclesCarousel currentVehicle={vehicle} />
       <PriceRangeCarousel currentVehicle={vehicle} />
     </div>
   );
 }
-

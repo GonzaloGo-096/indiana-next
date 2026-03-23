@@ -1,14 +1,23 @@
 /**
- * /usados/[id] - Detalle de vehículo usado (Server Component)
- * 
+ * /usados/[slug] - Detalle de vehículo usado (Server Component)
+ *
+ * Soporta:
+ * - URL vieja: /usados/699e2aa373f578ed9ede40cf → redirect 301 a canónica
+ * - URL nueva: /usados/peugeot-208-allure-2021-699e2aa373f578ed9ede40cf
+ * - Slug incorrecto: /usados/cualquier-cosa-699e2aa3... → redirect 301 a canónica
+ *
  * @author Indiana Peugeot
- * @version 1.0.0
+ * @version 2.0.0 - Slug + id
  */
 
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { vehiclesService } from "../../../lib/services/vehiclesApi.server";
 import { mapVehicle } from "../../../lib/mappers/vehicleMapper";
 import { absoluteUrl } from "../../../lib/site-url";
+import {
+  buildVehicleDetailUrl,
+  parseVehicleSlugParam,
+} from "@/utils/vehicleSlug";
 import VehicleDetailClient from "./VehicleDetailClient";
 
 /**
@@ -18,9 +27,10 @@ import VehicleDetailClient from "./VehicleDetailClient";
 function getVehicleJsonLd({ vehicle, canonicalUrl }) {
   if (!vehicle) return null;
 
-  const productName = vehicle.marca && vehicle.modelo
-    ? `${vehicle.marca} ${vehicle.modelo}`
-    : vehicle.marca || vehicle.modelo || "Vehículo usado";
+  const productName =
+    vehicle.marca && vehicle.modelo
+      ? `${vehicle.marca} ${vehicle.modelo}`
+      : vehicle.marca || vehicle.modelo || "Vehículo usado";
   const productDescription = vehicle.anio
     ? `Vehículo usado ${productName} ${vehicle.anio}`
     : `Vehículo usado ${productName}`;
@@ -28,11 +38,12 @@ function getVehicleJsonLd({ vehicle, canonicalUrl }) {
   // Imágenes: solo incluir si son absolutas o convertirlas a absolutas
   const images = vehicle.fotoPrincipal
     ? [
-        vehicle.fotoPrincipal.startsWith("http") || vehicle.fotoPrincipal.startsWith("//")
+        vehicle.fotoPrincipal.startsWith("http") ||
+        vehicle.fotoPrincipal.startsWith("//")
           ? vehicle.fotoPrincipal
           : vehicle.fotoPrincipal.startsWith("/")
-          ? absoluteUrl(vehicle.fotoPrincipal)
-          : absoluteUrl(`/${vehicle.fotoPrincipal}`),
+            ? absoluteUrl(vehicle.fotoPrincipal)
+            : absoluteUrl(`/${vehicle.fotoPrincipal}`),
       ]
     : [];
 
@@ -68,7 +79,16 @@ function getVehicleJsonLd({ vehicle, canonicalUrl }) {
  * Metadata dinámica para SEO
  */
 export async function generateMetadata({ params }) {
-  const { id } = await params;
+  const resolvedParams = await params;
+  const param = resolvedParams.slug ?? resolvedParams.id;
+  const { id } = parseVehicleSlugParam(param);
+
+  if (!id) {
+    return {
+      title: "Vehículo no encontrado | Indiana Peugeot",
+      description: "El vehículo solicitado no está disponible.",
+    };
+  }
 
   try {
     const backendVehicle = await vehiclesService.getVehicleById(id);
@@ -81,7 +101,8 @@ export async function generateMetadata({ params }) {
       };
     }
 
-    const canonicalUrl = absoluteUrl(`/usados/${id}`);
+    const canonicalPath = buildVehicleDetailUrl(vehicle);
+    const canonicalUrl = absoluteUrl(canonicalPath);
     const title = `${vehicle.marca} ${vehicle.modelo} ${vehicle.anio || ""} | Indiana Peugeot`;
     const description = `Vehículo usado: ${vehicle.marca} ${vehicle.modelo} ${
       vehicle.anio || ""
@@ -89,11 +110,12 @@ export async function generateMetadata({ params }) {
 
     // Convertir fotoPrincipal a absoluta si es relativa
     const ogImageUrl = vehicle.fotoPrincipal
-      ? vehicle.fotoPrincipal.startsWith("http") || vehicle.fotoPrincipal.startsWith("//")
+      ? vehicle.fotoPrincipal.startsWith("http") ||
+          vehicle.fotoPrincipal.startsWith("//")
         ? vehicle.fotoPrincipal
         : vehicle.fotoPrincipal.startsWith("/")
-        ? absoluteUrl(vehicle.fotoPrincipal)
-        : absoluteUrl(`/${vehicle.fotoPrincipal}`)
+          ? absoluteUrl(vehicle.fotoPrincipal)
+          : absoluteUrl(`/${vehicle.fotoPrincipal}`)
       : null;
 
     return {
@@ -139,8 +161,6 @@ export async function generateMetadata({ params }) {
  * Generar paths estáticos (opcional, para SSG)
  */
 export async function generateStaticParams() {
-  // Por ahora retornamos vacío (ISR)
-  // En el futuro, podemos pre-renderizar los más populares
   return [];
 }
 
@@ -148,46 +168,31 @@ export async function generateStaticParams() {
  * Página de detalle de vehículo
  */
 export default async function VehicleDetailPage({ params }) {
-  const { id } = await params;
+  const resolvedParams = await params;
+  const param = resolvedParams.slug ?? resolvedParams.id;
+  const { id, needsRedirect } = parseVehicleSlugParam(param);
+
+  if (!id) notFound();
+
+  let backendVehicle;
+  let vehicle;
 
   try {
-    // Fetch del vehículo
-    const backendVehicle = await vehiclesService.getVehicleById(id);
+    backendVehicle = await vehiclesService.getVehicleById(id);
 
-    if (!backendVehicle) {
-      notFound();
-    }
+    if (!backendVehicle) notFound();
 
-    // Mapear datos
-    const vehicle = mapVehicle(backendVehicle);
+    vehicle = mapVehicle(backendVehicle);
 
-    if (!vehicle) {
-      notFound();
-    }
-
-    // Generar Structured Data (JSON-LD) para el vehículo
-    const canonicalUrl = absoluteUrl(`/usados/${id}`);
-    const jsonLd = getVehicleJsonLd({ vehicle, canonicalUrl });
-
-    // Pasar a Client Component con JSON-LD
-    return (
-      <>
-        {/* Structured Data (JSON-LD) para SEO */}
-        {jsonLd && (
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-          />
-        )}
-        <VehicleDetailClient vehicle={vehicle} />
-      </>
-    );
+    if (!vehicle) notFound();
   } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
+    if (error?.digest?.startsWith?.("NEXT_REDIRECT")) throw error;
+    if (error?.digest === "NEXT_NOT_FOUND") throw error;
+
+    if (process.env.NODE_ENV === "development") {
       console.error("[VehicleDetailPage] Error:", error);
     }
 
-    // Si es 404, usar notFound()
     if (
       error.message?.includes("not found") ||
       error.message?.includes("404")
@@ -195,7 +200,6 @@ export default async function VehicleDetailPage({ params }) {
       notFound();
     }
 
-    // Para otros errores, mostrar error
     return (
       <div style={{ padding: "2rem", textAlign: "center" }}>
         <h1>Error al cargar vehículo</h1>
@@ -203,5 +207,45 @@ export default async function VehicleDetailPage({ params }) {
       </div>
     );
   }
-}
 
+  const canonicalPath = buildVehicleDetailUrl(vehicle);
+  const expectedSegment = canonicalPath.replace(/^\/usados\/?/, "");
+  const willRedirect = needsRedirect || param !== expectedSegment;
+
+  if (process.env.NODE_ENV === "development") {
+    console.log("[slug] REDIRECT DIAGNOSTIC:", {
+      param,
+      expectedSegment,
+      canonicalPath,
+      needsRedirect,
+      willRedirect,
+      slugMatch: param === expectedSegment,
+      vehicle: {
+        id: vehicle.id ?? vehicle._id,
+        marca: vehicle.marca,
+        modelo: vehicle.modelo,
+        version: vehicle.version,
+        anio: vehicle.anio ?? vehicle.año,
+      },
+    });
+  }
+
+  if (willRedirect) {
+    permanentRedirect(canonicalPath);
+  }
+
+  const canonicalUrl = absoluteUrl(canonicalPath);
+  const jsonLd = getVehicleJsonLd({ vehicle, canonicalUrl });
+
+  return (
+    <>
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
+      <VehicleDetailClient vehicle={vehicle} />
+    </>
+  );
+}

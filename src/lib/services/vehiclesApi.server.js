@@ -13,97 +13,9 @@
  * @version 1.0.0
  */
 
-/**
- * Obtener base URL del API
- * En Server Components, podemos usar API_URL (sin NEXT_PUBLIC_)
- * 
- * @returns {string} Base URL del API
- */
-const getBaseURL = () => {
-  // Prioridad: API_URL (server-only) o NEXT_PUBLIC_API_URL
-  return (
-    process.env.API_URL ||
-    process.env.NEXT_PUBLIC_API_URL ||
-    "http://localhost:3001"
-  );
-};
-
-/**
- * Obtener timeout configurado
- * @returns {number} Timeout en milisegundos
- */
-const getTimeout = () => {
-  const timeout = process.env.API_TIMEOUT || process.env.NEXT_PUBLIC_API_TIMEOUT || "15000";
-  return parseInt(timeout, 10) || 15000;
-};
-
-/**
- * Fetch con timeout usando AbortController
- * 
- * ✅ IMPORTANTE: En Next.js Server Components, fetch puede tener problemas con localhost
- * Usar 127.0.0.1 como fallback si localhost falla
- * 
- * @param {string} url - URL a fetch
- * @param {RequestInit} options - Opciones de fetch
- * @returns {Promise<Response>} Response del fetch
- */
-async function fetchWithTimeout(url, options = {}) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), getTimeout());
-
-  try {
-    // ✅ Intentar con la URL original
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-      // ✅ IMPORTANTE: En Next.js, agregar cache: 'no-store' para desarrollo
-      // o usar next: { revalidate } para producción
-      cache: process.env.NODE_ENV === "development" ? "no-store" : undefined,
-    });
-    clearTimeout(timeoutId);
-    return response;
-  } catch (error) {
-    clearTimeout(timeoutId);
-    
-    // ✅ Si falla con localhost, intentar con 127.0.0.1
-    if (
-      (error.message === "fetch failed" || error.code === "ECONNREFUSED") &&
-      url.includes("localhost")
-    ) {
-      try {
-        const fallbackUrl = url.replace("localhost", "127.0.0.1");
-        if (process.env.NODE_ENV === "development") {
-          console.log(`[API Server] Intentando con fallback: ${fallbackUrl}`);
-        }
-        
-        const fallbackController = new AbortController();
-        const fallbackTimeoutId = setTimeout(
-          () => fallbackController.abort(),
-          getTimeout()
-        );
-        
-        const response = await fetch(fallbackUrl, {
-          ...options,
-          signal: fallbackController.signal,
-          cache: "no-store",
-        });
-        clearTimeout(fallbackTimeoutId);
-        return response;
-      } catch (fallbackError) {
-        // Si el fallback también falla, lanzar el error original
-        if (error.name === "AbortError") {
-          throw new Error(`Request timeout: ${getTimeout()}ms`);
-        }
-        throw error;
-      }
-    }
-    
-    if (error.name === "AbortError") {
-      throw new Error(`Request timeout: ${getTimeout()}ms`);
-    }
-    throw error;
-  }
-}
+import { getApiBaseUrl } from "@/lib/config/api";
+import { fetchWithTimeout } from "@/lib/http/server";
+import { buildSearchParams } from "@/utils/filters";
 
 /**
  * Servicio de vehículos para Server Components
@@ -128,31 +40,9 @@ export const vehiclesService = {
       const safeCursor =
         Number.isFinite(Number(cursor)) && Number(cursor) > 0 ? Number(cursor) : 1;
 
-      // Construir URL con parámetros
-      const baseURL = getBaseURL();
-      const searchParams = new URLSearchParams();
-      
-      // Agregar filtros
-      if (filters.marca && Array.isArray(filters.marca) && filters.marca.length > 0) {
-        searchParams.set("marca", filters.marca.join(","));
-      }
-      if (filters.caja && Array.isArray(filters.caja) && filters.caja.length > 0) {
-        searchParams.set("caja", filters.caja.join(","));
-      }
-      if (filters.combustible && Array.isArray(filters.combustible) && filters.combustible.length > 0) {
-        searchParams.set("combustible", filters.combustible.join(","));
-      }
-      if (filters.año && Array.isArray(filters.año) && filters.año.length === 2) {
-        searchParams.set("anio", `${filters.año[0]},${filters.año[1]}`);
-      }
-      if (filters.precio && Array.isArray(filters.precio) && filters.precio.length === 2) {
-        searchParams.set("precio", `${filters.precio[0]},${filters.precio[1]}`);
-      }
-      if (filters.kilometraje && Array.isArray(filters.kilometraje) && filters.kilometraje.length === 2) {
-        searchParams.set("km", `${filters.kilometraje[0]},${filters.kilometraje[1]}`);
-      }
-
-      // Agregar paginación
+      // Construir URL: buildSearchParams (filtros) + limit/cursor (paginación backend)
+      const baseURL = getApiBaseUrl();
+      const searchParams = buildSearchParams(filters);
       searchParams.set("limit", String(safeLimit));
       searchParams.set("cursor", String(safeCursor));
 
@@ -212,7 +102,7 @@ export const vehiclesService = {
       return data;
     } catch (error) {
       // Manejo de errores robusto
-      const baseURL = getBaseURL();
+      const baseURL = getApiBaseUrl();
       const errorDetails = {
         message: error.message,
         baseURL,
@@ -280,7 +170,7 @@ export const vehiclesService = {
         throw new Error("ID de vehículo inválido");
       }
 
-      const baseURL = getBaseURL();
+      const baseURL = getApiBaseUrl();
       const endpoint = `${baseURL}/photos/getonephoto/${id}`;
 
       // Logging solo en desarrollo

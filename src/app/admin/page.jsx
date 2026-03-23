@@ -47,25 +47,9 @@ export default function DashboardPage() {
     año: [FILTER_DEFAULTS.AÑO.min, FILTER_DEFAULTS.AÑO.max]
   })
   
-  // Construir filtros para el backend
-  const backendFilters = useCallback(() => {
-    const params = {}
-    
-    // Filtro de marca
-    if (filters.marca && filters.marca.length > 0) {
-      params.marca = filters.marca.join(',')
-    }
-    
-    // Filtro de año
-    if (filters.año && filters.año.length === 2) {
-      const [min, max] = filters.año
-      if (min !== FILTER_DEFAULTS.AÑO.min || max !== FILTER_DEFAULTS.AÑO.max) {
-        params.anio = `${min},${max}`
-      }
-    }
-    
-    return params
-  }, [filters])
+  // Filtros para el backend: mismo formato que buildSearchParams() espera
+  // { marca: [], año: [min, max] } - useVehiclesList/vehiclesApi lo procesan correctamente
+  const backendFilters = useCallback(() => filters, [filters])
   
   // Hook para listado de vehículos con filtros
   // ✅ SOLUCIÓN SIMPLE: pageSize muy grande para traer todos los vehículos de una vez
@@ -112,6 +96,15 @@ export default function DashboardPage() {
       if (!carData || typeof carData !== 'object') {
         dispatch(setError('Respuesta de detalle inválida'))
         return
+      }
+
+      // El detalle (getonephoto) a veces no devuelve oferta/descuento; el listado (getallphotos) sí.
+      // Usar valores del vehículo de la lista como fallback para que el formulario cargue correctamente.
+      const listOferta = vehicle.oferta === true || vehicle.oferta === 'true'
+      const listDescuento = Math.min(100, Math.max(0, Number(vehicle.descuento) || 0))
+      if (listOferta && listDescuento > 0) {
+        carData.oferta = true
+        carData.descuento = listDescuento
       }
 
       dispatch(openEditForm(carData))
@@ -292,6 +285,18 @@ export default function DashboardPage() {
           <div className={styles.vehiclesList}>
             <h2>Lista de Vehículos ({vehicles.length})</h2>
             
+            {vehicles.length > 0 && (
+              <div className={styles.vehicleListHeader}>
+                <div className={styles.headerCell}></div>
+                <div className={styles.headerCell}>Marca / Modelo</div>
+                <div className={styles.headerCell}>Año</div>
+                <div className={styles.headerCell}>Km</div>
+                <div className={styles.headerCell}>Oferta</div>
+                <div className={styles.headerCell}>Precio</div>
+                <div className={styles.headerCell}></div>
+              </div>
+            )}
+            
             {vehicles.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '30px', color: '#666' }}>
                 No hay vehículos disponibles
@@ -301,24 +306,46 @@ export default function DashboardPage() {
                 const item = toAdminListItem(vehicle)
                 return (
                   <div key={item.id} className={styles.vehicleItem}>
-                    <div className={styles.vehicleInfo}>
-                      <div className={styles.vehicleImage}>
-                        <img 
-                          src={item.firstImageUrl}
-                          alt={`${item.marca} ${item.modelo}`}
-                          loading="lazy"
-                          onError={(e) => {
-                            e.target.src = fallbackImage
-                          }}
-                        />
-                      </div>
-                      <div className={styles.vehicleDetails}>
-                        <h3>{item.marca} {item.modelo}</h3>
-                        <p>Año: {item.anio} | Km: {item.kilometraje.toLocaleString()}</p>
-                        <p>Precio: ${item.precio.toLocaleString()}</p>
-                      </div>
+                    <div className={styles.vehicleImage}>
+                      <img 
+                        src={item.firstImageUrl}
+                        alt={`${item.marca} ${item.modelo}`}
+                        loading="lazy"
+                        onError={(e) => {
+                          e.target.src = fallbackImage
+                        }}
+                      />
                     </div>
-                    
+                    <div className={styles.vehicleCell}>
+                      <span className={styles.cellLabel}>Marca / Modelo</span>
+                      <span className={styles.cellValue}>{item.marca} {item.modelo}</span>
+                    </div>
+                    <div className={styles.vehicleCell}>
+                      <span className={styles.cellLabel}>Año</span>
+                      <span className={styles.cellValue}>{item.anio}</span>
+                    </div>
+                    <div className={styles.vehicleCell}>
+                      <span className={styles.cellLabel}>Km</span>
+                      <span className={styles.cellValue}>{item.kilometraje.toLocaleString()}</span>
+                    </div>
+                    <div className={styles.vehicleCell}>
+                      <span className={styles.cellLabel}>Oferta</span>
+                      <span className={item.oferta ? styles.ofertaSi : styles.ofertaNo}>
+                        {item.oferta ? `Sí · ${item.descuento}%` : 'No'}
+                      </span>
+                    </div>
+                    <div className={styles.vehicleCell}>
+                      <span className={styles.cellLabel}>Precio</span>
+                      {item.oferta && item.precioOferta != null ? (
+                        <span className={styles.priceBlock}>
+                          <span className={styles.priceOriginal}>${item.precio.toLocaleString()}</span>
+                          <span className={styles.priceOffer}>${item.precioOferta.toLocaleString()}</span>
+                          <span className={styles.ofertaBadge}>{item.descuento}%</span>
+                        </span>
+                      ) : (
+                        <span className={styles.cellValue}>${item.precio.toLocaleString()}</span>
+                      )}
+                    </div>
                     <div className={styles.vehicleActions}>
                       <button 
                         onClick={() => handleOpenEditForm(item._original)} 

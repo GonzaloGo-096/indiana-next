@@ -9,34 +9,7 @@
 
 import { AUTH_CONFIG } from '@/config/auth'
 import { authAxiosInstance } from '@/lib/api/axiosInstance'
-
-/**
- * Obtener base URL del API (compatible con Next.js)
- */
-const getBaseURL = () => {
-  if (typeof process !== "undefined" && process.env) {
-    return (
-      process.env.API_URL ||
-      process.env.NEXT_PUBLIC_API_URL ||
-      "http://localhost:3001"
-    );
-  }
-  if (typeof window !== "undefined") {
-    return (
-      process.env.NEXT_PUBLIC_API_URL ||
-      "http://localhost:3001"
-    );
-  }
-  return "http://localhost:3001";
-};
-
-/**
- * Obtener timeout configurado
- */
-const getTimeout = () => {
-  const timeout = process.env.NEXT_PUBLIC_API_TIMEOUT || "15000";
-  return parseInt(timeout, 10) || 15000;
-};
+import { getApiBaseUrl, getApiTimeout } from '@/lib/config/api'
 
 /**
  * Función helper para limpiar localStorage (solo en cliente)
@@ -62,8 +35,8 @@ export const authService = {
     };
 
     try {
-      const baseURL = getBaseURL();
-      const timeout = getTimeout();
+      const baseURL = getApiBaseUrl();
+      const timeout = getApiTimeout();
 
       // Log solo en desarrollo
       if (process.env.NODE_ENV === "development") {
@@ -98,14 +71,14 @@ export const authService = {
       if (error.code === "ECONNABORTED") {
         return {
           success: false,
-          message: `Timeout: El backend no respondió en ${getTimeout()}ms. Verifica que esté ejecutándose.`
+          message: `Timeout: El backend no respondió en ${getApiTimeout()}ms. Verifica que esté ejecutándose.`
         };
       }
 
       if (!error.response) {
         return {
           success: false,
-          message: `Error de conexión: No se pudo conectar con ${getBaseURL()}. Verifica que el backend esté ejecutándose.`
+          message: `Error de conexión: No se pudo conectar con ${getApiBaseUrl()}. Verifica que el backend esté ejecutándose.`
         };
       }
 

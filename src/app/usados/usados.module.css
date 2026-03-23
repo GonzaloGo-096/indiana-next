@@ -87,6 +87,13 @@
   outline-offset: 2px;
 }
 
+/* ===== HEADER USADOS — carrusel de promociones full-bleed ===== */
+.usadosHeader {
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+}
+
 /* ===== SECCIÓN PROMOCIONES — minimalista, mismo fondo que la página ===== */
 .promocionesSection {
   padding: clamp(2rem, 5vw, 3.5rem) 0;
@@ -251,6 +258,103 @@
     object-position: center;
     border-radius: var(--border-radius-md);
   }
+}
+
+/* ===== CARRUSEL DE PROMOCIONES ===== */
+.promosCarousel {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--border-radius-md);
+}
+
+.promosCarouselTrack {
+  display: flex;
+  transition: transform 0.4s ease-out;
+}
+
+.promosCarouselSlide {
+  flex: 0 0 100%;
+  min-width: 100%;
+}
+
+.promosCarouselSlide .promocionesImage {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Header: mantener proporción natural de la imagen, sin deformar */
+.usadosHeader .promocionesImage {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+}
+
+.promosCarouselArrow {
+  position: absolute;
+  top: 50%;
+  left: var(--spacing-2);
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--color-white);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  z-index: 2;
+}
+
+.promosCarouselArrow:hover {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.promosCarouselArrow:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+.promosCarouselArrowRight {
+  left: auto;
+  right: var(--spacing-2);
+}
+
+.promosCarouselDots {
+  position: absolute;
+  bottom: var(--spacing-3);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding: 0;
+  z-index: 2;
+}
+
+.promosCarouselDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  padding: 0;
+  transition: all var(--transition-fast);
+}
+
+.promosCarouselDot:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.promosCarouselDotActive {
+  background: var(--color-brand-500);
+  border-color: var(--color-brand-500);
 }
 
 .promocionesTitle {

@@ -28,6 +28,7 @@ import { AnioIcon } from "../../../ui/icons/AnioIcon";
 import { KmIcon } from "../../../ui/icons/KmIcon";
 import { CajaIconDetalle } from "../../../ui/icons/CajaIconDetalle";
 import { STORAGE_KEYS } from "../../../../constants/storageKeys";
+import { buildVehicleDetailUrl } from "../../../../utils/vehicleSlug";
 import styles from "./CardSimilar.module.css";
 
 /**
@@ -52,6 +53,8 @@ export const CardSimilar = memo(({ auto, isPriority = false }) => {
     return auto.fotoPrincipal || auto.imagen || "/auto1.jpg";
   }, [auto.fotoPrincipal, auto.imagen]);
 
+  const detailUrl = buildVehicleDetailUrl(auto);
+
   // ✅ HANDLER: Click en toda la tarjeta para abrir detalle
   const handleCardClick = useCallback(() => {
     if (!vehicleId) {
@@ -71,8 +74,8 @@ export const CardSimilar = memo(({ auto, isPriority = false }) => {
       sessionStorage.setItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL, JSON.stringify(scrollData));
     }
     
-    router.push(`/usados/${vehicleId}`);
-  }, [vehicleId, router]);
+    router.push(detailUrl);
+  }, [vehicleId, detailUrl, router]);
 
   // ✅ MEMOIZAR DATOS FORMATEADOS
   const formattedData = useMemo(() => {
