@@ -35,7 +35,12 @@ const MODELOS = {
  * @param {string} slug - Slug del modelo (ej: '2008', 'partner')
  * @returns {Object|null} - Objeto modelo o null
  */
-export const getModelo = (slug) => MODELOS[slug] || null
+export const getModelo = (slug) => {
+  if (slug == null || slug === '') return null
+  const key = String(slug).trim()
+  if (!key) return null
+  return MODELOS[key] || MODELOS[key.toLowerCase()] || null
+}
 
 /**
  * Verificar si un modelo existe

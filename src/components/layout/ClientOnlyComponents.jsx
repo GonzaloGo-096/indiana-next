@@ -11,6 +11,7 @@
  */
 
 import dynamic from "next/dynamic";
+import FloatingWhatsAppButton from "./FloatingWhatsApp/FloatingWhatsAppButton";
 
 // ✅ AnalyticsWrapper - No crítico, puede cargar después
 const AnalyticsWrapper = dynamic(
@@ -36,6 +37,7 @@ export default function ClientOnlyComponents() {
     <>
       <ScrollToTopOnMount />
       <AnalyticsWrapper />
+      <FloatingWhatsAppButton />
     </>
   );
 }

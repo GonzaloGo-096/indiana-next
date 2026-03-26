@@ -291,12 +291,17 @@ export const getAllPlanes = () => {
  */
 export const extraerModeloBase = (nombreModelo) => {
   const nombre = nombreModelo.toLowerCase();
-  
-  if (nombre.includes("2008")) return "2008";
-  if (nombre.includes("208")) return "208";
+
+  // Orden: números más largos primero para no confundir 408 con 208, 2008 con 008, etc.
+  if (/\b5008\b/.test(nombre)) return "5008";
+  if (/\b3008\b/.test(nombre)) return "3008";
+  if (/\b2008\b/.test(nombre)) return "2008";
+  if (/\b408\b/.test(nombre)) return "408";
+  if (/\b208\b/.test(nombre)) return "208";
   if (nombre.includes("expert")) return "expert";
   if (nombre.includes("partner")) return "partner";
-  
+  if (nombre.includes("boxer")) return "boxer";
+
   return "otros";
 };
 

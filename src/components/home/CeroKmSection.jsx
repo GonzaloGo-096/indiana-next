@@ -42,7 +42,7 @@ export function CeroKmSection() {
 
   return (
     <section className={styles.section} aria-labelledby="cero-km-title">
-      <div className="container">
+      <div className={styles.sectionInner}>
         <div className={styles.content}>
           <div className={styles.titleBlock}>
             <Image
@@ -64,7 +64,12 @@ export function CeroKmSection() {
           </p>
           {allCards.length > 0 && (
             <div className={styles.carouselSlot}>
-              <VehiculosCarouselClient cards={allCards} variant="dark" compact />
+              <VehiculosCarouselClient
+                cards={allCards}
+                variant="dark"
+                compact
+                fillParentWidth
+              />
             </div>
           )}
           <div className={styles.buttonsContainer}>

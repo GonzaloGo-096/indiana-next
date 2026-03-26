@@ -4,8 +4,8 @@
  * HomeUsadosCarousel - Carrusel de usados solo para la sección de inicio
  *
  * Mobile: mismo estilo y espaciado que hasta ahora (viewportClip + compact).
- * Desktop: mismo carrusel que la página /usados (contenido, sin viewportClip),
- *          así la separación horizontal y el layout son idénticos.
+ * Desktop: sin viewportClip; cards un poco más angostas que /usados para ver 4 a la vez
+ *          en el ancho ampliado del home (solo inicio).
  *
  * @author Indiana Peugeot
  */
@@ -22,7 +22,7 @@ export function HomeUsadosCarousel({ vehicles = [] }) {
   }, []);
 
   // Mobile: viewportClip + compact (estilos y espaciado actuales del inicio).
-  // Desktop: sin viewportClip y sin compact = mismo comportamiento que página /usados.
+  // Desktop: sin viewportClip y sin compact; .carouselHomeDesktopFour solo aplica en CSS ≥992px.
   const useMobileStyle = mounted && isMobile;
 
   return (
@@ -30,6 +30,7 @@ export function HomeUsadosCarousel({ vehicles = [] }) {
       vehicles={vehicles}
       compact={useMobileStyle}
       viewportClip={useMobileStyle}
+      homeDesktopFourColumns
     />
   );
 }

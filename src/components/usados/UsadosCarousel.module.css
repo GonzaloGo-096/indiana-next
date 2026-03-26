@@ -21,9 +21,10 @@
 .carouselWrapper {
   position: relative;
   width: 100%;
+  max-width: 100%;
   overflow: visible;
-  padding: 0 48px; /* Espacio para flechas fuera del carrusel */
-  box-sizing: content-box;
+  padding: 0 48px; /* Flechas en el padding; incluido en el 100% para no desbordar a la derecha */
+  box-sizing: border-box;
 }
 
 /* ===== FLECHAS - Sutiles, absolute, fuera del contenedor ===== */
@@ -418,6 +419,32 @@
     height: 160px;
     min-height: 160px;
     max-height: 160px;
+  }
+}
+
+/* Inicio desktop: ~4 cards; anchos acordes al sectionInner intermedio del home */
+@media (min-width: 992px) {
+  .carouselHomeDesktopFour .carouselContainer {
+    gap: 0.75rem;
+    padding: var(--spacing-4) var(--spacing-4) var(--spacing-6) var(--spacing-4);
+  }
+
+  .carouselHomeDesktopFour .cardWrapper {
+    min-width: 270px;
+    max-width: 270px;
+    width: 270px;
+    flex: 0 0 270px;
+    margin: 0 0.3rem;
+  }
+
+  /* CardSimilar: el root fija 320px; forzamos al ancho del wrapper y sin márgenes laterales */
+  .carouselHomeDesktopFour .cardWrapper > :first-child {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 }
 

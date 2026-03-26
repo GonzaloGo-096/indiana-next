@@ -1,6 +1,22 @@
 import { notFound } from "next/navigation";
 import dynamic from "next/dynamic";
 import { getModelo, getModelosSlugs } from "../../../data/modelos";
+
+/** Normaliza el segmento dinámico (Turbopack / encoding / tipos raros) */
+function normalizeAutoSlug(raw) {
+  if (raw == null) return "";
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  const str = String(value).trim();
+  if (!str) return "";
+  try {
+    return decodeURIComponent(str);
+  } catch {
+    return str;
+  }
+}
+
+/** Permite /0km/[slug] aunque no esté en el último build de SSG (dev / nuevos modelos) */
+export const dynamicParams = true;
 import { getPlanesPorModelo } from "../../../data/planes";
 import { absoluteUrl } from "../../../lib/site-url";
 import { ModeloDetalleClient } from "./ModeloDetalleClient";
@@ -221,7 +237,8 @@ export async function generateStaticParams() {
 // Metadata dinámica por página
 export async function generateMetadata({ params }) {
   try {
-    const { autoSlug } = await params;
+    const { autoSlug: rawSlug } = await params;
+    const autoSlug = normalizeAutoSlug(rawSlug);
     const modelo = getModelo(autoSlug);
 
     if (!modelo) {
@@ -296,7 +313,8 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function CeroKilometroDetallePage({ params }) {
-  const { autoSlug } = await params;
+  const { autoSlug: rawSlug } = await params;
+  const autoSlug = normalizeAutoSlug(rawSlug);
   const modelo = getModelo(autoSlug);
 
   if (!modelo) {

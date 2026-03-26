@@ -14,8 +14,14 @@ import styles from "../../app/0km/0km.module.css";
  * @param {Array} props.cards - Array de cards con { key, src, alt, titulo, slug }
  * @param {string} props.variant - 'default' | 'dark' - Variante para fondos claros u oscuros (botones)
  * @param {boolean} props.compact - Cards más pequeñas (para home)
+ * @param {boolean} props.fillParentWidth - Ancho del track = padre (inicio: más de 4 cards visibles en desktop)
  */
-export function VehiculosCarouselClient({ cards, variant = "default", compact = false }) {
+export function VehiculosCarouselClient({
+  cards,
+  variant = "default",
+  compact = false,
+  fillParentWidth = false,
+}) {
   const carouselRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -71,17 +77,23 @@ export function VehiculosCarouselClient({ cards, variant = "default", compact = 
     carousel.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
 
-  const sectionClass =
-    variant === "dark"
-      ? `${styles.carouselSection} ${styles.vehiculosSection} ${styles.carouselSectionDark}`
-      : `${styles.carouselSection} ${styles.vehiculosSection}`;
+  const sectionClass = [
+    styles.carouselSection,
+    styles.vehiculosSection,
+    variant === "dark" ? styles.carouselSectionDark : "",
+    fillParentWidth ? styles.carouselSectionHomeDesktop : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <section
       className={sectionClass}
       aria-label="Gama de Vehículos Peugeot 0km"
     >
-      <div className={styles.carouselWrapper}>
+      <div
+        className={`${styles.carouselWrapper}${fillParentWidth ? ` ${styles.carouselWrapperHome}` : ""}`}
+      >
         <button
           className={`${styles.scrollButton} ${styles.scrollButtonLeft}`}
           onClick={() => scroll("left")}

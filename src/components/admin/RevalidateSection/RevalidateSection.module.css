@@ -57,6 +57,23 @@
   word-break: break-all;
 }
 
+.sessionHint {
+  margin: 8px 0 0 0;
+  font-size: 13px;
+  color: #856404;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.prodNote {
+  margin: 14px 0 0 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #6c757d;
+}
+
 .publishButton {
   padding: 10px 20px;
   background: #007bff;
@@ -123,48 +140,6 @@
 
 .error strong {
   font-weight: 600;
-}
-
-/* Input de secret (temporal) */
-.secretInput {
-  margin-top: 15px;
-  padding-top: 15px;
-  border-top: 1px solid #dee2e6;
-}
-
-.secretLabel {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #495057;
-}
-
-.secretInputField {
-  width: 100%;
-  padding: 10px 12px;
-  border: 2px solid #dee2e6;
-  border-radius: 6px;
-  font-size: 14px;
-  font-family: monospace;
-  background: #f8f9fa;
-  color: #495057;
-  transition: all 0.2s ease;
-}
-
-.secretInputField:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
-  background: white;
-}
-
-.secretHint {
-  display: block;
-  margin-top: 6px;
-  font-size: 11px;
-  color: #6c757d;
-  font-style: italic;
 }
 
 /* Responsive */

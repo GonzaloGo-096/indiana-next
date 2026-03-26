@@ -1,27 +1,25 @@
 /**
  * API Route: /api/revalidate
- * 
+ *
  * Revalida tags de Next.js y hace warmup de URLs
- * 
- * ⚠️ SEGURIDAD:
- * Este endpoint usa REVALIDATE_SECRET (solo server-side) porque el login actual
- * NO es validable en el servidor (solo client-side con localStorage).
- * 
- * ⚠️ SOLUCIÓN TEMPORAL: Para producción, debería migrarse a autenticación server-side
- * (cookies httpOnly, NextAuth, o middleware de auth) y eliminar el secret manual.
- * 
+ *
+ * Autenticación (cualquiera de las dos):
+ * 1) Header `x-revalidate-secret` === REVALIDATE_SECRET (cron, CLI, integraciones)
+ * 2) Header `Authorization: Bearer <JWT>` validado contra el backend (panel admin)
+ *
  * @author Indiana Usados
- * @version 2.0.0 - Secret solo en server, validación mejorada
+ * @version 3.0.0 - Bearer de admin + secret para automatización
  */
 
 import { revalidateTag } from 'next/cache'
 import { NextResponse } from 'next/server'
 import { getSiteUrl } from '@/lib/site-url'
+import { verifyAdminBearerToken } from '@/lib/auth/verifyAdminBearerServer'
 
 // ✅ CONFIGURACIÓN
-// ⚠️ REVALIDATE_SECRET solo en .env.local (NO usar NEXT_PUBLIC_)
-// ⚠️ SIN FALLBACK: Si no existe, el endpoint fallará explícitamente (seguridad)
-const REVALIDATE_SECRET = process.env.REVALIDATE_SECRET // ⚠️ Sin fallback - debe estar configurado
+// REVALIDATE_SECRET: obligatorio solo si usás el header x-revalidate-secret (cron, CLI).
+// El panel admin puede usar solo Bearer; en ese caso no hace falta definir esta variable.
+const REVALIDATE_SECRET = (process.env.REVALIDATE_SECRET || '').trim()
 const MAX_WARMUP_IDS = 15
 const WARMUP_BATCH_SIZE = 5
 
@@ -103,26 +101,38 @@ export async function POST(request) {
   const startTime = Date.now()
 
   try {
-    // ✅ VALIDAR CONFIGURACIÓN DEL SECRET (OBLIGATORIO)
-    // ⚠️ Si REVALIDATE_SECRET no está configurado, el endpoint NO debe funcionar
-    if (!REVALIDATE_SECRET || REVALIDATE_SECRET.trim() === '') {
+    // ✅ Autorización: secret (automatización) O JWT de admin validado en backend
+    const secretHeaderRaw = request.headers.get('x-revalidate-secret')
+    const secretHeader = (secretHeaderRaw || '').trim()
+    const authHeader = request.headers.get('authorization') || ''
+    const bearerToken =
+      authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : ''
+
+    // Si mandan el header de secret, el servidor debe tener REVALIDATE_SECRET configurado
+    if (secretHeader.length > 0 && !REVALIDATE_SECRET) {
       const tookMs = Date.now() - startTime
       return NextResponse.json(
         {
           ok: false,
-          error: 'Server configuration error: REVALIDATE_SECRET is not configured. Please set REVALIDATE_SECRET in .env.local',
-          tookMs
+          error:
+            'Server configuration error: se envió x-revalidate-secret pero REVALIDATE_SECRET no está definido en el servidor',
+          tookMs,
         },
         { status: 500 }
       )
     }
 
-    // ✅ VALIDAR SECRET DEL REQUEST (solo server-side, NO usar NEXT_PUBLIC_)
-    // ⚠️ TEMPORAL: En producción migrar a auth server-side (cookies/sesión)
-    const secret = request.headers.get('x-revalidate-secret')
-    if (!secret || secret !== REVALIDATE_SECRET) {
+    const secretOk =
+      secretHeader.length > 0 && REVALIDATE_SECRET && secretHeader === REVALIDATE_SECRET
+    const bearerOk =
+      bearerToken.length > 0 && (await verifyAdminBearerToken(bearerToken))
+
+    if (!secretOk && !bearerOk) {
       return NextResponse.json(
-        { error: 'Unauthorized: invalid secret' },
+        {
+          error:
+            'Unauthorized: enviá x-revalidate-secret o Authorization Bearer con sesión de admin válida',
+        },
         { status: 401 }
       )
     }
@@ -213,8 +223,8 @@ export async function POST(request) {
 export async function GET() {
   return NextResponse.json({
     message: 'Revalidate endpoint está activo',
-    requiresSecret: true,
-    method: 'POST'
+    auth: ['x-revalidate-secret', 'Authorization: Bearer (JWT admin válido)'],
+    method: 'POST',
   })
 }
 

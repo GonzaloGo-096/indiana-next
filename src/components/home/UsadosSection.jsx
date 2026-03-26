@@ -17,7 +17,7 @@ export function UsadosSection({ vehicles = [] }) {
       className={styles.section}
       aria-labelledby="usados-title"
     >
-      <div className="container">
+      <div className={styles.sectionInner}>
         <div className={styles.content}>
           <div className={styles.titleBlock}>
             <div className={styles.titleLogoWrap}>

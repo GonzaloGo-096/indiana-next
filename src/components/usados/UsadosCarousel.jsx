@@ -63,8 +63,14 @@ const SkeletonCard = () => (
  * Componente principal del carrusel
  * @param {boolean} compact - Cards más pequeñas (para home mobile / usados mobile)
  * @param {boolean} viewportClip - Clipping en borde del viewport (solo mobile en inicio y en /usados)
+ * @param {boolean} homeDesktopFourColumns - Solo inicio desktop: cards un poco más angostas para mostrar 4 a la vez
  */
-export const UsadosCarousel = ({ vehicles = [], compact = false, viewportClip = false }) => {
+export const UsadosCarousel = ({
+  vehicles = [],
+  compact = false,
+  viewportClip = false,
+  homeDesktopFourColumns = false,
+}) => {
   const carouselRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -255,7 +261,14 @@ export const UsadosCarousel = ({ vehicles = [], compact = false, viewportClip = 
     </>
   );
 
-  const wrapperClassName = `${styles.carouselWrapper} ${compact ? styles.carouselCompact : ""} ${viewportClip ? styles.carouselViewportClip : ""}`;
+  const wrapperClassName = [
+    styles.carouselWrapper,
+    compact ? styles.carouselCompact : "",
+    viewportClip ? styles.carouselViewportClip : "",
+    homeDesktopFourColumns ? styles.carouselHomeDesktopFour : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return viewportClip ? (
     <div className={styles.viewportClip}>

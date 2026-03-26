@@ -48,7 +48,6 @@ function ModelCard({ src, alt, titulo, slug, compact = false }) {
             width={44}
             height={44}
             className={styles.peugeotLogo}
-            style={{ width: "auto", height: "auto" }}
           />
           <h3 className={styles.title}>{titulo}</h3>
         </div>
