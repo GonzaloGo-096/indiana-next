@@ -18,6 +18,37 @@
 import { FILTER_DEFAULTS } from "../constants/filterOptions";
 
 /**
+ * Valores de caja que el backend puede tener como "Automático" u otras variantes;
+ * el filtro muestra "Automática" y aquí se envían ambos al query.
+ */
+function expandCajaValuesForApi(cajaArray) {
+  if (!Array.isArray(cajaArray) || cajaArray.length === 0) return [];
+  const out = [];
+  for (const raw of cajaArray) {
+    const v = typeof raw === "string" ? raw.trim() : raw;
+    if (!v) continue;
+    if (v === "Automática") {
+      out.push("Automática", "Automático");
+    } else {
+      out.push(v);
+    }
+  }
+  return [...new Set(out)];
+}
+
+/**
+ * Normaliza tokens de URL al valor usado en el MultiSelect (Automático → Automática).
+ */
+function normalizeCajaTokensFromUrl(tokens) {
+  if (!Array.isArray(tokens) || tokens.length === 0) return [];
+  const mapped = tokens
+    .map((t) => (typeof t === "string" ? t.trim() : ""))
+    .filter(Boolean)
+    .map((t) => (t === "Automático" ? "Automática" : t));
+  return [...new Set(mapped)];
+}
+
+/**
  * Construye URLSearchParams desde objeto de filtros
  * 
  * ✅ ÚNICA FUNCIÓN para construir searchParams desde filtros
@@ -48,7 +79,10 @@ export const buildSearchParams = (filters = {}) => {
   }
 
   if (filters.caja && Array.isArray(filters.caja) && filters.caja.length > 0) {
-    params.set("caja", filters.caja.join(","));
+    const forApi = expandCajaValuesForApi(filters.caja);
+    if (forApi.length > 0) {
+      params.set("caja", forApi.join(","));
+    }
   }
 
   if (
@@ -164,7 +198,7 @@ export const parseFilters = (searchParams) => {
 
   const caja = params.get("caja");
   if (caja && typeof caja === "string") {
-    filters.caja = caja.split(",");
+    filters.caja = normalizeCajaTokensFromUrl(caja.split(","));
   }
 
   const combustible = params.get("combustible");

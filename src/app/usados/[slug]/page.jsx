@@ -18,7 +18,26 @@ import {
   buildVehicleDetailUrl,
   parseVehicleSlugParam,
 } from "@/utils/vehicleSlug";
+import { serializeVehicleForClient } from "@/utils/serializeVehicleForClient";
 import VehicleDetailClient from "./VehicleDetailClient";
+
+function formatPrecioForMeta(precio) {
+  if (precio == null || precio === "") return "";
+  if (typeof precio === "number" && Number.isFinite(precio)) {
+    try {
+      return precio.toLocaleString("es-AR");
+    } catch {
+      return String(precio);
+    }
+  }
+  if (typeof precio === "string") return precio;
+  return "";
+}
+
+function fotoPrincipalString(vehicle) {
+  const fp = vehicle?.fotoPrincipal;
+  return typeof fp === "string" && fp.trim() !== "" ? fp.trim() : "";
+}
 
 /**
  * Helper para generar Structured Data (JSON-LD) del vehículo
@@ -35,15 +54,14 @@ function getVehicleJsonLd({ vehicle, canonicalUrl }) {
     ? `Vehículo usado ${productName} ${vehicle.anio}`
     : `Vehículo usado ${productName}`;
 
-  // Imágenes: solo incluir si son absolutas o convertirlas a absolutas
-  const images = vehicle.fotoPrincipal
+  const principal = fotoPrincipalString(vehicle);
+  const images = principal
     ? [
-        vehicle.fotoPrincipal.startsWith("http") ||
-        vehicle.fotoPrincipal.startsWith("//")
-          ? vehicle.fotoPrincipal
-          : vehicle.fotoPrincipal.startsWith("/")
-            ? absoluteUrl(vehicle.fotoPrincipal)
-            : absoluteUrl(`/${vehicle.fotoPrincipal}`),
+        principal.startsWith("http") || principal.startsWith("//")
+          ? principal
+          : principal.startsWith("/")
+            ? absoluteUrl(principal)
+            : absoluteUrl(`/${principal}`),
       ]
     : [];
 
@@ -79,18 +97,18 @@ function getVehicleJsonLd({ vehicle, canonicalUrl }) {
  * Metadata dinámica para SEO
  */
 export async function generateMetadata({ params }) {
-  const resolvedParams = await params;
-  const param = resolvedParams.slug ?? resolvedParams.id;
-  const { id } = parseVehicleSlugParam(param);
-
-  if (!id) {
-    return {
-      title: "Vehículo no encontrado | Indiana Peugeot",
-      description: "El vehículo solicitado no está disponible.",
-    };
-  }
-
   try {
+    const resolvedParams = await params;
+    const param = resolvedParams.slug ?? resolvedParams.id;
+    const { id } = parseVehicleSlugParam(param);
+
+    if (!id) {
+      return {
+        title: "Vehículo no encontrado | Indiana Peugeot",
+        description: "El vehículo solicitado no está disponible.",
+      };
+    }
+
     const backendVehicle = await vehiclesService.getVehicleById(id);
     const vehicle = mapVehicle(backendVehicle);
 
@@ -104,18 +122,18 @@ export async function generateMetadata({ params }) {
     const canonicalPath = buildVehicleDetailUrl(vehicle);
     const canonicalUrl = absoluteUrl(canonicalPath);
     const title = `${vehicle.marca} ${vehicle.modelo} ${vehicle.anio || ""} | Indiana Peugeot`;
+    const precioMeta = formatPrecioForMeta(vehicle.precio);
     const description = `Vehículo usado: ${vehicle.marca} ${vehicle.modelo} ${
       vehicle.anio || ""
-    }. ${vehicle.precio ? `Precio: ${vehicle.precio.toLocaleString()}` : ""}`;
+    }.${precioMeta ? ` Precio: ${precioMeta}` : ""}`;
 
-    // Convertir fotoPrincipal a absoluta si es relativa
-    const ogImageUrl = vehicle.fotoPrincipal
-      ? vehicle.fotoPrincipal.startsWith("http") ||
-          vehicle.fotoPrincipal.startsWith("//")
-        ? vehicle.fotoPrincipal
-        : vehicle.fotoPrincipal.startsWith("/")
-          ? absoluteUrl(vehicle.fotoPrincipal)
-          : absoluteUrl(`/${vehicle.fotoPrincipal}`)
+    const fp = fotoPrincipalString(vehicle);
+    const ogImageUrl = fp
+      ? fp.startsWith("http") || fp.startsWith("//")
+        ? fp
+        : fp.startsWith("/")
+          ? absoluteUrl(fp)
+          : absoluteUrl(`/${fp}`)
       : null;
 
     return {
@@ -149,7 +167,7 @@ export async function generateMetadata({ params }) {
         canonical: canonicalUrl,
       },
     };
-  } catch (error) {
+  } catch {
     return {
       title: "Error | Indiana Peugeot",
       description: "Error al cargar la información del vehículo.",
@@ -168,23 +186,88 @@ export async function generateStaticParams() {
  * Página de detalle de vehículo
  */
 export default async function VehicleDetailPage({ params }) {
-  const resolvedParams = await params;
+  let resolvedParams;
+  try {
+    resolvedParams = await params;
+  } catch {
+    notFound();
+  }
+
   const param = resolvedParams.slug ?? resolvedParams.id;
   const { id, needsRedirect } = parseVehicleSlugParam(param);
 
   if (!id) notFound();
 
-  let backendVehicle;
-  let vehicle;
-
   try {
-    backendVehicle = await vehiclesService.getVehicleById(id);
+    const backendVehicle = await vehiclesService.getVehicleById(id);
 
     if (!backendVehicle) notFound();
 
-    vehicle = mapVehicle(backendVehicle);
+    const vehicle = mapVehicle(backendVehicle);
 
     if (!vehicle) notFound();
+
+    const canonicalPath = buildVehicleDetailUrl(vehicle);
+    const expectedSegment = canonicalPath.replace(/^\/usados\/?/, "");
+    const willRedirect = needsRedirect || param !== expectedSegment;
+
+    if (process.env.NODE_ENV === "development") {
+      console.log("[slug] REDIRECT DIAGNOSTIC:", {
+        param,
+        expectedSegment,
+        canonicalPath,
+        needsRedirect,
+        willRedirect,
+        slugMatch: param === expectedSegment,
+        vehicle: {
+          id: vehicle.id ?? vehicle._id,
+          marca: vehicle.marca,
+          modelo: vehicle.modelo,
+          version: vehicle.version,
+          anio: vehicle.anio ?? vehicle.año,
+        },
+      });
+    }
+
+    if (willRedirect) {
+      permanentRedirect(canonicalPath);
+    }
+
+    const canonicalUrl = absoluteUrl(canonicalPath);
+    const jsonLd = getVehicleJsonLd({ vehicle, canonicalUrl });
+
+    const clientVehicle = serializeVehicleForClient(vehicle);
+    if (!clientVehicle) {
+      return (
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+          <h1>Error al cargar vehículo</h1>
+          <p>No se pudo preparar los datos del vehículo.</p>
+        </div>
+      );
+    }
+
+    let jsonLdHtml = null;
+    if (jsonLd) {
+      try {
+        jsonLdHtml = JSON.stringify(jsonLd);
+      } catch (stringifyErr) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("[VehicleDetailPage] JSON-LD omitido:", stringifyErr);
+        }
+      }
+    }
+
+    return (
+      <>
+        {jsonLdHtml ? (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: jsonLdHtml }}
+          />
+        ) : null}
+        <VehicleDetailClient vehicle={clientVehicle} />
+      </>
+    );
   } catch (error) {
     if (error?.digest?.startsWith?.("NEXT_REDIRECT")) throw error;
     if (error?.digest === "NEXT_NOT_FOUND") throw error;
@@ -207,45 +290,4 @@ export default async function VehicleDetailPage({ params }) {
       </div>
     );
   }
-
-  const canonicalPath = buildVehicleDetailUrl(vehicle);
-  const expectedSegment = canonicalPath.replace(/^\/usados\/?/, "");
-  const willRedirect = needsRedirect || param !== expectedSegment;
-
-  if (process.env.NODE_ENV === "development") {
-    console.log("[slug] REDIRECT DIAGNOSTIC:", {
-      param,
-      expectedSegment,
-      canonicalPath,
-      needsRedirect,
-      willRedirect,
-      slugMatch: param === expectedSegment,
-      vehicle: {
-        id: vehicle.id ?? vehicle._id,
-        marca: vehicle.marca,
-        modelo: vehicle.modelo,
-        version: vehicle.version,
-        anio: vehicle.anio ?? vehicle.año,
-      },
-    });
-  }
-
-  if (willRedirect) {
-    permanentRedirect(canonicalPath);
-  }
-
-  const canonicalUrl = absoluteUrl(canonicalPath);
-  const jsonLd = getVehicleJsonLd({ vehicle, canonicalUrl });
-
-  return (
-    <>
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      )}
-      <VehicleDetailClient vehicle={vehicle} />
-    </>
-  );
 }

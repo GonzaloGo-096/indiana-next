@@ -53,7 +53,8 @@ export const marcas = [
 export const combustibles = ["Nafta", "Diesel", "Gas"];
 
 // Tipos de caja de cambios (simplificados)
-export const cajas = ["Manual", "Automático", "Secuencial"];
+// "Automática" en UI; la API se amplía a Automático en buildSearchParams (filters.js)
+export const cajas = ["Manual", "Automática", "Secuencial"];
 
 // ✅ Opciones de ordenamiento
 export const SORT_OPTIONS = [
