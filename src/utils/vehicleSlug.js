@@ -53,7 +53,7 @@ export function buildVehicleDetailUrl(vehicle) {
     throw new Error("[vehicleSlug] buildVehicleDetailUrl: vehicle debe tener id o _id");
   }
 
-  const idStr = String(id).trim();
+  const idStr = slugSegmentSinBasura(String(id));
   const anio = vehicle.anio ?? vehicle.año;
   const parts = [vehicle.marca, vehicle.modelo, vehicle.version, anio]
     .filter((v) => v != null && String(v).trim() !== "")
@@ -69,6 +69,17 @@ const SLUG_ID_REGEX = /-([a-fA-F0-9]{24})$/i;
 
 /** Regex: string completo es exactamente 24 hex (URL vieja). Case-insensitive (MongoDB ObjectId). */
 const ID_ONLY_REGEX = /^[a-fA-F0-9]{24}$/i;
+
+/**
+ * Quita texto accidental pegado al slug (espacios, frases copiadas del chat, etc.).
+ * Ej: "peugeot-208-2017-699e29... Si ahí tam" → "peugeot-208-2017-699e29..."
+ */
+function slugSegmentSinBasura(raw) {
+  if (raw == null || typeof raw !== "string") return "";
+  const t = raw.trim();
+  if (!t) return "";
+  return t.split(/\s+/)[0] || t;
+}
 
 /**
  * Interpreta el segmento dinámico de la URL (/usados/[param]).
@@ -88,7 +99,7 @@ export function parseVehicleSlugParam(param) {
     return { id: null, needsRedirect: false };
   }
 
-  const trimmed = param.trim();
+  const trimmed = slugSegmentSinBasura(param);
 
   // URL vieja: solo ID (24 hex). Normalizar a minúscula (backend espera lowercase).
   if (ID_ONLY_REGEX.test(trimmed)) {

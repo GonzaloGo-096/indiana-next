@@ -42,8 +42,12 @@ const vehiclesService = {
    * Obtener un vehículo por ID
    */
   async getVehicleById(id) {
-    const response = await axiosInstance.get(`/photos/getonephoto/${id}`)
-    return response.data
+    const cleanId =
+      id != null && id !== undefined
+        ? `${id}`.trim().split(/\s+/)[0] || `${id}`.trim()
+        : "";
+    const response = await axiosInstance.get(`/photos/getonephoto/${cleanId}`);
+    return response.data;
   }
 }
 

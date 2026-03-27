@@ -162,16 +162,18 @@ export const vehiclesService = {
    * @returns {Promise<Object>} Vehículo del backend
    */
   async getVehicleById(id) {
-    try {
-      const isValidId =
-        id !== null && id !== undefined && `${id}`.trim() !== "";
+    const cleanId =
+      id != null && id !== undefined
+        ? `${id}`.trim().split(/\s+/)[0] || `${id}`.trim()
+        : "";
 
-      if (!isValidId) {
+    try {
+      if (!cleanId) {
         throw new Error("ID de vehículo inválido");
       }
 
       const baseURL = getApiBaseUrl();
-      const endpoint = `${baseURL}/photos/getonephoto/${id}`;
+      const endpoint = `${baseURL}/photos/getonephoto/${cleanId}`;
 
       // Logging solo en desarrollo
       if (process.env.NODE_ENV === "development") {
@@ -188,13 +190,13 @@ export const vehiclesService = {
         },
         next: {
           revalidate: 21600, // 6 horas
-          tags: ['vehicle-detail', `vehicle:${id}`],
+          tags: ['vehicle-detail', `vehicle:${cleanId}`],
         },
       });
 
       if (!response.ok) {
         console.error("[API Server] getVehicleById HTTP error:", {
-          id,
+          id: cleanId,
           status: response.status,
           statusText: response.statusText,
           endpoint,
@@ -213,7 +215,7 @@ export const vehiclesService = {
         data = text ? JSON.parse(text) : null;
       } catch (parseErr) {
         console.error("[API Server] getVehicleById respuesta no JSON:", {
-          id,
+          id: cleanId,
           endpoint,
           message: parseErr?.message,
         });
@@ -229,7 +231,7 @@ export const vehiclesService = {
       return vehicle;
     } catch (error) {
       console.error("[API Server] Error fetching vehicle by ID:", {
-        id,
+        id: cleanId,
         message: error.message,
       });
 
