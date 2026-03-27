@@ -118,9 +118,17 @@ h1, h2, h3 {
   padding-top: 92px; /* mobile: altura Nav ~80px + padding */
 }
 
+.main-content--maintenance {
+  padding-top: 0;
+}
+
 @media (min-width: var(--tablet-min)) {
   .main-content {
     padding-top: 116px; /* tablet+: altura Nav 100px + padding */
+  }
+
+  .main-content--maintenance {
+    padding-top: 0;
   }
 }
 

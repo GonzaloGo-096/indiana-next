@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Poppins, Barlow_Condensed } from "next/font/google";
 import dynamic from "next/dynamic";
+import { headers } from "next/headers";
 import "./globals.css";
 import { getSiteUrl } from "../lib/site-url";
 import Nav from "../components/layout/Nav";
@@ -60,22 +61,33 @@ function PageFallback() {
   return <div style={{ minHeight: "50vh" }} aria-hidden />;
 }
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  const requestHeaders = await headers();
+  const isMaintenanceView = requestHeaders.get("x-maintenance-view") === "1";
+
   return (
     <html lang="es" data-scroll-behavior="smooth">
       <body
         className={`${poppins.variable} ${barlowCondensed.variable}`}
       >
-        <ClientOnlyComponents />
-        <Nav />
-        <main className="main-content">
+        {!isMaintenanceView && <ClientOnlyComponents />}
+        {!isMaintenanceView && <Nav />}
+        <main
+          className={
+            isMaintenanceView
+              ? "main-content main-content--maintenance"
+              : "main-content"
+          }
+        >
           <Suspense fallback={<PageFallback />}>
             {children}
           </Suspense>
         </main>
-        <Suspense fallback={null}>
-          <Footer />
-        </Suspense>
+        {!isMaintenanceView && (
+          <Suspense fallback={null}>
+            <Footer />
+          </Suspense>
+        )}
       </body>
     </html>
   );
