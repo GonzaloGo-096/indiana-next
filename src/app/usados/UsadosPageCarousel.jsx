@@ -28,6 +28,7 @@ export default function UsadosPageCarousel({ vehicles = [] }) {
       vehicles={vehicles}
       compact={mobileStyleHome}
       viewportClip={mobileStyleHome}
+      flushLeadingEdge
     />
   );
 }

@@ -384,15 +384,6 @@ export default async function CeroKilometroDetallePage({ params }) {
         return null;
       })()}
 
-      {/* Sección de dimensiones (solo para utilitarios: Partner, Expert y Boxer) */}
-      {(autoSlug === "partner" ||
-        autoSlug === "expert" ||
-        autoSlug === "boxer") && (
-        <div style={{ padding: "2rem", textAlign: "center", color: "#666" }}>
-          <p>Dimensions Section (placeholder)</p>
-        </div>
-      )}
-
       {/* CTA Contacto - Antes de la galería */}
       <div className={styles.ctaContainer}>
         <section className={styles.ctaSection}>

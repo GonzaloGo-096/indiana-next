@@ -2,7 +2,7 @@
  * /usados - Página principal de usados (Server Component)
  * 
  * ✅ ARQUITECTURA:
- * - Sección 1: Título + botón "Ver todos" + carrusel de 8 autos
+ * - Sección vehículos: título + "Ver todos" + carrusel debajo (inicio alineado con el título)
  * - Sección 2: Promociones y formas de pago
  * 
  * @author Indiana Peugeot
@@ -102,16 +102,20 @@ export default async function UsadosPage() {
         <PromocionesCarousel />
       </header>
 
-      {/* Sección 2: Título + Botón "Ver todos" + Carrusel (abajo) */}
+      {/* Título arriba; carrusel debajo con inicio alineado al título */}
       <section className={styles.vehiclesSection}>
         <div className={styles.vehiclesContainer}>
-          <div className={styles.vehiclesHeader}>
-            <h1 className={styles.vehiclesTitle}>Vehículos Usados</h1>
-            <Link href="/usados/vehiculos" className={styles.verTodosButton}>
-              Ver todos
-            </Link>
+          <div className={styles.vehiclesStack}>
+            <div className={styles.vehiclesHeader}>
+              <h1 className={styles.vehiclesTitle}>Vehículos Usados</h1>
+              <Link href="/usados/vehiculos" className={styles.verTodosButton}>
+                Ver todos
+              </Link>
+            </div>
+            <div className={styles.vehiclesCarouselSlot}>
+              <UsadosPageCarousel vehicles={vehicles} />
+            </div>
           </div>
-          <UsadosPageCarousel vehicles={vehicles} />
         </div>
       </section>
     </div>

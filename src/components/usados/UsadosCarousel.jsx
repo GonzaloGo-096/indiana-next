@@ -12,7 +12,7 @@
  * - Mobile-first responsive design
  * - Skeleton loading states
  * - Manejo de estados vacíos
- * - Flechas unificadas (40px x 40px, fondo negro, posición absoluta)
+ * - Desktop: flechas en columnas laterales (flex), fuera de la pista de scroll
  * 
  * @author Indiana Peugeot
  * @version 1.0.0
@@ -64,12 +64,14 @@ const SkeletonCard = () => (
  * @param {boolean} compact - Cards más pequeñas (para home mobile / usados mobile)
  * @param {boolean} viewportClip - Clipping en borde del viewport (solo mobile en inicio y en /usados)
  * @param {boolean} homeDesktopFourColumns - Solo inicio desktop: cards un poco más angostas para mostrar 4 a la vez
+ * @param {boolean} flushLeadingEdge - Alinea el inicio del scroll con el borde del contenedor (p. ej. /usados con título arriba)
  */
 export const UsadosCarousel = ({
   vehicles = [],
   compact = false,
   viewportClip = false,
   homeDesktopFourColumns = false,
+  flushLeadingEdge = false,
 }) => {
   const carouselRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -237,28 +239,32 @@ export const UsadosCarousel = ({
   );
 
   const carouselInner = (
-    <>
+    <div className={styles.carouselFrame}>
       {canScrollLeft && (
-        <button
-          className={styles.arrowButton}
-          onClick={scrollLeft}
-          aria-label="Desplazar hacia la izquierda"
-          type="button"
-        >
-          <ChevronIcon direction="left" size={20} />
-        </button>
+        <div className={styles.carouselNavPrev}>
+          <button
+            type="button"
+            className={styles.carouselArrow}
+            onClick={scrollLeft}
+            aria-label="Desplazar hacia la izquierda"
+          >
+            <ChevronIcon direction="left" size={20} />
+          </button>
+        </div>
       )}
-      {carouselContent}
-      <button
-        className={`${styles.arrowButton} ${styles.arrowButtonRight} ${!canScrollRight ? styles.arrowButtonDisabled : ""}`}
-        onClick={scrollRight}
-        aria-label="Desplazar hacia la derecha"
-        type="button"
-        disabled={!canScrollRight}
-      >
-        <ChevronIcon direction="right" size={20} />
-      </button>
-    </>
+      <div className={styles.carouselTrack}>{carouselContent}</div>
+      <div className={styles.carouselNavNext}>
+        <button
+          type="button"
+          className={`${styles.carouselArrow} ${!canScrollRight ? styles.carouselArrowDisabled : ""}`}
+          onClick={scrollRight}
+          aria-label="Desplazar hacia la derecha"
+          disabled={!canScrollRight}
+        >
+          <ChevronIcon direction="right" size={20} />
+        </button>
+      </div>
+    </div>
   );
 
   const wrapperClassName = [
@@ -266,6 +272,7 @@ export const UsadosCarousel = ({
     compact ? styles.carouselCompact : "",
     viewportClip ? styles.carouselViewportClip : "",
     homeDesktopFourColumns ? styles.carouselHomeDesktopFour : "",
+    flushLeadingEdge ? styles.carouselFlushLeading : "",
   ]
     .filter(Boolean)
     .join(" ");

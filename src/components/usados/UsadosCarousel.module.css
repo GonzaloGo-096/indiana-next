@@ -3,7 +3,7 @@
  * 
  * Diseño mobile-first con scroll horizontal suave.
  * Cards adaptadas para tamaño más compacto en carrusel.
- * Flechas unificadas: 40px x 40px, fondo negro, posición absoluta.
+ * Desktop: flechas en columnas flex fuera de la pista de scroll (sin overlay sobre cards).
  * 
  * @author Indiana Peugeot
  * @version 1.0.0
@@ -17,71 +17,118 @@
   box-sizing: border-box;
 }
 
-/* ===== CARRUSEL WRAPPER - Flechas fuera del contenedor ===== */
+/* ===== CARRUSEL WRAPPER ===== */
 .carouselWrapper {
   position: relative;
   width: 100%;
   max-width: 100%;
   overflow: visible;
-  padding: 0 48px; /* Flechas en el padding; incluido en el 100% para no desbordar a la derecha */
+  padding: 0;
   box-sizing: border-box;
 }
 
-/* ===== FLECHAS - Sutiles, absolute, fuera del contenedor ===== */
-.arrowButton {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  left: 0;
+/* /usados: primera card alineada con el título */
+.carouselFlushLeading .carouselContainer {
+  padding-left: 0;
+}
+
+.carouselFlushLeading .cardWrapper:first-child {
+  margin-left: 0;
+}
+
+/* ===== MARCO: pista de scroll + columnas de navegación (sin overlay) ===== */
+.carouselFrame {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--spacing-3);
+  box-sizing: border-box;
+}
+
+.carouselTrack {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.carouselNavPrev,
+.carouselNavNext {
+  display: none;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  width: 40px;
+  flex-shrink: 0;
+}
+
+@media (min-width: 992px) {
+  .carouselNavPrev,
+  .carouselNavNext {
+    display: flex;
+  }
+}
+
+@media (max-width: 991px) {
+  .carouselFrame {
+    display: block;
+  }
+
+  .carouselTrack {
+    width: 100%;
+  }
+}
+
+.carouselArrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 32px;
   height: 32px;
+  padding: 0;
+  margin: 0;
   background: rgba(0, 0, 0, 0.06);
   color: var(--color-neutral-600);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 50%;
-  display: none;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-  z-index: 10;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.arrowButton:hover {
+.carouselArrow:hover:not(:disabled) {
   background: rgba(0, 0, 0, 0.1);
   color: var(--color-neutral-900);
   border-color: rgba(0, 0, 0, 0.12);
 }
 
-.arrowButton:active {
-  transform: translateY(-50%) scale(0.96);
+.carouselArrow:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
-.arrowButton:focus-visible {
+.carouselArrow:focus-visible {
   outline: 2px solid var(--color-brand-500);
   outline-offset: 2px;
 }
 
-.arrowButton svg {
+.carouselArrow svg {
   width: 16px;
   height: 16px;
   stroke-width: 2;
 }
 
-.arrowButtonRight {
-  left: auto;
-  right: 0;
-}
-
-.arrowButtonDisabled {
+.carouselArrowDisabled {
   opacity: 0.25;
   cursor: not-allowed;
-  pointer-events: none;
 }
 
-.arrowButtonDisabled:hover {
+.carouselArrowDisabled:hover {
   background: rgba(0, 0, 0, 0.06);
-  transform: translateY(-50%);
+  color: var(--color-neutral-600);
+  border-color: rgba(0, 0, 0, 0.08);
 }
 
 /* ===== CONTENEDOR DE CARRUSEL (scroll horizontal) ===== */
@@ -109,16 +156,6 @@
 /* viewportClip: sin padding-left en el container (el spacer lo reemplaza) */
 .viewportClip .carouselContainer {
   padding-left: 0 !important;
-}
-
-/* Flechas ligeramente insettadas para no pegar al borde del viewport */
-.viewportClip .arrowButton {
-  left: 12px;
-}
-
-.viewportClip .arrowButtonRight {
-  left: auto;
-  right: 12px;
 }
 
 /* viewportClip: componente vacío transparente - ocupa espacio, cards arrancan más a la derecha */
@@ -452,14 +489,6 @@
   .carouselContainer {
     gap: 1.25rem;
     padding: var(--spacing-4) var(--spacing-4) var(--spacing-6) var(--spacing-4);
-  }
-
-  .arrowButton {
-    display: flex !important;
-  }
-
-  .arrowButtonRight {
-    display: flex !important;
   }
 
   .cardWrapper {
