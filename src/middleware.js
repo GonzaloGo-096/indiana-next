@@ -130,6 +130,8 @@ export function middleware(request) {
   return withHeaders(response, maintenanceHeaders());
 }
 
+// Incluir "/" explícito: `/:path*` no aplica al home en Next, y el home quedaba
+// fuera del middleware (home “normal” y /planes en mantenimiento si MODE=true).
 export const config = {
-  matcher: ["/:path*"],
+  matcher: ["/", "/:path*"],
 };

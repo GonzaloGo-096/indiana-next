@@ -1,8 +1,19 @@
 export const MAINTENANCE_BYPASS_COOKIE = "maintenance_bypass";
 export const MAINTENANCE_PAGE_PATH = "/mantenimiento";
 
+/**
+ * Mantenimiento activo solo con MAINTENANCE_MODE=true.
+ * En desarrollo (next dev) se ignora salvo MAINTENANCE_MODE_DEV=true,
+ * para poder trabajar en local aunque .env.local tenga el flag de producción.
+ */
 export function isMaintenanceEnabled() {
-  return process.env.MAINTENANCE_MODE === "true";
+  if (process.env.MAINTENANCE_MODE !== "true") {
+    return false;
+  }
+  if (process.env.NODE_ENV !== "production") {
+    return process.env.MAINTENANCE_MODE_DEV === "true";
+  }
+  return true;
 }
 
 export function getRetryAfterSeconds() {
