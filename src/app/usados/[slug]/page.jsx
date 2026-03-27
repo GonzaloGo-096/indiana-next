@@ -182,6 +182,9 @@ export async function generateStaticParams() {
   return [];
 }
 
+/** Siempre render dinámico: el detalle depende del GET a /photos/getonephoto/:id en el servidor. */
+export const dynamic = "force-dynamic";
+
 /**
  * Página de detalle de vehículo
  */
@@ -272,9 +275,7 @@ export default async function VehicleDetailPage({ params }) {
     if (error?.digest?.startsWith?.("NEXT_REDIRECT")) throw error;
     if (error?.digest === "NEXT_NOT_FOUND") throw error;
 
-    if (process.env.NODE_ENV === "development") {
-      console.error("[VehicleDetailPage] Error:", error);
-    }
+    console.error("[VehicleDetailPage] Error:", error?.message || error);
 
     if (
       error.message?.includes("not found") ||
@@ -283,10 +284,26 @@ export default async function VehicleDetailPage({ params }) {
       notFound();
     }
 
+    const isApiFailure =
+      error.message?.includes("API error:") ||
+      error.message?.includes("No se pudo conectar") ||
+      error.message?.includes("Request timeout") ||
+      error.message?.includes("respuesta inválida");
+
     return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
+      <div style={{ padding: "2rem", textAlign: "center", maxWidth: "36rem", margin: "0 auto" }}>
         <h1>Error al cargar vehículo</h1>
         <p>{error.message || "Error desconocido"}</p>
+        {isApiFailure ? (
+          <p style={{ marginTop: "1rem", color: "#555", fontSize: "0.95rem" }}>
+            El detalle de usados pide al backend{" "}
+            <code style={{ fontSize: "0.85em" }}>GET /photos/getonephoto/&lt;id&gt;</code> desde el
+            servidor (Vercel). Revisá que{" "}
+            <code style={{ fontSize: "0.85em" }}>NEXT_PUBLIC_API_URL</code> o{" "}
+            <code style={{ fontSize: "0.85em" }}>API_URL</code> apunten al API público en{" "}
+            <strong>https</strong> y que el backend responda bien a ese ID.
+          </p>
+        ) : null}
       </div>
     );
   }

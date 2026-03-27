@@ -313,7 +313,14 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function CeroKilometroDetallePage({ params }) {
-  const { autoSlug: rawSlug } = await params;
+  let rawSlug;
+  try {
+    const p = await params;
+    rawSlug = p.autoSlug;
+  } catch {
+    notFound();
+  }
+
   const autoSlug = normalizeAutoSlug(rawSlug);
   const modelo = getModelo(autoSlug);
 
@@ -321,19 +328,29 @@ export default async function CeroKilometroDetallePage({ params }) {
     notFound();
   }
 
-  // Generar Structured Data (JSON-LD) con URL absoluta
-  const canonicalUrl = absoluteUrl(`/0km/${autoSlug}`);
-  const jsonLd = getModeloJsonLd({ modelo, canonicalUrl });
+  try {
+    const canonicalUrl = absoluteUrl(`/0km/${autoSlug}`);
+    const jsonLd = getModeloJsonLd({ modelo, canonicalUrl });
 
-  return (
+    let jsonLdHtml = null;
+    if (jsonLd) {
+      try {
+        jsonLdHtml = JSON.stringify(jsonLd);
+      } catch (stringifyErr) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn("[0km detalle] JSON-LD omitido:", stringifyErr);
+        }
+      }
+    }
+
+    return (
     <div className={styles.page}>
-      {/* Structured Data (JSON-LD) para SEO */}
-      {jsonLd && (
+      {jsonLdHtml ? (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdHtml }}
         />
-      )}
+      ) : null}
       {/* Hero Image (solo desktop) - Client Component para evitar carga en mobile */}
       {modelo.heroImage && (
         <HeroImageDesktop heroImage={{ ...modelo.heroImage, modelName: modelo.nombre }} />
@@ -417,5 +434,20 @@ export default async function CeroKilometroDetallePage({ params }) {
         <ModelGallery images={modelo.galeria} title="Galería" />
       )}
     </div>
-  );
+    );
+  } catch (error) {
+    if (error?.digest === "NEXT_NOT_FOUND") throw error;
+    if (error?.digest?.startsWith?.("NEXT_REDIRECT")) throw error;
+
+    if (process.env.NODE_ENV === "development") {
+      console.error("[CeroKilometroDetallePage]", error);
+    }
+
+    return (
+      <div style={{ padding: "2rem", textAlign: "center" }}>
+        <h1>Error al cargar el modelo</h1>
+        <p>{error.message || "Error desconocido"}</p>
+      </div>
+    );
+  }
 }

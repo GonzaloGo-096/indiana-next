@@ -193,6 +193,12 @@ export const vehiclesService = {
       });
 
       if (!response.ok) {
+        console.error("[API Server] getVehicleById HTTP error:", {
+          id,
+          status: response.status,
+          statusText: response.statusText,
+          endpoint,
+        });
         if (response.status === 404) {
           throw new Error("Vehículo no encontrado");
         }
@@ -201,7 +207,20 @@ export const vehiclesService = {
         );
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : null;
+      } catch (parseErr) {
+        console.error("[API Server] getVehicleById respuesta no JSON:", {
+          id,
+          endpoint,
+          message: parseErr?.message,
+        });
+        throw new Error(
+          "El servidor devolvió una respuesta inválida al cargar el vehículo."
+        );
+      }
 
       // El backend puede retornar { getOnePhoto: {...} } o directamente el objeto
       const vehicle =
@@ -209,7 +228,6 @@ export const vehiclesService = {
 
       return vehicle;
     } catch (error) {
-      // Manejo de errores robusto
       console.error("[API Server] Error fetching vehicle by ID:", {
         id,
         message: error.message,
