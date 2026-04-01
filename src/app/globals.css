@@ -132,6 +132,16 @@ h1, h2, h3 {
   }
 }
 
+/*
+ * Separación contenido → footer: el padding-bottom va en el hijo directo del main
+ * (el root element del page) en lugar de en .main-content. Así la zona de separación
+ * hereda el background de la PÁGINA, no del body, y no crea una franja de otro color.
+ * Se excluyen admin (usa .admin-container con su propio padding) y maintenance.
+ */
+.main-content:not(.main-content--maintenance) > * {
+  padding-bottom: clamp(3rem, 6vw, 5rem);
+}
+
 /* Admin layout */
 .admin-container {
   padding: var(--spacing-6, 1.5rem) var(--spacing-4, 1rem);

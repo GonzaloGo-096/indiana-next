@@ -1,13 +1,21 @@
 /* ===== LOADING STATE STYLES ===== */
 .container {
-  min-height: 60vh;
+  /* Ocupa todo el viewport menos la Nav fija (92px mobile / 116px tablet+).
+     Evita que el footer suba durante la carga y luego baje cuando llega el contenido. */
+  min-height: calc(100dvh - 92px);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: var(--spacing-4);
   padding: var(--spacing-6);
-  background: var(--color-surface, #ffffff);
+  background: transparent;
+}
+
+@media (min-width: 768px) {
+  .container {
+    min-height: calc(100dvh - 116px);
+  }
 }
 
 .spinner {

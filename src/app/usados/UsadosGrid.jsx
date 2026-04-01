@@ -18,15 +18,22 @@ import styles from "./usados.module.css";
  * @param {Object} props
  * @param {Object} props.vehicle - Datos del vehículo
  * @param {boolean} props.isPriority - Si es una de las primeras 4-6 cards (LCP)
+ * @param {number} props.index - Posición en el grid, para animación escalonada
  */
-function VehicleCard({ vehicle, isPriority = false }) {
+function VehicleCard({ vehicle, isPriority = false, index = 0 }) {
   const imageUrl = vehicle.fotoPrincipal || vehicle.imagen || "";
   const altText = vehicle.marca && vehicle.modelo
     ? `${vehicle.marca} ${vehicle.modelo}`
     : "Vehículo usado";
 
+  const delay = `${Math.min(index * 0.06, 0.42)}s`;
+
   return (
-    <Link href={buildVehicleDetailUrl(vehicle)} className={styles.vehicleCard}>
+    <Link
+      href={buildVehicleDetailUrl(vehicle)}
+      className={styles.vehicleCard}
+      style={{ animationDelay: delay }}
+    >
       <div className={styles.vehicleCardImage}>
         {imageUrl ? (
           <Image
@@ -128,6 +135,7 @@ export default function UsadosGrid({
             key={vehicle.id} 
             vehicle={vehicle}
             isPriority={index < 6}
+            index={index}
           />
         ))}
       </div>

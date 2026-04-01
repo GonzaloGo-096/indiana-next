@@ -142,8 +142,8 @@
   border: 2px solid var(--color-brand-500);
   border-radius: var(--border-radius-md);
   text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
+  text-transform: none;
+  letter-spacing: 0.3px;
   font-family: var(--font-condensed);
   font-weight: var(--font-weight-bold);
   font-size: clamp(1rem, 2.5vw, 1.25rem);
@@ -169,7 +169,7 @@
   outline-offset: 2px;
 }
 
-/* Mobile: botones lado a lado, centrados en el contenedor */
+/* Mobile: botones lado a lado, centrados con margen lateral */
 @media (max-width: 767px) {
   .section {
     overflow-x: hidden;
@@ -180,13 +180,15 @@
     gap: var(--spacing-3);
     width: 100%;
     justify-content: center;
-    padding: 0;
+    padding: 0 1.25rem;
+    box-sizing: border-box;
   }
 
   .button {
     min-width: 0;
-    flex: 0 0 auto;
-    padding: var(--spacing-2) var(--spacing-5);
+    flex: 1;
+    max-width: 180px;
+    padding: var(--spacing-2) var(--spacing-4);
     height: 42px;
   }
 }

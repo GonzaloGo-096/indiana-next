@@ -1,12 +1,13 @@
 import styles from "../../loading.module.css";
 
 /**
- * Loading State para página de detalle de vehículo
+ * Loading State para /usados/[slug]
  *
- * Se muestra mientras Next.js está cargando la página del vehículo.
- * Usa spinner en lugar de skeleton.
+ * Usa el mismo spinner compartido que el resto del sitio.
+ * El contenedor llena el viewport (menos la Nav) para que el footer
+ * no suba durante la carga y luego baje al aparecer el contenido.
  */
-export default function Loading() {
+export default function VehicleDetailLoading() {
   return (
     <div className={styles.container}>
       <div className={styles.spinner}>

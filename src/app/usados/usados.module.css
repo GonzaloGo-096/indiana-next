@@ -504,6 +504,17 @@
   margin-bottom: var(--spacing-6);
 }
 
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .vehicleCard {
   display: flex;
   flex-direction: column;
@@ -514,11 +525,18 @@
   text-decoration: none;
   color: inherit;
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  animation: cardFadeIn 0.4s ease both;
 }
 
 .vehicleCard:hover {
   transform: translateY(-4px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vehicleCard {
+    animation: none;
+  }
 }
 
 .vehicleCardImage {

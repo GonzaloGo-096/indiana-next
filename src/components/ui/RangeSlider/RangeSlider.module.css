@@ -53,15 +53,15 @@
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 18px;
-  height: 18px;
-  background: var(--color-white, #ffffff); /* ✅ CAMBIADO: Fondo blanco */
-  border: 2px solid var(--color-neutral-900, #111827); /* ✅ CAMBIADO: Borde negro */
+  width: 14px;
+  height: 14px;
+  background: var(--color-white, #ffffff);
+  border: 2px solid var(--color-neutral-900, #111827);
   border-radius: 50%;
   cursor: grab;
   transition: all 0.2s ease;
   z-index: 2;
-  touch-action: none; /* ✅ Evita que el navegador capture gestos de scroll */
+  touch-action: none;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -140,75 +140,75 @@
 }
 
 .value {
-  font-size: var(--font-size-lg, 1.125rem);
+  font-size: var(--font-size-sm, 0.875rem);
   color: var(--color-text-primary, #1a1a1a);
-  font-weight: 400; /* ✅ Menos bold - peso normal */
+  font-weight: 400;
 }
 
 .separator {
   color: var(--color-text-primary, #1a1a1a);
-  font-size: var(--font-size-lg, 1.125rem);
+  font-size: var(--font-size-sm, 0.875rem);
   margin: 0 var(--spacing-xs, 0.5rem);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .rangeSlider {
-    width: 100%; /* En mobile usar ancho completo */
+    width: 100%;
   }
   
   .label {
-    font-size: var(--font-size-base, 1rem);
+    font-size: var(--font-size-sm, 0.875rem);
   }
   
   .track {
-    height: 10px; /* ✅ Más grueso */
+    height: 6px;
   }
   
   .thumb {
-    width: 32px; /* ✅ Más grande */
-    height: 32px; /* ✅ Más grande */
-    border-width: 3px; /* ✅ Borde más grueso */
+    width: 22px;
+    height: 22px;
+    border-width: 2px;
   }
   
   .values {
-    font-size: 1.25rem; /* ✅ Más grande - 20px */
+    font-size: 0.875rem;
   }
   
   .value {
-    font-size: 1.25rem; /* ✅ Más grande - 20px */
-    font-weight: 400; /* ✅ Menos bold - peso normal */
+    font-size: 0.875rem;
+    font-weight: 400;
   }
   
   .separator {
-    font-size: 1.25rem; /* ✅ Más grande también */
+    font-size: 0.875rem;
   }
   
   .tooltip {
-    font-size: 0.75rem; /* ✅ Más chico - 12px */
-    padding: 4px 8px; /* ✅ Padding reducido */
-    font-weight: 600; /* ✅ Más bold */
-    bottom: 35px; /* ✅ Ajustado para la bolilla más grande */
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    font-weight: 600;
+    bottom: 28px;
   }
 }
 
 /* Touch optimizations */
 @media (hover: none) and (pointer: coarse) {
   .thumb {
-    width: 32px; /* ✅ Más grande para touch */
-    height: 32px; /* ✅ Más grande para touch */
-    border-width: 3px; /* ✅ Borde más grueso */
+    width: 22px;
+    height: 22px;
+    border-width: 2px;
   }
   
   .track {
-    height: 10px; /* ✅ Más grueso */
+    height: 6px;
   }
   
   .tooltip {
-    font-size: 1.125rem; /* ✅ Mucho más grande - 18px */
-    padding: 8px 14px; /* ✅ Más padding */
-    font-weight: 600; /* ✅ Más bold */
-    bottom: 35px; /* ✅ Ajustado para la bolilla más grande */
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    font-weight: 600;
+    bottom: 28px;
   }
 }
 
