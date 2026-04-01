@@ -6,6 +6,7 @@ import "./globals.css";
 import { getSiteUrl } from "../lib/site-url";
 import Nav from "../components/layout/Nav";
 import ClientOnlyComponents from "../components/layout/ClientOnlyComponents";
+import MarketingTracking from "../components/tracking/MarketingTracking";
 
 const Footer = dynamic(() => import("../components/layout/Footer"), {
   ssr: true,
@@ -29,6 +30,14 @@ const barlowCondensed = Barlow_Condensed({
 
 export const metadata = {
   metadataBase: new URL(getSiteUrl()),
+  icons: {
+    icon: {
+      url: "/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp",
+      type: "image/webp",
+    },
+    shortcut: "/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp",
+    apple: "/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp",
+  },
   title: {
     template: "%s | Indiana Peugeot",
     default:
@@ -64,12 +73,15 @@ function PageFallback() {
 export default async function RootLayout({ children }) {
   const requestHeaders = await headers();
   const isMaintenanceView = requestHeaders.get("x-maintenance-view") === "1";
+  const skipMarketing =
+    isMaintenanceView || requestHeaders.get("x-indiana-no-tracking") === "1";
 
   return (
     <html lang="es" data-scroll-behavior="smooth">
       <body
         className={`${poppins.variable} ${barlowCondensed.variable}`}
       >
+        {!skipMarketing && <MarketingTracking />}
         {!isMaintenanceView && <ClientOnlyComponents />}
         {!isMaintenanceView && <Nav />}
         <main

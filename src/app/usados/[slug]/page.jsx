@@ -182,8 +182,9 @@ export async function generateStaticParams() {
   return [];
 }
 
-/** Siempre render dinámico: el detalle depende del GET a /photos/getonephoto/:id en el servidor. */
-export const dynamic = "force-dynamic";
+/**
+ * Sin force-dynamic: el detalle sigue siendo dinámico por [slug]; el fetch a getonephoto mantiene su revalidate.
+ */
 
 /**
  * Página de detalle de vehículo

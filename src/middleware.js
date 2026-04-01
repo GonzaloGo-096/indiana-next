@@ -44,6 +44,15 @@ function withHeaders(response, headersObj) {
   return response;
 }
 
+/** Request header leída en RootLayout para no cargar GTM/Pixel en el panel admin */
+function nextWithTrackingHeaders(request) {
+  const headers = new Headers(request.headers);
+  if (request.nextUrl.pathname.startsWith("/admin")) {
+    headers.set("x-indiana-no-tracking", "1");
+  }
+  return NextResponse.next({ request: { headers } });
+}
+
 export function middleware(request) {
   const { pathname, searchParams } = request.nextUrl;
 
@@ -75,29 +84,29 @@ export function middleware(request) {
   }
 
   if (!isMaintenanceEnabled()) {
-    return NextResponse.next();
+    return nextWithTrackingHeaders(request);
   }
 
   const hasBypass = request.cookies.get(MAINTENANCE_BYPASS_COOKIE)?.value === "1";
   if (hasBypass) {
-    return NextResponse.next();
+    return nextWithTrackingHeaders(request);
   }
 
   if (isStaticLikePath(pathname)) {
-    return NextResponse.next();
+    return nextWithTrackingHeaders(request);
   }
 
   if (pathname.startsWith("/admin")) {
-    return NextResponse.next();
+    return nextWithTrackingHeaders(request);
   }
 
   if (pathname === MAINTENANCE_PAGE_PATH) {
-    return NextResponse.next();
+    return nextWithTrackingHeaders(request);
   }
 
   if (pathname.startsWith("/api")) {
     if (isAllowedApiPath(pathname)) {
-      return NextResponse.next();
+      return nextWithTrackingHeaders(request);
     }
 
     // Explicitly blocked or non-allowlisted APIs receive maintenance response.

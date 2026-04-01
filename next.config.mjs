@@ -1,5 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  async redirects() {
+    return [
+      {
+        source: "/favicon.ico",
+        destination:
+          "/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp",
+        permanent: false,
+      },
+    ];
+  },
   // Desactivar reactCompiler para acelerar build (puede reactivarse si es necesario)
   reactCompiler: false,
   images: {

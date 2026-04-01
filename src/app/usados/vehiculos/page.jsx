@@ -16,7 +16,7 @@ import { Suspense } from "react";
 import { vehiclesService } from "../../../lib/services/vehiclesApi.server";
 import { mapVehiclesPage } from "../../../lib/mappers/vehicleMapper";
 import { parseFilters } from "../../../utils/filters";
-import { absoluteUrl } from "../../../lib/site-url";
+import { getSiteUrl, tryAbsoluteUrl } from "../../../lib/site-url";
 import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
 import VehiculosClient from "./VehiculosClient";
 
@@ -129,11 +129,11 @@ function buildCanonicalUrl(searchParams) {
   const hasIndexable = Object.keys(indexableParams).length > 0;
 
   if (!hasIndexable) {
-    // Sin filtros indexables: canonical base sin query string
-    return absoluteUrl("/usados/vehiculos");
+    return (
+      tryAbsoluteUrl("/usados/vehiculos") ?? "/usados/vehiculos"
+    );
   }
 
-  // Construir query string ordenado alfabéticamente
   const params = new URLSearchParams();
   const keysSorted = Object.keys(indexableParams).sort();
 
@@ -142,7 +142,8 @@ function buildCanonicalUrl(searchParams) {
   }
 
   const queryString = params.toString();
-  return absoluteUrl(`/usados/vehiculos?${queryString}`);
+  const path = `/usados/vehiculos?${queryString}`;
+  return tryAbsoluteUrl(path) ?? path;
 }
 
 /**
@@ -153,6 +154,18 @@ function getVehiclesListJsonLd(vehicles) {
   if (!vehicles || !Array.isArray(vehicles) || vehicles.length === 0) {
     return null;
   }
+
+  let siteBase;
+  try {
+    siteBase = getSiteUrl();
+  } catch {
+    return null;
+  }
+
+  const toAbs = (path) => {
+    const p = path.startsWith("/") ? path : `/${path}`;
+    return `${siteBase}${p}`;
+  };
 
   const itemListElement = vehicles.map((vehicle, index) => {
     const vehicleName = vehicle.marca && vehicle.modelo
@@ -171,7 +184,7 @@ function getVehiclesListJsonLd(vehicles) {
     return {
       "@type": "ListItem",
       position: index + 1,
-      url: absoluteUrl(detailPath),
+      url: toAbs(detailPath),
       name: `${vehicleName}${vehicleYear}`,
     };
   });
@@ -186,66 +199,85 @@ function getVehiclesListJsonLd(vehicles) {
 }
 
 export async function generateMetadata({ searchParams }) {
-  // ✅ IMPORTANTE: En Next.js 15+, searchParams es una Promise
-  const resolvedSearchParams = await searchParams;
-  const filters = parseFilters(resolvedSearchParams || {});
-  const hasFilters = Object.keys(filters).length > 0;
+  try {
+    const resolvedSearchParams = await searchParams;
+    const filters = parseFilters(resolvedSearchParams || {});
+    const hasFilters = Object.keys(filters).length > 0;
 
-  // ✅ SEO: Construir canonical con solo filtros indexables
-  const canonicalUrl = buildCanonicalUrl(resolvedSearchParams || {});
+    const canonicalUrl = buildCanonicalUrl(resolvedSearchParams || {});
 
-  // ✅ SEO: Verificar si hay parámetros no-indexables (page/sort/etc)
-  const hasNonIndexable = hasNonIndexableParams(resolvedSearchParams || {});
+    const hasNonIndexable = hasNonIndexableParams(resolvedSearchParams || {});
 
-  // ✅ SEO: Verificar si hay filtros indexables
-  const indexableParams = pickIndexableParams(resolvedSearchParams || {});
-  const hasIndexableFilters = Object.keys(indexableParams).length > 0;
+    const title = hasFilters
+      ? "Vehículos Usados Filtrados | Indiana Peugeot"
+      : "Vehículos Usados Multimarca | Indiana Peugeot";
+    const description = hasFilters
+      ? "Encontrá el vehículo usado que buscás con nuestros filtros avanzados. Amplia selección con garantía y financiación."
+      : "Amplia selección de vehículos usados multimarca en Indiana Peugeot. Garantía incluida, financiación disponible y servicio postventa profesional.";
 
-  const title = hasFilters
-    ? "Vehículos Usados Filtrados | Indiana Peugeot"
-    : "Vehículos Usados Multimarca | Indiana Peugeot";
-  const description = hasFilters
-    ? "Encontrá el vehículo usado que buscás con nuestros filtros avanzados. Amplia selección con garantía y financiación."
-    : "Amplia selección de vehículos usados multimarca en Indiana Peugeot. Garantía incluida, financiación disponible y servicio postventa profesional.";
+    const robots = hasNonIndexable
+      ? { index: false, follow: true }
+      : undefined;
 
-  // ✅ SEO: Robots meta tag
-  // Si hay parámetros no-indexables (page/sort/etc) o parámetros desconocidos → noindex
-  // Si solo hay filtros indexables → permitir index (index,follow por defecto)
-  const robots = hasNonIndexable
-    ? { index: false, follow: true }
-    : undefined; // undefined = index,follow por defecto
+    const ogImage =
+      tryAbsoluteUrl(
+        "/assets/logos/logos-indiana/desktop/azul-chico-desktop.webp"
+      ) ?? null;
 
-  return {
-    title,
-    description,
-    robots, // ✅ SEO: Control de indexación según filtros
-    openGraph: {
+    return {
       title,
       description,
-      url: canonicalUrl, // ✅ SEO: og:url debe coincidir con canonical
-      siteName: "Indiana Peugeot",
-      locale: "es_AR",
-      type: "website",
-      images: [
-        {
-          url: absoluteUrl("/assets/logos/logos-indiana/desktop/azul-chico-desktop.webp"),
-          alt: "Vehículos Usados Multimarca - Indiana Peugeot",
-          width: 1200,
-          height: 630,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [absoluteUrl("/assets/logos/logos-indiana/desktop/azul-chico-desktop.webp")],
-    },
-    alternates: {
-      canonical: canonicalUrl, // ✅ SEO: Canonical con solo filtros indexables
-    },
-  };
+      robots,
+      openGraph: {
+        title,
+        description,
+        url: canonicalUrl,
+        siteName: "Indiana Peugeot",
+        locale: "es_AR",
+        type: "website",
+        images: ogImage
+          ? [
+              {
+                url: ogImage,
+                alt: "Vehículos Usados Multimarca - Indiana Peugeot",
+                width: 1200,
+                height: 630,
+              },
+            ]
+          : [],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: ogImage ? [ogImage] : [],
+      },
+      alternates: {
+        canonical: canonicalUrl,
+      },
+    };
+  } catch (err) {
+    const msg = err?.message || String(err);
+    if (
+      msg.includes("Dynamic server usage") ||
+      msg.includes("couldn't be rendered statically")
+    ) {
+      throw err;
+    }
+    console.error("[usados/vehiculos] generateMetadata:", msg);
+    return {
+      title: "Vehículos Usados | Indiana Peugeot",
+      description:
+        "Vehículos usados multimarca en Indiana Peugeot, Tucumán.",
+      alternates: { canonical: "/usados/vehiculos" },
+    };
+  }
 }
+
+/**
+ * No usar force-dynamic: obligaba a renderizar cada request en Vercel (TTFB alto y sensación de lag).
+ * Esta ruta ya es dinámica por searchParams; el fetch usa Data Cache (revalidate en vehiclesApi.server).
+ */
 
 /**
  * Página principal de vehículos
@@ -275,19 +307,24 @@ export default async function VehiculosPage({ searchParams }) {
     // Mapear datos del backend al formato frontend
     const mappedData = mapVehiclesPage(backendData, cursor);
 
-    // Generar Structured Data (JSON-LD) para el listado
-    const jsonLd = getVehiclesListJsonLd(mappedData.vehicles || []);
+    let jsonLdHtml = null;
+    try {
+      const jsonLd = getVehiclesListJsonLd(mappedData.vehicles || []);
+      if (jsonLd) {
+        jsonLdHtml = JSON.stringify(jsonLd);
+      }
+    } catch (jsonErr) {
+      console.error("[VehiculosPage] JSON-LD omitido:", jsonErr?.message || jsonErr);
+    }
 
-    // Pasar datos iniciales a Client Component con JSON-LD
     return (
       <>
-        {/* Structured Data (JSON-LD) para SEO */}
-        {jsonLd && (
+        {jsonLdHtml ? (
           <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            dangerouslySetInnerHTML={{ __html: jsonLdHtml }}
           />
-        )}
+        ) : null}
         {/* ✅ Suspense boundary para useSearchParams() */}
         <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Cargando...</div>}>
           <VehiculosClient
@@ -299,10 +336,7 @@ export default async function VehiculosPage({ searchParams }) {
       </>
     );
   } catch (error) {
-    // Manejo de errores robusto
-    if (process.env.NODE_ENV === 'development') {
-      console.error("[VehiculosPage] Error:", error);
-    }
+    console.error("[VehiculosPage] Error:", error?.message || error);
 
     // Si es error 404, usar notFound()
     if (error.message?.includes("not found") || error.message?.includes("404")) {

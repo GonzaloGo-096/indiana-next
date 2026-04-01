@@ -124,3 +124,18 @@ export function absoluteUrl(path) {
   return `${baseUrl}${normalizedPath}`;
 }
 
+/**
+ * Igual que absoluteUrl pero no lanza (p. ej. falta NEXT_PUBLIC_SITE_URL en prod).
+ * Útil para metadata / JSON-LD sin tumbar SSR.
+ *
+ * @param {string} path
+ * @returns {string|null}
+ */
+export function tryAbsoluteUrl(path) {
+  try {
+    return absoluteUrl(path);
+  } catch {
+    return null;
+  }
+}
+

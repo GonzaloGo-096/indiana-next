@@ -93,16 +93,37 @@ export const vehiclesService = {
       }
 
       if (!response.ok) {
+        console.error("[API Server] getVehicles HTTP error:", {
+          status: response.status,
+          statusText: response.statusText,
+          endpoint,
+        });
         throw new Error(
           `API error: ${response.status} ${response.statusText}`
         );
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        const text = await response.text();
+        data = text ? JSON.parse(text) : null;
+      } catch (parseErr) {
+        console.error("[API Server] getVehicles respuesta no JSON:", {
+          endpoint,
+          message: parseErr?.message,
+        });
+        throw new Error(
+          "El servidor devolvió una respuesta inválida al listar vehículos."
+        );
+      }
       return data;
     } catch (error) {
-      // Manejo de errores robusto
-      const baseURL = getApiBaseUrl();
+      let baseURL = "";
+      try {
+        baseURL = getApiBaseUrl();
+      } catch {
+        baseURL = "(API URL no configurada)";
+      }
       const errorDetails = {
         message: error.message,
         baseURL,

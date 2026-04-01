@@ -10,7 +10,7 @@
  */
 
 import Link from "next/link";
-import { absoluteUrl } from "../../lib/site-url";
+import { tryAbsoluteUrl } from "../../lib/site-url";
 import { vehiclesService } from "../../lib/services/vehiclesApi.server";
 import { mapVehiclesPage } from "../../lib/mappers/vehicleMapper";
 import UsadosPageCarousel from "./UsadosPageCarousel";
@@ -25,36 +25,59 @@ export async function generateMetadata() {
   const description =
     "Amplia selección de vehículos usados multimarca en Indiana Peugeot. Garantía incluida, financiación disponible y servicio postventa profesional.";
 
-  return {
-    title,
-    description,
-    openGraph: {
+  try {
+    const canonical = tryAbsoluteUrl("/usados") ?? "/usados";
+    const ogImage =
+      tryAbsoluteUrl(
+        "/assets/logos/logos-indiana/desktop/azul-chico-desktop.webp"
+      ) ?? null;
+
+    return {
       title,
       description,
-      url: absoluteUrl("/usados"),
-      siteName: "Indiana Peugeot",
-      locale: "es_AR",
-      type: "website",
-      images: [
-        {
-          url: absoluteUrl("/assets/logos/logos-indiana/desktop/azul-chico-desktop.webp"),
-          alt: "Vehículos Usados Multimarca - Indiana Peugeot",
-          width: 1200,
-          height: 630,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
+      openGraph: {
+        title,
+        description,
+        url: canonical,
+        siteName: "Indiana Peugeot",
+        locale: "es_AR",
+        type: "website",
+        images: ogImage
+          ? [
+              {
+                url: ogImage,
+                alt: "Vehículos Usados Multimarca - Indiana Peugeot",
+                width: 1200,
+                height: 630,
+              },
+            ]
+          : [],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: ogImage ? [ogImage] : [],
+      },
+      alternates: {
+        canonical,
+      },
+    };
+  } catch (err) {
+    console.error("[usados] generateMetadata:", err?.message || err);
+    return {
       title,
       description,
-      images: [absoluteUrl("/assets/logos/logos-indiana/desktop/azul-chico-desktop.webp")],
-    },
-    alternates: {
-      canonical: absoluteUrl("/usados"),
-    },
-  };
+      alternates: { canonical: "/usados" },
+    };
+  }
 }
+
+/**
+ * ISR ligero: evita ejecutar el Server Component en cada visita (mejor TTFB que force-dynamic).
+ * Los datos del carrusel pueden tardar hasta este intervalo en reflejar cambios del API.
+ */
+export const revalidate = 120;
 
 /**
  * Página principal de usados
@@ -88,10 +111,7 @@ export default async function UsadosPage() {
     }
     vehicles = list;
   } catch (error) {
-    // En caso de error, mostrar carrusel vacío
-    if (process.env.NODE_ENV === 'development') {
-      console.error("[UsadosPage] Error fetching vehicles:", error);
-    }
+    console.error("[UsadosPage] Error fetching vehicles:", error?.message || error);
     vehicles = [];
   }
 
