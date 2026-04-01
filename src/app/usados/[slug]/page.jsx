@@ -183,8 +183,13 @@ export async function generateStaticParams() {
 }
 
 /**
- * Sin force-dynamic: el detalle sigue siendo dinámico por [slug]; el fetch a getonephoto mantiene su revalidate.
+ * force-dynamic requerido: el layout raíz llama a headers() para detectar modo mantenimiento,
+ * lo que obliga a que toda la cadena de render sea dinámica. Sin esta declaración, Next.js
+ * intenta regenerar la página estáticamente cuando el cache ISR expira (cada 6h) y lanza
+ * DYNAMIC_SERVER_USAGE → 500. Los fetch individuales conservan su revalidate a nivel de
+ * fetch-cache, por lo que los datos siguen siendo cacheados en el servidor.
  */
+export const dynamic = "force-dynamic";
 
 /**
  * Página de detalle de vehículo
