@@ -13,7 +13,7 @@
  * @version 1.0.0 - Next.js migrado
  */
 
-import { memo, useMemo, useCallback } from "react";
+import { memo, useMemo, useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
@@ -111,6 +111,9 @@ export const CardSimilar = memo(({ auto, isPriority = false }) => {
     return `${formattedData.brandModel} - ${formattedData.year}`;
   }, [formattedData.brandModel, formattedData.year]);
 
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const handleImageLoad = useCallback(() => setIsImageLoaded(true), []);
+
   return (
     <div
       className={styles.card}
@@ -128,18 +131,20 @@ export const CardSimilar = memo(({ auto, isPriority = false }) => {
       aria-label={`Ver detalles de ${formattedData.brandModel}`}
     >
       {/* ===== IMAGEN PRINCIPAL ===== */}
-      <div className={styles["card__image-container"]}>
+      <div className={`${styles["card__image-container"]} ${!isImageLoaded ? styles["card__image-container--loading"] : ""}`}>
         <Image
           src={primaryImage}
           alt={altText}
           width={400}
           height={225}
-          className={styles["card__image"]}
+          className={`${styles["card__image"]} ${isImageLoaded ? styles["card__image--loaded"] : ""}`}
           priority={isPriority}
           loading={isPriority ? "eager" : "lazy"}
           quality={isPriority ? 85 : 80}
           sizes="(max-width: 768px) 240px, 320px"
           fetchPriority={isPriority ? "high" : "auto"}
+          onLoad={handleImageLoad}
+          onError={handleImageLoad}
         />
       </div>
 

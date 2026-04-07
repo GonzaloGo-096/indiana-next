@@ -112,23 +112,30 @@ h1, h2, h3 {
 }
 
 /* Main content: crece en el flex del body (sticky footer). padding-top compensa Nav fijo. */
+/* min-height explícito evita que el footer suba durante transiciones de página (un frame
+   donde el Suspense boundary tiene 0 hijos antes de que flex recalcule la altura). */
 .main-content {
   flex: 1 0 auto;
   width: 100%;
   padding-top: 92px; /* mobile: altura Nav ~80px + padding */
+  min-height: calc(100dvh - 92px);
 }
 
 .main-content--maintenance {
   padding-top: 0;
+  min-height: 0;
 }
 
-@media (min-width: var(--tablet-min)) {
+/* Nota: var() no es válido en media queries — usar valor literal */
+@media (min-width: 768px) {
   .main-content {
     padding-top: 116px; /* tablet+: altura Nav 100px + padding */
+    min-height: calc(100dvh - 116px);
   }
 
   .main-content--maintenance {
     padding-top: 0;
+    min-height: 0;
   }
 }
 

@@ -15,7 +15,7 @@
  * @version 6.0.0 - Migración desde React a Next.js
  */
 
-import { memo, useMemo, useCallback } from "react";
+import { memo, useMemo, useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,7 +30,6 @@ import {
   formatHPDisplay,
 } from "../../../../utils/formatters";
 import { getBrandLogo } from "../../../../utils/getBrandLogo";
-import { getBlurPlaceholder } from "../../../../utils/imageBlur";
 import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import { buildVehicleDetailUrl } from "../../../../utils/vehicleSlug";
 import styles from "./CardAuto.module.css";
@@ -53,10 +52,9 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
     return auto.fotoPrincipal || auto.imagen || "/auto1.jpg";
   }, [auto]);
 
-  // ✅ Blur placeholder para mejorar percepción de carga
-  const blurDataURL = useMemo(() => {
-    return getBlurPlaceholder(primaryImage);
-  }, [primaryImage]);
+  // ✅ Estado de carga de imagen para shimmer
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const handleImageLoad = useCallback(() => setIsImageLoaded(true), []);
 
   // ✅ HANDLER: Click en toda la tarjeta para abrir detalle
   const handleCardClick = useCallback((e) => {
@@ -77,6 +75,9 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
         timestamp: Date.now(),
       };
       sessionStorage.setItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL, JSON.stringify(scrollData));
+      // #region agent log
+      fetch('http://127.0.0.1:7701/ingest/25c72653-2494-40bb-8270-03a5c89d932c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4f9f97'},body:JSON.stringify({sessionId:'4f9f97',hypothesisId:'E',location:'CardAuto.jsx:handleCardClick',message:'scroll guardado - navegando al detalle',data:{key:STORAGE_KEYS.VEHICLES_LIST_SCROLL,scrollData,windowScrollY:window.scrollY},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
     }
     
     // Permitir que el Link navegue normalmente
@@ -199,7 +200,7 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
       aria-label={`Ver detalles de ${formattedData.brandModel}`}
     >
       {/* ===== IMAGEN PRINCIPAL ===== */}
-      <div className={styles["card__image-container"]}>
+      <div className={`${styles["card__image-container"]} ${!isImageLoaded ? styles["card__image-container--loading"] : ""}`}>
         {offerData.hasOffer && (
           <span
             className={styles.discount_badge}
@@ -212,13 +213,13 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
           src={primaryImage}
           alt={altText}
           fill
-          className={styles["card__image"]}
+          className={`${styles["card__image"]} ${isImageLoaded ? styles["card__image--loaded"] : ""}`}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority={imagePriority === "high"}
           loading={imagePriority === "high" ? "eager" : "lazy"}
           quality={80}
-          placeholder="blur"
-          blurDataURL={blurDataURL}
+          onLoad={handleImageLoad}
+          onError={handleImageLoad}
         />
       </div>
 

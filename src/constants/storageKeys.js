@@ -14,7 +14,10 @@
 export const STORAGE_KEYS = {
   /** Posición de scroll de la lista de vehículos */
   VEHICLES_LIST_SCROLL: 'vehicles_list_scroll',
-  
+
+  /** Lista acumulada de vehículos (para restaurar páginas cargadas por infinite scroll) */
+  VEHICLES_LIST_DATA: 'vehicles_list_data',
+
   /** Posición de scroll de vehículos (legacy, mantener por compatibilidad) */
   VEHICLES_SCROLL_POSITION: 'vehiculos_scroll_position',
 };

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Footer - Componente de pie de página simplificado
  * 
  * Características:
@@ -13,6 +13,7 @@
  * @version 3.1.0 - Agregado logo en encabezado
  */
 
+import Image from "next/image";
 import FooterModules from "./FooterModules";
 import styles from "./Footer.module.css";
 
@@ -24,12 +25,12 @@ const Footer = () => {
       <div className={styles.footerContainer}>
         {/* ✅ LOGO ENCABEZADO */}
         <div className={styles.header}>
-          <img
+          <Image
             src="/assets/logos/logos-indiana/mobile/logo-chico-solid-fallback-transparente.webp"
             alt="Indiana Usados"
             className={styles.logo}
-            width="120"
-            height="auto"
+            width={320}
+            height={80}
             loading="lazy"
           />
         </div>

@@ -507,10 +507,22 @@
     font-size: 0.75rem;
   }
 
+  /*
+   * Full-bleed carousel en mobile: igual lógica que SimilarVehiclesCarousel.
+   * Escapa el padding del .container interno + el de la página (cada uno spacing-3).
+   */
+  .carouselWrapper {
+    margin-left: calc(-2 * var(--spacing-3));
+    width: calc(100% + 4 * var(--spacing-3));
+    padding: 0;
+    box-sizing: border-box;
+  }
+
   .carouselContainer {
-    gap: 1.5rem !important; /* ✅ Espacio lateral entre cards en mobile - igual que SimilarVehiclesCarousel */
-    padding: var(--spacing-2) var(--spacing-2) var(--spacing-3)
-      var(--spacing-2);
+    gap: 1rem !important;
+    padding: var(--spacing-2) var(--spacing-4) var(--spacing-3) var(--spacing-4);
+    scroll-padding-left: var(--spacing-4);
+    scroll-snap-type: x mandatory;
   }
 
   .cardWrapper {
@@ -521,11 +533,6 @@
   .skeletonCard {
     width: 260px;
     height: 360px;
-  }
-
-  /* Snap más agresivo en mobile */
-  .carouselContainer {
-    scroll-snap-type: x mandatory;
   }
 }
 

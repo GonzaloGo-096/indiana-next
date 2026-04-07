@@ -81,49 +81,89 @@ export default function VehiculosClient({
   const currentPage = searchParamsData.page;
   const currentSort = searchParamsData.sort;
 
-  // ✅ Restaurar posición de scroll al volver desde detalle
-  // ✅ IMPORTANTE: Se ejecuta DESPUÉS de ScrollToTopOnMount
-  // Orden: Scroll al top → Skeleton → Contenido → Restaurar scroll (si aplica)
+  // ✅ Guardar lista acumulada de vehículos en sessionStorage cuando cambia
+  // Permite restaurar páginas cargadas via infinite scroll al volver desde detalle
+  // ✅ CRÍTICO: No guardar si hay scroll pendiente de restaurar — evita sobreescribir
+  //    los datos guardados (p.ej. 64 autos) con los datos del server (p.ej. 8 autos)
+  //    antes de que el efecto de restauración los lea.
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const restoreScroll = () => {
-        try {
-          const savedData = sessionStorage.getItem("scroll_vehicles-list");
-          if (savedData) {
-            const scrollData = JSON.parse(savedData);
-            // Solo restaurar si es la misma ruta y los datos no son muy antiguos
-            const isRecent = scrollData.timestamp && 
-              (Date.now() - scrollData.timestamp) < VEHICLE_CONSTANTS.SCROLL_DATA_MAX_AGE;
-            if (scrollData.path === "/usados/vehiculos" && isRecent) {
-              // ✅ Esperar a que el contenido se renderice completamente
-              // Delay mayor para asegurar que el contenido esté listo
-              setTimeout(() => {
-                window.scrollTo({
-                  top: scrollData.position,
-                  behavior: "instant", // Sin animación para evitar saltos
-                });
-                // Limpiar después de restaurar
-                sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
-              }, Math.max(VEHICLE_CONSTANTS.SCROLL_RESTORE_DELAY, 200)); // Mínimo 200ms
-            } else {
-              // Limpiar datos antiguos o inválidos
-              sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
-            }
-          }
-        } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            console.error("Error al restaurar posición de scroll:", error);
-          }
-          sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
-        }
-      };
-
-      // ✅ NO restaurar inmediatamente - esperar a que el contenido se cargue
-      // El ScrollToTopOnMount ya hizo scroll al top, ahora esperamos a restaurar
-      const timeoutId = setTimeout(restoreScroll, VEHICLE_CONSTANTS.SCROLL_RESTORE_TIMEOUT);
-      
-      return () => clearTimeout(timeoutId);
+    if (typeof window === "undefined") return;
+    if (!data.vehicles || data.vehicles.length === 0) return;
+    if (sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL)) return;
+    try {
+      sessionStorage.setItem(STORAGE_KEYS.VEHICLES_LIST_DATA, JSON.stringify(data));
+    } catch {
+      // Ignorar errores de cuota
     }
+  }, [data]);
+
+  // ✅ Restaurar posición de scroll y lista de vehículos al volver desde detalle
+  // ✅ IMPORTANTE: Se ejecuta DESPUÉS de ScrollToTopOnMount
+  // Orden: Scroll al top (ScrollToTopOnMount) → Restaurar datos → Restaurar scroll
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // #region agent log
+    fetch('http://127.0.0.1:7701/ingest/25c72653-2494-40bb-8270-03a5c89d932c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4f9f97'},body:JSON.stringify({sessionId:'4f9f97',hypothesisId:'E',location:'VehiculosClient.jsx:useEffect[]',message:'useEffect[] FIRED - componente montado',data:{scrollY:window.scrollY,savedScroll:sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL),savedDataKeys:sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_DATA)?'present':'absent',t:Date.now()},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+
+    const restoreScrollAndData = () => {
+      try {
+        const savedScrollRaw = sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
+        if (!savedScrollRaw) return;
+
+        const scrollData = JSON.parse(savedScrollRaw);
+        const isRecent = scrollData.timestamp &&
+          (Date.now() - scrollData.timestamp) < VEHICLE_CONSTANTS.SCROLL_DATA_MAX_AGE;
+
+        if (scrollData.path !== "/usados/vehiculos" || !isRecent) {
+          sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
+          sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_DATA);
+          return;
+        }
+
+        // ✅ Restaurar lista acumulada si hay más de una página cargada
+        let dataRestored = false;
+        const savedListRaw = sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_DATA);
+        if (savedListRaw) {
+          try {
+            const savedList = JSON.parse(savedListRaw);
+            if (savedList?.vehicles?.length > 0) {
+              // #region agent log
+              fetch('http://127.0.0.1:7701/ingest/25c72653-2494-40bb-8270-03a5c89d932c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4f9f97'},body:JSON.stringify({sessionId:'4f9f97',hypothesisId:'E',location:'VehiculosClient.jsx:restoreData',message:'restaurando lista de vehículos',data:{vehiculosGuardados:savedList.vehicles.length,vehiculosActuales:data.vehicles?.length,scrollTarget:scrollData.position},timestamp:Date.now()})}).catch(()=>{});
+              // #endregion
+              setData(savedList);
+              dataRestored = true;
+            }
+          } catch {}
+        }
+
+        // ✅ Esperar a que React renderice los vehículos restaurados antes de scrollear
+        // Si se restauraron datos: 600ms (React necesita re-renderizar + browser repintar)
+        // Si no: 300ms (contenido ya estaba listo)
+        const scrollDelay = dataRestored ? 600 : 300;
+
+        setTimeout(() => {
+          // #region agent log
+          fetch('http://127.0.0.1:7701/ingest/25c72653-2494-40bb-8270-03a5c89d932c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4f9f97'},body:JSON.stringify({sessionId:'4f9f97',hypothesisId:'E',location:'VehiculosClient.jsx:scrollTo',message:'ejecutando scrollTo',data:{targetPosition:scrollData.position,pageHeight:document.body.scrollHeight,dataRestored,scrollDelay},timestamp:Date.now()})}).catch(()=>{});
+          // #endregion
+          window.scrollTo({ top: scrollData.position, behavior: "instant" });
+          sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
+          sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_DATA);
+        }, scrollDelay);
+
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.error("Error al restaurar scroll:", error);
+        }
+        sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
+        sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_DATA);
+      }
+    };
+
+    // ✅ Pequeño delay inicial para que ScrollToTopOnMount corra primero
+    const timeoutId = setTimeout(restoreScrollAndData, VEHICLE_CONSTANTS.SCROLL_RESTORE_TIMEOUT);
+    return () => clearTimeout(timeoutId);
   }, []); // Solo ejecutar una vez al montar
 
   // Sincronizar sorting con URL
@@ -133,7 +173,11 @@ export default function VehiculosClient({
 
   // Verificar si hay filtros activos
   const isFiltered = useMemo(() => {
-    return hasAnyFilter(currentFilters);
+    const result = hasAnyFilter(currentFilters);
+    // #region agent log
+    fetch('http://127.0.0.1:7701/ingest/25c72653-2494-40bb-8270-03a5c89d932c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4f9f97'},body:JSON.stringify({sessionId:'4f9f97',hypothesisId:'C',location:'VehiculosClient.jsx:isFiltered',message:'isFiltered calculado',data:{currentFilters,isFiltered:result,tienePageEnFiltros:'page' in currentFilters},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion
+    return result;
   }, [currentFilters]);
 
   // Marcas seleccionadas
@@ -188,6 +232,10 @@ export default function VehiculosClient({
 
       // Actualizar URL (resetear a página 1)
       updateURL(newFilters, 1, currentSort);
+
+      // #region agent log
+      fetch('http://127.0.0.1:7701/ingest/25c72653-2494-40bb-8270-03a5c89d932c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4f9f97'},body:JSON.stringify({sessionId:'4f9f97',hypothesisId:'D',location:'VehiculosClient.jsx:handleApplyFilters',message:'filtros aplicados - URL actualizada, iniciando fetch',data:{newFilters,currentSort,currentFiltersAntesDeFetch:currentFilters},timestamp:Date.now()})}).catch(()=>{});
+      // #endregion
 
       // Fetch desde cliente
       try {

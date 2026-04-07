@@ -1,16 +1,13 @@
 import { Suspense } from "react";
 import { Poppins, Barlow_Condensed } from "next/font/google";
-import dynamic from "next/dynamic";
 import { headers } from "next/headers";
 import "./globals.css";
 import { getSiteUrl } from "../lib/site-url";
 import Nav from "../components/layout/Nav";
+import FooterLazy from "../components/layout/Footer/FooterLazy";
 import ClientOnlyComponents from "../components/layout/ClientOnlyComponents";
 import MarketingTracking from "../components/tracking/MarketingTracking";
-
-const Footer = dynamic(() => import("../components/layout/Footer"), {
-  ssr: true,
-});
+import loadingStyles from "./loading.module.css";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -65,9 +62,13 @@ export const metadata = {
   },
 };
 
-/** Fallback mínimo durante navegación para evitar error de "async info / Suspense boundary" (React DevTools + Next) */
+/**
+ * PageFallback - Mantiene la altura del viewport durante navegacion para evitar
+ * que el footer suba mientras el server component se resuelve.
+ * Usa el mismo CSS que loading.jsx para altura consistente.
+ */
 function PageFallback() {
-  return <div style={{ minHeight: "50vh" }} aria-hidden />;
+  return <div className={loadingStyles.container} aria-hidden />;
 }
 
 export default async function RootLayout({ children }) {
@@ -95,11 +96,7 @@ export default async function RootLayout({ children }) {
             {children}
           </Suspense>
         </main>
-        {!isMaintenanceView && (
-          <Suspense fallback={null}>
-            <Footer />
-          </Suspense>
-        )}
+        {!isMaintenanceView && <FooterLazy />}
       </body>
     </html>
   );

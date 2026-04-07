@@ -7,7 +7,9 @@
 
 .container {
   padding: var(--spacing-6) clamp(var(--container-padding-mobile), 5vw, var(--spacing-8));
-  min-height: auto;
+  /* Mantiene altura minima consistente con loading.jsx - evita que el footer suba
+     al transicionar de spinner a contenido (antes de que monten los carruseles) */
+  min-height: calc(100dvh - 92px);
   max-width: 100%;
   margin: 0 auto;
   width: 100%;
@@ -190,6 +192,7 @@
   .container {
     padding: var(--spacing-8) clamp(var(--container-padding-tablet), 6vw, var(--spacing-10));
     max-width: 100%;
+    min-height: calc(100dvh - 116px);
   }
 
   .backButton {

@@ -98,13 +98,34 @@
     contain: layout style paint;
 }
 
+@keyframes cardSimilarShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.card__image-container--loading {
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-100) 25%,
+    var(--color-neutral-50)  50%,
+    var(--color-neutral-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: cardSimilarShimmer 1.4s infinite linear;
+}
+
 .card__image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center;
-    transition: transform var(--transition-smooth);
+    opacity: 0;
+    transition: opacity 0.35s ease, transform var(--transition-smooth);
     z-index: 0 !important;
+}
+
+.card__image--loaded {
+    opacity: 1;
 }
 
 .card__image-container [class*="image"],

@@ -83,6 +83,8 @@
   margin: 0 0 48px 0;
   position: relative;
   overflow: hidden;
+  /* Reserva espacio antes de que la imagen cargue - evita layout shift */
+  aspect-ratio: 1920 / 800;
 }
 
 .heroBadge {

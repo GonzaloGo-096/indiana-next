@@ -50,6 +50,15 @@ export const ImageCarousel = ({
     }).filter(Boolean);
   }, [images]);
 
+  // Estado de carga para la imagen principal
+  const [isMainLoaded, setIsMainLoaded] = useState(false);
+  const handleMainLoad = useCallback(() => setIsMainLoaded(true), []);
+
+  // Resetear cuando cambia la imagen activa
+  useEffect(() => {
+    setIsMainLoaded(false);
+  }, [currentIndex]);
+
   // ===== Navegación =====
   const goToPrevious = useCallback(() => {
     setCurrentIndex((prevIndex) =>
@@ -144,7 +153,7 @@ export const ImageCarousel = ({
       {/* Imagen principal */}
       <div
         ref={mainImageContainerRef}
-        className={`${styles.mainImageContainer} ${
+        className={`${styles.mainImageContainer} ${!isMainLoaded ? styles.mainImageLoading : ""} ${
           onMainImageClick ? styles.mainImageClickable : ""
         }`}
         onClick={onMainImageClick ? () => onMainImageClick(currentIndex) : undefined}
@@ -167,20 +176,22 @@ export const ImageCarousel = ({
           onMainImageClick ? "Abrir galería en pantalla completa" : undefined
         }
       >
-        {/* Imagen con efecto fade */}
+        {/* Imagen con shimmer + fade-in */}
         {currentImage && (
           <Image
-            key={currentIndex} // Key para reiniciar animación
+            key={currentIndex}
             src={currentImage}
             alt={`${altText} ${currentIndex + 1} de ${allImages.length}`}
             width={800}
             height={600}
-            className={styles.mainImage}
-            priority={currentIndex === 0} // ✅ LCP: Priorizar primera imagen above-the-fold
-            quality={currentIndex === 0 ? 80 : 75} // ✅ Performance: Imagen más chica para cargar más rápido
-            sizes="(max-width: 768px) 100vw, 600px" // ✅ Performance: Imagen más chica (600px) para cargar más rápido en desktop
+            className={`${styles.mainImage} ${isMainLoaded ? styles.mainImageLoaded : ""}`}
+            priority={currentIndex === 0}
+            quality={currentIndex === 0 ? 80 : 75}
+            sizes="(max-width: 768px) 100vw, 600px"
             loading={currentIndex === 0 ? "eager" : "lazy"}
             fetchPriority={currentIndex === 0 ? "high" : "auto"}
+            onLoad={handleMainLoad}
+            onError={handleMainLoad}
           />
         )}
 

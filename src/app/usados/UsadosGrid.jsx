@@ -7,6 +7,7 @@
  * @version 1.0.0
  */
 
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { formatPrice } from "../../utils/formatters";
@@ -26,6 +27,9 @@ function VehicleCard({ vehicle, isPriority = false, index = 0 }) {
     ? `${vehicle.marca} ${vehicle.modelo}`
     : "Vehículo usado";
 
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const handleImageLoad = useCallback(() => setIsImageLoaded(true), []);
+
   const delay = `${Math.min(index * 0.06, 0.42)}s`;
 
   return (
@@ -34,18 +38,20 @@ function VehicleCard({ vehicle, isPriority = false, index = 0 }) {
       className={styles.vehicleCard}
       style={{ animationDelay: delay }}
     >
-      <div className={styles.vehicleCardImage}>
+      <div className={`${styles.vehicleCardImage} ${imageUrl && !isImageLoaded ? styles.vehicleCardImageLoading : ""}`}>
         {imageUrl ? (
           <Image
             src={imageUrl}
             alt={altText}
             width={400}
             height={300}
-            className={styles.vehicleImage}
+            className={`${styles.vehicleImage} ${isImageLoaded ? styles.vehicleImageLoaded : ""}`}
             priority={isPriority}
             loading={isPriority ? "eager" : "lazy"}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             quality={80}
+            onLoad={handleImageLoad}
+            onError={handleImageLoad}
           />
         ) : (
           <div className={styles.vehicleImagePlaceholder}>

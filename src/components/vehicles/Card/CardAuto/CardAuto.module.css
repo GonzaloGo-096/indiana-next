@@ -125,6 +125,25 @@
 }
 
 /**
+ * SHIMMER DE CARGA
+ */
+@keyframes cardImageShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.card__image-container--loading {
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-100) 25%,
+    var(--color-neutral-50)  50%,
+    var(--color-neutral-100) 75%
+  );
+  background-size: 200% 100%;
+  animation: cardImageShimmer 1.4s infinite linear;
+}
+
+/**
  * IMAGEN DENTRO DEL CONTENEDOR
  */
 .card__image {
@@ -132,12 +151,16 @@
     height: 100%;
     object-fit: cover;
     object-position: center;
+    opacity: 0;
     
-    /* ✅ TRANSICIÓN: Solo transform (performance - usa GPU) */
-    transition: transform var(--transition-smooth);
+    /* Fade-in al cargar + zoom en hover */
+    transition: opacity 0.35s ease, transform var(--transition-smooth);
     
-    /* ✅ Z-INDEX: Asegurar que esté sobre el placeholder */
     z-index: 0;
+}
+
+.card__image--loaded {
+    opacity: 1;
 }
 
 /**

@@ -538,10 +538,25 @@
     font-size: 0.8125rem;
   }
 
+  /*
+   * Full-bleed carousel en mobile:
+   * El wrapper escapa el padding del .container interno (spacing-3 = 12px) y el
+   * padding de la página (spacing-3 = 12px), alcanzando exactamente el borde del
+   * viewport. El overflow-x:hidden del padre de página clipea en ese mismo límite.
+   * Las cards arrancan con spacing-4 (16px) de margen visual desde el borde.
+   */
+  .carouselWrapper {
+    margin-left: calc(-2 * var(--spacing-3));
+    width: calc(100% + 4 * var(--spacing-3));
+    padding: 0;
+    box-sizing: border-box;
+  }
+
   .carouselContainer {
-    gap: 1.5rem !important; /* ✅ Espacio lateral entre cards en mobile */
-    padding: var(--spacing-2) var(--spacing-2) var(--spacing-3)
-      var(--spacing-2);
+    gap: 1rem !important;
+    padding: var(--spacing-2) var(--spacing-4) var(--spacing-3) var(--spacing-4);
+    scroll-padding-left: var(--spacing-4);
+    scroll-snap-type: x mandatory;
   }
 
   .cardWrapper {
@@ -552,11 +567,6 @@
   .skeletonCard {
     width: 260px;
     height: 360px;
-  }
-
-  /* Snap más agresivo en mobile */
-  .carouselContainer {
-    scroll-snap-type: x mandatory;
   }
 }
 
