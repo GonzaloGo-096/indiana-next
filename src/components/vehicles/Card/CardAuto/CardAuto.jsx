@@ -32,6 +32,7 @@ import {
 import { getBrandLogo } from "../../../../utils/getBrandLogo";
 import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import { buildVehicleDetailUrl } from "../../../../utils/vehicleSlug";
+import { debugIngest } from "../../../../lib/debugIngestClient";
 import styles from "./CardAuto.module.css";
 
 /**
@@ -75,9 +76,16 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
         timestamp: Date.now(),
       };
       sessionStorage.setItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL, JSON.stringify(scrollData));
-      // #region agent log
-      fetch('http://127.0.0.1:7701/ingest/25c72653-2494-40bb-8270-03a5c89d932c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4f9f97'},body:JSON.stringify({sessionId:'4f9f97',hypothesisId:'E',location:'CardAuto.jsx:handleCardClick',message:'scroll guardado - navegando al detalle',data:{key:STORAGE_KEYS.VEHICLES_LIST_SCROLL,scrollData,windowScrollY:window.scrollY},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
+      debugIngest({
+        hypothesisId: "E",
+        location: "CardAuto.jsx:handleCardClick",
+        message: "scroll guardado - navegando al detalle",
+        data: {
+          key: STORAGE_KEYS.VEHICLES_LIST_SCROLL,
+          scrollData,
+          windowScrollY: window.scrollY,
+        },
+      });
     }
     
     // Permitir que el Link navegue normalmente

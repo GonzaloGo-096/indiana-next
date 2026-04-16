@@ -1,13 +1,6 @@
-import { Suspense } from "react";
 import { Poppins, Barlow_Condensed } from "next/font/google";
-import { headers } from "next/headers";
 import "./globals.css";
 import { getSiteUrl } from "../lib/site-url";
-import Nav from "../components/layout/Nav";
-import FooterLazy from "../components/layout/Footer/FooterLazy";
-import ClientOnlyComponents from "../components/layout/ClientOnlyComponents";
-import MarketingTracking from "../components/tracking/MarketingTracking";
-import loadingStyles from "./loading.module.css";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -62,41 +55,13 @@ export const metadata = {
   },
 };
 
-/**
- * PageFallback - Mantiene la altura del viewport durante navegacion para evitar
- * que el footer suba mientras el server component se resuelve.
- * Usa el mismo CSS que loading.jsx para altura consistente.
- */
-function PageFallback() {
-  return <div className={loadingStyles.container} aria-hidden />;
-}
-
-export default async function RootLayout({ children }) {
-  const requestHeaders = await headers();
-  const isMaintenanceView = requestHeaders.get("x-maintenance-view") === "1";
-  const skipMarketing =
-    isMaintenanceView || requestHeaders.get("x-indiana-no-tracking") === "1";
-
+export default function RootLayout({ children }) {
   return (
     <html lang="es" data-scroll-behavior="smooth">
       <body
         className={`${poppins.variable} ${barlowCondensed.variable}`}
       >
-        {!skipMarketing && <MarketingTracking />}
-        {!isMaintenanceView && <ClientOnlyComponents />}
-        {!isMaintenanceView && <Nav />}
-        <main
-          className={
-            isMaintenanceView
-              ? "main-content main-content--maintenance"
-              : "main-content"
-          }
-        >
-          <Suspense fallback={<PageFallback />}>
-            {children}
-          </Suspense>
-        </main>
-        {!isMaintenanceView && <FooterLazy />}
+        {children}
       </body>
     </html>
   );

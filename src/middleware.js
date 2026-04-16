@@ -44,15 +44,6 @@ function withHeaders(response, headersObj) {
   return response;
 }
 
-/** Request header leída en RootLayout para no cargar GTM/Pixel en el panel admin */
-function nextWithTrackingHeaders(request) {
-  const headers = new Headers(request.headers);
-  if (request.nextUrl.pathname.startsWith("/admin")) {
-    headers.set("x-indiana-no-tracking", "1");
-  }
-  return NextResponse.next({ request: { headers } });
-}
-
 export function middleware(request) {
   const { pathname, searchParams } = request.nextUrl;
 
@@ -84,29 +75,29 @@ export function middleware(request) {
   }
 
   if (!isMaintenanceEnabled()) {
-    return nextWithTrackingHeaders(request);
+    return NextResponse.next();
   }
 
   const hasBypass = request.cookies.get(MAINTENANCE_BYPASS_COOKIE)?.value === "1";
   if (hasBypass) {
-    return nextWithTrackingHeaders(request);
+    return NextResponse.next();
   }
 
   if (isStaticLikePath(pathname)) {
-    return nextWithTrackingHeaders(request);
+    return NextResponse.next();
   }
 
   if (pathname.startsWith("/admin")) {
-    return nextWithTrackingHeaders(request);
+    return NextResponse.next();
   }
 
   if (pathname === MAINTENANCE_PAGE_PATH) {
-    return nextWithTrackingHeaders(request);
+    return NextResponse.next();
   }
 
   if (pathname.startsWith("/api")) {
     if (isAllowedApiPath(pathname)) {
-      return nextWithTrackingHeaders(request);
+      return NextResponse.next();
     }
 
     // Explicitly blocked or non-allowlisted APIs receive maintenance response.
@@ -128,13 +119,7 @@ export function middleware(request) {
   const rewriteUrl = request.nextUrl.clone();
   rewriteUrl.pathname = MAINTENANCE_PAGE_PATH;
   rewriteUrl.search = "";
-
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-maintenance-view", "1");
-
-  const response = NextResponse.rewrite(rewriteUrl, {
-    request: { headers: requestHeaders },
-  });
+  const response = NextResponse.rewrite(rewriteUrl);
 
   return withHeaders(response, maintenanceHeaders());
 }

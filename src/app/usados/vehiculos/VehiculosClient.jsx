@@ -30,6 +30,7 @@ import FilterFormSimple from "../../../components/vehicles/Filters/FilterFormSim
 import ActionButtons from "../../../components/vehicles/ActionButtons/ActionButtons";
 import { STORAGE_KEYS } from "../../../constants/storageKeys";
 import { VEHICLE_CONSTANTS } from "../../../constants/vehicles";
+import { debugIngest } from "../../../lib/debugIngestClient";
 
 // ✅ Code splitting: BrandsCarousel solo se carga cuando es necesario
 const BrandsCarousel = dynamic(
@@ -103,9 +104,19 @@ export default function VehiculosClient({
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // #region agent log
-    fetch('http://127.0.0.1:7701/ingest/25c72653-2494-40bb-8270-03a5c89d932c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4f9f97'},body:JSON.stringify({sessionId:'4f9f97',hypothesisId:'E',location:'VehiculosClient.jsx:useEffect[]',message:'useEffect[] FIRED - componente montado',data:{scrollY:window.scrollY,savedScroll:sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL),savedDataKeys:sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_DATA)?'present':'absent',t:Date.now()},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
+    debugIngest({
+      hypothesisId: "E",
+      location: "VehiculosClient.jsx:useEffect[]",
+      message: "useEffect[] FIRED - componente montado",
+      data: {
+        scrollY: window.scrollY,
+        savedScroll: sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL),
+        savedDataKeys: sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_DATA)
+          ? "present"
+          : "absent",
+        t: Date.now(),
+      },
+    });
 
     const restoreScrollAndData = () => {
       try {
@@ -129,9 +140,16 @@ export default function VehiculosClient({
           try {
             const savedList = JSON.parse(savedListRaw);
             if (savedList?.vehicles?.length > 0) {
-              // #region agent log
-              fetch('http://127.0.0.1:7701/ingest/25c72653-2494-40bb-8270-03a5c89d932c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4f9f97'},body:JSON.stringify({sessionId:'4f9f97',hypothesisId:'E',location:'VehiculosClient.jsx:restoreData',message:'restaurando lista de vehículos',data:{vehiculosGuardados:savedList.vehicles.length,vehiculosActuales:data.vehicles?.length,scrollTarget:scrollData.position},timestamp:Date.now()})}).catch(()=>{});
-              // #endregion
+              debugIngest({
+                hypothesisId: "E",
+                location: "VehiculosClient.jsx:restoreData",
+                message: "restaurando lista de vehículos",
+                data: {
+                  vehiculosGuardados: savedList.vehicles.length,
+                  vehiculosActuales: data.vehicles?.length,
+                  scrollTarget: scrollData.position,
+                },
+              });
               setData(savedList);
               dataRestored = true;
             }
@@ -144,9 +162,17 @@ export default function VehiculosClient({
         const scrollDelay = dataRestored ? 600 : 300;
 
         setTimeout(() => {
-          // #region agent log
-          fetch('http://127.0.0.1:7701/ingest/25c72653-2494-40bb-8270-03a5c89d932c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4f9f97'},body:JSON.stringify({sessionId:'4f9f97',hypothesisId:'E',location:'VehiculosClient.jsx:scrollTo',message:'ejecutando scrollTo',data:{targetPosition:scrollData.position,pageHeight:document.body.scrollHeight,dataRestored,scrollDelay},timestamp:Date.now()})}).catch(()=>{});
-          // #endregion
+          debugIngest({
+            hypothesisId: "E",
+            location: "VehiculosClient.jsx:scrollTo",
+            message: "ejecutando scrollTo",
+            data: {
+              targetPosition: scrollData.position,
+              pageHeight: document.body.scrollHeight,
+              dataRestored,
+              scrollDelay,
+            },
+          });
           window.scrollTo({ top: scrollData.position, behavior: "instant" });
           sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
           sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_DATA);
@@ -174,9 +200,16 @@ export default function VehiculosClient({
   // Verificar si hay filtros activos
   const isFiltered = useMemo(() => {
     const result = hasAnyFilter(currentFilters);
-    // #region agent log
-    fetch('http://127.0.0.1:7701/ingest/25c72653-2494-40bb-8270-03a5c89d932c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4f9f97'},body:JSON.stringify({sessionId:'4f9f97',hypothesisId:'C',location:'VehiculosClient.jsx:isFiltered',message:'isFiltered calculado',data:{currentFilters,isFiltered:result,tienePageEnFiltros:'page' in currentFilters},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
+    debugIngest({
+      hypothesisId: "C",
+      location: "VehiculosClient.jsx:isFiltered",
+      message: "isFiltered calculado",
+      data: {
+        currentFilters,
+        isFiltered: result,
+        tienePageEnFiltros: "page" in currentFilters,
+      },
+    });
     return result;
   }, [currentFilters]);
 
@@ -233,9 +266,12 @@ export default function VehiculosClient({
       // Actualizar URL (resetear a página 1)
       updateURL(newFilters, 1, currentSort);
 
-      // #region agent log
-      fetch('http://127.0.0.1:7701/ingest/25c72653-2494-40bb-8270-03a5c89d932c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4f9f97'},body:JSON.stringify({sessionId:'4f9f97',hypothesisId:'D',location:'VehiculosClient.jsx:handleApplyFilters',message:'filtros aplicados - URL actualizada, iniciando fetch',data:{newFilters,currentSort,currentFiltersAntesDeFetch:currentFilters},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
+      debugIngest({
+        hypothesisId: "D",
+        location: "VehiculosClient.jsx:handleApplyFilters",
+        message: "filtros aplicados - URL actualizada, iniciando fetch",
+        data: { newFilters, currentSort, currentFiltersAntesDeFetch: currentFilters },
+      });
 
       // Fetch desde cliente
       try {

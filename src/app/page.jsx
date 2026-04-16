@@ -2,6 +2,7 @@ import Link from "next/link";
 import Hero from "../components/Hero";
 import { CeroKmSection } from "../components/home/CeroKmSection";
 import { HomeUsadosSectionClient } from "../components/home/HomeUsadosSectionClient";
+import PublicSiteLayout from "../components/layout/PublicSiteLayout";
 import { staticImages } from "../config/cloudinaryStaticImages";
 import { getSiteUrl } from "../lib/site-url";
 import styles from "./page.module.css";
@@ -90,7 +91,7 @@ export default async function Home() {
   const structuredData = getStructuredData();
 
   return (
-    <>
+    <PublicSiteLayout>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
@@ -143,6 +144,6 @@ export default async function Home() {
           </div>
         </section>
       </div>
-    </>
+    </PublicSiteLayout>
   );
 }
