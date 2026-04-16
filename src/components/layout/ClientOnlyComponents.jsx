@@ -11,7 +11,6 @@
  */
 
 import dynamic from "next/dynamic";
-import FloatingWhatsAppButton from "./FloatingWhatsApp/FloatingWhatsAppButton";
 
 // ✅ AnalyticsWrapper - No crítico, puede cargar después
 const AnalyticsWrapper = dynamic(
@@ -26,6 +25,14 @@ const ScrollToTopOnMount = dynamic(
   () => import("./ScrollToTopOnMount").then((mod) => mod.ScrollToTopOnMount),
   {
     ssr: false, // Solo funciona en cliente (usa window)
+  }
+);
+
+// ✅ WhatsApp flotante - diferido para no cargar en el chunk inicial crítico
+const FloatingWhatsAppButton = dynamic(
+  () => import("./FloatingWhatsApp/FloatingWhatsAppButton"),
+  {
+    ssr: false,
   }
 );
 

@@ -10,7 +10,11 @@ export const FORM_RULES = {
   // Solo se requieren las 2 fotos principales (fotoPrincipal + fotoHover)
   REQUIRED_PHOTOS: 2,
   MAX_FILE_SIZE: 10 * 1024 * 1024, // 10MB
-  SUPPORTED_TYPES: ['image/jpeg', 'image/png', 'image/webp']
+  SUPPORTED_TYPES: ['image/jpeg', 'image/png', 'image/webp'],
+  /** Máximo lado (px) en cliente; coherente con Sharp en /api/photos/create */
+  CLIENT_OPTIMIZE_MAX_EDGE: 1200,
+  /** Calidad WebP 0–1 (browser-image-compression) */
+  CLIENT_OPTIMIZE_WEBP_QUALITY: 0.85,
 }
 
 

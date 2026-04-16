@@ -105,11 +105,6 @@ export const mapVehiclesPage = (backendPage, currentCursor = null) => {
       }
     }
 
-    // #region agent log
-    const _dbgTotalPages = Math.ceil((totalDocs || 0) / 12);
-    const _dbgTotalPagesCorrect = Math.ceil((totalDocs || 0) / 8);
-    fetch('http://127.0.0.1:7701/ingest/25c72653-2494-40bb-8270-03a5c89d932c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4f9f97'},body:JSON.stringify({sessionId:'4f9f97',runId:'post-fix',hypothesisId:'B',location:'vehicleMapper.js:mapVehiclesPage',message:'[POST-FIX] totalPages calculado',data:{totalDocs,divisorUsado:'LIST_PAGE_SIZE=8',totalPagesActual:_dbgTotalPages,totalPagesCorrect:_dbgTotalPagesCorrect,sonIguales:_dbgTotalPages===_dbgTotalPagesCorrect},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     return {
       vehicles,
       totalDocs: totalDocs || 0,

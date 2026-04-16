@@ -56,9 +56,6 @@ export function ScrollToTopOnMount() {
           (Date.now() - savedScroll.timestamp) < 5 * 60 * 1000;
 
         if (savedScroll.path === pathname && isRecent && savedScroll.position > 0) {
-          // #region agent log
-          fetch('http://127.0.0.1:7701/ingest/25c72653-2494-40bb-8270-03a5c89d932c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4f9f97'},body:JSON.stringify({sessionId:'4f9f97',hypothesisId:'F',location:'ScrollToTopOnMount.jsx:cacheHitRestore',message:'cache hit: omitiendo scrollTop, restaurando posición guardada',data:{pathname,savedPosition:savedScroll.position,t:Date.now()},timestamp:Date.now()})}).catch(()=>{});
-          // #endregion
           // No scrollear al top — VehiculosClient lo maneja si está montado.
           // Si no está montado (cache hit), restauramos aquí después de un delay.
           setTimeout(() => {
@@ -74,9 +71,6 @@ export function ScrollToTopOnMount() {
       }
     } catch {}
 
-    // #region agent log
-    fetch('http://127.0.0.1:7701/ingest/25c72653-2494-40bb-8270-03a5c89d932c',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4f9f97'},body:JSON.stringify({sessionId:'4f9f97',hypothesisId:'F',location:'ScrollToTopOnMount.jsx:scrollToTop',message:'scrolleando a 0 por pathname change (sin saved scroll)',data:{newPathname:pathname,scrollYAntes:window.scrollY,t:Date.now()},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
     // ✅ Scroll inmediato al top cuando cambia la ruta
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [pathname]);

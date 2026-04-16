@@ -25,17 +25,7 @@
 }
 
 /* ===== STAGGERED REVEAL ANIMATION - CSS Puro ===== */
-/* ✅ OPTIMIZADO: Animaciones CSS sin JavaScript para mejor performance */
-.backgroundPicture {
-  opacity: 0;
-  animation: fadeIn 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.1s forwards;
-}
-
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-  }
-}
+/* ✅ OPTIMIZADO: animar texto sin retrasar el LCP de la imagen */
 
 .title {
   opacity: 0;

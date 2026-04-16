@@ -7,9 +7,13 @@
 
 'use client'
 
-import { useEffect, useCallback } from 'react'
+import { useEffect, useCallback, useMemo } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
-import { useImageReducer, IMAGE_FIELDS } from '@/components/admin/hooks/useImageReducer'
+import {
+  useImageReducer,
+  IMAGE_FIELDS,
+  isImagePipelineBlocked,
+} from '@/components/admin/hooks/useImageReducer'
 import styles from './CarFormRHF.module.css'
 import { FORM_RULES } from '@/constants/forms'
 import { isValidImage, filterValidFiles } from '@/utils/files'
@@ -39,18 +43,17 @@ const CarFormRHF = ({
   const {
     imageState,
     initImageState,
-    setFile,
-    removeImage,
-    restoreImage,
-    resetImages,
+    pickPrincipalImage,
     validateImages,
     buildImageFormData,
     getPreviewFor,
     cleanupObjectUrls,
-    setMultipleExtras,
+    pickExtraFiles,
     removeExistingExtra,
-    restoreExistingExtra
+    restoreExistingExtra,
   } = useImageReducer(mode, initialData)
+
+  const pipelineBlocked = useMemo(() => isImagePipelineBlocked(imageState), [imageState])
 
   const {
     register,
@@ -250,24 +253,30 @@ const CarFormRHF = ({
       <div className={styles.requiredFieldsSection}>
         <h4 className={styles.subsectionTitle}>
           <span className={styles.requiredBadge}>Fotos Obligatorias</span>
-          <span className={styles.subsectionHint}>Formatos: JPG, PNG, WEBP · Se optimizarán automáticamente</span>
+          <span className={styles.subsectionHint}>
+            Formatos: JPG, PNG, WEBP · Optimización automática en el navegador antes de enviar
+          </span>
         </h4>
         
         <div className={styles.principalImagesGrid}>
-          {IMAGE_FIELDS.principales.map(field => {
-            const { file, existingUrl, remove } = imageState[field] || {}
+          {IMAGE_FIELDS.principales.map((field) => {
+            const slot = imageState[field] || {}
+            const { file, existingUrl, remove, processStatus, processError } = slot
             const preview = getPreviewFor(field)
-            
+            const optimizing = processStatus === 'optimizing'
+            const ready = processStatus === 'ready' && !!file
+            const failed = processStatus === 'error'
+
             return (
               <div key={field} className={styles.imageCard}>
                 <label className={styles.imageLabel}>
                   {field === 'fotoPrincipal' ? 'Foto Principal *' : 'Foto Hover *'}
                 </label>
-                
+
                 <div className={styles.imageContainer}>
                   {preview ? (
-                    <img 
-                      src={preview} 
+                    <img
+                      src={preview}
                       alt={`Preview ${field}`}
                       className={styles.previewImage}
                     />
@@ -277,43 +286,63 @@ const CarFormRHF = ({
                       <p>Seleccionar imagen</p>
                     </div>
                   )}
-                  
+
+                  {optimizing && (
+                    <div className={styles.imageProcessOverlay}>
+                      <span className={styles.imageSpinner} aria-hidden />
+                      <span className={styles.imageProcessText}>Optimizando…</span>
+                    </div>
+                  )}
+
                   {remove && (
                     <div className={styles.removedOverlay}>
                       <span>🗑️ Eliminada</span>
                     </div>
                   )}
                 </div>
-                
+
+                <div className={styles.imageStatusRow}>
+                  {optimizing && <span className={styles.imageStatusOptimizing}>Optimizando…</span>}
+                  {!optimizing && ready && (
+                    <span className={styles.imageStatusReady}>Lista</span>
+                  )}
+                  {!optimizing && failed && processError && (
+                    <span className={styles.imageStatusError}>{processError}</span>
+                  )}
+                </div>
+
                 <div className={styles.imageActions}>
                   <input
                     type="file"
                     accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+                    disabled={optimizing}
                     onChange={(e) => {
-                      const file = e.target.files?.[0]
-                      if (file) {
-                        const isValidType = isValidImage(file)
-                        if (!isValidType) {
-                          setError(field, { type: 'manual', message: 'Formato inválido. Solo JPG, PNG o WEBP' })
-                          return
-                        }
-                        // ✅ Validación de tamaño eliminada: Sharp optimizará las imágenes en la API Route
-                        clearErrors(field)
-                        setFile(field, file)
+                      const picked = e.target.files?.[0]
+                      e.target.value = ''
+                      if (!picked) return
+                      if (!isValidImage(picked)) {
+                        setError(field, {
+                          type: 'manual',
+                          message: 'Formato inválido. Solo JPG, PNG o WEBP',
+                        })
+                        return
                       }
+                      clearErrors(field)
+                      void pickPrincipalImage(field, picked)
                     }}
                     className={styles.fileInput}
                     id={`${field}-input`}
                   />
-                  <label htmlFor={`${field}-input`} className={styles.fileButton}>
+                  <label
+                    htmlFor={`${field}-input`}
+                    className={`${styles.fileButton} ${optimizing ? styles.fileButtonDisabled : ''}`}
+                  >
                     {file || existingUrl ? 'Reemplazar' : 'Seleccionar'}
                   </label>
                 </div>
-                
+
                 {errors[field] && (
-                  <div className={styles.fieldError}>
-                    {errors[field].message}
-                  </div>
+                  <div className={styles.fieldError}>{errors[field].message}</div>
                 )}
               </div>
             )
@@ -325,7 +354,9 @@ const CarFormRHF = ({
       <div className={styles.optionalFieldsSection}>
         <h4 className={styles.subsectionTitle}>
           <span className={styles.optionalBadge}>Fotos Opcionales</span>
-          <span className={styles.subsectionHint}>Hasta {FORM_RULES.MAX_EXTRA_PHOTOS} fotos · JPG, PNG, WEBP · Se optimizarán automáticamente</span>
+          <span className={styles.subsectionHint}>
+            Hasta {FORM_RULES.MAX_EXTRA_PHOTOS} fotos · JPG, PNG, WEBP · Optimización secuencial en el navegador
+          </span>
         </h4>
         
         {/* ✅ FOTOS EXISTENTES (Solo en modo EDIT) */}
@@ -382,20 +413,33 @@ const CarFormRHF = ({
                 type="file"
                 accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
                 multiple
+                disabled={imageState.fotosExtra?.some((x) => x.processStatus === 'optimizing')}
                 onChange={(e) => {
                   const files = e.target.files
+                  const inputEl = e.target
                   if (files && files.length > 0) {
-                    // ✅ Validación de tamaño eliminada: Sharp optimizará las imágenes en la API Route
                     const validFiles = filterValidFiles(files, {
-                      maxBytes: null, // Sin límite de tamaño
-                      acceptWebpOnly: false
+                      maxBytes: null,
+                      acceptWebpOnly: false,
                     })
                     if (validFiles.length !== files.length) {
-                      setError('fotosExtra', { type: 'manual', message: 'Algunas fotos fueron descartadas (solo se permiten JPG, PNG o WEBP)' })
+                      setError('fotosExtra', {
+                        type: 'manual',
+                        message:
+                          'Algunas fotos fueron descartadas (solo se permiten JPG, PNG o WEBP)',
+                      })
                     } else {
                       clearErrors('fotosExtra')
                     }
-                    setMultipleExtras(validFiles)
+                    const capped = validFiles.slice(0, FORM_RULES.MAX_EXTRA_PHOTOS)
+                    if (validFiles.length > FORM_RULES.MAX_EXTRA_PHOTOS) {
+                      setError('fotosExtra', {
+                        type: 'manual',
+                        message: `Solo se procesan las primeras ${FORM_RULES.MAX_EXTRA_PHOTOS} fotos`,
+                      })
+                    }
+                    inputEl.value = ''
+                    void pickExtraFiles(capped)
                   }
                 }}
                 className={styles.multipleFileInput}
@@ -403,10 +447,13 @@ const CarFormRHF = ({
               <div className={styles.multipleInputUI}>
                 <span className={styles.multipleInputIcon}>📁</span>
                 <span className={styles.multipleInputText}>
-                  {imageState.fotosExtra?.length > 0 
-                    ? `${imageState.fotosExtra.length} archivo(s) seleccionado(s)`
-                    : 'Seleccionar múltiples archivos'
-                  }
+                  {imageState.fotosExtra?.length > 0
+                    ? `${imageState.fotosExtra.length} foto(s) · ${
+                        imageState.fotosExtra.some((x) => x.processStatus === 'optimizing')
+                          ? 'optimizando…'
+                          : `${imageState.fotosExtra.filter((x) => x.processStatus === 'ready').length} lista(s)`
+                      }`
+                    : 'Seleccionar múltiples archivos'}
                 </span>
               </div>
             </label>
@@ -415,20 +462,41 @@ const CarFormRHF = ({
           {/* ✅ PREVIEW DE ARCHIVOS NUEVOS */}
           {imageState.fotosExtra && imageState.fotosExtra.length > 0 && (
             <div className={styles.newFilesPreview}>
-              <h5>Archivos Nuevos:</h5>
+              <h5>Fotos nuevas:</h5>
               <div className={styles.newFilesGrid}>
-                {imageState.fotosExtra.map((file, index) => (
-                  <div key={index} className={styles.newFileCard}>
-                    <img 
-                      src={URL.createObjectURL(file)} 
-                      alt={`Nuevo archivo ${index + 1}`}
-                      className={styles.newFileImg}
-                    />
+                {imageState.fotosExtra.map((item, index) => (
+                  <div key={`${item.label}-${index}`} className={styles.newFileCard}>
+                    {item.previewUrl ? (
+                      <img
+                        src={item.previewUrl}
+                        alt={`Nueva foto ${index + 1}`}
+                        className={styles.newFileImg}
+                      />
+                    ) : (
+                      <div className={styles.newFilePlaceholder}>
+                        {item.processStatus === 'optimizing' ? (
+                          <>
+                            <span className={styles.imageSpinner} aria-hidden />
+                            <span className={styles.newFilePlaceholderText}>Optimizando…</span>
+                          </>
+                        ) : (
+                          <span className={styles.newFilePlaceholderText}>Sin vista previa</span>
+                        )}
+                      </div>
+                    )}
                     <div className={styles.newFileInfo}>
-                      <span className={styles.newFileName}>{file.name}</span>
-                      <span className={styles.newFileSize}>
-                        {(file.size / 1024 / 1024).toFixed(2)} MB
-                      </span>
+                      <span className={styles.newFileName}>{item.label}</span>
+                      {item.processStatus === 'ready' && item.file && (
+                        <span className={styles.newFileSize}>
+                          {(item.file.size / 1024 / 1024).toFixed(2)} MB
+                        </span>
+                      )}
+                      {item.processStatus === 'ready' && (
+                        <span className={styles.imageStatusReady}>Lista</span>
+                      )}
+                      {item.processStatus === 'error' && item.processError && (
+                        <span className={styles.imageStatusError}>{item.processError}</span>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -655,6 +723,11 @@ const CarFormRHF = ({
 
       {/* ✅ BOTONES DE ACCIÓN */}
       <div className={styles.actionButtons}>
+        {pipelineBlocked && (
+          <p className={styles.pipelineWarning} role="status">
+            Esperá a que termine la optimización de las imágenes antes de enviar el formulario.
+          </p>
+        )}
         <button
           type="button"
           onClick={onClose}
@@ -663,13 +736,17 @@ const CarFormRHF = ({
         >
           Cancelar
         </button>
-        
+
         <button
           type="submit"
           className={styles.submitButton}
-          disabled={isLoading}
+          disabled={isLoading || pipelineBlocked}
         >
-          {isLoading ? 'Procesando...' : (mode === MODE.CREATE ? 'Crear Auto' : 'Actualizar Auto')}
+          {isLoading
+            ? 'Procesando...'
+            : mode === MODE.CREATE
+              ? 'Crear Auto'
+              : 'Actualizar Auto'}
         </button>
       </div>
     </form>

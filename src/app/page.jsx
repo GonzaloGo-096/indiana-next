@@ -1,11 +1,9 @@
 import Link from "next/link";
 import Hero from "../components/Hero";
 import { CeroKmSection } from "../components/home/CeroKmSection";
-import { UsadosSection } from "../components/home/UsadosSection";
+import { HomeUsadosSectionClient } from "../components/home/HomeUsadosSectionClient";
 import { staticImages } from "../config/cloudinaryStaticImages";
 import { getSiteUrl } from "../lib/site-url";
-import { vehiclesService } from "../lib/services/vehiclesApi.server";
-import { mapVehiclesPage } from "../lib/mappers/vehicleMapper";
 import styles from "./page.module.css";
 
 // Structured Data: Organization + LocalBusiness + AutomotiveBusiness
@@ -91,21 +89,6 @@ export const metadata = {
 export default async function Home() {
   const structuredData = getStructuredData();
 
-  let usadosVehicles = [];
-  try {
-    const backendData = await vehiclesService.getVehicles({
-      filters: {},
-      limit: 6,
-      cursor: 1,
-    });
-    const mappedData = mapVehiclesPage(backendData, 1);
-    usadosVehicles = mappedData.vehicles || [];
-  } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.error("[Home] Error fetching usados:", error);
-    }
-  }
-
   return (
     <>
       <script
@@ -119,8 +102,8 @@ export default async function Home() {
         {/* Sección B: Peugeot 0km - Fondo negro */}
         <CeroKmSection />
 
-        {/* Sección C: Usados Multimarca */}
-        <UsadosSection vehicles={usadosVehicles} />
+        {/* Sección C: Usados Multimarca (carga en cliente para no bloquear render inicial) */}
+        <HomeUsadosSectionClient />
 
         {/* Sección D: Banner Postventa */}
         <section
