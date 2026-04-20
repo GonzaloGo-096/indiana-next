@@ -3,8 +3,8 @@
  */
 
 .section {
+  /* Sin overlay tipo ::before: evitaba una franja horizontal bajo el hero */
   padding: clamp(4.2rem, 9.6vw, 6rem) 0;
-  /* Carbón con ligera profundidad: menos duro que negro + blanco puro */
   background: linear-gradient(
     168deg,
     #1e232b 0%,
@@ -35,24 +35,6 @@
     max-width: min(1320px, 100%);
     padding: 0 var(--container-padding-desktop);
   }
-}
-
-/* Transición suave desde el hero claro */
-.section::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 36px;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.06) 0%,
-    rgba(24, 28, 36, 0.35) 55%,
-    rgba(18, 22, 30, 0.95) 100%
-  );
-  z-index: 0;
-  pointer-events: none;
 }
 
 .content {
