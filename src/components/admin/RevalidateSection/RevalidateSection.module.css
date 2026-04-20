@@ -15,9 +15,9 @@
   font-family: var(--font-sans);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--color-neutral-400);
-  background: transparent;
-  border: 1px solid color-mix(in srgb, var(--color-neutral-100) 12%, transparent);
+  color: var(--color-neutral-600);
+  background: color-mix(in srgb, #ffffff 70%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-neutral-900) 10%, transparent);
   padding: var(--spacing-2) var(--spacing-4);
   border-radius: 999px;
   cursor: pointer;
@@ -29,9 +29,9 @@
 }
 
 .openTrigger:hover {
-  color: var(--color-neutral-200);
-  border-color: color-mix(in srgb, var(--color-neutral-100) 20%, transparent);
-  background: color-mix(in srgb, var(--color-neutral-100) 6%, transparent);
+  color: var(--color-neutral-900);
+  border-color: color-mix(in srgb, var(--color-neutral-900) 16%, transparent);
+  background: color-mix(in srgb, var(--color-neutral-900) 5%, transparent);
 }
 
 .openTrigger:active {
@@ -45,7 +45,7 @@
 }
 
 .openTrigger:hover .openTriggerLabel {
-  text-decoration-color: color-mix(in srgb, var(--color-neutral-200) 70%, transparent);
+  text-decoration-color: color-mix(in srgb, var(--color-neutral-700) 70%, transparent);
 }
 
 .pendingBadge {

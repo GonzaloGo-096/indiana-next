@@ -1,178 +1,117 @@
-/* Panel de filtros — alineado al tema oscuro del dashboard admin */
+/* Filtros secundarios: disclosure compacto, sin peso visual de “panel principal” */
 
-.panel {
-  position: relative;
-  margin-bottom: var(--spacing-5);
-  padding: var(--spacing-5) var(--spacing-5) var(--spacing-5);
-  border-radius: 20px;
-  border: 1px solid color-mix(in srgb, var(--color-neutral-100) 10%, transparent);
-  background: linear-gradient(
-    155deg,
-    color-mix(in srgb, var(--color-neutral-800) 90%, transparent) 0%,
-    color-mix(in srgb, var(--color-neutral-900) 72%, transparent) 100%
-  );
-  box-shadow:
-    0 1px 0 color-mix(in srgb, var(--color-neutral-100) 6%, transparent) inset,
-    0 16px 48px rgba(0, 0, 0, 0.28);
-  /* visible: el MultiSelect se posiciona absolute y quedaría recortado con hidden */
-  overflow: visible;
-}
-
-.panelAccent {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 3px;
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--color-brand-500) 85%, transparent),
-    color-mix(in srgb, var(--color-brand-400) 55%, transparent),
-    color-mix(in srgb, var(--color-brand-600) 70%, transparent)
-  );
-  opacity: 0.95;
-  pointer-events: none;
-}
-
-.panelHeader {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--spacing-4);
+.filterDetails {
   margin-bottom: var(--spacing-4);
-  padding-top: 2px;
-}
-
-.panelHeaderMain {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--spacing-3);
-  min-width: 0;
-}
-
-.panelIconWrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
   border-radius: 14px;
-  color: var(--color-brand-100);
-  background: color-mix(in srgb, var(--color-brand-500) 22%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-brand-400) 38%, transparent);
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--color-brand-600) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-neutral-900) 6%, transparent);
+  background: color-mix(in srgb, var(--color-neutral-900) 2.5%, #ffffff 97.5%);
+  box-shadow: 0 1px 0 color-mix(in srgb, #ffffff 70%, transparent) inset;
 }
 
-.panelTitles {
-  min-width: 0;
-}
-
-.panelTitle {
-  margin: 0 0 var(--spacing-1);
-  font-family: var(--font-display);
-  font-size: clamp(1.05rem, 2vw, 1.2rem);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-white);
-  letter-spacing: 0.02em;
-  line-height: 1.2;
-}
-
-.panelSubtitle {
-  margin: 0;
-  max-width: 42ch;
-  font-size: var(--font-size-sm);
-  line-height: 1.45;
-  color: var(--color-neutral-400);
-}
-
-.resetButton {
-  font-family: var(--font-sans);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  padding: var(--spacing-2) var(--spacing-4);
-  border-radius: 10px;
-  cursor: pointer;
-  flex-shrink: 0;
-  color: var(--color-neutral-200);
-  background: color-mix(in srgb, var(--color-neutral-100) 8%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-neutral-100) 14%, transparent);
-  transition:
-    background 0.2s ease,
-    border-color 0.2s ease,
-    color 0.2s ease,
-    transform 0.15s ease;
-}
-
-.resetButton:hover {
-  color: var(--color-white);
-  background: color-mix(in srgb, var(--color-neutral-100) 12%, transparent);
-  border-color: color-mix(in srgb, var(--color-brand-400) 35%, transparent);
-}
-
-.resetButton:active {
-  transform: scale(0.98);
-}
-
-.summary {
+.filterSummary {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: var(--spacing-2) var(--spacing-3);
-  margin-bottom: var(--spacing-4);
-}
-
-.summaryChip {
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.03em;
-  color: var(--color-neutral-200);
-  background: color-mix(in srgb, var(--color-neutral-900) 45%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-neutral-100) 10%, transparent);
   padding: var(--spacing-2) var(--spacing-3);
-  border-radius: 999px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
 }
 
-.controlsGrid {
+.filterSummary::-webkit-details-marker {
+  display: none;
+}
+
+.filterSummaryCaret {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-right: 2px solid var(--color-neutral-500);
+  border-bottom: 2px solid var(--color-neutral-500);
+  transform: rotate(-45deg);
+  transition: transform 0.2s ease;
+  margin-top: -2px;
+}
+
+.filterDetails[open] .filterSummaryCaret {
+  transform: rotate(45deg);
+  margin-top: 0;
+}
+
+.filterSummaryLabel {
+  font-size: 11px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-neutral-500);
+}
+
+.filterSummaryMeta {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-neutral-600);
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.filterBody {
+  padding: 0 var(--spacing-3) var(--spacing-3);
+  border-top: 1px solid color-mix(in srgb, var(--color-neutral-900) 6%, transparent);
+}
+
+.filterRow {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--spacing-4);
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: var(--spacing-3) var(--spacing-4);
+  align-items: end;
+  padding-top: var(--spacing-3);
 }
 
-.filterGroup {
+.filterRowHasReset {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto;
+}
+
+.filterCell {
   min-width: 0;
   position: relative;
-}
-
-/* El desplegable de marca debe superponerse al bloque de año (grid / responsive) */
-.filterGroup:first-child {
-  z-index: 2;
-}
-
-.filterGroup:last-child {
   z-index: 1;
 }
 
-.filterSurface {
-  height: 100%;
-  border-radius: 16px;
-  padding: var(--spacing-4) var(--spacing-4) var(--spacing-5);
-  background: color-mix(in srgb, var(--color-neutral-900) 42%, transparent);
-  border: 1px solid color-mix(in srgb, var(--color-neutral-100) 9%, transparent);
-  box-shadow: 0 1px 0 color-mix(in srgb, var(--color-neutral-100) 5%, transparent) inset;
+.filterCell:first-child {
+  z-index: 2;
 }
 
-/* Solo el título de cada control (no las opciones del desplegable) */
-.filterSurface > div > label {
-  color: var(--color-neutral-300);
+.filterActions {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 2px;
 }
 
-.filterSurface .rangeSliderHost > div > label {
-  color: var(--color-neutral-300);
+.filterReset {
+  font-family: var(--font-sans);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-neutral-600);
+  background: transparent;
+  border: none;
+  padding: var(--spacing-2) var(--spacing-2);
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
 }
 
-/* El RangeSlider usa ancho 75% centrado; en el panel ocupamos todo el ancho */
+.filterReset:hover {
+  color: var(--color-neutral-900);
+  background: color-mix(in srgb, var(--color-neutral-900) 4%, transparent);
+  text-decoration: none;
+}
+
 .rangeSliderHost > div {
   width: 100% !important;
   margin-left: 0 !important;
@@ -181,28 +120,18 @@
 
 .rangeSliderHost > div > label {
   text-align: left;
-  font-size: var(--font-size-sm, 0.875rem);
-  margin-bottom: var(--spacing-2, 0.5rem);
+  font-size: var(--font-size-xs, 0.75rem);
+  margin-bottom: var(--spacing-1, 0.25rem);
 }
 
-@media (max-width: 768px) {
-  .panel {
-    padding: var(--spacing-4);
-    border-radius: 18px;
-  }
-
-  .panelHeader {
-    flex-direction: column;
+@media (max-width: 900px) {
+  .filterRow {
+    grid-template-columns: 1fr;
     align-items: stretch;
   }
 
-  .resetButton {
-    width: 100%;
-    text-align: center;
-  }
-
-  .controlsGrid {
-    grid-template-columns: 1fr;
-    gap: var(--spacing-4);
+  .filterActions {
+    justify-content: flex-start;
+    padding-bottom: 0;
   }
 }

@@ -4,33 +4,42 @@ import styles from '@/app/admin/dashboard.module.css'
 
 const fallbackImage = '/assets/logos/logos-indiana/desktop/logo-chico-solid.webp'
 
-/**
- * Inventario del panel: encabezado, contador, vacío y tarjetas con editar / eliminar.
- * `items` debe ser la lista ya mapeada con toAdminListItem (incluye _original para editar).
- */
-export default function AdminInventorySection({ items, onEdit, onDelete }) {
+export default function AdminInventorySection({
+  items,
+  onEdit,
+  onDelete,
+  onOpenCreate,
+  addDisabled = false,
+}) {
   const count = items.length
 
   return (
     <section className={styles.vehiclesList} aria-labelledby="admin-inventory-heading">
       <div className={styles.listIntro}>
-        <h2 id="admin-inventory-heading" className={styles.listTitle}>
-          Inventario
-        </h2>
-        <p className={styles.listHint}>
-          {count === 0
-            ? 'No hay resultados con los filtros actuales.'
-            : 'Cada fila resume el estado publicado del vehículo.'}
-        </p>
-        <span className={styles.countPill}>{count} unidades</span>
+        <div className={styles.listIntroMain}>
+          <h2 id="admin-inventory-heading" className={styles.listTitle}>
+            Inventario
+          </h2>
+          <span className={styles.countPill}>{count} unidades</span>
+        </div>
+        {typeof onOpenCreate === 'function' ? (
+          <button
+            type="button"
+            className={styles.inventoryAddButton}
+            onClick={onOpenCreate}
+            disabled={addDisabled}
+          >
+            <span className={styles.inventoryAddIcon} aria-hidden>
+              +
+            </span>
+            Nuevo vehículo
+          </button>
+        ) : null}
       </div>
 
       {count === 0 ? (
         <div className={styles.emptyState}>
           <p className={styles.emptyTitle}>Sin vehículos para mostrar</p>
-          <p className={styles.emptyText}>
-            Probá ampliar el rango de años o las marcas en los filtros de arriba.
-          </p>
         </div>
       ) : (
         <ul className={styles.vehicleCardList}>

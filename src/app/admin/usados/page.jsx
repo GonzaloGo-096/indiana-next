@@ -1,17 +1,12 @@
-/**
- * Panel admin — Sección Usados: inventario y operaciones sobre vehículos usados.
- */
-
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useId, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useVehiclesList } from '@/hooks/useVehiclesList'
 import { useCarMutation } from '@/hooks/admin/useCarMutation'
 import { useAdminVehicleModal } from '@/hooks/admin/useAdminVehicleModal'
 import { toAdminListItem } from '@/mappers/admin/toAdminListItem'
 import AdminLayout from '@/components/admin/AdminLayout/AdminLayout'
-import AdminToolbar from '@/components/admin/AdminToolbar/AdminToolbar'
 import AdminInventorySection from '@/components/admin/AdminInventorySection/AdminInventorySection'
 import { Alert } from '@/components/ui/Alert/Alert'
 import AdminFilters from '@/components/admin/AdminFilters/AdminFilters'
@@ -20,8 +15,33 @@ import RevalidateSection from '@/components/admin/RevalidateSection/RevalidateSe
 import { FILTER_DEFAULTS } from '@/constants/filterOptions'
 import styles from '../dashboard.module.css'
 
+const USADOS_TAB = {
+  INVENTARIO: 'inventario',
+  METRICAS: 'metricas',
+}
+
+function UsadosMetricasPlaceholder({ id, role, 'aria-labelledby': ariaLabelledBy, className }) {
+  return (
+    <div id={id} role={role} aria-labelledby={ariaLabelledBy} className={className}>
+      <div className={styles.sectionPlaceholder}>
+        <h3 className={styles.sectionPlaceholderTitle}>Métricas</h3>
+        <p className={styles.sectionPlaceholderText}>
+          Aquí podrás ver indicadores del inventario. Próximamente.
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export default function AdminUsadosPage() {
   const { logout } = useAuth()
+  const tabId = useId()
+  const inventarioTabId = `${tabId}-inventario-tab`
+  const metricasTabId = `${tabId}-metricas-tab`
+  const inventarioPanelId = `${tabId}-inventario-panel`
+  const metricasPanelId = `${tabId}-metricas-panel`
+
+  const [usadosTab, setUsadosTab] = useState(USADOS_TAB.INVENTARIO)
 
   const [filters, setFilters] = useState({
     marca: [],
@@ -69,16 +89,60 @@ export default function AdminUsadosPage() {
     [deleteMutation, refetch]
   )
 
+  const usadosTabs = (
+    <div className={styles.usadosTabs} role="tablist" aria-label="Secciones de Usados">
+      <button
+        type="button"
+        id={inventarioTabId}
+        role="tab"
+        aria-selected={usadosTab === USADOS_TAB.INVENTARIO}
+        aria-controls={inventarioPanelId}
+        className={`${styles.usadosTab} ${usadosTab === USADOS_TAB.INVENTARIO ? styles.usadosTabActive : ''}`}
+        onClick={() => setUsadosTab(USADOS_TAB.INVENTARIO)}
+      >
+        Inventario
+      </button>
+      <button
+        type="button"
+        id={metricasTabId}
+        role="tab"
+        aria-selected={usadosTab === USADOS_TAB.METRICAS}
+        aria-controls={metricasPanelId}
+        className={`${styles.usadosTab} ${usadosTab === USADOS_TAB.METRICAS ? styles.usadosTabActive : ''}`}
+        onClick={() => setUsadosTab(USADOS_TAB.METRICAS)}
+      >
+        Métricas
+      </button>
+    </div>
+  )
+
   if (isLoading) {
     return (
       <AdminLayout onLogout={handleLogout}>
-        <header className={styles.sectionScreenHeader}>
-          <h2 className={styles.sectionScreenTitle}>Usados</h2>
-          <p className={styles.sectionScreenLead}>Inventario y publicaciones del catálogo usados.</p>
-        </header>
-        <div className={styles.statePanel} role="status" aria-live="polite">
-          <span className={styles.spinner} aria-hidden />
-          <p className={styles.stateText}>Cargando vehículos del servidor…</p>
+        <div className={styles.usadosShell}>
+          {usadosTabs}
+          {usadosTab === USADOS_TAB.INVENTARIO ? (
+            <div
+              id={inventarioPanelId}
+              role="tabpanel"
+              aria-labelledby={inventarioTabId}
+              className={styles.usadosTabPanel}
+            >
+              <div className={styles.usadosPageIntro}>
+                <div className={styles.statePanel} role="status" aria-live="polite">
+                  <span className={styles.spinner} aria-hidden />
+                  <p className={styles.stateText}>Cargando vehículos del servidor…</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <UsadosMetricasPlaceholder
+              id={metricasPanelId}
+              role="tabpanel"
+              aria-labelledby={metricasTabId}
+              className={styles.usadosTabPanel}
+            />
+          )}
         </div>
       </AdminLayout>
     )
@@ -87,16 +151,33 @@ export default function AdminUsadosPage() {
   if (error) {
     return (
       <AdminLayout onLogout={handleLogout}>
-        <header className={styles.sectionScreenHeader}>
-          <h2 className={styles.sectionScreenTitle}>Usados</h2>
-          <p className={styles.sectionScreenLead}>Inventario y publicaciones del catálogo usados.</p>
-        </header>
-        <div className={`${styles.statePanel} ${styles.statePanelError}`} role="alert">
-          <h3 className={styles.stateTitle}>Error al cargar vehículos</h3>
-          <p className={styles.stateMessage}>{error.message || 'Error desconocido'}</p>
-          <button type="button" onClick={refetch} className={styles.addButton}>
-            Reintentar
-          </button>
+        <div className={styles.usadosShell}>
+          {usadosTabs}
+          {usadosTab === USADOS_TAB.INVENTARIO ? (
+            <div
+              id={inventarioPanelId}
+              role="tabpanel"
+              aria-labelledby={inventarioTabId}
+              className={styles.usadosTabPanel}
+            >
+              <div className={styles.usadosPageIntro}>
+                <div className={`${styles.statePanel} ${styles.statePanelError}`} role="alert">
+                  <h3 className={styles.stateTitle}>Error al cargar vehículos</h3>
+                  <p className={styles.stateMessage}>{error.message || 'Error desconocido'}</p>
+                  <button type="button" onClick={refetch} className={styles.addButton}>
+                    Reintentar
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <UsadosMetricasPlaceholder
+              id={metricasPanelId}
+              role="tabpanel"
+              aria-labelledby={metricasTabId}
+              className={styles.usadosTabPanel}
+            />
+          )}
         </div>
       </AdminLayout>
     )
@@ -104,30 +185,46 @@ export default function AdminUsadosPage() {
 
   return (
     <AdminLayout onLogout={handleLogout}>
-      <header className={styles.sectionScreenHeader}>
-        <h2 className={styles.sectionScreenTitle}>Usados</h2>
-        <p className={styles.sectionScreenLead}>Inventario y publicaciones del catálogo usados.</p>
-      </header>
+      <div className={styles.usadosShell}>
+        {usadosTabs}
+        {usadosTab === USADOS_TAB.INVENTARIO ? (
+          <div
+            id={inventarioPanelId}
+            role="tabpanel"
+            aria-labelledby={inventarioTabId}
+            className={styles.usadosTabPanel}
+          >
+            <div className={styles.usadosPageIntro}>
+              <AdminFilters onFiltersChange={handleFiltersChange} initialFilters={filters} />
 
-      <AdminToolbar onOpenCreate={modal.openCreate} />
+              {deleteError && (
+                <div className={styles.alertWrap}>
+                  <Alert variant="error" dismissible onDismiss={() => setDeleteError(null)}>
+                    {deleteError}
+                  </Alert>
+                </div>
+              )}
+            </div>
 
-      <AdminFilters onFiltersChange={handleFiltersChange} initialFilters={filters} />
+            <AdminInventorySection
+              items={vehicles.map((vehicle) => toAdminListItem(vehicle))}
+              onEdit={modal.openEdit}
+              onDelete={handleDeleteVehicle}
+              onOpenCreate={modal.openCreate}
+              addDisabled={createMutation.isPending}
+            />
 
-      {deleteError && (
-        <div className={styles.alertWrap}>
-          <Alert variant="error" dismissible onDismiss={() => setDeleteError(null)}>
-            {deleteError}
-          </Alert>
-        </div>
-      )}
-
-      <AdminInventorySection
-        items={vehicles.map((vehicle) => toAdminListItem(vehicle))}
-        onEdit={modal.openEdit}
-        onDelete={handleDeleteVehicle}
-      />
-
-      <RevalidateSection />
+            <RevalidateSection />
+          </div>
+        ) : (
+          <UsadosMetricasPlaceholder
+            id={metricasPanelId}
+            role="tabpanel"
+            aria-labelledby={metricasTabId}
+            className={styles.usadosTabPanel}
+          />
+        )}
+      </div>
 
       <AdminCarModal
         isOpen={modal.modalState.isOpen}
