@@ -41,19 +41,18 @@ import styles from "./CardSimilar.module.css";
 export const CardSimilar = memo(({ auto, isPriority = false }) => {
   const router = useRouter();
 
-  // ✅ VALIDAR DATOS DEL VEHÍCULO
-  if (!auto || (!auto.id && !auto._id)) {
-    return null;
-  }
-
-  const vehicleId = auto.id || auto._id;
+  const vehicleId = auto?.id || auto?._id;
 
   // ✅ URL de imagen principal optimizada
   const primaryImage = useMemo(() => {
+    if (!auto) return "/auto1.jpg";
     return auto.fotoPrincipal || auto.imagen || "/auto1.jpg";
-  }, [auto.fotoPrincipal, auto.imagen]);
+  }, [auto]);
 
-  const detailUrl = buildVehicleDetailUrl(auto);
+  const detailUrl = useMemo(() => {
+    if (!auto || !vehicleId) return "";
+    return buildVehicleDetailUrl(auto);
+  }, [auto, vehicleId]);
 
   // ✅ HANDLER: Click en toda la tarjeta para abrir detalle
   const handleCardClick = useCallback(() => {
@@ -63,7 +62,9 @@ export const CardSimilar = memo(({ auto, isPriority = false }) => {
       }
       return;
     }
-    
+
+    if (!detailUrl) return;
+
     // ✅ Guardar posición de scroll antes de navegar
     if (typeof window !== "undefined") {
       const scrollData = {
@@ -73,12 +74,23 @@ export const CardSimilar = memo(({ auto, isPriority = false }) => {
       };
       sessionStorage.setItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL, JSON.stringify(scrollData));
     }
-    
+
     router.push(detailUrl);
   }, [vehicleId, detailUrl, router]);
 
   // ✅ MEMOIZAR DATOS FORMATEADOS
   const formattedData = useMemo(() => {
+    if (!auto) {
+      return {
+        price: formatPrice(undefined),
+        kilometers: formatKilometraje(undefined),
+        year: formatYear(undefined),
+        caja: formatCaja(undefined),
+        brandModel: formatBrandModel(undefined, undefined),
+        version: formatValue(""),
+      };
+    }
+
     const cajaFormateada = formatCaja(auto.caja);
 
     return {
@@ -113,6 +125,11 @@ export const CardSimilar = memo(({ auto, isPriority = false }) => {
 
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const handleImageLoad = useCallback(() => setIsImageLoaded(true), []);
+
+  // ✅ VALIDAR DATOS DEL VEHÍCULO (después de todos los hooks)
+  if (!auto || (!auto.id && !auto._id)) {
+    return null;
+  }
 
   return (
     <div
@@ -213,5 +230,3 @@ export const CardSimilar = memo(({ auto, isPriority = false }) => {
 CardSimilar.displayName = "CardSimilar";
 
 export default CardSimilar;
-
-

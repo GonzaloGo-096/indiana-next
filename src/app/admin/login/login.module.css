@@ -1,64 +1,84 @@
-/* Login.module.css - Estilos optimizados para admin */
-
 .container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f5f5f5;
-  padding: 20px;
+  padding: var(--spacing-5);
+  background:
+    radial-gradient(800px 400px at 50% -20%, var(--color-brand-500-rgba-25), transparent 55%),
+    linear-gradient(180deg, var(--color-neutral-900) 0%, #06080f 100%);
 }
 
 .content {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
 }
 
 .card {
-  background: white;
-  border-radius: 8px;
-  border: 1px solid #ddd;
+  border-radius: 20px;
   overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--color-neutral-100) 10%, transparent);
+  background: linear-gradient(
+    165deg,
+    color-mix(in srgb, var(--color-neutral-800) 92%, transparent),
+    color-mix(in srgb, var(--color-neutral-900) 88%, transparent)
+  );
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
 }
 
 .cardBody {
-  padding: 30px;
+  padding: var(--spacing-6) var(--spacing-5);
 }
 
 .title {
   text-align: center;
-  font-size: 24px;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 20px 0;
+  font-family: var(--font-display);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-white);
+  margin: 0 0 var(--spacing-5);
+  letter-spacing: 0.02em;
+}
+
+.loadingText {
+  margin: 0;
+  text-align: center;
+  font-size: var(--font-size-base);
+  color: var(--color-neutral-400);
 }
 
 .credentials {
   text-align: center;
-  margin-bottom: 20px;
-  padding: 12px;
-  background: #f8f9fa;
-  border-radius: 6px;
-  border-left: 3px solid #007bff;
+  margin-bottom: var(--spacing-5);
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--color-brand-500) 15%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-brand-400) 28%, transparent);
 }
 
 .credentials p {
   margin: 0;
-  color: #666;
-  font-size: 13px;
-  font-family: monospace;
+  color: var(--color-brand-100);
+  font-size: var(--font-size-xs);
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  line-height: 1.45;
 }
 
 .error {
-  background: #f8d7da;
-  color: #721c24;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 15px;
+  background: color-mix(in srgb, var(--color-error-600) 28%, transparent);
+  color: var(--color-error-100);
+  padding: var(--spacing-3);
+  border-radius: 12px;
+  margin-bottom: var(--spacing-4);
   text-align: center;
-  font-size: 13px;
-  border: 1px solid #f5c6cb;
+  font-size: var(--font-size-sm);
+  border: 1px solid color-mix(in srgb, var(--color-error-400) 40%, transparent);
 }
 
-
-
+.formSurface {
+  padding: var(--spacing-5);
+  border-radius: 14px;
+  background: var(--color-white);
+  border: 1px solid var(--color-neutral-200);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+}

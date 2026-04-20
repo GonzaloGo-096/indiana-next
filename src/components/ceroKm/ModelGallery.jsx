@@ -25,30 +25,35 @@ import styles from "./ModelGallery.module.css";
  * @param {string} props.title - Título opcional para la sección
  */
 export function ModelGallery({ images, title = "Galería" }) {
-  if (!images) return null;
-
   // ✅ Estado para evitar hidratación: empezar con mobile (consistente servidor/cliente)
   const [isDesktop, setIsDesktop] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    setIsMounted(true);
     const checkDesktop = () => {
       setIsDesktop(window.innerWidth >= 768);
     };
 
-    checkDesktop();
+    queueMicrotask(() => {
+      setIsMounted(true);
+      checkDesktop();
+    });
+
     window.addEventListener("resize", checkDesktop);
     return () => window.removeEventListener("resize", checkDesktop);
   }, []);
 
-  // ✅ Memoizar imágenes según breakpoint
+  // ✅ Memoizar imágenes según breakpoint (images ausente → [])
   const imagesToShow = useMemo(() => {
-    if (!isMounted) return images.mobile || []; // Durante SSR, usar mobile
+    if (!images) return [];
+    if (!isMounted) return images.mobile || [];
     return isDesktop ? (images.desktop || images.mobile || []) : (images.mobile || []);
   }, [isDesktop, isMounted, images]);
 
-  if (!imagesToShow || imagesToShow.length === 0) return null;
+  // Validación (después de todos los hooks)
+  if (!images || !imagesToShow.length) {
+    return null;
+  }
 
   return (
     <section className={styles.section} aria-labelledby="gallery-title">

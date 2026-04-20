@@ -12,53 +12,6 @@ import { getClosestChildIndex, scrollToChildIndex } from "../../../utils/carouse
 import styles from "./ModeloPlanes.module.css";
 
 /**
- * Función para obtener versión del plan basándose en el nombre del plan y los modelos
- * @param {Object} plan - Objeto del plan
- * @param {string} modeloSlug - Slug del modelo (2008, 208, expert, partner)
- * @returns {string} - Nombre de la versión
- */
-const obtenerVersionDelPlan = (plan, modeloSlug) => {
-  const modeloData = getModelo(modeloSlug);
-  if (!modeloData || !modeloData.versiones) return "";
-
-  const nombrePlan = plan.plan.toLowerCase();
-  const modelosPlan = plan.modelos.map((m) => m.toLowerCase());
-
-  // Mapeo específico por plan
-  const mapeoVersiones = {
-    "2008-allure-t200": "ALLURE",
-    "2008-active-t200": "ACTIVE",
-    easy: "ALLURE",
-    "plus-at": "ALLURE AT",
-    "plus-208": "ALLURE",
-    "expert-carga": "L3 HDI 120 - Carga",
-    "partner-hdi": "CONFORT 1.6 HDI 92",
-  };
-
-  // Buscar por ID del plan
-  if (mapeoVersiones[plan.id]) {
-    return mapeoVersiones[plan.id];
-  }
-
-  // Buscar versión en los nombres de modelos del plan
-  for (const nombreModelo of modelosPlan) {
-    for (const version of modeloData.versiones) {
-      const versionNombre = version.nombre.toLowerCase();
-      const versionNombreCorto = version.nombreCorto.toLowerCase();
-
-      if (
-        nombreModelo.includes(versionNombre) ||
-        nombreModelo.includes(versionNombreCorto)
-      ) {
-        return version.nombreCorto || version.nombre;
-      }
-    }
-  }
-
-  return "";
-};
-
-/**
  * ModeloPlanes - Componente genérico para mostrar planes de financiación de un modelo
  * 
  * Reemplaza ScrollParallaxTransition208 y ScrollParallaxTransition2008
@@ -69,15 +22,15 @@ const obtenerVersionDelPlan = (plan, modeloSlug) => {
  */
 const ModeloPlanes = ({ modeloSlug }) => {
   const modelo = getModelo(modeloSlug);
-  if (!modelo) return null;
 
-  // Obtener planes para este modelo
-  const planes = useMemo(() => getPlanesPorModelo(modeloSlug), [modeloSlug]);
-  
-  // Si no hay planes, no renderizar nada
-  if (!planes || planes.length === 0) return null;
+  // Obtener planes para este modelo (siempre array; sin modelo válido → [])
+  const planes = useMemo(() => {
+    const m = getModelo(modeloSlug);
+    if (!m) return [];
+    const p = getPlanesPorModelo(modeloSlug);
+    return Array.isArray(p) ? p : [];
+  }, [modeloSlug]);
 
-  const modeloDisplay = modelo.nombre.charAt(0).toUpperCase() + modelo.nombre.slice(1);
   const scrollContainerRef = React.useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -92,7 +45,7 @@ const ModeloPlanes = ({ modeloSlug }) => {
   }, []);
 
   // Indicador por ÍTEM (no por página)
-  const itemCount = planes?.length || 0;
+  const itemCount = planes.length;
   // Flechas solo en desktop cuando hay 4 o más cards
   const showArrows = itemCount >= 4;
   const [activeItem, setActiveItem] = useState(0);
@@ -116,7 +69,7 @@ const ModeloPlanes = ({ modeloSlug }) => {
           rafId = null;
         });
       };
-      
+
       // ✅ OPTIMIZADO: Debounce para resize
       let resizeTimeout = null;
       const onResize = () => {
@@ -126,7 +79,7 @@ const ModeloPlanes = ({ modeloSlug }) => {
           checkActiveItem();
         }, 150);
       };
-      
+
       container.addEventListener("scroll", onScroll, { passive: true });
       window.addEventListener("resize", onResize, { passive: true });
       return () => {
@@ -173,6 +126,17 @@ const ModeloPlanes = ({ modeloSlug }) => {
     },
     []
   );
+
+  const rawNombre = modelo?.nombre;
+  const modeloDisplay =
+    typeof rawNombre === "string" && rawNombre.length > 0
+      ? rawNombre.charAt(0).toUpperCase() + rawNombre.slice(1)
+      : "";
+
+  // Validación (después de todos los hooks)
+  if (!modelo || planes.length === 0) {
+    return null;
+  }
 
   return (
     <section className={styles.modeloPlanes}>
@@ -233,4 +197,3 @@ const ModeloPlanes = ({ modeloSlug }) => {
 };
 
 export default ModeloPlanes;
-

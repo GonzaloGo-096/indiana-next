@@ -10,7 +10,7 @@
  * @version 1.2.0 - OPTIMIZADO
  */
 
-import { useState, useRef, useEffect, useCallback, useMemo, memo } from 'react'
+import { useState, useRef, useEffect, useCallback, memo } from 'react'
 import styles from './RangeSlider.module.css'
 
 const RangeSlider = memo(({
@@ -22,6 +22,8 @@ const RangeSlider = memo(({
   label,
   formatValue = (val) => val,
   className = '',
+  /** `onDark`: valores y separador en claro (p. ej. filtros sobre fondo oscuro). */
+  variant = 'default',
   'aria-label': ariaLabel,
   'aria-describedby': ariaDescribedBy
 }) => {
@@ -35,24 +37,15 @@ const RangeSlider = memo(({
     setLocalValue(value)
   }, [value])
 
-  // Calcular posiciones - OPTIMIZADO: Funciones simples sin memoización
-  const getPercentage = (val) => {
-    return ((val - min) / (max - min)) * 100
-  }
+  // Porcentaje visual en el track (misma fórmula que getPercentage antes)
+  const minPercentage = ((localValue[0] - min) / (max - min)) * 100
+  const maxPercentage = ((localValue[1] - min) / (max - min)) * 100
 
-  // ✅ Función para redondear valores al múltiplo más cercano del step (estándar Material Design)
-  const snapToStep = (value) => {
-    return Math.round((value - min) / step) * step + min
-  }
-
-  const getValueFromPercentage = (percentage) => {
+  // Click / drag: porcentaje → valor alineado a step (misma fórmula que antes)
+  const getValueFromPercentage = useCallback((percentage) => {
     const rawValue = (percentage / 100) * (max - min) + min
-    return snapToStep(rawValue)
-  }
-
-  // Memoizar cálculos de posiciones para evitar recálculos
-  const minPercentage = useMemo(() => getPercentage(localValue[0]), [localValue[0], min, max])
-  const maxPercentage = useMemo(() => getPercentage(localValue[1]), [localValue[1], min, max])
+    return Math.round((rawValue - min) / step) * step + min
+  }, [min, max, step])
 
   // Manejar cambios - MEMOIZADO Y OPTIMIZADO
   const handleChange = useCallback((newValue) => {
@@ -83,7 +76,7 @@ const RangeSlider = memo(({
     }
 
     handleChange([newMin, newMax])
-  }, [localValue, min, max, step, handleChange])
+  }, [localValue, min, max, step, handleChange, getValueFromPercentage])
 
   // Manejar arrastre de thumbs - MEMOIZADO
   const handleMouseDown = useCallback((thumb) => {
@@ -108,7 +101,7 @@ const RangeSlider = memo(({
       const newMax = Math.min(max, Math.max(minVal + step, newValue))
       handleChange([minVal, newMax])
     }
-  }, [activeThumb, localValue, min, max, step, handleChange])
+  }, [activeThumb, localValue, min, max, step, handleChange, getValueFromPercentage])
 
   const handleMouseMove = useCallback((e) => {
     if (!isDragging) return
@@ -169,8 +162,10 @@ const RangeSlider = memo(({
     }
   }, [isDragging, handleTouchMove, handleTouchEnd])
 
+  const variantClass = variant === 'onDark' ? styles.onDark : ''
+
   return (
-    <div className={`${styles.rangeSlider} ${className}`}>
+    <div className={`${styles.rangeSlider} ${variantClass} ${className}`.trim()}>
       {label && <label className={styles.label} htmlFor={`${label}-slider`}>{label}</label>}
       
       <div className={styles.container}>
@@ -234,6 +229,3 @@ const RangeSlider = memo(({
 RangeSlider.displayName = 'RangeSlider'
 
 export default RangeSlider
-
-
-

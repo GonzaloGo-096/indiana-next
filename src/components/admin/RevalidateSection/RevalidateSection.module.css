@@ -1,156 +1,318 @@
-/* RevalidateSection.module.css - Estilos para sección de revalidación */
+/* Acceso secundario al pie + modal de publicación / caché */
 
-.revalidateSection {
-  background: white;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 20px;
-  margin-bottom: 20px;
-}
-
-.title {
-  margin: 0 0 15px 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-  border-bottom: 2px solid #e9ecef;
-  padding-bottom: 10px;
-}
-
-.content {
+.footerWrap {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
+  padding-top: var(--spacing-6);
+  padding-bottom: var(--spacing-2);
+}
+
+.openTrigger {
+  display: inline-flex;
   align-items: center;
-  gap: 15px;
-  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-2);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-neutral-400);
+  background: transparent;
+  border: 1px solid color-mix(in srgb, var(--color-neutral-100) 12%, transparent);
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.openTrigger:hover {
+  color: var(--color-neutral-200);
+  border-color: color-mix(in srgb, var(--color-neutral-100) 20%, transparent);
+  background: color-mix(in srgb, var(--color-neutral-100) 6%, transparent);
+}
+
+.openTrigger:active {
+  transform: scale(0.98);
+}
+
+.openTriggerLabel {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--color-neutral-400) 55%, transparent);
+}
+
+.openTrigger:hover .openTriggerLabel {
+  text-decoration-color: color-mix(in srgb, var(--color-neutral-200) 70%, transparent);
+}
+
+.pendingBadge {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  color: var(--color-warning-900);
+  background: color-mix(in srgb, var(--color-warning-300) 95%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-warning-500) 45%, transparent);
+}
+
+/* —— Modal —— */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-5);
+  background: color-mix(in srgb, var(--color-neutral-900) 72%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.modalDialog {
+  position: relative;
+  width: 100%;
+  max-width: 34rem;
+  max-height: min(90vh, 640px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  border: 1px solid color-mix(in srgb, var(--color-brand-400) 22%, transparent);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--color-brand-900) 88%, transparent),
+    color-mix(in srgb, var(--color-neutral-900) 92%, transparent)
+  );
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-3);
+  padding: var(--spacing-4) var(--spacing-4) var(--spacing-3);
+  border-bottom: 1px solid color-mix(in srgb, var(--color-neutral-100) 10%, transparent);
+  flex-shrink: 0;
+}
+
+.modalTitle {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-white);
+  line-height: 1.25;
+  padding-top: 2px;
+}
+
+.modalClose {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: -6px -6px 0 0;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--color-neutral-300);
+  background: color-mix(in srgb, var(--color-neutral-100) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-neutral-100) 12%, transparent);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.modalClose:hover {
+  color: var(--color-white);
+  background: color-mix(in srgb, var(--color-neutral-100) 14%, transparent);
+}
+
+.modalBody {
+  padding: var(--spacing-4) var(--spacing-5) var(--spacing-5);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
 }
 
 .info {
-  flex: 1;
-  min-width: 200px;
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .pendingCount {
-  margin: 0 0 8px 0;
-  font-size: 14px;
-  font-weight: 500;
+  margin: 0 0 var(--spacing-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-neutral-300);
+}
+
+.explainPending {
+  margin: 0 0 var(--spacing-3);
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+  color: var(--color-neutral-400);
+}
+
+.explainPending strong {
+  color: var(--color-neutral-200);
+  font-weight: var(--font-weight-semibold);
 }
 
 .hasPending {
-  color: #dc3545;
-  font-weight: 600;
+  color: var(--color-warning-200);
+  font-weight: var(--font-weight-bold);
 }
 
 .noPending {
-  color: #28a745;
-  font-weight: 500;
+  color: var(--color-success-300);
+  font-weight: var(--font-weight-semibold);
 }
 
 .idList {
-  margin-top: 8px;
+  margin-top: var(--spacing-2);
 }
 
 .idList small {
-  color: #6c757d;
-  font-size: 12px;
-  font-family: monospace;
+  color: var(--color-neutral-400);
+  font-size: var(--font-size-xs);
+  font-family: ui-monospace, 'Cascadia Code', monospace;
   word-break: break-all;
 }
 
 .sessionHint {
-  margin: 8px 0 0 0;
-  font-size: 13px;
-  color: #856404;
-  background: #fff3cd;
-  border: 1px solid #ffc107;
-  border-radius: 6px;
-  padding: 8px 10px;
+  margin: var(--spacing-2) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-warning-100);
+  background: color-mix(in srgb, var(--color-warning-600) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-warning-400) 35%, transparent);
+  border-radius: 12px;
+  padding: var(--spacing-3) var(--spacing-3);
+}
+
+.whatButtonDoes {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  line-height: 1.55;
+  color: var(--color-neutral-300);
+}
+
+.whatButtonDoes strong {
+  color: var(--color-neutral-100);
+}
+
+.codeInline {
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  font-size: 0.9em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--color-neutral-100) 8%, transparent);
 }
 
 .prodNote {
-  margin: 14px 0 0 0;
-  font-size: 12px;
-  line-height: 1.45;
-  color: #6c757d;
+  margin: 0;
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+  color: var(--color-neutral-400);
 }
 
 .publishButton {
-  padding: 10px 20px;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
+  align-self: flex-start;
+  padding: var(--spacing-3) var(--spacing-5);
+  font-family: var(--font-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-white);
+  background: linear-gradient(135deg, var(--color-brand-600), var(--color-brand-500));
+  border: 1px solid color-mix(in srgb, var(--color-brand-300) 40%, transparent);
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
   white-space: nowrap;
+  transition: filter 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--color-brand-500) 28%, transparent);
 }
 
 .publishButton:hover:not(:disabled) {
-  background: #0056b3;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+  filter: brightness(1.06);
+  box-shadow: 0 6px 28px color-mix(in srgb, var(--color-brand-500) 38%, transparent);
+}
+
+.publishButton:active:not(:disabled) {
+  transform: scale(0.99);
 }
 
 .publishButton:disabled {
-  background: #6c757d;
+  opacity: 0.45;
   cursor: not-allowed;
-  opacity: 0.7;
+  box-shadow: none;
 }
 
 .result {
-  margin-top: 15px;
-  padding: 15px;
-  background: #d4edda;
-  border: 1px solid #c3e6cb;
-  border-radius: 6px;
+  margin: 0;
+  padding: var(--spacing-4);
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--color-success-400) 35%, transparent);
+  background: color-mix(in srgb, var(--color-success-900) 45%, transparent);
 }
 
 .result h4 {
-  margin: 0 0 10px 0;
-  color: #155724;
-  font-size: 14px;
-  font-weight: 600;
+  margin: 0 0 var(--spacing-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-success-200);
 }
 
 .resultJson {
   margin: 0;
-  padding: 10px;
-  background: white;
-  border: 1px solid #c3e6cb;
-  border-radius: 4px;
-  font-size: 11px;
-  font-family: 'Courier New', monospace;
-  color: #155724;
-  overflow-x: auto;
+  padding: var(--spacing-3);
   max-height: 200px;
-  overflow-y: auto;
+  overflow: auto;
+  font-size: 11px;
+  font-family: ui-monospace, 'Cascadia Code', monospace;
+  color: var(--color-success-100);
+  background: color-mix(in srgb, var(--color-neutral-900) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-success-500) 25%, transparent);
+  border-radius: 10px;
 }
 
 .error {
-  margin-top: 15px;
-  padding: 12px;
-  background: #f8d7da;
-  border: 1px solid #f5c6cb;
-  border-radius: 6px;
-  color: #721c24;
-  font-size: 14px;
+  margin: 0;
+  padding: var(--spacing-3) var(--spacing-4);
+  border-radius: 12px;
+  font-size: var(--font-size-sm);
+  color: var(--color-error-100);
+  background: color-mix(in srgb, var(--color-error-700) 35%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-error-400) 40%, transparent);
 }
 
 .error strong {
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
 }
 
-/* Responsive */
 @media (max-width: 768px) {
-  .content {
-    flex-direction: column;
-    align-items: stretch;
+  .footerWrap {
+    padding-inline: var(--spacing-2);
+  }
+
+  .openTrigger {
+    width: 100%;
+    max-width: 20rem;
   }
 
   .publishButton {
     width: 100%;
+    text-align: center;
+    white-space: normal;
   }
 }
-

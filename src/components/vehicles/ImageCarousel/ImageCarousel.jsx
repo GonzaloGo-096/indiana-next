@@ -56,7 +56,9 @@ export const ImageCarousel = ({
 
   // Resetear cuando cambia la imagen activa
   useEffect(() => {
-    setIsMainLoaded(false);
+    queueMicrotask(() => {
+      setIsMainLoaded(false);
+    });
   }, [currentIndex]);
 
   // ===== Navegación =====

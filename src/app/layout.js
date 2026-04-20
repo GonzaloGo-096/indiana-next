@@ -59,7 +59,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="es" data-scroll-behavior="smooth">
       <body
-        className={`${poppins.variable} ${barlowCondensed.variable}`}
+        className={`${poppins.variable} ${barlowCondensed.variable} antialiased`}
       >
         {children}
       </body>

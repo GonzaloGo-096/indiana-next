@@ -16,8 +16,6 @@ export function VersionTabs({
   versionActivaId,
   onVersionChange,
 }) {
-  if (!versiones.length) return null;
-
   // Navegación por teclado: Arrow keys para cambiar entre tabs
   const handleKeyDown = useCallback(
     (e, currentIndex) => {
@@ -50,6 +48,8 @@ export function VersionTabs({
     },
     [versiones, onVersionChange]
   );
+
+  if (!versiones.length) return null;
 
   // Formatear nombre: GT en rojo, siglas en mayúsculas, resto capitalizado
   const renderNombre = (nombre) => {

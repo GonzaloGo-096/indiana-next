@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import ModelCard from "../ModelCard/ModelCard";
-import styles from "../../app/0km/0km.module.css";
+import styles from "../../app/(site)/0km/0km.module.css";
 
 /**
  * VehiculosCarouselClient - Client Component para carrusel de vehículos
@@ -14,13 +14,15 @@ import styles from "../../app/0km/0km.module.css";
  * @param {Array} props.cards - Array de cards con { key, src, alt, titulo, slug }
  * @param {string} props.variant - 'default' | 'dark' - Variante para fondos claros u oscuros (botones)
  * @param {boolean} props.compact - Cards más pequeñas (para home)
- * @param {boolean} props.fillParentWidth - Ancho del track = padre (inicio: más de 4 cards visibles en desktop)
+ * @param {boolean} props.fillParentWidth - Ancho del track = padre (home)
+ * @param {boolean} props.softSurface - Cards menos contrastadas + más grandes y separadas (solo home / fondo oscuro)
  */
 export function VehiculosCarouselClient({
   cards,
   variant = "default",
   compact = false,
   fillParentWidth = false,
+  softSurface = false,
 }) {
   const carouselRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -73,7 +75,8 @@ export function VehiculosCarouselClient({
     const carousel = carouselRef.current;
     if (!carousel) return;
 
-    const scrollAmount = direction === "left" ? -650 : 650;
+    const step = softSurface ? 820 : 650;
+    const scrollAmount = direction === "left" ? -step : step;
     carousel.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
 
@@ -82,6 +85,7 @@ export function VehiculosCarouselClient({
     styles.vehiculosSection,
     variant === "dark" ? styles.carouselSectionDark : "",
     fillParentWidth ? styles.carouselSectionHomeDesktop : "",
+    fillParentWidth && softSurface ? styles.carouselSectionHomeSpacious : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -126,6 +130,7 @@ export function VehiculosCarouselClient({
                 titulo={card.titulo}
                 slug={card.slug}
                 compact={compact}
+                softSurface={softSurface}
               />
             </div>
           ))}

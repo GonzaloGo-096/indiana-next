@@ -344,11 +344,14 @@ export const useImageReducer = (mode, initialData = {}) => {
   })
 
   const stateRef = useRef(imageState)
-  stateRef.current = imageState
 
   const defaultImagesLoaded = useRef(false)
   const principalPickGen = useRef({ fotoPrincipal: 0, fotoHover: 0 })
   const extrasBatchGen = useRef(0)
+
+  useEffect(() => {
+    stateRef.current = imageState
+  }, [imageState])
 
   useEffect(() => {
     if (mode !== 'create' || defaultImagesLoaded.current) {

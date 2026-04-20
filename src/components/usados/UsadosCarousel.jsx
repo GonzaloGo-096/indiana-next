@@ -101,8 +101,10 @@ export const UsadosCarousel = ({
     // ✅ Resetear scroll exactamente a 0 y resetear el estado de scroll
     carousel.scrollLeft = 0;
     hasUserScrolled.current = false; // ✅ Resetear el rastreo de scroll
-    setCanScrollLeft(false);
-    
+    queueMicrotask(() => {
+      setCanScrollLeft(false);
+    });
+
     // ✅ Múltiples verificaciones para asegurar que el scroll esté en 0
     requestAnimationFrame(() => {
       if (carousel.scrollLeft !== 0) {
@@ -127,8 +129,10 @@ export const UsadosCarousel = ({
     // ✅ Asegurar que el scroll esté en 0 al montar y resetear el rastreo
     carousel.scrollLeft = 0;
     hasUserScrolled.current = false;
-    setCanScrollLeft(false);
-    
+    queueMicrotask(() => {
+      setCanScrollLeft(false);
+    });
+
     // ✅ Verificar múltiples veces que el scroll esté en 0
     requestAnimationFrame(() => {
       if (carousel.scrollLeft !== 0) {

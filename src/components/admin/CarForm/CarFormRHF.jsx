@@ -7,8 +7,8 @@
 
 'use client'
 
-import { useEffect, useCallback, useMemo } from 'react'
-import { useForm, useWatch } from 'react-hook-form'
+import { useEffect, useCallback, useMemo, useRef, useState } from 'react'
+import { useForm, useWatch, Controller } from 'react-hook-form'
 import {
   useImageReducer,
   IMAGE_FIELDS,
@@ -16,6 +16,7 @@ import {
 } from '@/components/admin/hooks/useImageReducer'
 import styles from './CarFormRHF.module.css'
 import { FORM_RULES } from '@/constants/forms'
+import { marcas as MARCAS_LIST } from '@/constants/filterOptions'
 import { isValidImage, filterValidFiles } from '@/utils/files'
 import { normalizeCilindrada } from '@/utils/formatters'
 
@@ -37,7 +38,9 @@ const CarFormRHF = ({
   initialData = {}, 
   onSubmitFormData,
   isLoading = false,
-  onClose
+  onClose,
+  /** Si es false, no se muestra el encabezado duplicado (p. ej. cuando el modal ya tiene título). */
+  showTitle = true,
 }) => {
   // ✅ HOOK PERSONALIZADO PARA MANEJO DE IMÁGENES
   const {
@@ -85,6 +88,47 @@ const CarFormRHF = ({
   })
 
   const ofertaValue = useWatch({ control, name: 'oferta', defaultValue: false })
+
+  const [marcaDropdownOpen, setMarcaDropdownOpen] = useState(false)
+  const marcaDropdownRef = useRef(null)
+
+  useEffect(() => {
+    if (!marcaDropdownOpen) return
+    const close = () => setMarcaDropdownOpen(false)
+    const onPointerDown = (e) => {
+      if (marcaDropdownRef.current && !marcaDropdownRef.current.contains(e.target)) {
+        close()
+      }
+    }
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') close()
+    }
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [marcaDropdownOpen])
+
+  useEffect(() => {
+    let active = true
+    queueMicrotask(() => {
+      if (active) setMarcaDropdownOpen(false)
+    })
+    return () => {
+      active = false
+    }
+  }, [initialData])
+
+  /** Marcas del select + la del vehículo en edición si no está en el catálogo */
+  const marcaSelectOptions = useMemo(() => {
+    const current = initialData?.marca != null ? String(initialData.marca).trim() : ''
+    if (current && !MARCAS_LIST.includes(current)) {
+      return [current, ...MARCAS_LIST]
+    }
+    return MARCAS_LIST
+  }, [initialData])
 
   // ✅ INICIALIZAR FORMULARIO CON DATOS INICIALES
   useEffect(() => {
@@ -244,10 +288,12 @@ const CarFormRHF = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-      <div className={styles.formHeader}>
-        <h2>{mode === MODE.CREATE ? 'Crear Nuevo Auto' : 'Editar Auto'}</h2>
-        <p>Complete los campos requeridos</p>
-      </div>
+      {showTitle ? (
+        <div className={styles.formHeader}>
+          <h2>{mode === MODE.CREATE ? 'Crear Nuevo Auto' : 'Editar Auto'}</h2>
+          <p>Complete los campos requeridos</p>
+        </div>
+      ) : null}
 
       {/* ✅ SECCIÓN DE IMÁGENES PRINCIPALES */}
       <div className={styles.requiredFieldsSection}>
@@ -525,11 +571,89 @@ const CarFormRHF = ({
           
           <div className={styles.formGrid}>
             <div className={styles.formGroup}>
-              <label>Marca *</label>
-              <input
-                type="text"
-                {...register('marca', { required: 'Marca es requerida' })}
-                className={styles.input}
+              <span className={styles.marcaLabel} id="car-form-marca-label">
+                Marca *
+              </span>
+              <Controller
+                name="marca"
+                control={control}
+                rules={{ required: 'Marca es requerida' }}
+                render={({ field }) => (
+                  <div
+                    className={styles.marcaDropdown}
+                    ref={marcaDropdownRef}
+                  >
+                    <button
+                      type="button"
+                      id="car-form-marca"
+                      className={`${styles.input} ${styles.marcaDropdownTrigger}`}
+                      aria-haspopup="listbox"
+                      aria-expanded={marcaDropdownOpen}
+                      aria-labelledby="car-form-marca-label"
+                      aria-controls="car-form-marca-listbox"
+                      disabled={isLoading}
+                      onClick={() => {
+                        if (!isLoading) setMarcaDropdownOpen((o) => !o)
+                      }}
+                    >
+                      <span
+                        className={
+                          field.value
+                            ? styles.marcaDropdownValue
+                            : styles.marcaDropdownPlaceholder
+                        }
+                      >
+                        {field.value || 'Seleccionar marca'}
+                      </span>
+                      <span className={styles.marcaDropdownChevron} aria-hidden />
+                    </button>
+                    {marcaDropdownOpen ? (
+                      <ul
+                        id="car-form-marca-listbox"
+                        className={styles.marcaDropdownList}
+                        role="listbox"
+                        aria-labelledby="car-form-marca-label"
+                      >
+                        <li role="presentation">
+                          <button
+                            type="button"
+                            role="option"
+                            aria-selected={!field.value}
+                            className={styles.marcaDropdownOption}
+                            onClick={() => {
+                              field.onChange('')
+                              field.onBlur()
+                              clearErrors('marca')
+                              setMarcaDropdownOpen(false)
+                            }}
+                          >
+                            Seleccionar marca
+                          </button>
+                        </li>
+                        {marcaSelectOptions.map((m) => (
+                          <li key={m} role="presentation">
+                            <button
+                              type="button"
+                              role="option"
+                              aria-selected={field.value === m}
+                              className={`${styles.marcaDropdownOption} ${
+                                field.value === m ? styles.marcaDropdownOptionActive : ''
+                              }`}
+                              onClick={() => {
+                                field.onChange(m)
+                                field.onBlur()
+                                clearErrors('marca')
+                                setMarcaDropdownOpen(false)
+                              }}
+                            >
+                              {m}
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+                  </div>
+                )}
               />
               {errors.marca && <span className={styles.error}>{errors.marca.message}</span>}
             </div>

@@ -12,10 +12,10 @@ import { staticImages } from "../../config/cloudinaryStaticImages";
  * @author Indiana Peugeot
  * @version 2.0.0 - Server Component optimizado
  */
-const Hero = () => {
+const Hero = ({ className }) => {
   return (
     <section
-      className={styles.hero}
+      className={[styles.hero, className].filter(Boolean).join(" ")}
       aria-label="Sección principal"
     >
       {/* Imagen de fondo responsive con next/image - Crítica para LCP */}

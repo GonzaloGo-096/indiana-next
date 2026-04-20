@@ -21,12 +21,12 @@ const obtenerVersionDelPlan = (plan, modeloSlug) => {
 
   // Mapeo específico por plan
   const mapeoVersiones = {
-    "2008-allure-t200": "ALLURE",
+    "2008-t200": "ALLURE",
     "2008-active-t200": "ACTIVE",
     easy: "ALLURE",
     "plus-at": "ALLURE AT",
     "plus-208": "ALLURE",
-    "expert-carga": "L3 HDI 120 - Carga",
+    "expert-carga": "L3 HDI 150",
     "partner-hdi": "CONFORT 1.6 HDI 92",
   };
 

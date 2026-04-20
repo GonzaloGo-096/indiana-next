@@ -18,8 +18,6 @@ export function ColorSelector({
   onColorChange,
   size = "md",
 }) {
-  if (!colores.length) return null;
-
   // Navegación por teclado: Arrow keys para cambiar entre colores
   const handleKeyDown = useCallback(
     (e, currentIndex) => {
@@ -52,6 +50,8 @@ export function ColorSelector({
     },
     [colores, onColorChange]
   );
+
+  if (!colores.length) return null;
 
   return (
     <div

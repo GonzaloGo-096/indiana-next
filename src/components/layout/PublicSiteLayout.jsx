@@ -1,8 +1,5 @@
 import { Suspense } from "react";
-import Nav from "./Nav";
-import FooterLazy from "./Footer/FooterLazy";
-import ClientOnlyComponents from "./ClientOnlyComponents";
-import MarketingTracking from "../tracking/MarketingTracking";
+import PublicSiteChrome from "./PublicSiteChrome";
 import loadingStyles from "../../app/loading.module.css";
 
 function PageFallback() {
@@ -11,15 +8,9 @@ function PageFallback() {
 
 export default function PublicSiteLayout({ children }) {
   return (
-    <>
-      <MarketingTracking />
-      <ClientOnlyComponents />
-      <Nav />
-      <main className="main-content">
-        <Suspense fallback={<PageFallback />}>{children}</Suspense>
-      </main>
-      <FooterLazy />
-    </>
+    <PublicSiteChrome>
+      <Suspense fallback={<PageFallback />}>{children}</Suspense>
+    </PublicSiteChrome>
   );
 }
 

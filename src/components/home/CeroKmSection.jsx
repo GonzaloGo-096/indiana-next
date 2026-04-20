@@ -5,9 +5,13 @@ import { staticImages } from "../../config/cloudinaryStaticImages";
 import { VehiculosCarouselClient } from "../0km/VehiculosCarouselClient";
 import styles from "./CeroKmSection.module.css";
 
-const UTILITARIOS_KEYS = ["partner", "expert", "boxer"];
+const SLUG_UTILITARIOS = new Set(["partner", "expert", "boxer"]);
 
-const toCard = (modelo) => {
+function slugLower(slug) {
+  return (slug || "").toLowerCase();
+}
+
+function modeloToCard(modelo) {
   const staticImage = staticImages.ceroKm.modelos[modelo.slug];
   return {
     key: modelo.slug,
@@ -16,62 +20,60 @@ const toCard = (modelo) => {
     titulo: staticImage?.titulo || modelo.nombre,
     slug: modelo.slug,
   };
-};
+}
+
+/** Vehículos de pasajeros primero, utilitarios al final (un solo carrusel continuo). */
+function buildCarouselCards(modelos) {
+  const vehiculos = modelos.filter((m) => !SLUG_UTILITARIOS.has(slugLower(m.slug)));
+  const utilitarios = modelos.filter((m) => SLUG_UTILITARIOS.has(slugLower(m.slug)));
+  return [...vehiculos, ...utilitarios].map(modeloToCard);
+}
 
 /**
- * CeroKmSection - Sección de Peugeot 0km en la página de inicio
- *
- * Carrusel: vehículos primero, luego utilitarios (seguiditos)
- *
- * @author Indiana Peugeot
- * @version 3.1.0 - Vehículos + utilitarios en un solo carrusel
+ * Sección Peugeot 0 km en la página de inicio (carrusel + CTAs).
  */
 export function CeroKmSection() {
-  const allModelos = getAllModelos();
-  const lower = (s) => (s || "").toLowerCase();
-  const vehiculos = allModelos.filter(
-    (m) => !UTILITARIOS_KEYS.includes(lower(m.slug))
-  );
-  const utilitarios = allModelos.filter((m) =>
-    UTILITARIOS_KEYS.includes(lower(m.slug))
-  );
-
-  const vehiculosCards = vehiculos.map(toCard);
-  const utilitariosCards = utilitarios.map(toCard);
-  const allCards = [...vehiculosCards, ...utilitariosCards];
+  const cards = buildCarouselCards(getAllModelos());
 
   return (
     <section className={styles.section} aria-labelledby="cero-km-title">
       <div className={styles.sectionInner}>
         <div className={styles.content}>
           <div className={styles.titleBlock}>
-            <Image
-              src="/assets/logos/logos-peugeot/Peugeot_logo_PNG8.webp"
-              alt="Logo Peugeot"
-              width={96}
-              height={96}
-              className={styles.titleLogo}
-              style={{ width: "auto", height: "auto" }}
-              loading="lazy"
-              quality={90}
-            />
+            <div className={styles.titleLogoWrap}>
+              <Image
+                src="/assets/logos/logos-peugeot/Peugeot_logo_PNG8.webp"
+                alt="Peugeot"
+                width={128}
+                height={128}
+                className={styles.titleLogoImg}
+                loading="lazy"
+                quality={90}
+              />
+            </div>
             <h2 id="cero-km-title" className={styles.title}>
               PEUGEOT <span className={styles.titleSeparator}>|</span> 0KM
             </h2>
           </div>
+
           <p className={styles.description}>
-            Con 60 años de experiencia, Indiana Peugeot es tu concesionaria oficial en Tucumán. Gama completa de modelos 0km, garantía oficial Peugeot y opciones de financiación.
+            Con 60 años de experiencia, Indiana Peugeot es tu concesionaria oficial en
+            Tucumán. Gama completa de modelos 0km, garantía oficial Peugeot y opciones de
+            financiación.
           </p>
-          {allCards.length > 0 && (
+
+          {cards.length > 0 && (
             <div className={styles.carouselSlot}>
               <VehiculosCarouselClient
-                cards={allCards}
+                cards={cards}
                 variant="dark"
                 compact
                 fillParentWidth
+                softSurface
               />
             </div>
           )}
+
           <div className={styles.buttonsContainer}>
             <Link href="/0km" className={styles.button}>
               Ver modelos 0km
@@ -85,4 +87,3 @@ export function CeroKmSection() {
     </section>
   );
 }
-

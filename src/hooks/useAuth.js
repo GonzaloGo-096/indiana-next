@@ -59,6 +59,36 @@ export const useAuth = () => {
   }, [])
 
   /**
+   * Logout con limpieza completa
+   */
+  const logout = useCallback(async () => {
+    try {
+      if (process.env.NODE_ENV === 'development') {
+        console.info('[Auth] Iniciando logout')
+      }
+      
+      // Limpiar localStorage
+      authService.clearLocalStorage()
+      
+      // Limpiar estado
+      setUser(null)
+      setIsAuthenticated(false)
+      setError(null)
+      
+      // Redirigir al login
+      router.push(AUTH_CONFIG.routes.login)
+    } catch (error) {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('[Auth] Error durante logout', error)
+      }
+      // Continuar con la limpieza local aunque falle
+      setUser(null)
+      setIsAuthenticated(false)
+      setError(null)
+    }
+  }, [router])
+
+  /**
    * Verificar autenticación con validación de token
    */
   const checkAuthStatus = useCallback(async () => {
@@ -105,37 +135,7 @@ export const useAuth = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [isTokenExpired])
-
-  /**
-   * Logout con limpieza completa
-   */
-  const logout = useCallback(async () => {
-    try {
-      if (process.env.NODE_ENV === 'development') {
-        console.info('[Auth] Iniciando logout')
-      }
-      
-      // Limpiar localStorage
-      authService.clearLocalStorage()
-      
-      // Limpiar estado
-      setUser(null)
-      setIsAuthenticated(false)
-      setError(null)
-      
-      // Redirigir al login
-      router.push(AUTH_CONFIG.routes.login)
-    } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('[Auth] Error durante logout', error)
-      }
-      // Continuar con la limpieza local aunque falle
-      setUser(null)
-      setIsAuthenticated(false)
-      setError(null)
-    }
-  }, [router])
+  }, [isTokenExpired, logout])
 
   /**
    * Login con mejor manejo de errores

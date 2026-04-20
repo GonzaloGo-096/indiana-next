@@ -36,7 +36,9 @@ export const GalleryModal = memo(
 
     // Solo renderizar en cliente
     useEffect(() => {
-      setMounted(true);
+      queueMicrotask(() => {
+        setMounted(true);
+      });
     }, []);
 
     // Navegación

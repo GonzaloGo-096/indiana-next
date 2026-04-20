@@ -72,12 +72,12 @@ export const CardDetalle = memo(({ auto, contactInfo }) => {
   const altText = useMemo(() => {
     if (!vehicleData?.marca || !vehicleData?.modelo) return "Vehículo";
     return `${formatValue(vehicleData.marca)} ${formatValue(vehicleData.modelo)}`;
-  }, [vehicleData?.marca, vehicleData?.modelo]);
+  }, [vehicleData]);
 
   // Memoizar logo de marca
   const brandLogo = useMemo(() => {
     return getBrandLogo(vehicleData?.marca);
-  }, [vehicleData?.marca]);
+  }, [vehicleData]);
 
   // Transformar imágenes al formato que espera GalleryModal
   const galleryImages = useMemo(() => {
@@ -108,21 +108,20 @@ export const CardDetalle = memo(({ auto, contactInfo }) => {
     setActiveIndex(newIndex);
   }, []);
 
-  // Validación
-  if (!vehicleData) return null;
-
   // Datos principales (Año, Km, Caja) — solo los que tienen valor, se acumulan a la izquierda
   const mainData = useMemo(() => {
+    if (!vehicleData) return [];
     const items = [
       { label: "Año", value: vehicleData.año },
       { label: "Km", value: formatKilometraje(vehicleData.kms) },
       { label: "Caja", value: vehicleData.caja ? formatCaja(vehicleData.caja) : "" },
     ];
     return items.filter((item) => item.value != null && item.value !== "" && item.value !== "-");
-  }, [vehicleData.año, vehicleData.kms, vehicleData.caja]);
+  }, [vehicleData]);
 
   // Tracción, HP, Cilindrada — solo los que tienen valor, se acumulan a la izquierda
   const versionSpecItems = useMemo(() => {
+    if (!vehicleData) return [];
     const traccion = formatValue(vehicleData.traccion);
     const hp = formatHPDisplay(vehicleData.HP);
     const cilindrada = formatCilindradaDisplay(vehicleData.cilindrada);
@@ -131,10 +130,11 @@ export const CardDetalle = memo(({ auto, contactInfo }) => {
     if (hp && hp !== "") items.push({ value: hp });
     if (cilindrada && cilindrada !== "") items.push({ value: cilindrada });
     return items;
-  }, [vehicleData.traccion, vehicleData.HP, vehicleData.cilindrada]);
+  }, [vehicleData]);
 
   // Información adicional — solo los que tienen valor; los vacíos no se muestran
   const additionalInfo = useMemo(() => {
+    if (!vehicleData) return [];
     const items = [
       { label: "Combustible", value: formatValue(vehicleData.combustible) },
       { label: "Tapizado", value: formatValue(vehicleData.tapizado) },
@@ -143,6 +143,9 @@ export const CardDetalle = memo(({ auto, contactInfo }) => {
     ];
     return items.filter((item) => item.value != null && item.value !== "" && item.value !== "-");
   }, [vehicleData]);
+
+  // Validación (después de todos los hooks)
+  if (!vehicleData) return null;
 
   return (
     <div className={styles.cardContent} data-testid="vehicle-detail">

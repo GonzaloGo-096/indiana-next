@@ -23,10 +23,15 @@ import styles from "./ModelCard.module.css";
  * @param {string} props.titulo - Nombre del modelo
  * @param {string} props.slug - Slug para la URL (ej: "208", "2008")
  * @param {boolean} props.compact - Versión más pequeña (para home)
+ * @param {boolean} props.softSurface - Sobre fondo oscuro: menos contraste (off-white, sombra suave)
  */
-function ModelCard({ src, alt, titulo, slug, compact = false }) {
+function ModelCard({ src, alt, titulo, slug, compact = false, softSurface = false }) {
+  const classNames = [styles.card, compact && styles.compact, softSurface && styles.softSurface]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <Link href={`/0km/${slug}`} className={`${styles.card} ${compact ? styles.compact : ""}`}>
+    <Link href={`/0km/${slug}`} className={classNames}>
       <div className={styles.imageContainer}>
         <Image
           src={src}

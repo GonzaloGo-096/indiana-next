@@ -34,8 +34,9 @@
 .track {
   position: relative;
   height: 6px;
-  background: var(--color-neutral-200, #e5e7eb);
+  background: var(--color-neutral-100, #f3f4f6);
   border-radius: 3px;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-neutral-400, #9ca3af) 22%, transparent);
   cursor: pointer;
   user-select: none;
   touch-action: none; /* ✅ Evita que el navegador capture gestos de scroll */
@@ -149,6 +150,21 @@
   color: var(--color-text-primary, #1a1a1a);
   font-size: var(--font-size-sm, 0.875rem);
   margin: 0 var(--spacing-xs, 0.5rem);
+}
+
+/* Variante oscura: rango mín/máx visibles en blanco bajo la pista */
+.onDark .values {
+  margin-top: var(--spacing-2, 0.5rem);
+}
+
+.onDark .value {
+  color: var(--color-white, #ffffff);
+  font-weight: var(--font-weight-semibold, 600);
+}
+
+.onDark .separator {
+  color: color-mix(in srgb, var(--color-white, #ffffff) 55%, transparent);
+  font-weight: var(--font-weight-medium, 500);
 }
 
 /* Responsive */

@@ -18,7 +18,9 @@ export function HomeUsadosCarousel({ vehicles = [] }) {
   const isMobile = !useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
-    setMounted(true);
+    queueMicrotask(() => {
+      setMounted(true);
+    });
   }, []);
 
   // Mobile: viewportClip + compact (estilos y espaciado actuales del inicio).

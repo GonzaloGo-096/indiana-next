@@ -1,303 +1,183 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef, useId } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./Nav.module.css";
+import { NavMenuContent } from "./NavMenuContent";
+import { navStrings } from "./navStrings";
+import { useMobileNavA11y } from "./useMobileNavA11y";
 
-const Nav = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [is0kmDropdownOpen, setIs0kmDropdownOpen] = useState(false);
+function useScrollLock(menuOpen) {
+  useEffect(() => {
+    if (!menuOpen) {
+      document.body.classList.remove("menu-open");
+      document.body.style.removeProperty("top");
+      return undefined;
+    }
+
+    const scrollY = window.scrollY ?? window.pageYOffset;
+    document.body.classList.add("menu-open");
+    document.body.style.setProperty("top", `-${scrollY}px`);
+
+    return () => {
+      document.body.classList.remove("menu-open");
+      document.body.style.removeProperty("top");
+      window.scrollTo(0, scrollY);
+    };
+  }, [menuOpen]);
+}
+
+function useCloseOnEscape(menuOpen, onClose) {
+  useEffect(() => {
+    if (!menuOpen) return undefined;
+
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [menuOpen, onClose]);
+}
+
+export default function Nav() {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const isActive = (path) => pathname === path;
+  const menuButtonRef = useRef(null);
+  const mobilePanelRef = useRef(null);
+
+  const reactId = useId();
+  const idSafe = reactId.replace(/:/g, "");
+  const mobilePanelId = `${idSafe}-mobile-panel`;
+  const dropdownIdDesktop = `${idSafe}-dropdown-desktop`;
+  const dropdownIdMobile = `${idSafe}-dropdown-mobile`;
+
+  const closeAll = useCallback(() => {
+    setMenuOpen(false);
+    setDropdownOpen(false);
+  }, []);
 
   const toggleMenu = useCallback(() => {
-    setIsMenuOpen((prev) => !prev);
+    setMenuOpen((v) => !v);
   }, []);
 
-  const closeMenu = useCallback(() => {
-    setIsMenuOpen(false);
-    setIs0kmDropdownOpen(false);
-  }, []);
-
-  const handleBackdropClick = useCallback(() => {
-    closeMenu();
-  }, [closeMenu]);
-
-  /* Scroll-lock: body.menu-open (globals.css) bloquea scroll; preservar/restaurar scrollY evita saltos */
-  useEffect(() => {
-    if (isMenuOpen) {
-      const scrollY = typeof window !== "undefined" ? window.scrollY ?? window.pageYOffset : 0;
-      document.body.classList.add("menu-open");
-      document.body.style.setProperty("top", `-${scrollY}px`);
-
-      return () => {
-        document.body.classList.remove("menu-open");
-        document.body.style.removeProperty("top");
-        if (typeof window !== "undefined") {
-          window.scrollTo(0, scrollY);
-        }
-      };
-    }
-
-    document.body.classList.remove("menu-open");
-    document.body.style.removeProperty("top");
-    return undefined;
-  }, [isMenuOpen]);
-
-  /* Cerrar menú con tecla Escape */
-  useEffect(() => {
-    if (!isMenuOpen) return;
-
-    const handleEscape = (e) => {
-      if (e.key === "Escape") closeMenu();
-    };
-
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, [isMenuOpen, closeMenu]);
-
-  const toggle0kmDropdown = useCallback((e) => {
+  const toggleDropdown = useCallback((e) => {
     e.preventDefault();
-    setIs0kmDropdownOpen((prev) => !prev);
+    setDropdownOpen((v) => !v);
   }, []);
 
-  const handle0kmMouseEnter = useCallback(() => {
-    setIs0kmDropdownOpen(true);
+  const openDropdownHover = useCallback(() => {
+    setDropdownOpen(true);
   }, []);
 
-  const handle0kmMouseLeave = useCallback(() => {
-    setIs0kmDropdownOpen(false);
+  const closeDropdownHover = useCallback(() => {
+    setDropdownOpen(false);
   }, []);
 
-  const handleScrollToFooter = useCallback((event) => {
-    event.preventDefault();
-    const footerEl = document.getElementById("contacto");
-    if (footerEl) {
-      footerEl.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-    closeMenu();
-  }, [closeMenu]);
+  const goToContact = useCallback(
+    (event) => {
+      event.preventDefault();
+      const footerEl = document.getElementById("contacto");
+      if (footerEl) {
+        footerEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      closeAll();
+    },
+    [closeAll],
+  );
+
+  useScrollLock(menuOpen);
+  useCloseOnEscape(menuOpen, closeAll);
+  useMobileNavA11y(menuOpen, mobilePanelRef, menuButtonRef);
+
+  const dropdownProps = {
+    isOpen: dropdownOpen,
+    toggle: toggleDropdown,
+    onMouseEnter: openDropdownHover,
+    onMouseLeave: closeDropdownHover,
+  };
 
   return (
     <>
-      {isMenuOpen && (
+      {menuOpen && (
         <div
           className={styles.backdrop}
-          onClick={handleBackdropClick}
+          onClick={closeAll}
           aria-hidden="true"
         />
       )}
 
       <nav
-        className={`${styles.navbar} ${isMenuOpen ? styles.navbarMenuOpen : ""}`}
+        className={`${styles.navbar} ${menuOpen ? styles.navbarMenuOpen : ""}`}
+        aria-label={navStrings.primaryNav}
       >
-        <div className={styles.container}>
-          <Link
-            className={styles.brand}
-            href="/"
-            onClick={closeMenu}
-          >
-            <img
-              src="/assets/logos/logos-indiana/indiana-final.webp"
-              alt="Logo Indiana"
-              className={styles.logo}
-              width="200"
-              height="80"
-            />
-          </Link>
+        <div className={styles.navbarInner}>
+          <div className={styles.container}>
+            <Link className={styles.brand} href="/" onClick={closeAll}>
+              <img
+                src="/assets/logos/logos-indiana/indiana-final.webp"
+                alt="Indiana Peugeot — inicio"
+                className={styles.logo}
+                width={200}
+                height={80}
+                decoding="async"
+              />
+            </Link>
 
-          <button
-            className={styles.mobileMenu}
-            onClick={toggleMenu}
-            aria-label="Toggle navigation"
-            aria-expanded={isMenuOpen}
-          >
-            <span className={styles.hamburger}>
-              <span className={styles.line}></span>
-              <span className={styles.line}></span>
-              <span className={styles.line}></span>
-            </span>
-          </button>
+            <button
+              ref={menuButtonRef}
+              type="button"
+              className={styles.mobileMenu}
+              onClick={toggleMenu}
+              aria-label={menuOpen ? navStrings.closeMenu : navStrings.openMenu}
+              aria-expanded={menuOpen}
+              aria-controls={mobilePanelId}
+            >
+              <span className={styles.hamburger} aria-hidden="true">
+                <span className={styles.line} />
+                <span className={styles.line} />
+                <span className={styles.line} />
+              </span>
+            </button>
 
-          {/* Menú desktop dentro del nav */}
-          <div className={`${styles.nav} ${styles.navDesktop}`}>
-            <div className={styles.navList}>
-              <Link
-                className={`${styles.navLink} ${isActive("/") ? styles.active : ""}`}
-                href="/"
-                aria-current={isActive("/") ? "page" : undefined}
-                onClick={closeMenu}
-              >
-                Inicio
-              </Link>
-
-              {/* ✅ Peugeot | 0 KM con dropdown de Planes */}
-              <div
-                className={styles.dropdown}
-                onMouseEnter={handle0kmMouseEnter}
-                onMouseLeave={handle0kmMouseLeave}
-              >
-                <button
-                  className={`${styles.dropdownToggle} ${isActive("/0km") || isActive("/planes") ? styles.active : ""} ${is0kmDropdownOpen ? styles.active : ""}`}
-                  onClick={toggle0kmDropdown}
-                  aria-expanded={is0kmDropdownOpen}
-                  aria-haspopup="true"
-                >
-                  Peugeot <span className={styles.navDivider}>|</span> 0 KM
-                  <span
-                    className={`${styles.dropdownArrow} ${is0kmDropdownOpen ? styles.dropdownArrowOpen : ""}`}
-                  >
-                    ▼
-                  </span>
-                </button>
-                <div
-                  className={`${styles.dropdownMenu} ${is0kmDropdownOpen ? styles.dropdownMenuOpen : ""}`}
-                >
-                  <Link
-                    className={`${styles.dropdownItem} ${isActive("/0km") ? styles.active : ""}`}
-                    href="/0km"
-                    onClick={closeMenu}
-                  >
-                    Peugeot <span className={styles.navDivider}>|</span> 0 KM
-                  </Link>
-                  <Link
-                    className={`${styles.dropdownItem} ${isActive("/planes") ? styles.active : ""}`}
-                    href="/planes"
-                    onClick={closeMenu}
-                  >
-                    Planes
-                  </Link>
-                </div>
+            <div className={`${styles.nav} ${styles.navDesktop}`}>
+              <div className={styles.navList}>
+                <NavMenuContent
+                  styles={styles}
+                  pathname={pathname}
+                  onNavigate={closeAll}
+                  onContactClick={goToContact}
+                  dropdownMenuId={dropdownIdDesktop}
+                  dropdown={dropdownProps}
+                />
               </div>
-
-              {/* ✅ Usados | Multimarca */}
-              <Link
-                className={`${styles.navLink} ${isActive("/usados") ? styles.active : ""}`}
-                href="/usados"
-                aria-current={isActive("/usados") ? "page" : undefined}
-                onClick={closeMenu}
-              >
-                Usados <span className={styles.navDivider}>|</span> Multimarca
-              </Link>
-              <Link
-                className={`${styles.navLink} ${isActive("/postventa") ? styles.active : ""}`}
-                href="/postventa"
-                aria-current={isActive("/postventa") ? "page" : undefined}
-                onClick={closeMenu}
-              >
-                Postventa
-              </Link>
-              <Link
-                className={`${styles.navLink} ${isActive("/trabaja-con-nosotros") ? styles.active : ""}`}
-                href="/trabaja-con-nosotros"
-                aria-current={isActive("/trabaja-con-nosotros") ? "page" : undefined}
-                onClick={closeMenu}
-              >
-                Trabaja con nosotros
-              </Link>
-              <a
-                className={styles.navLink}
-                href="#contacto"
-                onClick={handleScrollToFooter}
-              >
-                Contacto
-              </a>
             </div>
+          </div>
+        </div>
+
+        <div
+          ref={mobilePanelRef}
+          id={mobilePanelId}
+          className={`${styles.nav} ${styles.navMobile} ${menuOpen ? styles.open : ""}`}
+          aria-label={navStrings.mobileMenuRegion}
+          aria-hidden={!menuOpen}
+          inert={!menuOpen}
+          tabIndex={-1}
+        >
+          <div className={styles.navList}>
+            <NavMenuContent
+              styles={styles}
+              pathname={pathname}
+              onNavigate={closeAll}
+              onContactClick={goToContact}
+              dropdownMenuId={dropdownIdMobile}
+              dropdown={dropdownProps}
+            />
           </div>
         </div>
       </nav>
-
-      <div
-        className={`${styles.nav} ${styles.navMobile} ${isMenuOpen ? styles.open : ""}`}
-      >
-        <div className={styles.navList}>
-          <Link
-            className={`${styles.navLink} ${isActive("/") ? styles.active : ""}`}
-            href="/"
-            aria-current={isActive("/") ? "page" : undefined}
-            onClick={closeMenu}
-          >
-            Inicio
-          </Link>
-
-          {/* ✅ Peugeot | 0 KM con dropdown de Planes */}
-          <div
-            className={styles.dropdown}
-            onMouseEnter={handle0kmMouseEnter}
-            onMouseLeave={handle0kmMouseLeave}
-          >
-            <button
-              className={`${styles.dropdownToggle} ${isActive("/0km") || isActive("/planes") ? styles.active : ""} ${is0kmDropdownOpen ? styles.active : ""}`}
-              onClick={toggle0kmDropdown}
-              aria-expanded={is0kmDropdownOpen}
-              aria-haspopup="true"
-            >
-              Peugeot <span className={styles.navDivider}>|</span> 0 KM
-              <span
-                className={`${styles.dropdownArrow} ${is0kmDropdownOpen ? styles.dropdownArrowOpen : ""}`}
-              >
-                ▼
-              </span>
-            </button>
-            <div
-              className={`${styles.dropdownMenu} ${is0kmDropdownOpen ? styles.dropdownMenuOpen : ""}`}
-            >
-              <Link
-                className={`${styles.dropdownItem} ${isActive("/0km") ? styles.active : ""}`}
-                href="/0km"
-                onClick={closeMenu}
-              >
-                Peugeot <span className={styles.navDivider}>|</span> 0 KM
-              </Link>
-              <Link
-                className={`${styles.dropdownItem} ${isActive("/planes") ? styles.active : ""}`}
-                href="/planes"
-                onClick={closeMenu}
-              >
-                Planes
-              </Link>
-            </div>
-          </div>
-
-          {/* ✅ Usados | Multimarca */}
-          <Link
-            className={`${styles.navLink} ${isActive("/usados") ? styles.active : ""}`}
-            href="/usados"
-            aria-current={isActive("/usados") ? "page" : undefined}
-            onClick={closeMenu}
-          >
-            Usados <span className={styles.navDivider}>|</span> Multimarca
-          </Link>
-          <Link
-            className={`${styles.navLink} ${isActive("/postventa") ? styles.active : ""}`}
-            href="/postventa"
-            aria-current={isActive("/postventa") ? "page" : undefined}
-            onClick={closeMenu}
-          >
-            Postventa
-          </Link>
-          <Link
-            className={`${styles.navLink} ${isActive("/trabaja-con-nosotros") ? styles.active : ""}`}
-            href="/trabaja-con-nosotros"
-            aria-current={isActive("/trabaja-con-nosotros") ? "page" : undefined}
-            onClick={closeMenu}
-          >
-            Trabaja con nosotros
-          </Link>
-          <a
-            className={styles.navLink}
-            href="#contacto"
-            onClick={handleScrollToFooter}
-          >
-            Contacto
-          </a>
-        </div>
-      </div>
     </>
   );
-};
-
-export default Nav;
-
+}

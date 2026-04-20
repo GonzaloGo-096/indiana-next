@@ -12,6 +12,11 @@
   min-height: 100vh;
 }
 
+/*
+ * Hero: sin margin negativo. El offset del nav fijo lo aplica `.main-content` (globals.css);
+ * así la imagen del hero empieza debajo de la barra y no queda tapada.
+ */
+
 /* ===== HERO SECTION ===== */
 /* El componente Hero maneja sus propios estilos */
 

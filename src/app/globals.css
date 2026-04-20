@@ -1,15 +1,36 @@
 /**
  * globals.css – Estilos globales
  *
- * 1. Variables (variables.css, utilities.css)
+ * 0. Tailwind v4 (theme + utilities, sin Preflight — convive con reset propio)
+ * 1. variables.css (con Tailwind) + utilities.css del proyecto
  * 2. Reset y base (html, body)
  * 3. Scroll-lock (body.menu-open, ver Nav.jsx)
  * 4. Tipografía y utilidades
  * 5. Layout (container, main-content, admin-container)
  */
 
-/* ===== 1. IMPORTAR VARIABLES GLOBALES ===== */
+/* ===== 0. TAILWIND (sin preflight: no pisar márgenes/listas/img del sitio) ===== */
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
 @import '../styles/variables.css';
+
+/* Tokens Indiana → utilidades Tailwind (bg-brand-500, text-brand-600, …) — después de :root */
+@theme {
+  --color-brand-50: var(--color-brand-50);
+  --color-brand-100: var(--color-brand-100);
+  --color-brand-200: var(--color-brand-200);
+  --color-brand-300: var(--color-brand-300);
+  --color-brand-400: var(--color-brand-400);
+  --color-brand-500: var(--color-brand-500);
+  --color-brand-600: var(--color-brand-600);
+  --color-brand-700: var(--color-brand-700);
+  --color-brand-800: var(--color-brand-800);
+  --color-brand-900: var(--color-brand-900);
+}
+
+@import "tailwindcss/utilities.css" layer(utilities);
+
+/* ===== 1. UTILIDADES GLOBALES (proyecto) ===== */
 @import '../styles/utilities.css';
 
 /* ===== 2. RESET BÁSICO ===== */

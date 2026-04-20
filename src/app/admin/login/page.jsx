@@ -53,15 +53,7 @@ export default function LoginPage() {
         <div className={styles.content}>
           <div className={styles.card}>
             <div className={styles.cardBody}>
-              <div
-                style={{
-                  textAlign: 'center',
-                  fontSize: '18px',
-                  color: '#666'
-                }}
-              >
-                Verificando sesión...
-              </div>
+              <p className={styles.loadingText}>Verificando sesión…</p>
             </div>
           </div>
         </div>
@@ -88,11 +80,13 @@ export default function LoginPage() {
             {/* Mostrar error general */}
             {error && <div className={styles.error}>{error}</div>}
 
-            <LoginForm
-              onSubmit={handleSubmit}
-              isSubmitting={isSubmitting}
-              errors={{}}
-            />
+            <div className={styles.formSurface}>
+              <LoginForm
+                onSubmit={handleSubmit}
+                isSubmitting={isSubmitting}
+                errors={{}}
+              />
+            </div>
           </div>
         </div>
       </div>
