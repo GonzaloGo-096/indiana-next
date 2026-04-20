@@ -14,7 +14,8 @@
   box-shadow:
     0 1px 0 color-mix(in srgb, var(--color-neutral-100) 6%, transparent) inset,
     0 16px 48px rgba(0, 0, 0, 0.28);
-  overflow: hidden;
+  /* visible: el MultiSelect se posiciona absolute y quedaría recortado con hidden */
+  overflow: visible;
 }
 
 .panelAccent {
@@ -141,6 +142,16 @@
 
 .filterGroup {
   min-width: 0;
+  position: relative;
+}
+
+/* El desplegable de marca debe superponerse al bloque de año (grid / responsive) */
+.filterGroup:first-child {
+  z-index: 2;
+}
+
+.filterGroup:last-child {
+  z-index: 1;
 }
 
 .filterSurface {

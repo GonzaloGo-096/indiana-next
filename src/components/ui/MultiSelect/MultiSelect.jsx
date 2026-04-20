@@ -14,6 +14,7 @@
 
 import { useState, useRef, useEffect, useMemo, useId, memo } from 'react'
 import { ChevronIcon } from '../icons/ChevronIcon'
+import { normalizeForSearch } from '@/utils/normalizeForSearch'
 import styles from './MultiSelect.module.css'
 
 const MultiSelect = memo(({
@@ -26,12 +27,16 @@ const MultiSelect = memo(({
   disabled = false,
   error = false,
   required = false,
+  searchable = false,
+  searchPlaceholder = 'Buscar…',
   'aria-label': ariaLabel,
   'aria-describedby': ariaDescribedBy
 }) => {
   const [isOpen, setIsOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   const labelId = useId()
   const dropdownRef = useRef(null)
+  const searchInputRef = useRef(null)
 
   // Validación simple y eficiente
   const validOptions = useMemo(() => 
@@ -46,6 +51,25 @@ const MultiSelect = memo(({
 
   // Set para O(1) lookups - ÚNICA optimización crítica
   const selectedSet = useMemo(() => new Set(validValue), [validValue])
+
+  const filteredOptions = useMemo(() => {
+    if (!searchable) return validOptions
+    const q = normalizeForSearch(searchQuery.trim())
+    if (!q) return validOptions
+    return validOptions.filter((opt) => normalizeForSearch(opt).includes(q))
+  }, [searchable, validOptions, searchQuery])
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchQuery('')
+      return
+    }
+    if (!searchable) return
+    const id = requestAnimationFrame(() => {
+      searchInputRef.current?.focus()
+    })
+    return () => cancelAnimationFrame(id)
+  }, [isOpen, searchable])
 
   // Click outside - Lógica simple
   useEffect(() => {
@@ -127,14 +151,43 @@ const MultiSelect = memo(({
 
         {isOpen && (
           <div 
-            className={styles.dropdown}
+            className={`${styles.dropdown} ${searchable ? styles.dropdownSearchable : ''}`}
             role="listbox"
             aria-multiselectable="true"
             aria-labelledby={labelId}
           >
+            {searchable ? (
+              <div className={styles.searchWrap}>
+                <input
+                  ref={searchInputRef}
+                  type="search"
+                  className={styles.searchInput}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={searchPlaceholder}
+                  aria-label={searchPlaceholder}
+                  disabled={disabled}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                      e.stopPropagation()
+                      setIsOpen(false)
+                    }
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            ) : null}
             <div className={styles.options}>
-              {validOptions.length > 0 ? (
-                validOptions.map((option) => (
+              {validOptions.length === 0 ? (
+                <div className={styles.emptyState}>
+                  No hay opciones disponibles
+                </div>
+              ) : filteredOptions.length === 0 ? (
+                <div className={styles.emptyState}>
+                  Ninguna opción coincide con tu búsqueda
+                </div>
+              ) : (
+                filteredOptions.map((option) => (
                   <label 
                     key={option} 
                     className={styles.option}
@@ -156,10 +209,6 @@ const MultiSelect = memo(({
                     <span className={styles.optionText}>{option}</span>
                   </label>
                 ))
-              ) : (
-                <div className={styles.emptyState}>
-                  No hay opciones disponibles
-                </div>
               )}
             </div>
           </div>

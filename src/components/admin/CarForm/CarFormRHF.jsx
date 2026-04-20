@@ -19,6 +19,7 @@ import { FORM_RULES } from '@/constants/forms'
 import { marcas as MARCAS_LIST } from '@/constants/filterOptions'
 import { isValidImage, filterValidFiles } from '@/utils/files'
 import { normalizeCilindrada } from '@/utils/formatters'
+import { normalizeForSearch } from '@/utils/normalizeForSearch'
 
 // ✅ CONSTANTES
 const MODE = {
@@ -90,7 +91,20 @@ const CarFormRHF = ({
   const ofertaValue = useWatch({ control, name: 'oferta', defaultValue: false })
 
   const [marcaDropdownOpen, setMarcaDropdownOpen] = useState(false)
+  const [marcaSearchQuery, setMarcaSearchQuery] = useState('')
   const marcaDropdownRef = useRef(null)
+  const marcaSearchInputRef = useRef(null)
+
+  useEffect(() => {
+    if (!marcaDropdownOpen) {
+      setMarcaSearchQuery('')
+      return
+    }
+    const id = requestAnimationFrame(() => {
+      marcaSearchInputRef.current?.focus()
+    })
+    return () => cancelAnimationFrame(id)
+  }, [marcaDropdownOpen])
 
   useEffect(() => {
     if (!marcaDropdownOpen) return
@@ -129,6 +143,12 @@ const CarFormRHF = ({
     }
     return MARCAS_LIST
   }, [initialData])
+
+  const filteredMarcaSelectOptions = useMemo(() => {
+    const q = normalizeForSearch(marcaSearchQuery.trim())
+    if (!q) return marcaSelectOptions
+    return marcaSelectOptions.filter((m) => normalizeForSearch(m).includes(q))
+  }, [marcaSelectOptions, marcaSearchQuery])
 
   // ✅ INICIALIZAR FORMULARIO CON DATOS INICIALES
   useEffect(() => {
@@ -608,49 +628,79 @@ const CarFormRHF = ({
                       <span className={styles.marcaDropdownChevron} aria-hidden />
                     </button>
                     {marcaDropdownOpen ? (
-                      <ul
-                        id="car-form-marca-listbox"
-                        className={styles.marcaDropdownList}
-                        role="listbox"
-                        aria-labelledby="car-form-marca-label"
-                      >
-                        <li role="presentation">
-                          <button
-                            type="button"
-                            role="option"
-                            aria-selected={!field.value}
-                            className={styles.marcaDropdownOption}
-                            onClick={() => {
-                              field.onChange('')
-                              field.onBlur()
-                              clearErrors('marca')
-                              setMarcaDropdownOpen(false)
+                      <div className={styles.marcaDropdownPanel}>
+                        <div className={styles.marcaDropdownSearchWrap}>
+                          <input
+                            ref={marcaSearchInputRef}
+                            type="search"
+                            className={`${styles.input} ${styles.marcaSearchInput}`}
+                            value={marcaSearchQuery}
+                            onChange={(e) => setMarcaSearchQuery(e.target.value)}
+                            placeholder="Buscar marca…"
+                            aria-label="Buscar marca"
+                            disabled={isLoading}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Escape') {
+                                e.stopPropagation()
+                                setMarcaDropdownOpen(false)
+                              }
                             }}
-                          >
-                            Seleccionar marca
-                          </button>
-                        </li>
-                        {marcaSelectOptions.map((m) => (
-                          <li key={m} role="presentation">
+                            onClick={(e) => e.stopPropagation()}
+                          />
+                        </div>
+                        <ul
+                          id="car-form-marca-listbox"
+                          className={styles.marcaDropdownList}
+                          role="listbox"
+                          aria-labelledby="car-form-marca-label"
+                        >
+                          <li role="presentation">
                             <button
                               type="button"
                               role="option"
-                              aria-selected={field.value === m}
-                              className={`${styles.marcaDropdownOption} ${
-                                field.value === m ? styles.marcaDropdownOptionActive : ''
-                              }`}
+                              aria-selected={!field.value}
+                              className={styles.marcaDropdownOption}
                               onClick={() => {
-                                field.onChange(m)
+                                field.onChange('')
                                 field.onBlur()
                                 clearErrors('marca')
                                 setMarcaDropdownOpen(false)
                               }}
                             >
-                              {m}
+                              Seleccionar marca
                             </button>
                           </li>
-                        ))}
-                      </ul>
+                          {filteredMarcaSelectOptions.length === 0 ? (
+                            <li
+                              className={styles.marcaDropdownEmpty}
+                              role="presentation"
+                            >
+                              Ninguna marca coincide con tu búsqueda
+                            </li>
+                          ) : (
+                            filteredMarcaSelectOptions.map((m) => (
+                              <li key={m} role="presentation">
+                                <button
+                                  type="button"
+                                  role="option"
+                                  aria-selected={field.value === m}
+                                  className={`${styles.marcaDropdownOption} ${
+                                    field.value === m ? styles.marcaDropdownOptionActive : ''
+                                  }`}
+                                  onClick={() => {
+                                    field.onChange(m)
+                                    field.onBlur()
+                                    clearErrors('marca')
+                                    setMarcaDropdownOpen(false)
+                                  }}
+                                >
+                                  {m}
+                                </button>
+                              </li>
+                            ))
+                          )}
+                        </ul>
+                      </div>
                     ) : null}
                   </div>
                 )}

@@ -125,6 +125,8 @@ export default function AdminFilters({ onFiltersChange, initialFilters = {} }) {
               value={filters.marca.includes('Todas las marcas') ? marcaOptions.slice(1) : filters.marca}
               onChange={handleMarcaSelect}
               placeholder="Seleccionar marca"
+              searchable
+              searchPlaceholder="Buscar marca…"
             />
           </div>
         </div>

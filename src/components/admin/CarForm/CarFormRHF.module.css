@@ -651,25 +651,55 @@
   transform: rotate(180deg);
 }
 
-.marcaDropdownList {
+.marcaDropdownPanel {
   position: absolute;
   left: 0;
   right: 0;
   top: calc(100% + 6px);
-  margin: 0;
-  padding: 6px 0;
-  list-style: none;
-  max-height: min(220px, 42vh);
-  overflow-y: auto;
-  overflow-x: hidden;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  max-height: min(280px, 48vh);
+  overflow: hidden;
   border-radius: 10px;
   border: 1px solid var(--cf-border);
   background: var(--color-white, #fff);
   box-shadow:
     0 10px 40px -8px rgba(0, 0, 0, 0.18),
     0 0 0 1px color-mix(in srgb, var(--color-neutral-900, #111) 5%, transparent);
-  z-index: 40;
+}
+
+.marcaDropdownSearchWrap {
+  flex-shrink: 0;
+  padding: 8px 8px 6px;
+  border-bottom: 1px solid color-mix(in srgb, var(--cf-border) 85%, transparent);
+}
+
+.marcaSearchInput {
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.marcaDropdownList {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 6px 0;
+  list-style: none;
+  overflow-y: auto;
+  overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
+}
+
+.marcaDropdownEmpty {
+  padding: 12px 14px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-neutral-500, #6b7280);
+  text-align: center;
+  list-style: none;
 }
 
 .marcaDropdownOption {
