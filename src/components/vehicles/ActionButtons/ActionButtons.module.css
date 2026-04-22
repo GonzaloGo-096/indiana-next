@@ -40,7 +40,10 @@
   color: var(--color-text-primary);
   text-transform: none;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition:
+    background-color var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
   white-space: nowrap;
   min-height: 48px; /* Mobile: altura mínima táctil */
 }
@@ -57,14 +60,45 @@
   border-right: none;
 }
 
+/* Hover: solo tinte + texto marca (sin barra inferior: chocaba con el radio del bloque) */
 .actionButton:hover:not(:disabled) {
-  background-color: var(--color-brand-500-rgba-10);
-  color: var(--color-brand-600);
+  background-color: color-mix(
+    in srgb,
+    var(--color-neutral-900, #0f172a) 6%,
+    var(--vehiculos-strip-surface-strong, var(--color-surface, #ffffff))
+  );
+  color: var(--color-brand-600, #0052a3);
+  box-shadow: none;
 }
 
+.actionButton:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-brand-500) 42%, transparent);
+  z-index: 2;
+}
+
+/* Orden con criterio activo */
 .actionButton.active {
-  background: var(--color-brand-500-rgba-15);
+  background-color: color-mix(
+    in srgb,
+    var(--color-brand-500, #0066cc) 11%,
+    var(--vehiculos-strip-surface-strong, var(--color-surface, #ffffff))
+  );
   color: var(--color-brand-600);
+  box-shadow: none;
+}
+
+.actionButton.active:hover:not(:disabled) {
+  background-color: color-mix(
+    in srgb,
+    var(--color-brand-500, #0066cc) 14%,
+    var(--vehiculos-strip-surface-strong, var(--color-surface, #ffffff))
+  );
+}
+
+.actionButton.active:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-brand-500) 42%, transparent);
 }
 
 .actionButton svg {
@@ -88,5 +122,9 @@
   display: inline-block;
 }
 
-/* Desktop styles se aplican desde vehiculos.module.css */
+@media (prefers-reduced-motion: reduce) {
+  .actionButton {
+    transition: none;
+  }
+}
 

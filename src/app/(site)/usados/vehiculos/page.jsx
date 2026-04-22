@@ -15,7 +15,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { vehiclesService } from "../../../../lib/services/vehiclesApi.server";
 import { mapVehiclesPage } from "../../../../lib/mappers/vehicleMapper";
-import { parseFilters } from "../../../../utils/filters";
+import { mergeDefaultRanges, parseFilters } from "../../../../utils/filters";
 import { getSiteUrl, tryAbsoluteUrl } from "../../../../lib/site-url";
 import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
 import VehiculosClient from "./VehiculosClient";
@@ -291,7 +291,7 @@ export default async function VehiculosPage({ searchParams }) {
 
   try {
     // Parsear filtros desde URL (única fuente de verdad)
-    const filters = parseFilters(resolvedSearchParams || {});
+    const filters = mergeDefaultRanges(parseFilters(resolvedSearchParams || {}));
 
     // Extraer página desde searchParams (default: 1)
     const page = Number(resolvedSearchParams?.page) || 1;
@@ -374,7 +374,7 @@ export default async function VehiculosPage({ searchParams }) {
             hasNextPage: false,
             nextPage: null,
           }}
-          initialFilters={parseFilters(resolvedSearchParams || {})}
+          initialFilters={mergeDefaultRanges(parseFilters(resolvedSearchParams || {}))}
           initialPage={Number(resolvedSearchParams?.page) || 1}
           error={errorMessage}
         />

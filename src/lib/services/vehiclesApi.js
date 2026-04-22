@@ -16,7 +16,7 @@ const vehiclesService = {
    */
   async getVehicles({ filters = {}, limit = 8, cursor = 1, signal }) {
     // ✅ Construir parámetros usando la misma función que en producción
-    const urlParams = buildSearchParams(filters)
+    const urlParams = buildSearchParams(filters, { includeDefaultRanges: true })
     
     // ✅ CRÍTICO: El backend espera 'cursor', no 'page'
     urlParams.set('limit', String(limit))

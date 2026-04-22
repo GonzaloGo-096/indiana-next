@@ -4,11 +4,11 @@ import { staticImages } from "../../config/cloudinaryStaticImages";
 
 /**
  * Hero - Sección principal de la página de inicio
- * 
+ *
  * ✅ OPTIMIZADO: Convertido a Server Component
  * ✅ Animación con CSS puro (sin JavaScript)
  * ✅ Mejor performance: Sin hidratación innecesaria
- * 
+ *
  * @author Indiana Peugeot
  * @version 2.0.0 - Server Component optimizado
  */
@@ -55,4 +55,3 @@ const Hero = ({ className }) => {
 };
 
 export default Hero;
-

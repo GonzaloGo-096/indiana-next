@@ -28,6 +28,8 @@ import styles from "./ActionButtons.module.css";
  * @param {boolean} props.isSortDropdownOpen - Si el dropdown está abierto
  * @param {Object} props.sortButtonRef - Ref para el botón de sorting
  * @param {string} props.className - Clase CSS adicional para el contenedor
+ * @param {string} props.actionButtonClassName - Clase de la página (p. ej. layout en vehiculos.module.css)
+ * @param {boolean} props.filtersPanelOpen - Panel de filtros abierto (strip /usados/vehiculos)
  */
 export const ActionButtons = memo(({
   onFilterClick,
@@ -39,14 +41,20 @@ export const ActionButtons = memo(({
   isSortDropdownOpen,
   sortButtonRef,
   className = "",
+  actionButtonClassName = "",
+  filtersPanelOpen = false,
 }) => {
+  const btnClass = [styles.actionButton, actionButtonClassName].filter(Boolean).join(" ");
+
   return (
     <div className={`${styles.actionButtons} ${className}`}>
       <button
-        className={styles.actionButton}
+        className={btnClass}
         onClick={onFilterClick}
         type="button"
-        aria-label="Abrir filtros"
+        aria-expanded={filtersPanelOpen}
+        aria-label={filtersPanelOpen ? "Cerrar filtros" : "Abrir filtros"}
+        data-filters-open={filtersPanelOpen ? "true" : undefined}
       >
         <FilterIcon size={16} />
         <span>Filtrar</span>
@@ -55,12 +63,14 @@ export const ActionButtons = memo(({
       <div style={{ position: "relative" }}>
         <button
           ref={sortButtonRef}
-          className={`${styles.actionButton} ${selectedSort ? styles.active : ""}`}
+          className={[btnClass, selectedSort ? styles.active : ""].filter(Boolean).join(" ")}
           onClick={onSortClick}
           disabled={isSortDisabled}
           type="button"
           aria-label="Ordenar vehículos"
           aria-expanded={isSortDropdownOpen}
+          data-sort-active={selectedSort ? "true" : undefined}
+          data-sort-menu-open={isSortDropdownOpen ? "true" : undefined}
         >
           <SortIcon size={16} />
           <span>Ordenar</span>

@@ -86,6 +86,8 @@ const BrandsCarouselInner = forwardRef(function BrandsCarouselInner(
       scrollNext: () => {
         scrollContainerRef.current?.scrollBy({ left: 400, behavior: "smooth" });
       },
+      /** Lista usados: leer/restaurar scroll horizontal tras abrir panel de filtros */
+      getTrackElement: () => scrollContainerRef.current,
     }),
     []
   );

@@ -12,7 +12,7 @@
  * - Mobile-first responsive design
  * - Skeleton loading states
  * - Manejo de estados vacíos
- * - Desktop: flechas en columnas laterales (flex), fuera de la pista de scroll
+ * - Desktop: flechas absolutas a los lados, trazo fino (sin caja alrededor del carrusel)
  * 
  * @author Indiana Peugeot
  * @version 1.0.0
@@ -20,8 +20,30 @@
 
 import React, { useMemo, useRef, useCallback, useState, useEffect } from "react";
 import { CardSimilar } from "../vehicles/Card/CardSimilar/CardSimilar";
-import { ChevronIcon } from "../ui/icons/ChevronIcon";
 import styles from "./UsadosCarousel.module.css";
+
+/** Chevron mínimo (misma idea que marcas en /usados/vehiculos) */
+function CarouselNudge({ direction }) {
+  const left = direction === "left";
+  return (
+    <svg
+      className={styles.carouselNudgeSvg}
+      width="8"
+      height="14"
+      viewBox="0 0 8 14"
+      aria-hidden
+    >
+      <path
+        d={left ? "M6.5 1 L1.5 7 L6.5 13" : "M1.5 1 L6.5 7 L1.5 13"}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.15"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 /**
  * Skeleton card para loading state
@@ -251,30 +273,26 @@ export const UsadosCarousel = ({
 
   const carouselInner = (
     <div className={styles.carouselFrame}>
-      {canScrollLeft && (
-        <div className={styles.carouselNavPrev}>
-          <button
-            type="button"
-            className={styles.carouselArrow}
-            onClick={scrollLeft}
-            aria-label="Desplazar hacia la izquierda"
-          >
-            <ChevronIcon direction="left" size={20} />
-          </button>
-        </div>
-      )}
       <div className={styles.carouselTrack}>{carouselContent}</div>
-      <div className={styles.carouselNavNext}>
+      {canScrollLeft && (
         <button
           type="button"
-          className={`${styles.carouselArrow} ${!canScrollRight ? styles.carouselArrowDisabled : ""}`}
-          onClick={scrollRight}
-          aria-label="Desplazar hacia la derecha"
-          disabled={!canScrollRight}
+          className={styles.carouselArrowPrev}
+          onClick={scrollLeft}
+          aria-label="Desplazar hacia la izquierda"
         >
-          <ChevronIcon direction="right" size={20} />
+          <CarouselNudge direction="left" />
         </button>
-      </div>
+      )}
+      <button
+        type="button"
+        className={`${styles.carouselArrowNext} ${!canScrollRight ? styles.carouselArrowDisabled : ""}`}
+        onClick={scrollRight}
+        aria-label="Desplazar hacia la derecha"
+        disabled={!canScrollRight}
+      >
+        <CarouselNudge direction="right" />
+      </button>
     </div>
   );
 

@@ -58,4 +58,3 @@ export function UsadosSection({ vehicles = [] }) {
     </section>
   );
 }
-

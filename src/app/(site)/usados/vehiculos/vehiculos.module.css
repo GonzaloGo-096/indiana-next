@@ -6,16 +6,15 @@
 
 /* ===== PAGE + TOKENS (hijos como BrandsCarousel leen var(--vehiculos-*) ) ===== */
 .page {
-  /* Superficie: ligero tinte frío, menos “plancha blanca” */
-  --vehiculos-strip-surface: color-mix(in srgb, var(--color-neutral-50, #f8fafc) 88%, #ffffff);
-  --vehiculos-strip-surface-strong: color-mix(in srgb, var(--color-neutral-100, #f1f5f9) 55%, #ffffff);
-  --vehiculos-strip-border: color-mix(in srgb, var(--color-neutral-900, #0f172a) 9%, transparent);
-  --vehiculos-strip-border-soft: color-mix(in srgb, var(--color-neutral-900, #0f172a) 5%, transparent);
-  /* Elevación: capa única + profundidad suave (mejor performance que múltiples inset) */
+  /* Franja herramientas: más cerca del blanco de página, borde y sombra muy suaves */
+  --vehiculos-strip-surface: color-mix(in srgb, var(--color-neutral-50, #f8fafc) 94%, #ffffff);
+  --vehiculos-strip-surface-strong: color-mix(in srgb, var(--color-neutral-100, #f1f5f9) 42%, #ffffff);
+  --vehiculos-strip-border: color-mix(in srgb, var(--color-neutral-900, #0f172a) 6%, transparent);
+  --vehiculos-strip-border-soft: color-mix(in srgb, var(--color-neutral-900, #0f172a) 3.5%, transparent);
   --vehiculos-strip-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.65) inset,
-    0 1px 2px rgba(15, 23, 42, 0.05),
-    0 12px 32px -16px rgba(15, 23, 42, 0.12);
+    0 1px 0 rgba(255, 255, 255, 0.75) inset,
+    0 1px 1px rgba(15, 23, 42, 0.028),
+    0 10px 28px -22px rgba(15, 23, 42, 0.07);
   --vehiculos-strip-radius: clamp(12px, 2.2vw, 16px);
   background-color: var(--color-surface, #ffffff);
   min-height: 100vh;
@@ -55,7 +54,8 @@
   text-align: left;
   justify-content: flex-start;
   align-items: flex-start;
-  margin: clamp(1.5rem, 4vw, 2.5rem) 0 0.75rem;
+  /* Más aire bajo el título antes del bloque de marcas/filtros */
+  margin: clamp(1.5rem, 4vw, 2.5rem) 0 clamp(1.35rem, 4vw, 2.25rem);
   padding: 0;
   width: 100%;
   max-width: 100%;
@@ -90,6 +90,17 @@
   border: 1px solid var(--vehiculos-strip-border-soft);
   border-radius: var(--vehiculos-strip-radius);
   box-shadow: var(--vehiculos-strip-shadow);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.toolbarRegion_filtersOpen {
+  border-color: color-mix(in srgb, var(--color-neutral-900, #0f172a) 13%, transparent);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.65) inset,
+    0 1px 2px rgba(15, 23, 42, 0.055),
+    0 14px 36px -18px rgba(15, 23, 42, 0.11);
 }
 
 @media (min-width: 768px) {
@@ -113,6 +124,33 @@
   margin-bottom: 0;
   box-shadow: none;
   border: none;
+}
+
+.brandStripHeading {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: clamp(0.35rem, 1vw, 0.5rem) 0 clamp(0.3rem, 0.9vw, 0.45rem);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.brandStripHeadingTitle {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-semibold, 600);
+  font-family: var(--font-condensed, "Barlow Condensed", sans-serif);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: color-mix(
+    in srgb,
+    var(--color-text-primary, #1a1a1a) 72%,
+    var(--color-neutral-500, #737373)
+  );
+  line-height: 1.25;
 }
 
 /* Carrusel de marcas: una columna si no hay overflow; con scroll, márgenes mínimos a los lados */
@@ -168,10 +206,12 @@
   cursor: default;
 }
 
+/* Móvil: sin flechas (scroll táctil); una columna aunque el padre marque _hasScroll */
 @media (max-width: 768px) {
-  .brandsCarouselRow,
   .brandsCarouselRow_hasScroll {
-    display: block;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: 0;
   }
 
   .brandsToolbarArrow {
@@ -179,11 +219,9 @@
   }
 }
 
-@media (min-width: 769px) {
-  .brandsToolbarArrow:focus-visible {
-    outline: 1px solid color-mix(in srgb, var(--color-neutral-500, #64748b) 45%, transparent);
-    outline-offset: 2px;
-  }
+.brandsToolbarArrow:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--color-neutral-500, #64748b) 45%, transparent);
+  outline-offset: 2px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -214,9 +252,11 @@
   border-top: 1px solid var(--vehiculos-strip-border-soft);
 }
 
+/* Recorta hijos a la curva inferior del bloque (evita esquinas rectas vs caja redondeada) */
 .toolbarRegion .actionButtons {
   border-bottom-left-radius: var(--vehiculos-strip-radius);
   border-bottom-right-radius: var(--vehiculos-strip-radius);
+  overflow: hidden;
 }
 
 /* ✅ Desktop: Botones fuera del carrusel */
@@ -278,55 +318,118 @@
   border-right: none;
 }
 
-.actionButton:hover:not(:disabled) {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--color-brand-500, #0066cc) 14%, #ffffff) 0%,
-    color-mix(in srgb, var(--color-brand-500, #0066cc) 9%, transparent) 100%
-  );
-  color: var(--color-brand-600);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+/*
+ * ≤768px coincide con logos embebidos más chicos (BrandsCarousel).
+ * ActionButtons.module aporta min-height 48px y padding menor; aquí fijamos barra táctil cómoda.
+ */
+@media (max-width: 768px) {
+  .toolbarRegion .actionButtons > button,
+  .toolbarRegion .actionButtons > div .actionButton,
+  .toolbarRegion .actionButtonsDesktop > button,
+  .toolbarRegion .actionButtonsDesktop > div .actionButton {
+    min-height: 54px;
+    padding: 16px 12px;
+    font-size: 0.9375rem;
+  }
 }
 
-.actionButton:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--color-brand-500) 55%, transparent);
-  outline-offset: -2px;
-  z-index: 2;
+/*
+ * Filtrar / Ordenar: sin tinte de fondo en hover, :active ni estados “abierto/activo”.
+ * Resalte = texto marca + barra inferior (box-shadow); pisa ActionButtons.module.css.
+ */
+.toolbarRegion .actionButtons > button:hover:not(:disabled),
+.toolbarRegion .actionButtons > div .actionButton:hover:not(:disabled),
+.toolbarRegion .actionButtonsDesktop > button:hover:not(:disabled),
+.toolbarRegion .actionButtonsDesktop > div .actionButton:hover:not(:disabled) {
+  background-color: transparent !important;
+  color: var(--color-brand-600, #0052a3);
+  box-shadow: inset 0 -2px 0 0 var(--color-brand-500, #0066cc);
 }
 
-.actionButton.active {
-  background: color-mix(in srgb, var(--color-brand-500, #0066cc) 16%, transparent);
-  color: var(--color-brand-600);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+.toolbarRegion .actionButtons > button:active:not(:disabled),
+.toolbarRegion .actionButtons > div .actionButton:active:not(:disabled),
+.toolbarRegion .actionButtonsDesktop > button:active:not(:disabled),
+.toolbarRegion .actionButtonsDesktop > div .actionButton:active:not(:disabled) {
+  background-color: transparent !important;
+  color: var(--color-brand-600, #0052a3);
+  box-shadow: inset 0 -2px 0 0 var(--color-brand-500, #0066cc);
 }
 
-.actionButton.active:hover:not(:disabled) {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--color-brand-500, #0066cc) 20%, #ffffff) 0%,
-    color-mix(in srgb, var(--color-brand-500, #0066cc) 12%, transparent) 100%
-  );
+.toolbarRegion .actionButtons > button[data-filters-open="true"],
+.toolbarRegion .actionButtonsDesktop > button[data-filters-open="true"] {
+  background-color: transparent !important;
+  color: var(--color-brand-600, #0052a3);
+  box-shadow: inset 0 -2px 0 0 var(--color-brand-500, #0066cc);
 }
 
-.actionButton svg {
-  width: 18px; /* ✅ Tamaño fijo y equilibrado */
-  height: 18px;
-  stroke: currentColor;
-  fill: none;
-  stroke-width: 2;
-  flex-shrink: 0; /* ✅ Evitar que el icono se comprima */
-  /* Asegurar que el ícono siempre sea el mismo */
-  stroke-dasharray: none;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.toolbarRegion .actionButtons > button[data-filters-open="true"]:hover:not(:disabled),
+.toolbarRegion .actionButtonsDesktop > button[data-filters-open="true"]:hover:not(:disabled) {
+  background-color: transparent !important;
+  box-shadow: inset 0 -2px 0 0 var(--color-brand-500, #0066cc);
 }
 
-.actionButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.toolbarRegion .actionButtons > div .actionButton[data-sort-active="true"],
+.toolbarRegion .actionButtons > div .actionButton[data-sort-menu-open="true"],
+.toolbarRegion .actionButtonsDesktop > div .actionButton[data-sort-active="true"],
+.toolbarRegion .actionButtonsDesktop > div .actionButton[data-sort-menu-open="true"] {
+  background-color: transparent !important;
+  color: var(--color-brand-600, #0052a3);
+  box-shadow: inset 0 -2px 0 0 var(--color-brand-500, #0066cc);
 }
+
+.toolbarRegion .actionButtons > div .actionButton[data-sort-active="true"]:hover:not(:disabled),
+.toolbarRegion .actionButtons > div .actionButton[data-sort-menu-open="true"]:hover:not(:disabled),
+.toolbarRegion .actionButtonsDesktop > div .actionButton[data-sort-active="true"]:hover:not(:disabled),
+.toolbarRegion .actionButtonsDesktop > div .actionButton[data-sort-menu-open="true"]:hover:not(:disabled) {
+  background-color: transparent !important;
+  box-shadow: inset 0 -2px 0 0 var(--color-brand-500, #0066cc);
+}
+
+.toolbarRegion .actionButtons button:focus-visible,
+.toolbarRegion .actionButtonsDesktop button:focus-visible {
+  background-color: transparent !important;
+  outline: none;
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-brand-500, #0066cc) 38%, transparent);
+}
+
+.toolbarRegion .actionButtons > button[data-filters-open="true"]:focus-visible,
+.toolbarRegion .actionButtonsDesktop > button[data-filters-open="true"]:focus-visible {
+  box-shadow:
+    inset 0 0 0 2px color-mix(in srgb, var(--color-brand-500, #0066cc) 38%, transparent),
+    inset 0 -2px 0 0 var(--color-brand-500, #0066cc);
+}
+
+.toolbarRegion .actionButtons > div .actionButton[data-sort-active="true"]:focus-visible,
+.toolbarRegion .actionButtons > div .actionButton[data-sort-menu-open="true"]:focus-visible,
+.toolbarRegion .actionButtonsDesktop > div .actionButton[data-sort-active="true"]:focus-visible,
+.toolbarRegion .actionButtonsDesktop > div .actionButton[data-sort-menu-open="true"]:focus-visible {
+  box-shadow:
+    inset 0 0 0 2px color-mix(in srgb, var(--color-brand-500, #0066cc) 38%, transparent),
+    inset 0 -2px 0 0 var(--color-brand-500, #0066cc);
+}
+
+/* Hover/active/focus/iconos: ActionButtons.module.css */
 
 /* ===== CONTAINER ===== */
+/* Chips de filtros activos: mismo ancho que la grilla, entre toolbar y resultados */
+.activeChipsRegion {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--container-max-width, 1400px);
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: clamp(0.65rem, 2vw, 1rem);
+  padding: 0 var(--container-padding-mobile);
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .activeChipsRegion {
+    padding-left: var(--container-padding-desktop);
+    padding-right: var(--container-padding-desktop);
+  }
+}
+
 .container {
   box-sizing: border-box;
   width: 100%;
@@ -479,6 +582,7 @@
   .toolbarRegion .actionButtonsDesktop {
     border-bottom-left-radius: var(--vehiculos-strip-radius);
     border-bottom-right-radius: var(--vehiculos-strip-radius);
+    overflow: hidden;
   }
   
   .actionButtonsDesktop > div {

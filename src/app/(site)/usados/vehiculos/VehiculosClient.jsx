@@ -17,9 +17,16 @@
  * @version 1.0.0 - Migración desde React
  */
 
-import { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import { useState, useCallback, useMemo, useEffect, useLayoutEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { buildSearchParams, parseFilters, sortVehicles, hasAnyFilter } from "../../../../utils/filters";
+import {
+  buildSearchParams,
+  parseFilters,
+  mergeDefaultRanges,
+  sortVehicles,
+  hasAnyFilter,
+  getActiveFilterChips,
+} from "../../../../utils/filters";
 import { vehiclesService } from "../../../../lib/services/vehiclesApi";
 import { mapVehiclesPage } from "../../../../lib/mappers/vehicleMapper";
 import styles from "./vehiculos.module.css";
@@ -27,6 +34,7 @@ import styles from "./vehiculos.module.css";
 import dynamic from "next/dynamic";
 import AutosGrid from "../../../../components/vehicles/List/ListAutos";
 import FilterFormSimple from "../../../../components/vehicles/Filters/FilterFormSimple";
+import ActiveFilterChips from "../../../../components/vehicles/Filters/ActiveFilterChips";
 import ActionButtons from "../../../../components/vehicles/ActionButtons/ActionButtons";
 import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import { VEHICLE_CONSTANTS } from "../../../../constants/vehicles";
@@ -91,6 +99,7 @@ export default function VehiculosClient({
   const sortButtonRef = useRef(null);
   const sortButtonRefDesktop = useRef(null);
   const brandsCarouselRef = useRef(null);
+  const brandsCarouselScrollRestoreRef = useRef(null);
   const [brandsScroll, setBrandsScroll] = useState({
     canScrollLeft: false,
     canScrollRight: true,
@@ -99,11 +108,23 @@ export default function VehiculosClient({
     setBrandsScroll(next);
   }, []);
 
+  const [stripFiltersOpen, setStripFiltersOpen] = useState(false);
+
+  useLayoutEffect(() => {
+    if (!stripFiltersOpen) return;
+    const track = brandsCarouselRef.current?.getTrackElement?.();
+    const saved = brandsCarouselScrollRestoreRef.current;
+    brandsCarouselScrollRestoreRef.current = null;
+    if (!track || saved == null) return;
+    track.scrollLeft = saved;
+  }, [stripFiltersOpen]);
+
   // ✅ OPTIMIZADO: Extraer todos los valores de searchParams en un solo useMemo
   // Esto reduce múltiples re-renders y puede ayudar con el error de Suspense
   const searchParamsData = useMemo(() => {
+    const sparse = parseFilters(searchParams);
     return {
-      filters: parseFilters(searchParams),
+      filters: mergeDefaultRanges(sparse),
       page: Number(searchParams.get("page")) || 1,
       sort: searchParams.get("sort") || null,
     };
@@ -344,6 +365,24 @@ export default function VehiculosClient({
     [updateURL, currentSort]
   );
 
+  const handleRemoveOneFilterChip = useCallback(
+    (nextFilters) => {
+      handleApplyFilters(nextFilters);
+    },
+    [handleApplyFilters]
+  );
+
+  const handleClearSortOnly = useCallback(() => {
+    updateURL(currentFilters, currentPage, null);
+    setSelectedSort(null);
+    setIsSortDropdownOpen(false);
+  }, [currentFilters, currentPage, updateURL]);
+
+  const activeFilterChips = useMemo(
+    () => getActiveFilterChips(currentFilters),
+    [currentFilters]
+  );
+
   /**
    * Cargar más vehículos (infinite scroll)
    * ✅ ACUMULA vehículos en lugar de reemplazarlos
@@ -473,9 +512,10 @@ export default function VehiculosClient({
    * Toggle filtros (mobile/desktop)
    */
   const handleFilterClick = useCallback(() => {
-    if (filterFormRef.current) {
-      filterFormRef.current.toggleFilters();
-    }
+    const track = brandsCarouselRef.current?.getTrackElement?.();
+    brandsCarouselScrollRestoreRef.current =
+      track != null ? track.scrollLeft : null;
+    filterFormRef.current?.toggleFilters();
   }, []);
 
   /**
@@ -512,14 +552,26 @@ export default function VehiculosClient({
       </div>
 
       <div
-        className={`${styles.toolbarRegion} w-full min-w-0`}
+        className={`${styles.toolbarRegion} w-full min-w-0 ${
+          stripFiltersOpen ? styles.toolbarRegion_filtersOpen : ""
+        }`}
         aria-labelledby="vehiculos-lista-titulo"
       >
         <div className={`${styles.carouselSection} w-full min-w-0`}>
+          {stripFiltersOpen && (
+            <div className={styles.brandStripHeading}>
+              <h2 className={styles.brandStripHeadingTitle} id="vehiculos-marca-titulo">
+                Marca
+              </h2>
+            </div>
+          )}
           <div
             className={`${styles.brandsCarouselRow} ${
               showBrandScrollArrows ? styles.brandsCarouselRow_hasScroll : ""
             }`}
+            role="region"
+            aria-labelledby={stripFiltersOpen ? "vehiculos-marca-titulo" : undefined}
+            aria-label={stripFiltersOpen ? undefined : "Marcas (filtro del listado)"}
           >
             {showBrandScrollArrows && (
               <button
@@ -561,6 +613,7 @@ export default function VehiculosClient({
               isError={!!error}
               error={error ? { message: error } : null}
               stripLayout
+              onStripFiltersOpenChange={setStripFiltersOpen}
               onRetry={() => {
                 setError(null);
                 handleApplyFilters(currentFilters);
@@ -577,7 +630,9 @@ export default function VehiculosClient({
             isSortDisabled={isSortDisabled}
             isSortDropdownOpen={isSortDropdownOpen}
             sortButtonRef={sortButtonRef}
+            filtersPanelOpen={stripFiltersOpen}
             className={styles.actionButtons}
+            actionButtonClassName={styles.actionButton}
           />
         </div>
 
@@ -590,7 +645,19 @@ export default function VehiculosClient({
           isSortDisabled={isSortDisabled}
           isSortDropdownOpen={isSortDropdownOpen}
           sortButtonRef={sortButtonRefDesktop}
+          filtersPanelOpen={stripFiltersOpen}
           className={styles.actionButtonsDesktop}
+          actionButtonClassName={styles.actionButton}
+        />
+      </div>
+
+      <div className={`${styles.activeChipsRegion} w-full min-w-0`}>
+        <ActiveFilterChips
+          chips={activeFilterChips}
+          sort={currentSort}
+          onRemoveChip={handleRemoveOneFilterChip}
+          onClearSort={handleClearSortOnly}
+          disabled={isLoading}
         />
       </div>
 

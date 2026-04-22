@@ -12,7 +12,7 @@ import { Alert } from '@/components/ui/Alert/Alert'
 import AdminFilters from '@/components/admin/AdminFilters/AdminFilters'
 import AdminCarModal from '@/components/admin/AdminCarModal/AdminCarModal'
 import RevalidateSection from '@/components/admin/RevalidateSection/RevalidateSection'
-import { FILTER_DEFAULTS } from '@/constants/filterOptions'
+import { FILTER_BOUNDS } from '@/constants/filterOptions'
 import styles from '../dashboard.module.css'
 
 const USADOS_TAB = {
@@ -45,7 +45,7 @@ export default function AdminUsadosPage() {
 
   const [filters, setFilters] = useState({
     marca: [],
-    año: [FILTER_DEFAULTS.AÑO.min, FILTER_DEFAULTS.AÑO.max],
+    año: [FILTER_BOUNDS.AÑO.min, FILTER_BOUNDS.AÑO.max],
   })
 
   const backendFilters = useCallback(() => filters, [filters])

@@ -156,34 +156,66 @@
     margin-bottom: 0;
   }
 
-  .carouselTrack {
+  .carouselContainer:not(.carouselContainerEmbedded) .carouselTrack {
     gap: 1rem;
     scroll-snap-type: none;
   }
 
-  .brandItem {
-    height: 68px; /* ✅ Mobile: sutilmente más chico que 80px */
+  .carouselContainer:not(.carouselContainerEmbedded) .brandItem {
+    height: 68px;
     padding: 0 4px;
   }
 
-  .brandLogo {
+  .carouselContainer:not(.carouselContainerEmbedded) .brandLogo {
     max-height: 68px;
     max-width: 136px;
   }
 
-  .brandLogoSmall {
+  .carouselContainer:not(.carouselContainerEmbedded) .brandLogoSmall {
     max-height: 60px;
     max-width: 120px;
   }
 
-  .brandLogoLarge {
+  .carouselContainer:not(.carouselContainerEmbedded) .brandLogoLarge {
     max-height: 80px;
     max-width: 160px;
   }
 
-  .brandLogoFord {
+  .carouselContainer:not(.carouselContainerEmbedded) .brandLogoFord {
     max-height: 60px;
     max-width: 120px;
+  }
+
+  /* Franja /usados/vehiculos (embedded): fila tipo desktop, logos más chicos, no a pantalla completa */
+  .carouselContainerEmbedded .carouselTrack {
+    gap: clamp(0.75rem, 3vw, 1.5rem);
+    scroll-snap-type: x proximity;
+    padding-inline-end: max(0.35rem, env(safe-area-inset-right, 0px));
+  }
+
+  .carouselContainerEmbedded .brandItem {
+    height: 52px;
+    padding: 0 0.35rem;
+  }
+
+  .carouselContainerEmbedded .brandLogo {
+    max-height: 52px;
+    max-width: 104px;
+  }
+
+  .carouselContainerEmbedded .brandLogoSmall {
+    max-height: 46px;
+    max-width: 90px;
+  }
+
+  .carouselContainerEmbedded .brandLogoLarge {
+    max-height: 58px;
+    max-width: 114px;
+  }
+
+  .carouselContainerEmbedded .brandLogoFord {
+    max-height: 46px;
+    max-width: 90px;
   }
 }
 

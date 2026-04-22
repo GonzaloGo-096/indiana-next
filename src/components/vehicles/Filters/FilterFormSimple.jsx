@@ -18,9 +18,8 @@
 import { useState, useEffect, useCallback, useRef, forwardRef, memo, useImperativeHandle, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import RangeSlider from '../../ui/RangeSlider/RangeSlider'
-import MultiSelect from '../../ui/MultiSelect/MultiSelect'
 import { CloseIcon } from '../../ui/icons/CloseIcon'
-import { combustibles, cajas, FILTER_DEFAULTS } from '../../../constants/filterOptions'
+import { combustibles, cajas, FILTER_BOUNDS, FILTER_DEFAULTS } from '../../../constants/filterOptions'
 import { useDevice } from '../../../hooks/useDevice'
 import styles from './FilterFormSimple.module.css'
 
@@ -49,6 +48,8 @@ const FilterFormSimpleComponent = forwardRef(({
   onRetry = null,
   /** Lista /usados/vehiculos: integrar en franja toolbar sin segunda caja ni breakout 100vw */
   stripLayout = false,
+  /** Solo strip: avisa si el panel de filtros está abierto (p. ej. borde en VehiculosClient) */
+  onStripFiltersOpenChange,
 }, ref) => {
   const { isMobile } = useDevice()
   const router = useRouter()
@@ -64,10 +65,30 @@ const FilterFormSimpleComponent = forwardRef(({
   // ✅ FIX HIDRATACIÓN: Estado para saber si el componente ya se montó en el cliente
   // Esto evita diferencias entre servidor y cliente en el render inicial
   const [isMounted, setIsMounted] = useState(false)
-  
+  const stripPanelEndRef = useRef(null)
+
   useEffect(() => {
     setIsMounted(true)
   }, [])
+
+  /* Strip: al abrir, bajar la vista al pie del formulario (Aplicar); delay breve por título Marca en el padre */
+  useEffect(() => {
+    if (!stripLayout || !isVisibleDesktop) return
+    const el = stripPanelEndRef.current
+    if (!el) return
+    const t = window.setTimeout(() => {
+      el.scrollIntoView({ block: 'end', behavior: 'smooth' })
+    }, 140)
+    return () => window.clearTimeout(t)
+  }, [stripLayout, isVisibleDesktop])
+
+  useEffect(() => {
+    if (!stripLayout || !onStripFiltersOpenChange) return
+    onStripFiltersOpenChange(isVisibleDesktop)
+    return () => {
+      onStripFiltersOpenChange(false)
+    }
+  }, [stripLayout, isVisibleDesktop, onStripFiltersOpenChange])
 
   // ✅ FILTROS - ESTADO SIMPLE
   const [filters, setFilters] = useState({
@@ -134,20 +155,28 @@ const FilterFormSimpleComponent = forwardRef(({
 
   // ✅ HANDLERS UNIFICADOS (funcionan en ambos contextos)
   const toggleVisibility = useCallback(() => {
-    if (isMobile) {
-      setIsDrawerOpen(prev => !prev)
-    } else {
-      setIsVisibleDesktop(prev => !prev)
+    if (stripLayout) {
+      setIsVisibleDesktop((prev) => !prev)
+      return
     }
-  }, [isMobile])
+    if (isMobile) {
+      setIsDrawerOpen((prev) => !prev)
+    } else {
+      setIsVisibleDesktop((prev) => !prev)
+    }
+  }, [isMobile, stripLayout])
 
   const closeVisibility = useCallback(() => {
+    if (stripLayout) {
+      setIsVisibleDesktop(false)
+      return
+    }
     if (isMobile) {
       setIsDrawerOpen(false)
     } else {
       setIsVisibleDesktop(false)
     }
-  }, [isMobile])
+  }, [isMobile, stripLayout])
 
   // ✅ HANDLERS SIMPLES (mantener para compatibilidad)
   const toggleDrawer = useCallback(() => setIsDrawerOpen(prev => !prev), [])
@@ -156,6 +185,24 @@ const FilterFormSimpleComponent = forwardRef(({
   // ✅ HANDLERS DE FILTROS
   const handleFilterChange = useCallback((key, value) => {
     setFilters(prev => ({ ...prev, [key]: value }))
+  }, [])
+
+  const toggleCaja = useCallback((option) => {
+    setFilters((prev) => {
+      const has = prev.caja.includes(option)
+      const caja = has ? prev.caja.filter((x) => x !== option) : [...prev.caja, option]
+      return { ...prev, caja }
+    })
+  }, [])
+
+  const toggleCombustible = useCallback((option) => {
+    setFilters((prev) => {
+      const has = prev.combustible.includes(option)
+      const combustible = has
+        ? prev.combustible.filter((x) => x !== option)
+        : [...prev.combustible, option]
+      return { ...prev, combustible }
+    })
   }, [])
 
   const handleClear = useCallback(() => {
@@ -170,17 +217,24 @@ const FilterFormSimpleComponent = forwardRef(({
     router.push(window.location.pathname)
   }, [router])
 
-  // Cerrar con Escape y devolver foco al trigger
+  // Cerrar con Escape (drawer móvil clásico o panel strip móvil/desktop)
   useEffect(() => {
-    if (!isDrawerOpen) return
+    const panelOpen = stripLayout
+      ? isVisibleDesktop
+      : isMobile
+        ? isDrawerOpen
+        : isVisibleDesktop
+    if (!panelOpen) return
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        setIsDrawerOpen(false)
+        if (stripLayout) setIsVisibleDesktop(false)
+        else if (isMobile) setIsDrawerOpen(false)
+        else setIsVisibleDesktop(false)
       }
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [isDrawerOpen])
+  }, [stripLayout, isMobile, isDrawerOpen, isVisibleDesktop])
 
 
   // ✅ SUBMIT
@@ -216,13 +270,21 @@ const FilterFormSimpleComponent = forwardRef(({
     // Métodos originales (para mobile - compatibilidad)
     toggleDrawer,
     closeDrawer,
-    isDrawerOpen: isMobile ? isDrawerOpen : isVisibleDesktop,
-    
+    isDrawerOpen: stripLayout
+      ? isVisibleDesktop
+      : isMobile
+        ? isDrawerOpen
+        : isVisibleDesktop,
+
     // Métodos de LazyFilterFormSimple (para desktop - compatibilidad)
     toggleFilters: toggleVisibility,
     showFilters: () => setIsVisibleDesktop(true),
     hideFilters: () => setIsVisibleDesktop(false),
-    isFiltersVisible: isMobile ? isDrawerOpen : isVisibleDesktop,
+    isFiltersVisible: stripLayout
+      ? isVisibleDesktop
+      : isMobile
+        ? isDrawerOpen
+        : isVisibleDesktop,
     
     // ✅ NUEVO: Método para actualizar marca desde afuera (carrusel cuando panel está abierto)
     updateMarcaFilter: (marcaArray) => {
@@ -231,7 +293,16 @@ const FilterFormSimpleComponent = forwardRef(({
     
     // ✅ NUEVO: Método para obtener estado local actual (para carrusel cuando panel está abierto)
     getCurrentFilters: () => filters,
-  }), [isMobile, isDrawerOpen, isVisibleDesktop, toggleDrawer, closeDrawer, toggleVisibility, filters])
+  }), [
+    isMobile,
+    stripLayout,
+    isDrawerOpen,
+    isVisibleDesktop,
+    toggleDrawer,
+    closeDrawer,
+    toggleVisibility,
+    filters,
+  ])
 
   // ✅ CONTEO DE FILTROS ACTIVOS (memoizado para evitar recálculos)
   const activeFiltersCount = useMemo(() => {
@@ -248,7 +319,7 @@ const FilterFormSimpleComponent = forwardRef(({
   // ✅ CONTENIDO DEL FORMULARIO (reutilizable)
   const formContent = (
     <div
-      className={`${styles.filterContainer} ${stripLayout ? styles.filterContainerStrip : ''} ${isDrawerOpen ? styles.open : ''}`}
+      className={`${styles.filterContainer} ${stripLayout ? styles.filterContainerStrip : ''} ${!stripLayout && isDrawerOpen ? styles.open : ''}`}
     >
       {/* Error Messages */}
       {isError && error && (
@@ -263,77 +334,112 @@ const FilterFormSimpleComponent = forwardRef(({
       )}
 
       {/* Filter Form */}
-      {isDrawerOpen && (
-        <div className={styles.overlay} onClick={closeDrawer} />
+      {!stripLayout && isDrawerOpen && (
+        <div className={styles.overlay} onClick={closeVisibility} />
       )}
       
       <div className={styles.formWrapper}>
         <form id="filterForm" onSubmit={onSubmit} className={styles.form}>
           {/* Título y botones de cierre solo en mobile */}
           <div className={styles.formTitle}>
-            <button type="button" onClick={closeDrawer} className={styles.closeButtonMobile}>
-              <CloseIcon size={28} />
+            <span className={styles.drawerTitle}>Filtros</span>
+            <button
+              type="button"
+              onClick={closeVisibility}
+              className={styles.closeButtonMobile}
+              aria-label="Cerrar filtros"
+            >
+              <CloseIcon size={22} />
             </button>
           </div>
 
-          {/* MultiSelects - Primero los selects */}
-          {/* ✅ ELIMINADO: Input de marca - ahora se usa el carrusel de marcas */}
-          <div className={styles.selectsSection}>
-            <div className={styles.formGroup}>
-              <MultiSelect
-                label="Caja"
-                options={cajas}
-                value={filters.caja}
-                onChange={(val) => handleFilterChange('caja', val)}
-                placeholder="Todas las cajas"
-              />
+          <div
+            className={`${styles.formBody} ${stripLayout ? styles.formBodyStrip : ""}`}
+          >
+            <div className={styles.formColumn}>
+              <div
+                className={`${styles.selectsSection} ${stripLayout ? styles.selectsSectionStrip : ""}`}
+              >
+                <div className={styles.formGroup}>
+                  <fieldset className={styles.filterChoiceFieldset}>
+                    <legend className={styles.filterChoiceLegend}>Caja de cambios</legend>
+                    <div className={styles.checkboxRow}>
+                      {cajas.map((opt) => (
+                        <label key={opt} className={styles.checkboxItem}>
+                          <input
+                            type="checkbox"
+                            checked={filters.caja.includes(opt)}
+                            onChange={() => toggleCaja(opt)}
+                          />
+                          <span>{opt}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
             </div>
-            
-            <div className={styles.formGroup}>
-              <MultiSelect
-                label="Combustible"
-                options={combustibles}
-                value={filters.combustible}
-                onChange={(val) => handleFilterChange('combustible', val)}
-                placeholder="Seleccionar combustibles"
-              />
-            </div>
-          </div>
 
-          {/* Range Sliders - Después los rangos */}
-          <div className={styles.rangesSection}>
-            <div className={styles.formGroup}>
-              <RangeSlider
-                label="Año"
-                min={FILTER_DEFAULTS.AÑO.min}
-                max={FILTER_DEFAULTS.AÑO.max}
-                step={1}
-                value={filters.año}
-                onChange={(val) => handleFilterChange('año', val)}
-                formatValue={(val) => val.toString()}
-              />
+            <div className={styles.formColumn}>
+              <div className={styles.rangesSection}>
+                <div className={styles.formGroup}>
+                  <RangeSlider
+                    label="Año"
+                    min={FILTER_BOUNDS.AÑO.min}
+                    max={FILTER_BOUNDS.AÑO.max}
+                    step={1}
+                    value={filters.año}
+                    onChange={(val) => handleFilterChange("año", val)}
+                    formatValue={(val) => val.toString()}
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <RangeSlider
+                    label="Precio"
+                    min={FILTER_BOUNDS.PRECIO.min}
+                    max={FILTER_BOUNDS.PRECIO.max}
+                    step={1000000}
+                    value={filters.precio}
+                    onChange={(val) => handleFilterChange("precio", val)}
+                    formatValue={formatPrice}
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <RangeSlider
+                    label="km"
+                    min={FILTER_BOUNDS.KILOMETRAJE.min}
+                    max={FILTER_BOUNDS.KILOMETRAJE.max}
+                    step={5000}
+                    value={filters.kilometraje}
+                    onChange={(val) => handleFilterChange("kilometraje", val)}
+                    formatValue={formatKilometers}
+                  />
+                </div>
+              </div>
             </div>
-            <div className={styles.formGroup}>
-              <RangeSlider
-                label="Precio"
-                min={FILTER_DEFAULTS.PRECIO.min}
-                max={FILTER_DEFAULTS.PRECIO.max}
-                step={1000000}
-                value={filters.precio}
-                onChange={(val) => handleFilterChange('precio', val)}
-                formatValue={formatPrice}
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <RangeSlider
-                label="km"
-                min={FILTER_DEFAULTS.KILOMETRAJE.min}
-                max={FILTER_DEFAULTS.KILOMETRAJE.max}
-                step={5000}
-                value={filters.kilometraje}
-                onChange={(val) => handleFilterChange('kilometraje', val)}
-                formatValue={formatKilometers}
-              />
+
+            <div className={styles.formColumn}>
+              <div
+                className={`${styles.selectsSection} ${stripLayout ? styles.selectsSectionStrip : ""}`}
+              >
+                <div className={styles.formGroup}>
+                  <fieldset className={styles.filterChoiceFieldset}>
+                    <legend className={styles.filterChoiceLegend}>Combustible</legend>
+                    <div className={styles.checkboxRow}>
+                      {combustibles.map((opt) => (
+                        <label key={opt} className={styles.checkboxItem}>
+                          <input
+                            type="checkbox"
+                            checked={filters.combustible.includes(opt)}
+                            onChange={() => toggleCombustible(opt)}
+                          />
+                          <span>{opt}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -356,6 +462,13 @@ const FilterFormSimpleComponent = forwardRef(({
               {isSubmitting ? 'Aplicando...' : 'Aplicar'}
             </button>
           </div>
+          {stripLayout && (
+            <div
+              ref={stripPanelEndRef}
+              className={styles.stripPanelScrollAnchor}
+              aria-hidden
+            />
+          )}
         </form>
       </div>
     </div>
@@ -368,8 +481,8 @@ const FilterFormSimpleComponent = forwardRef(({
     return formContent
   }
 
-  // ✅ EN DESKTOP: Renderizar siempre manteniendo el ancho completo, con efecto slide simple
-  if (!isMobile) {
+  // ✅ Desktop, o strip en móvil: panel con show/hide (mismo patrón que desktop)
+  if (!isMobile || stripLayout) {
     return (
       <div className={isVisibleDesktop ? styles.desktopVisible : styles.desktopHidden}>
         {formContent}
@@ -377,7 +490,7 @@ const FilterFormSimpleComponent = forwardRef(({
     )
   }
 
-  // ✅ EN MOBILE: Renderizar directamente (comportamiento original)
+  // ✅ Móvil sin strip: drawer inferior (comportamiento clásico)
   return formContent
 })
 

@@ -33,13 +33,22 @@
 
 .vehiclesHeader {
   display: flex;
-  align-items: center;
+  align-items: stretch;
   margin-bottom: 0;
   flex-wrap: wrap;
 }
 
+@media (min-width: 640px) {
+  .vehiclesHeader {
+    flex-wrap: nowrap;
+  }
+}
+
 .vehiclesTitle {
   margin: 0;
+  flex: 0 1 auto;
+  align-self: center;
+  min-width: 0;
   font-family: var(--font-condensed);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
@@ -49,41 +58,70 @@
   text-align: left;
 }
 
-/* Mismo criterio que UsadosSection (home): fondo blanco, borde azul */
+/* Zona a la derecha del título: “Ver todos” */
+.vehiclesHeaderRest {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  align-self: stretch;
+  box-sizing: border-box;
+  flex-basis: 100%;
+  padding: 0.4rem 0 0 0;
+  margin: 0;
+}
+
+@media (min-width: 640px) {
+  .vehiclesHeaderRest {
+    flex: 1 1 12rem;
+    flex-basis: auto;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0;
+  }
+}
+
+/* Ver todos: discreto, algo más chico, neutro con leve acento marca al hover */
 .verTodosButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-2) var(--spacing-5);
-  min-height: 44px;
-  background: var(--color-white);
-  border: 2px solid var(--color-brand-500);
-  color: var(--color-brand-500);
+  padding: 0.3rem 0.75rem;
+  min-height: 34px;
+  background: color-mix(in srgb, var(--color-neutral-100, #f1f5f9) 55%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--color-neutral-900, #0f172a) 9%, transparent);
+  color: color-mix(in srgb, var(--color-neutral-700, #404040) 88%, var(--color-brand-600, #0052a3));
   text-decoration: none;
   font-family: var(--font-condensed);
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  font-weight: var(--font-weight-bold);
+  font-size: clamp(0.75rem, 1.65vw, 0.8125rem);
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 1px;
-  border-radius: var(--border-radius-md);
-  transition: all var(--transition-fast);
+  letter-spacing: 0.06em;
+  border-radius: 9999px;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
   white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: none;
 }
 
 .verTodosButton:hover {
-  background: var(--color-brand-500);
-  color: var(--color-white);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  background: color-mix(in srgb, var(--color-brand-500, #0066cc) 7%, #ffffff);
+  color: var(--color-brand-600, #0052a3);
+  border-color: color-mix(in srgb, var(--color-brand-500) 28%, var(--color-neutral-200));
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--color-neutral-900) 6%, transparent);
 }
 
 .verTodosButton:active {
-  transform: translateY(0);
+  background: color-mix(in srgb, var(--color-brand-500) 11%, #ffffff);
 }
 
 .verTodosButton:focus-visible {
-  outline: 2px solid var(--color-brand-500);
+  outline: 2px solid color-mix(in srgb, var(--color-brand-500) 40%, transparent);
   outline-offset: 2px;
 }
 

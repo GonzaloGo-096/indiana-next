@@ -3,7 +3,7 @@
  * 
  * Diseño mobile-first con scroll horizontal suave.
  * Cards adaptadas para tamaño más compacto en carrusel.
- * Desktop: flechas en columnas flex fuera de la pista de scroll (sin overlay sobre cards).
+ * Desktop: flechas position absolute a los lados; sin caja envolvente alrededor del carrusel.
  * 
  * @author Indiana Peugeot
  * @version 1.0.0
@@ -36,119 +36,92 @@
   margin-left: 0;
 }
 
-/* ===== MARCO: pista de scroll + columnas de navegación (sin overlay) ===== */
+/* ===== MARCO: pista de scroll; flechas desktop en absolute (sin caja envolvente) ===== */
 .carouselFrame {
-  display: flex;
+  position: relative;
   width: 100%;
-  align-items: center;
-  gap: var(--spacing-3);
   box-sizing: border-box;
 }
 
-@media (min-width: 992px) {
-  .carouselFrame {
-    gap: 0.75rem;
-    padding: 0.5rem 0.375rem;
-    background: color-mix(in srgb, var(--color-neutral-50) 88%, #fff);
-    border: 1px solid var(--color-neutral-100);
-    border-radius: 1rem;
-    box-shadow: 0 1px 0 rgba(6, 27, 156, 0.04);
-  }
-}
-
 .carouselTrack {
-  flex: 1 1 0;
+  width: 100%;
   min-width: 0;
   position: relative;
 }
 
-.carouselNavPrev,
-.carouselNavNext {
+.carouselNudgeSvg {
+  display: block;
+}
+
+/* Flechas: solo ≥992px; mismo criterio que marcas (sutil, sin disco) */
+.carouselArrowPrev,
+.carouselArrowNext {
   display: none;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  align-self: center;
-  width: 44px;
-  flex-shrink: 0;
 }
 
 @media (min-width: 992px) {
-  .carouselNavPrev,
-  .carouselNavNext {
+  .carouselArrowPrev,
+  .carouselArrowNext {
     display: flex;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 4;
+    width: 1.75rem;
+    min-width: 1.75rem;
+    height: auto;
+    min-height: 2.5rem;
+    padding: 0 2px;
+    margin: 0;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+    color: color-mix(in srgb, var(--color-neutral-500, #64748b) 52%, transparent);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease,
+      opacity 0.15s ease;
   }
-}
 
-@media (max-width: 991px) {
-  .carouselFrame {
-    display: block;
+  .carouselArrowPrev {
+    left: 0.1rem;
   }
 
-  .carouselTrack {
-    width: 100%;
+  .carouselArrowNext {
+    right: 0.1rem;
   }
-}
 
-.carouselArrow {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  padding: 0;
-  margin: 0;
-  background: #fff;
-  color: var(--color-brand-600);
-  border: 1px solid var(--color-neutral-200);
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow:
-    0 1px 2px rgba(0, 0, 0, 0.05),
-    0 4px 12px rgba(6, 27, 156, 0.06);
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
+  .carouselArrowPrev:hover:not(:disabled),
+  .carouselArrowNext:hover:not(:disabled) {
+    color: color-mix(in srgb, var(--color-neutral-600, #475569) 78%, transparent);
+    background-color: color-mix(in srgb, var(--color-neutral-900, #0f172a) 4%, transparent);
+  }
 
-.carouselArrow:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--color-brand-50) 92%, #fff);
-  color: var(--color-brand-500);
-  border-color: color-mix(in srgb, var(--color-brand-500) 35%, var(--color-neutral-200));
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.06),
-    0 8px 20px color-mix(in srgb, var(--color-brand-500) 12%, transparent);
-}
-
-.carouselArrow:active:not(:disabled) {
-  transform: scale(0.97);
-}
-
-.carouselArrow:focus-visible {
-  outline: 2px solid var(--color-brand-500);
-  outline-offset: 2px;
-}
-
-.carouselArrow svg {
-  width: 18px;
-  height: 18px;
-  stroke-width: 2;
+  .carouselArrowPrev:focus-visible,
+  .carouselArrowNext:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--color-neutral-500, #64748b) 45%, transparent);
+    outline-offset: 2px;
+  }
 }
 
 .carouselArrowDisabled {
-  opacity: 0.35;
+  opacity: 0.22;
   cursor: not-allowed;
-  box-shadow: none;
 }
 
-.carouselArrowDisabled:hover {
-  background: #fff;
-  color: var(--color-neutral-400);
-  border-color: var(--color-neutral-200);
-  box-shadow: none;
+.carouselArrowNext.carouselArrowDisabled:hover {
+  background-color: transparent;
+  color: color-mix(in srgb, var(--color-neutral-500, #64748b) 52%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .carouselArrowPrev,
+  .carouselArrowNext {
+    transition: none;
+  }
 }
 
 /* ===== CONTENEDOR DE CARRUSEL (scroll horizontal) ===== */

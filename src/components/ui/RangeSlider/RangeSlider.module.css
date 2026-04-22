@@ -1,66 +1,60 @@
 /**
- * RangeSlider.module.css - Estilos optimizados para el componente de rango
- * 
- * @author Indiana Peugeot
- * @version 2.0.0 - Optimizado y limpio
+ * RangeSlider — estilo simple: riel plano + thumb circular (patrón habitual y estable).
  */
 
 .rangeSlider {
-  width: 75%; /* Reducido en 25% */
-  margin-bottom: 0; /* ✅ Sin margin bottom */
-  margin-top: 0; /* ✅ Sin margin top */
-  margin-left: auto;
-  margin-right: auto;
-  padding-top: 0; /* ✅ Sin padding top */
-  padding-bottom: 0; /* ✅ Sin padding bottom */
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .label {
   display: block;
   font-size: var(--font-size-xs, 0.75rem);
-  font-weight: var(--font-weight-medium, 500);
-  color: var(--color-neutral-700, #374151);
-  margin-bottom: 0; /* ✅ Sin margin bottom */
-  margin-top: 0; /* ✅ Sin margin top */
-  text-align: center;
-  padding-top: 0; /* ✅ Sin padding top */
-  padding-bottom: 0; /* ✅ Sin padding bottom */
+  font-weight: 600;
+  color: var(--color-neutral-600, #525252);
+  margin: 0 0 0.35rem;
+  text-align: left;
 }
 
 .container {
   position: relative;
+  padding: 14px 4px 4px;
+  box-sizing: border-box;
 }
 
 .track {
   position: relative;
-  height: 6px;
-  background: var(--color-neutral-100, #f3f4f6);
-  border-radius: 3px;
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--color-neutral-400, #9ca3af) 22%, transparent);
+  height: 10px;
+  border-radius: 9999px;
+  background: var(--color-neutral-200, #e5e7eb);
   cursor: pointer;
   user-select: none;
-  touch-action: none; /* ✅ Evita que el navegador capture gestos de scroll */
+  touch-action: none;
 }
 
 .range {
   position: absolute;
   height: 100%;
+  top: 0;
+  border-radius: 9999px;
   background: var(--color-brand-500, #0066cc);
-  border-radius: 3px;
-  transition: all 0.2s ease;
+  transition: width 0.12s ease, left 0.12s ease;
 }
 
 .thumb {
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: 14px;
-  height: 14px;
-  background: var(--color-white, #ffffff);
-  border: 2px solid var(--color-neutral-900, #111827);
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
+  background: #fff;
+  border: 2px solid var(--color-brand-500, #0066cc);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.12);
   cursor: grab;
-  transition: all 0.2s ease;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
   z-index: 2;
   touch-action: none;
   -webkit-user-select: none;
@@ -68,38 +62,35 @@
 }
 
 .thumb:hover {
-  transform: translate(-50%, -50%) scale(1.1);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: translate(-50%, -50%) scale(1.06);
+  border-color: var(--color-brand-600, #0052a3);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.16);
 }
 
 .thumb.active {
-  transform: translate(-50%, -50%) scale(1.2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transform: translate(-50%, -50%) scale(1.08);
+  border-color: var(--color-brand-600, #0052a3);
   cursor: grabbing;
 }
 
-.thumbMin {
-  z-index: 3;
-}
-
+.thumbMin,
 .thumbMax {
   z-index: 3;
 }
 
-/* ✅ Aumentar z-index cuando el thumb está activo o en hover para que el tooltip esté por encima */
 .thumb:hover,
 .thumb.active {
-  z-index: 100000 !important; /* ✅ Z-index muy alto cuando está activo */
+  z-index: 100000 !important;
 }
 
 .thumb:hover .tooltip,
 .thumb.active .tooltip {
-  z-index: 999999 !important; /* ✅ Z-index extremadamente alto para el tooltip */
+  z-index: 999999 !important;
 }
 
 .tooltip {
   position: absolute;
-  bottom: 25px;
+  bottom: 32px;
   left: 50%;
   transform: translateX(-50%);
   background: var(--color-neutral-800, #1f2937);
@@ -107,17 +98,16 @@
   padding: 4px 8px;
   border-radius: 4px;
   font-size: var(--font-size-xs, 0.75rem);
-  font-weight: var(--font-weight-medium, 500);
+  font-weight: 500;
   white-space: nowrap;
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.15s ease;
   pointer-events: none;
-  z-index: 999999; /* ✅ Z-index extremadamente alto para que esté por encima de TODO */
-  isolation: isolate; /* ✅ Crear nuevo stacking context */
+  z-index: 999999;
 }
 
 .tooltip::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 100%;
   left: 50%;
@@ -135,98 +125,77 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 0; /* ✅ Sin margin top */
-  margin-bottom: 0; /* ✅ Sin margin bottom */
-  gap: 1rem;
+  margin-top: 0.3rem;
+  gap: 0.75rem;
 }
 
 .value {
   font-size: var(--font-size-sm, 0.875rem);
   color: var(--color-text-primary, #1a1a1a);
-  font-weight: 400;
+  font-weight: 500;
 }
 
 .separator {
-  color: var(--color-text-primary, #1a1a1a);
+  color: var(--color-neutral-400, #9ca3af);
   font-size: var(--font-size-sm, 0.875rem);
-  margin: 0 var(--spacing-xs, 0.5rem);
 }
 
-/* Variante oscura: rango mín/máx visibles en blanco bajo la pista */
 .onDark .values {
   margin-top: var(--spacing-2, 0.5rem);
 }
 
 .onDark .value {
   color: var(--color-white, #ffffff);
-  font-weight: var(--font-weight-semibold, 600);
+  font-weight: 600;
 }
 
 .onDark .separator {
-  color: color-mix(in srgb, var(--color-white, #ffffff) 55%, transparent);
-  font-weight: var(--font-weight-medium, 500);
+  color: color-mix(in srgb, var(--color-white, #ffffff) 50%, transparent);
 }
 
-/* Responsive */
+.onDark .track {
+  background: color-mix(in srgb, var(--color-neutral-600) 55%, var(--color-neutral-900));
+}
+
+.onDark .thumb {
+  background: #fff;
+  border-color: var(--color-brand-400, #3385d6);
+}
+
 @media (max-width: 768px) {
-  .rangeSlider {
-    width: 100%;
-  }
-  
   .label {
     font-size: var(--font-size-sm, 0.875rem);
   }
-  
+
+  .container {
+    padding: 16px 2px 6px;
+  }
+
   .track {
-    height: 6px;
+    height: 12px;
   }
-  
+
   .thumb {
-    width: 22px;
-    height: 22px;
-    border-width: 2px;
+    width: 24px;
+    height: 24px;
   }
-  
-  .values {
-    font-size: 0.875rem;
-  }
-  
-  .value {
-    font-size: 0.875rem;
-    font-weight: 400;
-  }
-  
-  .separator {
-    font-size: 0.875rem;
-  }
-  
+
   .tooltip {
-    font-size: 0.75rem;
-    padding: 4px 8px;
-    font-weight: 600;
-    bottom: 28px;
+    bottom: 34px;
   }
 }
 
-/* Touch optimizations */
 @media (hover: none) and (pointer: coarse) {
-  .thumb {
-    width: 22px;
-    height: 22px;
-    border-width: 2px;
-  }
-  
   .track {
-    height: 6px;
+    height: 12px;
   }
-  
+
+  .thumb {
+    width: 26px;
+    height: 26px;
+  }
+
   .tooltip {
-    font-size: 0.75rem;
-    padding: 4px 8px;
-    font-weight: 600;
-    bottom: 28px;
+    bottom: 36px;
   }
 }
-
-
-

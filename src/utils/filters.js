@@ -17,6 +17,24 @@
  */
 import { FILTER_DEFAULTS } from "../constants/filterOptions";
 
+/** Completa año / precio / km cuando faltan en la URL (valores = FILTER_DEFAULTS). */
+export function mergeDefaultRanges(filters = {}) {
+  const f = { ...filters };
+  if (!Array.isArray(f.año) || f.año.length !== 2) {
+    f.año = [FILTER_DEFAULTS.AÑO.min, FILTER_DEFAULTS.AÑO.max];
+  }
+  if (!Array.isArray(f.precio) || f.precio.length !== 2) {
+    f.precio = [FILTER_DEFAULTS.PRECIO.min, FILTER_DEFAULTS.PRECIO.max];
+  }
+  if (!Array.isArray(f.kilometraje) || f.kilometraje.length !== 2) {
+    f.kilometraje = [
+      FILTER_DEFAULTS.KILOMETRAJE.min,
+      FILTER_DEFAULTS.KILOMETRAJE.max,
+    ];
+  }
+  return f;
+}
+
 /**
  * Valores de caja que el backend puede tener como "Automático" u otras variantes;
  * el filtro muestra "Automática" y aquí se envían ambos al query.
@@ -62,79 +80,75 @@ function normalizeCajaTokensFromUrl(tokens) {
  * @param {Array} filters.precio - [min, max] rango de precios
  * @param {Array} filters.kilometraje - [min, max] rango de kilómetros
  * @param {number} filters.page - Página actual (opcional, para paginación)
+ * @param {Object} [options]
+ * @param {boolean} [options.includeDefaultRanges=false] - Si true (p. ej. llamada a la API), incluye anio/precio/km aunque coincidan con FILTER_DEFAULTS.
  * @returns {URLSearchParams} Parámetros listos para URL o backend
  */
-export const buildSearchParams = (filters = {}) => {
+export const buildSearchParams = (filters = {}, options = {}) => {
+  const { includeDefaultRanges = false } = options;
   const params = new URLSearchParams();
+  const f = mergeDefaultRanges({ ...filters });
 
   // Logging solo en desarrollo
   if (process.env.NODE_ENV === "development") {
-    console.debug("[Filters] Construyendo searchParams:", filters);
+    console.debug("[Filters] Construyendo searchParams:", f, options);
   }
 
   // ===== FILTROS SIMPLES (arrays → strings con comas) =====
 
-  if (filters.marca && Array.isArray(filters.marca) && filters.marca.length > 0) {
-    params.set("marca", filters.marca.join(","));
+  if (f.marca && Array.isArray(f.marca) && f.marca.length > 0) {
+    params.set("marca", f.marca.join(","));
   }
 
-  if (filters.caja && Array.isArray(filters.caja) && filters.caja.length > 0) {
-    const forApi = expandCajaValuesForApi(filters.caja);
+  if (f.caja && Array.isArray(f.caja) && f.caja.length > 0) {
+    const forApi = expandCajaValuesForApi(f.caja);
     if (forApi.length > 0) {
       params.set("caja", forApi.join(","));
     }
   }
 
   if (
-    filters.combustible &&
-    Array.isArray(filters.combustible) &&
-    filters.combustible.length > 0
+    f.combustible &&
+    Array.isArray(f.combustible) &&
+    f.combustible.length > 0
   ) {
-    params.set("combustible", filters.combustible.join(","));
+    params.set("combustible", f.combustible.join(","));
   }
 
   // ===== RANGOS (arrays → "min,max") =====
-  // Solo incluir si NO son valores por defecto (optimización de query params)
+  // URL: omitir si coinciden con FILTER_DEFAULTS. API: incluir siempre con includeDefaultRanges.
 
-  if (filters.año && Array.isArray(filters.año) && filters.año.length === 2) {
-    const [min, max] = filters.año;
+  if (f.año && Array.isArray(f.año) && f.año.length === 2) {
+    const [min, max] = f.año;
     const isDefault =
       min === FILTER_DEFAULTS.AÑO.min && max === FILTER_DEFAULTS.AÑO.max;
-    if (!isDefault) {
+    if (includeDefaultRanges || !isDefault) {
       params.set("anio", `${min},${max}`);
     }
   }
 
-  if (
-    filters.precio &&
-    Array.isArray(filters.precio) &&
-    filters.precio.length === 2
-  ) {
-    const [min, max] = filters.precio;
+  if (f.precio && Array.isArray(f.precio) && f.precio.length === 2) {
+    const [min, max] = f.precio;
     const isDefault =
       min === FILTER_DEFAULTS.PRECIO.min && max === FILTER_DEFAULTS.PRECIO.max;
-    if (!isDefault) {
+    if (includeDefaultRanges || !isDefault) {
       params.set("precio", `${min},${max}`);
     }
   }
 
-  if (
-    filters.kilometraje &&
-    Array.isArray(filters.kilometraje) &&
-    filters.kilometraje.length === 2
-  ) {
-    const [min, max] = filters.kilometraje;
+  if (f.kilometraje && Array.isArray(f.kilometraje) && f.kilometraje.length === 2) {
+    const [min, max] = f.kilometraje;
     const isDefault =
       min === FILTER_DEFAULTS.KILOMETRAJE.min &&
       max === FILTER_DEFAULTS.KILOMETRAJE.max;
-    if (!isDefault) {
+    if (includeDefaultRanges || !isDefault) {
       params.set("km", `${min},${max}`);
     }
   }
 
   // ===== PAGINACIÓN =====
-  if (filters.page && Number.isFinite(Number(filters.page)) && Number(filters.page) > 0) {
-    params.set("page", String(filters.page));
+  if (f.page && Number.isFinite(Number(f.page)) && Number(f.page) > 0) {
+    params.set("page", String(f.page));
   }
 
   // Logging solo en desarrollo
@@ -241,9 +255,29 @@ export const parseFilters = (searchParams) => {
  * @returns {boolean} True si hay al menos un filtro activo
  */
 export const hasAnyFilter = (filters = {}) => {
-  return Object.values(filters).some((value) =>
-    value && (Array.isArray(value) ? value.length > 0 : true)
-  );
+  const f = filters || {};
+  if (f.marca?.length) return true;
+  if (f.caja?.length) return true;
+  if (f.combustible?.length) return true;
+  if (f.page && Number(f.page) > 1) return true;
+  if (f.año?.length === 2) {
+    const [a, b] = f.año;
+    if (a !== FILTER_DEFAULTS.AÑO.min || b !== FILTER_DEFAULTS.AÑO.max) return true;
+  }
+  if (f.precio?.length === 2) {
+    const [a, b] = f.precio;
+    if (a !== FILTER_DEFAULTS.PRECIO.min || b !== FILTER_DEFAULTS.PRECIO.max) return true;
+  }
+  if (f.kilometraje?.length === 2) {
+    const [a, b] = f.kilometraje;
+    if (
+      a !== FILTER_DEFAULTS.KILOMETRAJE.min ||
+      b !== FILTER_DEFAULTS.KILOMETRAJE.max
+    ) {
+      return true;
+    }
+  }
+  return false;
 };
 
 /**
@@ -282,4 +316,105 @@ export const isValidSortOption = (sortOption) => {
   const validOptions = ["precio_desc", "precio_asc", "km_desc", "km_asc"];
   return validOptions.includes(sortOption);
 };
+
+/** Quita paginación del objeto (los chips / remociones no deben arrastrar `page`). */
+function omitPageFromFilters(filters = {}) {
+  const { page: _p, ...rest } = filters;
+  return rest;
+}
+
+function formatPriceChip(min, max) {
+  const fmt = (n) =>
+    `$${Number(n).toLocaleString("es-AR", { maximumFractionDigits: 0 })}`;
+  return `${fmt(min)} – ${fmt(max)}`;
+}
+
+function formatKmChip(min, max) {
+  const fmt = (n) =>
+    `${Number(n).toLocaleString("es-AR", { maximumFractionDigits: 0 })} km`;
+  return `${fmt(min)} – ${fmt(max)}`;
+}
+
+/**
+ * Descriptores de filtros activos para UI (chips): cada uno trae el estado resultante al quitarlo.
+ * No incluye `page` en `nextFilters`.
+ *
+ * @param {Object} filters - Mismo shape que `parseFilters` / estado de URL
+ * @returns {Array<{ id: string, label: string, nextFilters: Object }>}
+ */
+export function getActiveFilterChips(filters = {}) {
+  const f0 = omitPageFromFilters(filters);
+  const chips = [];
+
+  (f0.marca || []).forEach((m) => {
+    const marca = (f0.marca || []).filter((x) => x !== m);
+    chips.push({
+      id: `marca:${m}`,
+      label: m,
+      nextFilters: { ...f0, marca: marca.length ? marca : undefined },
+    });
+  });
+
+  (f0.caja || []).forEach((c) => {
+    const caja = (f0.caja || []).filter((x) => x !== c);
+    chips.push({
+      id: `caja:${c}`,
+      label: `Caja: ${c}`,
+      nextFilters: { ...f0, caja: caja.length ? caja : undefined },
+    });
+  });
+
+  (f0.combustible || []).forEach((c) => {
+    const combustible = (f0.combustible || []).filter((x) => x !== c);
+    chips.push({
+      id: `combustible:${c}`,
+      label: c,
+      nextFilters: {
+        ...f0,
+        combustible: combustible.length ? combustible : undefined,
+      },
+    });
+  });
+
+  if (f0.año?.length === 2) {
+    const [min, max] = f0.año;
+    if (min !== FILTER_DEFAULTS.AÑO.min || max !== FILTER_DEFAULTS.AÑO.max) {
+      chips.push({
+        id: "año",
+        label: `Año: ${min} – ${max}`,
+        nextFilters: { ...f0, año: undefined },
+      });
+    }
+  }
+
+  if (f0.precio?.length === 2) {
+    const [min, max] = f0.precio;
+    if (
+      min !== FILTER_DEFAULTS.PRECIO.min ||
+      max !== FILTER_DEFAULTS.PRECIO.max
+    ) {
+      chips.push({
+        id: "precio",
+        label: `Precio: ${formatPriceChip(min, max)}`,
+        nextFilters: { ...f0, precio: undefined },
+      });
+    }
+  }
+
+  if (f0.kilometraje?.length === 2) {
+    const [min, max] = f0.kilometraje;
+    if (
+      min !== FILTER_DEFAULTS.KILOMETRAJE.min ||
+      max !== FILTER_DEFAULTS.KILOMETRAJE.max
+    ) {
+      chips.push({
+        id: "km",
+        label: `Km: ${formatKmChip(min, max)}`,
+        nextFilters: { ...f0, kilometraje: undefined },
+      });
+    }
+  }
+
+  return chips;
+}
 

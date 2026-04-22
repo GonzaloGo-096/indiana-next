@@ -3,7 +3,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import MultiSelect from '@/components/ui/MultiSelect/MultiSelect'
 import RangeSlider from '@/components/ui/RangeSlider/RangeSlider'
-import { marcas, FILTER_DEFAULTS } from '@/constants/filterOptions'
+import { marcas, FILTER_BOUNDS } from '@/constants/filterOptions'
 import styles from './AdminFilters.module.css'
 
 const marcaOptions = ['Todas las marcas', ...marcas]
@@ -11,7 +11,7 @@ const marcaOptions = ['Todas las marcas', ...marcas]
 export default function AdminFilters({ onFiltersChange, initialFilters = {} }) {
   const [filters, setFilters] = useState({
     marca: initialFilters.marca || [],
-    año: initialFilters.año || [FILTER_DEFAULTS.AÑO.min, FILTER_DEFAULTS.AÑO.max],
+    año: initialFilters.año || [FILTER_BOUNDS.AÑO.min, FILTER_BOUNDS.AÑO.max],
   })
 
   const handleMarcaChange = useCallback(
@@ -60,15 +60,15 @@ export default function AdminFilters({ onFiltersChange, initialFilters = {} }) {
     const [a, b] = filters.año
     return (
       filters.marca.length > 0 ||
-      a !== FILTER_DEFAULTS.AÑO.min ||
-      b !== FILTER_DEFAULTS.AÑO.max
+      a !== FILTER_BOUNDS.AÑO.min ||
+      b !== FILTER_BOUNDS.AÑO.max
     )
   }, [filters.marca, filters.año])
 
   const handleReset = useCallback(() => {
     const cleared = {
       marca: [],
-      año: [FILTER_DEFAULTS.AÑO.min, FILTER_DEFAULTS.AÑO.max],
+      año: [FILTER_BOUNDS.AÑO.min, FILTER_BOUNDS.AÑO.max],
     }
     setFilters(cleared)
     onFiltersChange?.(cleared)
@@ -107,8 +107,8 @@ export default function AdminFilters({ onFiltersChange, initialFilters = {} }) {
             <div className={styles.rangeSliderHost}>
               <RangeSlider
                 label="Año"
-                min={FILTER_DEFAULTS.AÑO.min}
-                max={FILTER_DEFAULTS.AÑO.max}
+                min={FILTER_BOUNDS.AÑO.min}
+                max={FILTER_BOUNDS.AÑO.max}
                 step={1}
                 value={filters.año}
                 onChange={handleAñoChange}

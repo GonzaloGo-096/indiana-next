@@ -1,11 +1,33 @@
 /**
  * FilterFormSimple.module.css
- * @version 2.1.0 - Color de marca aplicado a CTAs principales (FASE 3.4)
- * Migrado a Next.js
+ * @version 4.0.0 — Formato en rejilla: dos columnas (listado) + tarjeta única / drawer claro
  */
+
+.drawerTitle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -45%);
+  margin: 0;
+  font-family: var(--font-condensed, "Barlow Condensed", sans-serif);
+  font-size: 0.9375rem;
+  font-weight: var(--font-weight-bold, 700);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-primary, #1a1a1a);
+  pointer-events: none;
+  white-space: nowrap;
+}
 
 /* ===== BASE ===== */
 .filterContainer {
+  --filter-surface: color-mix(in srgb, var(--color-neutral-50, #f8fafc) 88%, #ffffff);
+  --filter-surface-strong: color-mix(in srgb, var(--color-neutral-100, #f1f5f9) 55%, #ffffff);
+  --filter-edge: color-mix(in srgb, var(--color-neutral-900, #0f172a) 6%, transparent);
+  --filter-edge-soft: color-mix(in srgb, var(--color-neutral-900, #0f172a) 3.5%, transparent);
+  --filter-radius: clamp(10px, 1.6vw, 14px);
+  --filter-shadow: 0 1px 0 rgba(255, 255, 255, 0.7) inset,
+    0 1px 2px rgba(15, 23, 42, 0.04);
   position: relative;
   width: 100%;
   max-width: 1200px;
@@ -48,19 +70,20 @@
 }
 
 .errorMessage {
-  background: #fef2f2;
-  border: 1px solid #fecaca;
-  color: #dc2626;
+  background: color-mix(in srgb, #fef2f2 92%, #ffffff);
+  border: 1px solid color-mix(in srgb, #f87171 35%, transparent);
+  color: #b91c1c;
   padding: 0.75rem 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--filter-radius, 12px);
   margin-bottom: 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.8125rem;
+  font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.75rem;
   animation: slideIn 0.3s ease;
+  font-family: var(--font-poppins, system-ui, sans-serif);
 }
 
 .retryButton {
@@ -95,28 +118,48 @@
   width: 95%;
   max-width: 700px;
   background: var(--color-surface, #ffffff);
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  border-radius: var(--filter-radius, 12px);
+  box-shadow: var(--filter-shadow, 0 1px 2px rgba(15, 23, 42, 0.06));
+  border: 1px solid var(--filter-edge-soft, rgba(15, 23, 42, 0.06));
   overflow: visible;
   z-index: 10;
   padding: 0 1rem;
 }
 
 .form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    "ftitle"
+    "fbody"
+    "fmobile";
+  gap: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.formBody {
+  grid-area: fbody;
+  width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.03125rem;
-  padding: 0.125rem;
+  gap: 1.35rem;
+}
+
+.formColumn {
+  min-width: 0;
+  width: 100%;
 }
 
 .formTitle {
+  grid-area: ftitle;
   display: flex;
   justify-content: flex-end;
   align-items: center;
   margin-bottom: 0;
   padding: 0;
-  border: none; /* ✅ Border eliminado */
+  border: none;
 }
 
 .formTitle h3 {
@@ -133,21 +176,137 @@
 
 .rangesSection,
 .selectsSection {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2rem; /* ✅ Más separación entre inputs */
-  margin-bottom: 0;
+  margin: 0;
   padding: 0;
+  border: none;
+  background: transparent;
   border-radius: 0;
   overflow: visible;
+}
+
+.rangesSection {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.1rem;
+  margin-bottom: 0;
+}
+
+.selectsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.35rem;
+  position: relative;
+  z-index: 100;
+}
+
+/* Lista usados (strip): caja y combustible como dos tarjetas iguales, separadas */
+.selectsSectionStrip {
+  gap: clamp(0.85rem, 2vw, 1.15rem);
+}
+
+.selectsSectionStrip > .formGroup {
+  padding: clamp(0.65rem, 1.5vw, 0.9rem) clamp(0.75rem, 1.8vw, 1rem);
+  border: 1px solid var(--filter-edge-soft, rgba(15, 23, 42, 0.08));
+  border-radius: 10px;
+  background: color-mix(in srgb, #ffffff 94%, var(--color-neutral-50, #f8fafc));
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.92) inset;
+}
+
+/* Strip (/usados/vehiculos): 2 rangos arriba (Año | Precio), 1 abajo (km) centrado */
+.filterContainerStrip .rangesSection {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: clamp(0.65rem, 1.2vw, 1rem);
+  row-gap: clamp(0.85rem, 1.5vw, 1.1rem);
+  align-items: start;
   justify-items: stretch;
 }
 
-  .rangesSection {
-    z-index: 1; /* ✅ Z-index bajo - debe estar por debajo de selects */
-    position: relative;
-    margin-bottom: 1.25rem; /* ✅ Espacio reducido entre secciones */
-  }
+.filterContainerStrip .rangesSection .formGroup {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.filterContainerStrip .rangesSection .formGroup:nth-child(3) {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: min(100%, 20rem);
+  max-width: min(100%, 20rem);
+}
+
+.filterContainerStrip .rangesSection .formGroup .rangeSlider {
+  max-width: min(100%, 18rem);
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.filterContainerStrip .rangeSlider .container {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+/* Strip: títulos de rangos centrados y un poco más grandes que el resto del form */
+.filterContainerStrip .rangesSection .formGroup label {
+  text-align: center !important;
+  font-size: 0.8125rem !important;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Caja / combustible: fieldset + legend + checkboxes */
+.filterChoiceFieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  width: 100%;
+}
+
+.filterChoiceLegend {
+  padding: 0;
+  margin: 0 0 0.55rem;
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-semibold, 600);
+  font-family: var(--font-condensed, "Barlow Condensed", sans-serif);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: color-mix(in srgb, var(--color-text-primary, #1a1a1a) 78%, var(--color-neutral-500, #737373));
+}
+
+.checkboxRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1.35rem;
+  align-items: center;
+}
+
+.checkboxItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--color-text-primary, #1a1a1a);
+  font-family: var(--font-poppins, system-ui, sans-serif);
+  user-select: none;
+  min-height: 2.25rem;
+}
+
+.checkboxItem input {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  accent-color: var(--color-brand-500, #0066cc);
+  cursor: pointer;
+}
 
 .rangesSection .formGroup { 
   margin-bottom: 0; 
@@ -196,30 +355,27 @@
   z-index: 999999 !important; /* ✅ Z-index extremadamente alto */
 }
 
-.rangesSection .formGroup label { 
-  color: var(--color-text-primary, #1a1a1a); 
-  font-weight: var(--font-weight-semibold, 600); 
-  margin-bottom: var(--spacing-2, 0.5rem); 
-  font-size: var(--font-size-base, 1rem) !important; /* ✅ Tamaño normal */
+/* Misma jerarquía tipográfica que el resto del formulario (sin duplicar títulos grandes) */
+.rangesSection .formGroup label {
+  color: color-mix(in srgb, var(--color-text-primary, #1a1a1a) 72%, var(--color-neutral-500, #737373));
+  font-weight: var(--font-weight-semibold, 600);
+  margin-bottom: 0.45rem;
+  font-size: 0.6875rem !important;
+  font-family: var(--font-condensed, "Barlow Condensed", sans-serif);
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  text-align: left;
 }
 
-.selectsSection {
-  background: transparent; /* ✅ Fondo transparente para integración visual */
-  padding: 0;
-  border-radius: 0;
-  border: none;
-  position: relative;
-  z-index: 100; /* ✅ Z-index alto para que toda la sección esté por encima */
-}
-
-/* ✅ Orden inverso de z-index para que el primer select tenga prioridad sobre los de abajo */
-/* ✅ NOTA: Botones ahora son el primer elemento (nth-child(1)), entonces los selects son nth-child(2) y nth-child(3) */
+/* Checkboxes (caja / combustible): z-index por encima del track de rangos cuando hace falta */
 .selectsSection .formGroup {
   position: relative;
+  z-index: 102;
 }
 
-.selectsSection .formGroup:nth-child(1) { z-index: 103; } /* Caja - Mayor z-index porque está arriba */
-.selectsSection .formGroup:nth-child(2) { z-index: 102; } /* Combustible - Menor z-index porque está abajo */
+.selectsSection .formGroup:only-child {
+  z-index: 103;
+}
 
 .formGroup {
   display: flex;
@@ -266,10 +422,9 @@
   font-size: 0.875rem !important; /* ✅ 14px - más pequeño */
 }
 
-/* ✅ Estilos del RangeSlider en formulario de filtros - Desktop */
-.formGroup .rangeSlider .container,
-.formGroup .rangeSlider .values { 
-  padding: 0; 
+/* RangeSlider: el padding del track lo define el propio componente (marcadores altos) */
+.formGroup .rangeSlider .values {
+  padding: 0;
 }
 
 /* ✅ Valores del RangeSlider más compactos en desktop */
@@ -293,93 +448,81 @@
   position: absolute !important;
 }
 
-/* ✅ Thumb del RangeSlider más compacto en desktop */
-.formGroup .rangeSlider .thumb {
-  width: 20px !important; /* ✅ Más compacto */
-  height: 20px !important; /* ✅ Más compacto */
-  border-width: 2px !important;
-}
-
-/* ✅ Track del RangeSlider más delgado en desktop */
-.formGroup .rangeSlider .track {
-  height: 6px !important; /* ✅ Más delgado */
-}
-
 .formGroup .container { 
   margin-bottom: 0; 
 }
 
 .formGroup label {
-  text-align: left; /* ✅ Alineación a la izquierda para mejor legibilidad */
+  text-align: left;
   font-weight: var(--font-weight-semibold, 600);
-  font-size: 0.875rem !important; /* ✅ 14px - más compacto */
-  font-family: var(--font-display, "Barlow Condensed", sans-serif);
-  color: var(--color-text-primary, #1a1a1a);
-  margin-bottom: 0.5rem; /* ✅ Espacio reducido */
-  text-transform: capitalize;
-  letter-spacing: 0.3px;
+  font-size: 0.6875rem !important;
+  font-family: var(--font-condensed, "Barlow Condensed", sans-serif);
+  color: color-mix(in srgb, var(--color-text-primary, #1a1a1a) 72%, var(--color-neutral-500, #737373));
+  margin-bottom: 0.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
 }
 
 .buttonBase {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-3, 0.75rem) var(--spacing-6, 1.5rem); /* ✅ Padding más generoso (12px 24px) */
-  border-radius: 8px; /* ✅ Bordes más redondeados y modernos */
-  font-size: var(--font-size-base, 1rem); /* ✅ 16px - tamaño estándar legible */
+  padding: 0.55rem 1.1rem;
+  border-radius: 9999px;
+  font-size: 0.8125rem;
   font-weight: var(--font-weight-semibold, 600);
-  font-family: var(--font-display, "Barlow Condensed", sans-serif);
+  font-family: var(--font-condensed, "Barlow Condensed", sans-serif);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              transform 0.15s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.15s cubic-bezier(0.4, 0, 0.2, 1);
-  border: 1px solid transparent;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+  border: 1.5px solid transparent;
   text-decoration: none;
-  min-height: 44px; /* ✅ Altura mínima accesible */
+  min-height: 42px;
   white-space: nowrap;
 }
 
 .applyButton {
   composes: buttonBase;
-  /* ✅ Migrado: CTA principal → color de marca según sistema */
   background-color: var(--color-brand-500, #0066cc);
   color: var(--color-white, #ffffff);
   border-color: var(--color-brand-500, #0066cc);
-  box-shadow: 0 2px 4px rgba(0, 102, 204, 0.2); /* ✅ Sombra sutil para profundidad */
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--color-brand-500) 22%, transparent);
 }
 
-/* ✅ Migrado: Hover/Active → brand-600 para jerarquía visual */
-.applyButton:hover:not(:disabled) { 
-  background-color: var(--color-brand-600, #0052a3); 
-  border-color: var(--color-brand-600, #0052a3); 
-  transform: translateY(-1px); 
-  box-shadow: 0 4px 8px rgba(0, 102, 204, 0.25); /* ✅ Sombra más pronunciada en hover */
+.applyButton:hover:not(:disabled) {
+  background-color: var(--color-brand-600, #0052a3);
+  border-color: var(--color-brand-600, #0052a3);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--color-brand-500) 28%, transparent);
 }
 
-.applyButton:active:not(:disabled) { 
-  transform: translateY(0); 
-  box-shadow: 0 1px 2px rgba(0, 102, 204, 0.2); 
+.applyButton:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px color-mix(in srgb, var(--color-brand-500) 18%, transparent);
 }
 
 .clearButton {
   composes: buttonBase;
-  background: var(--color-neutral-100, #f3f4f6);
-  color: var(--color-text-secondary, #6b7280);
-  border-color: var(--color-neutral-300, #d1d5db);
+  background: transparent;
+  color: color-mix(in srgb, var(--color-neutral-700, #404040) 88%, var(--color-brand-600));
+  border-color: var(--filter-edge, rgba(15, 23, 42, 0.08));
 }
 
-.clearButton:hover:not(:disabled) { 
-  background: var(--color-neutral-200, #e5e7eb); 
-  border-color: var(--color-neutral-400, #9ca3af); 
+.clearButton:hover:not(:disabled) {
+  background: var(--filter-surface-strong, #f1f5f9);
+  border-color: color-mix(in srgb, var(--color-neutral-900) 12%, transparent);
   color: var(--color-text-primary, #1a1a1a);
-  transform: translateY(-1px); 
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08); 
+  transform: translateY(-1px);
 }
 
-.clearButton:active:not(:disabled) { 
-  transform: translateY(0); 
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08); 
+.clearButton:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .applyButton:disabled,
@@ -390,27 +533,36 @@
   box-shadow: none; 
 }
 
-/* ✅ Botones en desktop - Dentro del grid ocupando el espacio del input faltante */
+/* Botones: desktop y mobile comparten grid (solo uno visible por breakpoint) */
 .desktopButtons {
-  display: none; /* Oculto por defecto, visible en desktop */
-  gap: var(--spacing-3, 0.75rem); /* ✅ Espaciado entre botones (12px) */
-  align-items: flex-start; /* ✅ Alinear arriba */
-  justify-content: stretch;
-  flex-direction: row; /* ✅ Botones uno al lado del otro (horizontal) */
-  margin-top: 0; /* ✅ Sin margen superior (ya está en el grid) */
-  padding: 0; /* ✅ Sin padding extra */
-  border: none; /* ✅ Sin borde */
-  /* ✅ Añadir padding-top igual al espacio del label + margin-bottom para alinear con inputs */
-  padding-top: calc(0.875rem + 0.5rem); /* ✅ Altura del label (14px) + margin-bottom (8px) */
-  align-self: start; /* ✅ Alinear con el inicio del grid item */
+  grid-area: factions;
+  display: none;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 0.65rem;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 0;
+  padding: 0;
+  border: none;
 }
 
-/* ✅ Botones dentro del grid ocupan todo el espacio disponible */
 .desktopButtons button {
-  flex: 1; /* ✅ Cada botón ocupa la mitad del espacio horizontal */
-  width: 100%; /* ✅ Ancho completo dentro del flex */
+  flex: 0 0 auto;
+  min-width: 7.5rem;
 }
 
+.mobileButtons {
+  grid-area: fmobile;
+}
+
+/* Ancla cero altura al pie del form strip: scrollIntoView hacia zona Aplicar */
+.stripPanelScrollAnchor {
+  height: 0;
+  width: 100%;
+  overflow: hidden;
+  pointer-events: none;
+}
 
 /* ===== DESKTOP VISIBILITY STATES ===== */
 .desktopVisible {
@@ -435,44 +587,92 @@
 /* ===== RESPONSIVE ===== */
 /* ⚠️ Breakpoint 768px sincronizado con Vehiculos.jsx */
 @media (min-width: 769px) {
-  /* ✅ Una sola fila en desktop que reparte el ancho del viewport */
   .form {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: 2rem;
-    align-items: flex-start;
+    grid-template-areas:
+      "fbody"
+      "factions";
+    row-gap: 1rem;
     width: 100%;
   }
 
-  /* ✅ selectsSection: 2 columnas (Caja, Combustible) más chicas en ancho; el resto del espacio para rangos */
-  .selectsSection {
-    flex: 0 0 auto;
-    min-width: 0;
+  /* Listado usados: caja | rangos | combustible */
+  .formBodyStrip {
     display: grid;
-    grid-template-columns: minmax(0, 200px) minmax(0, 200px);
-    gap: 2.5rem 2.5rem;
-    justify-content: flex-start;
+    grid-template-columns: minmax(150px, 11rem) minmax(0, 1fr) minmax(150px, 11rem);
+    column-gap: clamp(0.9rem, 2.2vw, 1.5rem);
+    row-gap: 0.35rem;
     align-items: start;
-    margin-bottom: 0 !important;
+  }
+
+  .formBodyStrip .formColumn:not(:first-child) {
+    border-left: 1px solid var(--filter-edge-soft);
+    padding-left: clamp(0.85rem, 2vw, 1.35rem);
+    margin-left: 0;
+  }
+
+  .formBody:not(.formBodyStrip) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 2rem;
+  }
+
+  .formBody:not(.formBodyStrip) .formColumn {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .formBody:not(.formBodyStrip) .formColumn:first-child,
+  .formBody:not(.formBodyStrip) .formColumn:last-child {
+    flex: 0 0 auto;
+    max-width: 15rem;
+  }
+
+  .formBody:not(.formBodyStrip) .formColumn:nth-child(2) {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .selectsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+    margin: 0;
+  }
+
+  /* Rangos en columna: alineación uniforme y patrón de formulario estándar */
+  .rangesSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    min-width: 0;
+    margin: 0;
+    align-items: flex-start;
+  }
+
+  .rangesSection .formGroup {
+    width: 100%;
+    max-width: min(100%, 20rem);
+  }
+
+  .rangesSection .formGroup .rangeSlider {
+    max-width: min(100%, 18rem);
+    width: 100%;
+    margin-left: 0;
     margin-right: 0;
   }
 
-  .rangesSection {
-    flex: 1;
-    min-width: 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2.5rem 2.5rem;
-    justify-content: stretch;
-    align-items: start;
-    margin-bottom: 0 !important;
-    margin-top: 0 !important;
-  }
-
-  /* ✅ Botones al final de la fila: no crecen, alineados al inicio */
   .form .desktopButtons {
-    flex: 0 0 auto;
-    align-self: flex-start;
+    width: 100%;
+    max-width: 100%;
+    justify-content: flex-end;
+    padding-top: 1rem;
+    margin-top: 0.35rem;
+    border-top: 1px solid var(--filter-edge-soft);
+    box-sizing: border-box;
   }
   .formWrapper { 
     width: 100%; /* ✅ Ancho completo del contenedor padre */
@@ -523,6 +723,7 @@
     max-width: 100%;
     margin-left: 0;
     margin-right: 0;
+    justify-content: flex-start;
   }
 
   .filterContainerStrip .formWrapper {
@@ -531,8 +732,64 @@
     border: none;
     border-radius: 0;
     border-top: 1px solid var(--vehiculos-strip-border-soft, rgba(15, 23, 42, 0.06));
-    /* El padre .toolbarRegion ya aplica padding-inline como el título */
-    padding: clamp(1.25rem, 2.5vw, 1.75rem) 0;
+    padding: clamp(1.1rem, 2.2vw, 1.5rem) 0;
+    width: 100%;
+    max-width: none;
+  }
+
+  /* Strip: sin caja en el body ni en las columnas; Caja/Combustible usan solo .selectsSectionStrip > .formGroup */
+  .filterContainerStrip .formBodyStrip {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    padding: clamp(0.35rem, 1vw, 0.5rem) 0;
+    column-gap: clamp(0.55rem, 1.2vw, 0.9rem);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .filterContainerStrip .formBodyStrip > .formColumn {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: clamp(0.95rem, 2vw, 1.25rem) 0;
+    margin: 0;
+    border-left: none;
+    box-sizing: border-box;
+  }
+
+  .filterContainerStrip .formGroup .multiSelect .trigger {
+    border-radius: 10px !important;
+    border-color: var(--filter-edge-soft) !important;
+    background: #fff !important;
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset !important;
+    text-align: left !important;
+    padding: 0.5rem 0.75rem !important;
+    min-height: 40px !important;
+  }
+
+  .filterContainerStrip .formGroup .multiSelect .trigger .text {
+    text-align: left !important;
+  }
+
+  .filterContainerStrip .formGroup .multiSelect .trigger:focus,
+  .filterContainerStrip .formGroup .multiSelect .trigger.open {
+    border-color: color-mix(in srgb, var(--color-brand-500) 42%, var(--filter-edge)) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-500) 12%, transparent) !important;
+  }
+
+  .filterContainerStrip .form .desktopButtons {
+    border-top-color: var(--vehiculos-strip-border-soft, rgba(15, 23, 42, 0.06));
+    padding-top: clamp(0.85rem, 2vw, 1.1rem);
+    margin-top: clamp(0.35rem, 1vw, 0.5rem);
+    justify-content: flex-start;
+  }
+
+  .filterContainerStrip .desktopButtons button {
+    min-height: 40px;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }
 
@@ -550,7 +807,9 @@
   .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: color-mix(in srgb, var(--color-neutral-900, #0f172a) 42%, transparent);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     z-index: 1000;
     cursor: pointer;
   }
@@ -560,70 +819,186 @@
     bottom: 0;
     left: 0;
     right: 0;
-    max-height: 55vh; /* ✅ Máximo 55% de la altura (más compacto, no pantalla completa) */
+    max-height: min(72vh, 560px);
     z-index: 1001;
-    transform: translateY(100%); /* ✅ Oculto hacia abajo */
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border-radius: 16px 16px 0 0; /* ✅ Redondeado arriba */
-    background: var(--color-surface, #ffffff);
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(100%);
+    transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+    border-radius: var(--filter-radius) var(--filter-radius) 0 0;
+    background: color-mix(in srgb, var(--color-surface, #ffffff) 97%, var(--color-neutral-50));
+    box-shadow:
+      0 -8px 32px rgba(15, 23, 42, 0.12),
+      0 -1px 0 var(--filter-edge-soft);
     display: flex;
     flex-direction: column;
-    width: 100%; /* ✅ Ancho completo */
-    overflow-y: auto; /* ✅ Scroll vertical */
-    overflow-x: visible; /* ✅ Permitir que dropdowns salgan */
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: visible;
   }
   
   .filterContainer.open .formWrapper { transform: translateY(0); }
+
+  /* Strip /usados/vehiculos móvil: sin drawer abajo; mismo show/hide que desktop (flujo vertical) */
+  .filterContainerStrip.filterContainer {
+    height: auto;
+    overflow: visible;
+  }
+
+  .filterContainerStrip .formWrapper {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    transform: none !important;
+    max-height: none;
+    width: 100%;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    touch-action: auto;
+    overflow: visible;
+    /* Sin flex: el hijo .form con flex:1 + overflow:auto bloqueaba el scroll de página en móvil strip */
+    display: block;
+    padding-left: clamp(0.65rem, 4vw, 1.15rem);
+    padding-right: clamp(0.65rem, 4vw, 1.15rem);
+    box-sizing: border-box;
+  }
+
+  .filterContainerStrip .formTitle {
+    display: none;
+  }
+
+  .filterContainerStrip .form {
+    flex: none;
+    overflow: visible;
+    min-height: 0;
+    height: auto;
+    touch-action: auto;
+    overscroll-behavior: auto;
+    row-gap: clamp(0.45rem, 2vw, 0.75rem);
+  }
+
+  /* Contenedor show/hide del strip: no recortar contenido largo en móvil */
+  .desktopVisible:has(.filterContainerStrip) {
+    overflow: visible;
+    max-height: none;
+  }
   
   .form {
     flex: 1;
     overflow-y: auto;
-    overflow-x: visible; /* ✅ Permitir que dropdowns salgan horizontalmente */
+    overflow-x: visible;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain; /* Evita que el scroll se propague al body */
-    touch-action: pan-y; /* Solo permite scroll vertical, bloquea movimiento horizontal */
+    overscroll-behavior: contain;
+    touch-action: pan-y;
     padding: 0;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "ftitle"
+      "fbody"
+      "fmobile";
     gap: 0;
-    min-height: 0; /* ✅ Permitir que el flex funcione correctamente */
-    position: relative; /* ✅ Contexto de posicionamiento */
+    min-height: 0;
+    position: relative;
   }
   
-  /* Bloquear movimiento del formWrapper al tocar fuera de inputs */
-  .formWrapper {
+  /* Bloquear movimiento del formWrapper al tocar fuera de inputs (solo drawer clásico, no strip) */
+  .filterContainer:not(.filterContainerStrip) .formWrapper {
     touch-action: none;
     overscroll-behavior: contain;
   }
   
-  .formWrapper * {
+  .filterContainer:not(.filterContainerStrip) .formWrapper * {
     touch-action: pan-y;
   }
 
   .form::-webkit-scrollbar { display: none; }
 
-  /* ✅ Mobile: Contenido con scroll con padding más reducido */
+  .filterContainerStrip .formBodyStrip {
+    margin: 0.35rem auto 0;
+    padding: clamp(0.45rem, 2vw, 0.75rem) 0 clamp(0.35rem, 1.5vw, 0.55rem);
+    border-radius: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    gap: clamp(1rem, 3vw, 1.35rem);
+    align-items: center;
+    width: 100%;
+    max-width: min(100%, 22.5rem);
+    box-sizing: border-box;
+  }
+
+  .filterContainerStrip .formBodyStrip > .formColumn {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .filterContainerStrip .selectsSectionStrip {
+    align-items: center;
+    width: 100%;
+  }
+
+  /* Strip móvil: una columna, orden caja → rangos → combustible (mismo orden que drawer anterior) */
+  .formBodyStrip {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .formBodyStrip .formColumn:not(:first-child) {
+    border-left: none;
+    padding-left: 0;
+    margin-top: 0.15rem;
+    padding-top: 0.85rem;
+    border-top: 1px solid var(--filter-edge-soft);
+  }
+
+  .filterContainerStrip .formBodyStrip .formColumn:not(:first-child) {
+    margin-top: 0;
+    padding-top: clamp(0.65rem, 2.2vw, 0.95rem);
+  }
+
+  /* Strip móvil: los 3 rangos en columna (no grid 2+1 de desktop) */
+  .filterContainerStrip .rangesSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(0.85rem, 1.5vw, 1.1rem);
+  }
+
+  .filterContainerStrip .rangesSection .formGroup {
+    width: min(100%, 20rem);
+    max-width: min(100%, 20rem);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .filterContainerStrip .rangesSection .formGroup:nth-child(3) {
+    grid-column: auto;
+    justify-self: auto;
+  }
+
   .rangesSection,
   .selectsSection {
-    padding: 0.75rem 1rem; /* ✅ Padding vertical reducido, horizontal sutil */
-    padding-bottom: 0.5rem;
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
   }
 
-  /* ✅ Mobile: Una columna vertical para los filtros */
+  .selectsSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0;
+  }
+
   .rangesSection {
     display: flex;
-    flex-direction: column; /* ✅ Una columna vertical */
-    gap: 1.25rem; /* ✅ Más separación entre inputs */
-    margin-bottom: 0.5rem;
-  }
-
-  .selectsSection { 
-    display: flex;
-    flex-direction: column; /* ✅ Una columna vertical */
-    gap: 1.25rem; /* ✅ Más separación entre inputs */
-    margin-bottom: 0;
-    padding-bottom: 0.75rem; /* ✅ Padding más reducido */
+    flex-direction: column;
+    gap: 1.1rem;
+    margin: 0;
   }
 
   /* ✅ Ocultar botones desktop en mobile */
@@ -631,30 +1006,24 @@
     display: none !important;
   }
   
-  /* ✅ Mobile: Asegurar que selectsSection esté por encima de rangesSection */
+  /* ✅ Mobile: selects por encima de rangesSection */
   .selectsSection {
-    z-index: 500 !important; /* ✅ Z-index muy alto para toda la sección */
+    z-index: 500 !important;
     position: relative;
   }
-  
+
   .rangesSection {
-    z-index: 1 !important; /* ✅ Z-index bajo - debe estar por debajo */
+    z-index: 1 !important;
     position: relative;
   }
-  
-  /* ✅ En mobile: orden inverso de z-index para que el primer select tenga prioridad */
-  /* ✅ Nota: Ahora desktopButtons es nth-child(1), entonces los selects son nth-child(2) y nth-child(3) */
+
   .selectsSection .formGroup {
     position: relative !important;
-    z-index: 500 !important; /* ✅ Z-index base muy alto para todos los selects */
+    z-index: 500 !important;
   }
-  
-  .selectsSection .formGroup:nth-child(1) { 
-    z-index: 502 !important; /* Caja - Mayor z-index porque está arriba */
-  }
-  
-  .selectsSection .formGroup:nth-child(2) { 
-    z-index: 501 !important; /* Combustible - Menor z-index porque está abajo */
+
+  .selectsSection .formGroup {
+    z-index: 502 !important;
   }
   
   /* ✅ Mobile: Asegurar que los RangeSliders tengan z-index menor que los selects */
@@ -708,12 +1077,29 @@
     gap: 0.375rem !important; /* ✅ Espacio más reducido entre label e input */
   }
 
-  /* ✅ Mobile: Labels más compactos */
   .formGroup label {
-    font-size: 0.8125rem !important; /* ✅ 13px - más compacto */
-    font-weight: 600 !important;
-    margin-bottom: 0.375rem !important; /* ✅ Espacio más reducido */
-    color: var(--color-text-primary, #1a1a1a) !important;
+    font-size: 0.6875rem !important;
+    font-weight: 700 !important;
+    margin-bottom: 0.4rem !important;
+    letter-spacing: 0.14em !important;
+    text-transform: uppercase !important;
+    color: color-mix(
+      in srgb,
+      var(--color-text-primary, #1a1a1a) 72%,
+      var(--color-neutral-500)
+    ) !important;
+  }
+
+  /* Rangos alineados y con ancho acotado también en drawer */
+  .rangesSection .formGroup {
+    max-width: min(100%, 20rem);
+  }
+
+  .rangesSection .formGroup .rangeSlider {
+    max-width: min(100%, 18rem);
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
   }
 
   /* ✅ Mobile: RangeSlider más grande */
@@ -746,18 +1132,6 @@
     position: absolute !important;
   }
 
-  /* ✅ Mobile: Thumb del RangeSlider más compacto */
-  .formGroup .rangeSlider .thumb {
-    width: 24px !important; /* ✅ 24px - tamaño estándar */
-    height: 24px !important; /* ✅ 24px - tamaño estándar */
-    border-width: 2px !important; /* ✅ Borde estándar */
-  }
-
-  /* ✅ Mobile: Track del RangeSlider estándar */
-  .formGroup .rangeSlider .track {
-    height: 8px !important; /* ✅ 8px - tamaño estándar */
-  }
-
   /* ✅ Mobile: MultiSelect más compacto */
   .formGroup .multiSelect .trigger {
     padding: 10px 12px !important; /* ✅ Padding reducido */
@@ -781,45 +1155,49 @@
   .titleActions { display: flex; gap: 0.5rem; align-items: center; }
   
   .formTitle {
-    /* ✅ Barra de arrastre visual en top - compacta */
-    padding: 0.75rem 0; /* ✅ Padding reducido */
+    padding: 1.1rem 0.75rem 0.85rem;
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
     position: relative;
-    border-bottom: 1px solid #e5e7eb;
-    min-height: 48px; /* ✅ Altura mínima más compacta */
+    border-bottom: 1px solid var(--filter-edge-soft);
+    min-height: 52px;
   }
 
-  /* ✅ Barra de arrastre visual - compacta */
   .formTitle::before {
-    content: '';
+    content: "";
     position: absolute;
-    width: 40px; /* ✅ Tamaño estándar */
-    height: 4px; /* ✅ Tamaño estándar */
-    background: #d1d5db;
-    border-radius: 2px; /* ✅ Tamaño estándar */
-    top: 0.625rem; /* ✅ Ajustado para centrar */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 4px;
+    top: 0.55rem;
+    background: color-mix(in srgb, var(--color-neutral-400) 55%, transparent);
+    border-radius: 9999px;
   }
 
   .closeButtonMobile {
-    position: absolute;
-    right: 0.75rem;
-    background: none;
-    border: none;
-    color: #6b7280;
+    position: relative;
+    z-index: 2;
+    background: var(--filter-surface);
+    border: 1px solid var(--filter-edge-soft);
+    color: var(--color-neutral-600, #525252);
     cursor: pointer;
-    padding: 0.5rem; /* ✅ Padding reducido */
-    border-radius: 0.375rem;
-    transition: all 0.2s ease;
+    padding: 0.45rem;
+    border-radius: 9999px;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 2.5rem; /* ✅ Tamaño más compacto */
-    min-height: 2.5rem; /* ✅ Tamaño más compacto */
+    min-width: 2.35rem;
+    min-height: 2.35rem;
   }
-  
-  .closeButtonMobile:hover { background: rgba(0, 0, 0, 0.05); color: #374151; }
+
+  .closeButtonMobile:hover {
+    background: var(--filter-surface-strong);
+    color: var(--color-text-primary);
+    border-color: var(--filter-edge);
+  }
   .closeButtonMobile:active { transform: scale(0.95); }
   .titleActions .applyButton,
   .titleActions .clearButton { display: none; }
@@ -830,31 +1208,82 @@
     bottom: 0;
     display: flex;
     flex-direction: row;
-    gap: 0.625rem;
-    padding: 0.75rem; /* ✅ Padding reducido */
-    margin-top: auto; /* ✅ Empujar al final */
-    background: var(--color-surface, #ffffff);
-    border-top: 1px solid #e5e7eb;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+    flex-wrap: nowrap;
+    gap: 0.65rem;
+    padding: 0.85rem 1rem calc(0.85rem + env(safe-area-inset-bottom, 0));
+    margin-top: auto;
+    background: color-mix(in srgb, var(--color-surface, #fff) 92%, var(--color-neutral-50));
+    border-top: 1px solid var(--filter-edge-soft);
+    box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.06);
     z-index: 10;
   }
 
   .mobileButtons .applyButton,
-  .mobileButtons .clearButton { 
-    flex: 1; 
-    height: 2.25rem; /* ✅ Altura más compacta */
-    font-size: 0.8125rem; /* ✅ 13px - más compacto */
-    font-weight: 600; 
-    border-radius: 0.375rem;
+  .mobileButtons .clearButton {
+    flex: 1;
+    min-height: 44px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 9999px;
     cursor: pointer;
     transition: all 0.2s ease;
   }
-  /* ✅ Migrado: CTA principal mobile → color de marca según sistema */
-  .mobileButtons .applyButton { background-color: var(--color-brand-500, #0066cc); color: #ffffff; border: 1px solid var(--color-brand-500, #0066cc); }
-  /* ✅ Migrado: Hover mobile → brand-600 para jerarquía visual */
-  .mobileButtons .applyButton:hover { background-color: var(--color-brand-600, #0052a3); }
-  .mobileButtons .clearButton { background: transparent; color: #6b7280; border: 1px solid #d1d5db; }
-  .mobileButtons .clearButton:hover { background: #f3f4f6; }
+
+  .mobileButtons .applyButton {
+    background-color: var(--color-brand-500, #0066cc);
+    color: #ffffff;
+    border: 1.5px solid var(--color-brand-500, #0066cc);
+  }
+
+  .mobileButtons .applyButton:hover {
+    background-color: var(--color-brand-600, #0052a3);
+  }
+
+  .mobileButtons .clearButton {
+    background: transparent;
+    color: var(--color-neutral-600, #525252);
+    border: 1.5px solid var(--filter-edge-soft);
+  }
+
+  .mobileButtons .clearButton:hover {
+    background: var(--filter-surface-strong);
+  }
+
+  /* Strip móvil: Limpiar / Aplicar sin barra fija ni caja; centrados sobre el mismo fondo */
+  .filterContainerStrip .mobileButtons {
+    position: static;
+    margin-top: clamp(0.5rem, 2vw, 0.85rem);
+    padding: clamp(0.55rem, 2vw, 0.85rem) 0 calc(0.55rem + env(safe-area-inset-bottom, 0px));
+    background: transparent;
+    border-top: none;
+    box-shadow: none;
+    justify-content: center;
+    gap: clamp(0.65rem, 3vw, 1rem);
+    flex-wrap: nowrap;
+    z-index: 1;
+  }
+
+  .filterContainerStrip .mobileButtons .applyButton,
+  .filterContainerStrip .mobileButtons .clearButton {
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .formGroup .multiSelect .trigger {
+    border-radius: 10px !important;
+    border-color: var(--filter-edge-soft) !important;
+  }
+
+  .formGroup .multiSelect .trigger .text {
+    text-align: left !important;
+  }
+
+  .formGroup .rangeSlider {
+    width: 100% !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
 }
 
 @media (hover: none) and (pointer: coarse) {

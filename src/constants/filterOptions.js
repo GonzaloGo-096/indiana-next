@@ -7,11 +7,23 @@
  * @version 1.0.0 - Migración desde React
  */
 
-// ✅ Valores por defecto centralizados
-export const FILTER_DEFAULTS = {
-  AÑO: { min: 1990, max: 2024 },
+/**
+ * Límites del slider (rango buscable completo). No confundir con el rango inicial por defecto.
+ */
+export const FILTER_BOUNDS = {
+  AÑO: { min: 1990, max: 2026 },
   PRECIO: { min: 5000000, max: 100000000 },
   KILOMETRAJE: { min: 0, max: 200000 },
+};
+
+/**
+ * Rango por defecto: sin parámetro en URL / sin chip; la lista arranca con estos límites
+ * (distintos entre sí para que los sliders no queden todos “abiertos del todo”).
+ */
+export const FILTER_DEFAULTS = {
+  AÑO: { min: 2012, max: 2026 },
+  PRECIO: { min: 12000000, max: 75000000 },
+  KILOMETRAJE: { min: 0, max: 150000 },
 };
 
 // Marcas de vehículos (sin duplicados)

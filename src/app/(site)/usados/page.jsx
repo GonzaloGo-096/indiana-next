@@ -131,23 +131,25 @@ export default async function UsadosPage() {
       >
         <div className={`${styles.vehiclesContainer} w-full min-w-0`}>
           <div
-            className={`${styles.vehiclesStack} flex w-full min-w-0 flex-col gap-6 md:gap-8 lg:gap-10`}
+            className={`${styles.vehiclesStack} flex w-full min-w-0 flex-col gap-2 md:gap-3 lg:gap-4`}
           >
             <div
-              className={`${styles.vehiclesHeader} w-full min-w-0 items-center justify-between gap-x-4 gap-y-3`}
+              className={`${styles.vehiclesHeader} w-full min-w-0 gap-x-4 gap-y-3`}
             >
               <h1
                 id="usados-vehiculos-titulo"
-                className={`${styles.vehiclesTitle} min-w-0 flex-1 text-balance text-2xl sm:text-3xl md:text-4xl`}
+                className={`${styles.vehiclesTitle} text-balance text-2xl sm:text-3xl md:text-4xl`}
               >
                 Vehículos Usados
               </h1>
-              <Link
-                href="/usados/vehiculos"
-                className={`${styles.verTodosButton} shrink-0 text-sm sm:text-base shadow-sm transition-shadow hover:shadow-md`}
-              >
-                Ver todos
-              </Link>
+              <div className={styles.vehiclesHeaderRest}>
+                <Link
+                  href="/usados/vehiculos"
+                  className={styles.verTodosButton}
+                >
+                  Ver todos
+                </Link>
+              </div>
             </div>
             <div className={`${styles.vehiclesCarouselSlot} w-full min-w-0`}>
               <UsadosPageCarousel vehicles={vehicles} />

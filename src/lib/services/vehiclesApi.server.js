@@ -42,7 +42,7 @@ export const vehiclesService = {
 
       // Construir URL: buildSearchParams (filtros) + limit/cursor (paginación backend)
       const baseURL = getApiBaseUrl();
-      const searchParams = buildSearchParams(filters);
+      const searchParams = buildSearchParams(filters, { includeDefaultRanges: true });
       searchParams.set("limit", String(safeLimit));
       searchParams.set("cursor", String(safeCursor));
 
