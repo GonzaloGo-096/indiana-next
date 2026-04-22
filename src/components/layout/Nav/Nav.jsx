@@ -10,17 +10,22 @@ import { useMobileNavA11y } from "./useMobileNavA11y";
 
 function useScrollLock(menuOpen) {
   useEffect(() => {
+    const root = document.documentElement;
+
     if (!menuOpen) {
+      root.classList.remove("menu-open");
       document.body.classList.remove("menu-open");
       document.body.style.removeProperty("top");
       return undefined;
     }
 
     const scrollY = window.scrollY ?? window.pageYOffset;
+    root.classList.add("menu-open");
     document.body.classList.add("menu-open");
     document.body.style.setProperty("top", `-${scrollY}px`);
 
     return () => {
+      root.classList.remove("menu-open");
       document.body.classList.remove("menu-open");
       document.body.style.removeProperty("top");
       window.scrollTo(0, scrollY);
@@ -162,8 +167,7 @@ export default function Nav() {
           id={mobilePanelId}
           className={`${styles.nav} ${styles.navMobile} ${menuOpen ? styles.open : ""}`}
           aria-label={navStrings.mobileMenuRegion}
-          aria-hidden={!menuOpen}
-          inert={!menuOpen}
+          aria-hidden={menuOpen ? undefined : true}
           tabIndex={-1}
         >
           <div className={styles.navList}>

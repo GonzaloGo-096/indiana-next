@@ -76,13 +76,20 @@ body {
 
 
 /* Scroll-lock cuando el menú móvil está abierto. La clase la aplica/quita Nav.jsx. */
-body.menu-open {
+/* overflow solo en html: si body tiene position:fixed + overflow:hidden, algunos navegadores
+   recortan hijos position:fixed (p. ej. el panel del nav) a mitad de pantalla. */
+html.menu-open {
   overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body.menu-open {
   position: fixed;
   top: 0; /* Nav.jsx sobrescribe con top: -scrollY para preservar posición */
   left: 0;
   right: 0;
   width: 100%;
+  /* sin overflow:hidden: evita clip del menú overlay fixed */
 }
 
 /* Reset de imágenes para responsive */
