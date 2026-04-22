@@ -2,6 +2,7 @@
 
 import { SORT_OPTIONS } from "../../../constants/filterOptions";
 import { CloseIcon } from "../../ui/icons/CloseIcon";
+import { TrashIcon } from "../../ui/icons/TrashIcon";
 import styles from "./ActiveFilterChips.module.css";
 
 function sortLabel(sort) {
@@ -17,10 +18,13 @@ export default function ActiveFilterChips({
   sort = null,
   onRemoveChip,
   onClearSort,
+  onClearAllFilters,
+  showClearAllFilters = false,
   disabled = false,
 }) {
   const sortText = sortLabel(sort);
-  if (chips.length === 0 && !sortText) return null;
+  const hasChipsRow = chips.length > 0 || !!sortText;
+  if (!hasChipsRow && !showClearAllFilters) return null;
 
   return (
     <div
@@ -54,6 +58,20 @@ export default function ActiveFilterChips({
               onClick={() => onClearSort?.()}
             >
               <CloseIcon size={14} />
+            </button>
+          </li>
+        ) : null}
+        {showClearAllFilters && typeof onClearAllFilters === "function" ? (
+          <li className={styles.clearAllItem}>
+            <button
+              type="button"
+              className={styles.clearAll}
+              aria-label="Quitar todos los filtros"
+              title="Quitar todos los filtros"
+              disabled={disabled}
+              onClick={() => onClearAllFilters()}
+            >
+              <TrashIcon size={18} />
             </button>
           </li>
         ) : null}

@@ -336,7 +336,7 @@ export default function VehiculosClient({
         // ✅ REEMPLAZAR vehículos (nuevos filtros)
         setData(mappedData);
         
-        // ✅ Restaurar posición de scroll si hay una guardada (desde "Volver a lista principal")
+        // ✅ Restaurar posición de scroll si hay una guardada (p. ej. al limpiar todos los filtros)
         const savedPosition = sessionStorage.getItem(STORAGE_KEYS.VEHICLES_SCROLL_POSITION);
         if (savedPosition) {
           // ✅ Usar doble requestAnimationFrame para mejor sincronización con el DOM
@@ -657,6 +657,8 @@ export default function VehiculosClient({
           sort={currentSort}
           onRemoveChip={handleRemoveOneFilterChip}
           onClearSort={handleClearSortOnly}
+          onClearAllFilters={handleClearFilters}
+          showClearAllFilters={isFiltered}
           disabled={isLoading}
         />
       </div>
@@ -678,18 +680,6 @@ export default function VehiculosClient({
             }}
           />
         </div>
-
-        {/* Botón para volver a lista principal */}
-        {isFiltered && (
-          <div className={styles.backButtonContainer}>
-            <button
-              className={styles.backButton}
-              onClick={handleClearFilters}
-            >
-              Volver a lista principal
-            </button>
-          </div>
-        )}
       </div>
     </div>
   );
