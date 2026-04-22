@@ -121,37 +121,32 @@
 .gridContainer {
     position: relative;
     width: 100%;
-    max-width: 100%; /* ✅ Prevenir desbordamiento */
+    max-width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding-top: 0; /* ✅ Sin padding-top */
-    padding-bottom: 120px; /* ✅ 120px de espacio antes del footer (después del botón o última fila) */
-    margin-top: 0; /* ✅ Sin margin-top */
-    margin-bottom: 0; /* ✅ Sin margin-bottom */
-    
-    /* ✅ OPTIMIZACIÓN: Mejorar scroll performance */
-    contain: layout style;
+    padding-top: 0;
+    padding-bottom: 120px;
+    margin-top: 0;
+    margin-bottom: 0;
+    overflow: visible; /* sombras / hover no recortadas por un stacking context cerrado */
 }
 
 /* ===== GRID DE VEHÍCULOS - ESTÁNDAR CON TAMAÑO FIJO ===== */
 .grid {
     display: grid;
-    /* ✅ MOBILE: 1 columna, card ocupa 100% */
     grid-template-columns: 1fr;
-    gap: clamp(16px, 4vw, 32px); /* ✅ Gap reducido: De 24-48px a 16-32px */
+    gap: clamp(16px, 4vw, 32px);
     min-height: 150px;
-    padding: 0;
-    margin: 0 auto; /* ✅ Centrado */
-    max-width: 100%; /* ✅ CAPA 4: Asegurar que no exceda el contenedor */
-    width: 100%; /* ✅ CAPA 4: Ocupar ancho disponible sin desbordar */
-    
-    /* ✅ OPTIMIZACIÓN: Mejorar scroll performance del grid */
-    contain: layout style;
-    
-    /* ✅ OPTIMIZACIÓN: Forzar capa de composición para scroll suave */
-    transform: translateZ(0);
+    /* Aire lateral: box-shadow de CardAuto (~8–16px blur) sin pegar al borde del contenedor */
+    padding-inline: clamp(10px, 2vw, 20px);
+    padding-block: 0;
+    margin: 0 auto;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: visible;
 }
 
 /* Mobile: Asegurar que el grid esté centrado */
@@ -184,53 +179,61 @@
 /* Desktop: Grid adaptativo - 2 o 3 columnas según espacio disponible (desde 992px) */
 @media (min-width: 992px) {
     .grid {
-        /* ✅ Grid adaptativo: automáticamente ajusta entre 2 y 3 columnas según espacio */
-        grid-template-columns: repeat(auto-fit, minmax(280px, 380px));
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
         gap: clamp(24px, 4vw, 48px);
         justify-content: center;
         margin: 0 auto;
-        max-width: 100%; /* ✅ CRÍTICO: No exceder el contenedor */
-        width: 100%; /* ✅ Ocupar ancho disponible */
+        max-width: 100%;
+        width: 100%;
         box-sizing: border-box;
     }
 }
 
-/* Desktop grande: Forzar 3 columnas cuando hay espacio suficiente (desde 1300px) */
+/* Desktop grande: 3 columnas fluidas (antes 3×380px fijas desbordaban y el padre recortaba) */
 @media (min-width: 1300px) {
     .grid {
-        grid-template-columns: repeat(3, 380px); /* ✅ Forzar 3 columnas en pantallas grandes */
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: clamp(24px, 4vw, 48px);
         justify-content: center;
         margin: 0 auto;
-        max-width: fit-content; /* ✅ Ajustarse al contenido cuando hay espacio */
-        width: fit-content;
+        max-width: 100%;
+        width: 100%;
         box-sizing: border-box;
     }
+}
+
+/* Una sola card: una columna centrada (tablet 2-col dejaba la card solo a la izquierda) */
+.grid:has(> :only-child) {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
 }
 
 /* ===== WRAPPER DE TARJETAS - ULTRA COMPACTO ===== */
 .cardWrapper {
     min-height: 350px;
-    height: auto; /* ✅ CRÍTICO: Altura real basada en contenido para que height: 100% de la card funcione */
+    height: auto;
     width: 100%;
+    min-width: 0;
     padding-top: var(--spacing-2);
     padding-bottom: var(--spacing-2);
-    
-    /* ✅ OPTIMIZACIÓN: El navegador puede omitir trabajo de las cards fuera de viewport */
+    padding-inline: 2px; /* micro-respiración para sombra lateral respecto a la celda */
+    box-sizing: border-box;
     content-visibility: auto;
     contain-intrinsic-size: auto 420px;
-    
-    /* ✅ OPTIMIZACIÓN: Mejorar scroll performance */
-    contain: layout style;
-    
-    /* ✅ OPTIMIZACIÓN: Aceleración GPU para scroll suave */
-    will-change: transform;
-    transform: translateZ(0);
+    overflow: visible;
 }
 
 /* ✅ Cards con tamaño fijo en el grid */
 .cardWrapper :global(.card) {
     width: 100%;
+}
+
+/* Tablet/desktop: centrar la card en la celda cuando la columna es más ancha que CardAuto (max 360px) */
+@media (min-width: 769px) {
+    .cardWrapper {
+        justify-self: center;
+        max-width: 360px;
+    }
 }
 
 /* Mobile: Centrar las cards */
@@ -266,32 +269,25 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    padding-top: 0; /* ✅ Igual a gridContainer (sin padding-top) */
-    padding-bottom: 120px; /* ✅ Mismo padding-bottom que gridContainer */
-    margin-top: 0; /* ✅ Igual a gridContainer (sin margin-top) */
-    margin-bottom: 0; /* ✅ Igual a gridContainer (sin margin-bottom) */
-    
-    /* ✅ OPTIMIZACIÓN: Mejorar scroll performance */
-    contain: layout style;
+    padding-top: 0;
+    padding-bottom: 120px;
+    margin-top: 0;
+    margin-bottom: 0;
+    overflow: visible;
 }
 
 .loading {
     display: grid;
-    /* ✅ MOBILE: 1 columna, igual que .grid */
     grid-template-columns: 1fr;
-    gap: clamp(16px, 4vw, 32px); /* ✅ Gap exactamente igual a .grid */
+    gap: clamp(16px, 4vw, 32px);
     min-height: 150px;
-    padding: 0; /* ✅ Padding igual a .grid */
-    margin: 0 auto; /* ✅ Centrado igual que .grid */
-    max-width: 100%; /* ✅ Max-width igual a .grid */
-    width: 100%; /* ✅ Width igual a .grid */
-    
-    /* ✅ OPTIMIZACIÓN: Mejorar scroll performance del grid */
-    contain: layout style;
-    
-    /* ✅ OPTIMIZACIÓN: Forzar capa de composición para scroll suave */
-    will-change: transform;
-    transform: translateZ(0);
+    padding-inline: clamp(10px, 2vw, 20px);
+    padding-block: 0;
+    margin: 0 auto;
+    max-width: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: visible;
 }
 
 /* ✅ Responsive igual que .grid para mantener consistencia */
@@ -311,26 +307,24 @@
 /* Desktop: Grid adaptativo - 2 o 3 columnas según espacio disponible (desde 992px) */
 @media (min-width: 992px) {
     .loading {
-        /* ✅ Grid adaptativo: automáticamente ajusta entre 2 y 3 columnas según espacio */
-        grid-template-columns: repeat(auto-fit, minmax(280px, 380px)); /* ✅ Igual que .grid en desktop */
-        gap: clamp(24px, 4vw, 48px); /* ✅ Gap igual a .grid en desktop */
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+        gap: clamp(24px, 4vw, 48px);
         justify-content: center;
-        margin: 0 auto; /* ✅ Margin igual a .grid */
-        max-width: 100%; /* ✅ Max-width igual a .grid */
-        width: 100%; /* ✅ Width igual a .grid */
+        margin: 0 auto;
+        max-width: 100%;
+        width: 100%;
         box-sizing: border-box;
     }
 }
 
-/* Desktop grande: Forzar 3 columnas cuando hay espacio suficiente (desde 1300px) */
 @media (min-width: 1300px) {
     .loading {
-        grid-template-columns: repeat(3, 380px); /* ✅ Igual que .grid en desktop grande */
-        gap: clamp(24px, 4vw, 48px); /* ✅ Gap igual a .grid */
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: clamp(24px, 4vw, 48px);
         justify-content: center;
-        margin: 0 auto; /* ✅ Margin igual a .grid */
-        max-width: fit-content; /* ✅ Max-width igual a .grid */
-        width: fit-content; /* ✅ Width igual a .grid */
+        margin: 0 auto;
+        max-width: 100%;
+        width: 100%;
         box-sizing: border-box;
     }
 }

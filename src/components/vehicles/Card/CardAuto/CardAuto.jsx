@@ -32,6 +32,7 @@ import {
 import { getBrandLogo } from "../../../../utils/getBrandLogo";
 import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import { buildVehicleDetailUrl } from "../../../../utils/vehicleSlug";
+import { getVehicleOfferDisplay } from "../../../../utils/vehicleOffer";
 import { debugIngest } from "../../../../lib/debugIngestClient";
 import styles from "./CardAuto.module.css";
 
@@ -91,26 +92,7 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
     // Permitir que el Link navegue normalmente
   }, [auto]);
 
-  // ✅ MEMOIZAR DATOS DE OFERTA
-  const offerData = useMemo(() => {
-    if (!auto) return { hasOffer: false, descuento: 0, priceOriginal: "", priceOffer: "" };
-    const oferta = auto.oferta === true || auto.oferta === "true";
-    if (!oferta) return { hasOffer: false, descuento: 0, priceOriginal: "", priceOffer: "" };
-
-    const precio = Number(auto.precio) || 0;
-    const descuento = Math.min(100, Math.max(0, Number(auto.descuento) || 0));
-    const precioOferta =
-      auto.precioOferta != null && !isNaN(Number(auto.precioOferta))
-        ? Number(auto.precioOferta)
-        : Math.round(precio * (1 - descuento / 100));
-
-    return {
-      hasOffer: true,
-      descuento,
-      priceOriginal: formatPrice(precio),
-      priceOffer: formatPrice(precioOferta),
-    };
-  }, [auto]);
+  const offerData = useMemo(() => getVehicleOfferDisplay(auto), [auto]);
 
   // ✅ MEMOIZAR DATOS FORMATEADOS
   const formattedData = useMemo(() => {
@@ -207,6 +189,7 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
       onClick={handleCardClick}
       aria-label={`Ver detalles de ${formattedData.brandModel}`}
     >
+      <div className={styles.cardInner}>
       {/* ===== IMAGEN PRINCIPAL ===== */}
       <div className={`${styles["card__image-container"]} ${!isImageLoaded ? styles["card__image-container--loading"] : ""}`}>
         {offerData.hasOffer && (
@@ -324,6 +307,7 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
             )}
           </div>
         </div>
+      </div>
       </div>
     </Link>
   );

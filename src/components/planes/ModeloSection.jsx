@@ -258,7 +258,7 @@ export const ModeloSection = ({ modelo, planes }) => {
   };
 
   return (
-    <section className={styles.modeloSection}>
+    <section className={`${styles.modeloSection} min-w-0 w-full`}>
       <h2 className={styles.modeloTitle}>
         <PeugeotIcon className={styles.modeloTitleIcon} size={48} color="#000000" />
         Planes {modeloDisplay}

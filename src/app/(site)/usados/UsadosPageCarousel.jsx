@@ -26,11 +26,13 @@ export default function UsadosPageCarousel({ vehicles = [] }) {
   const mobileStyleHome = mounted && isMobile;
 
   return (
-    <UsadosCarousel
-      vehicles={vehicles}
-      compact={mobileStyleHome}
-      viewportClip={mobileStyleHome}
-      flushLeadingEdge
-    />
+    <div className="w-full min-w-0">
+      <UsadosCarousel
+        vehicles={vehicles}
+        compact={mobileStyleHome}
+        viewportClip={mobileStyleHome}
+        flushLeadingEdge
+      />
+    </div>
   );
 }

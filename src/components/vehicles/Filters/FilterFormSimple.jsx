@@ -47,6 +47,8 @@ const FilterFormSimpleComponent = forwardRef(({
   isError = false,
   error = null,
   onRetry = null,
+  /** Lista /usados/vehiculos: integrar en franja toolbar sin segunda caja ni breakout 100vw */
+  stripLayout = false,
 }, ref) => {
   const { isMobile } = useDevice()
   const router = useRouter()
@@ -245,7 +247,9 @@ const FilterFormSimpleComponent = forwardRef(({
 
   // ✅ CONTENIDO DEL FORMULARIO (reutilizable)
   const formContent = (
-    <div className={`${styles.filterContainer} ${isDrawerOpen ? styles.open : ''}`}>
+    <div
+      className={`${styles.filterContainer} ${stripLayout ? styles.filterContainerStrip : ''} ${isDrawerOpen ? styles.open : ''}`}
+    >
       {/* Error Messages */}
       {isError && error && (
         <div className={styles.errorMessage}>

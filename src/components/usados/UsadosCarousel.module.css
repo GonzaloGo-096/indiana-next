@@ -45,9 +45,21 @@
   box-sizing: border-box;
 }
 
+@media (min-width: 992px) {
+  .carouselFrame {
+    gap: 0.75rem;
+    padding: 0.5rem 0.375rem;
+    background: color-mix(in srgb, var(--color-neutral-50) 88%, #fff);
+    border: 1px solid var(--color-neutral-100);
+    border-radius: 1rem;
+    box-shadow: 0 1px 0 rgba(6, 27, 156, 0.04);
+  }
+}
+
 .carouselTrack {
   flex: 1 1 0;
   min-width: 0;
+  position: relative;
 }
 
 .carouselNavPrev,
@@ -57,7 +69,7 @@
   align-items: center;
   justify-content: center;
   align-self: center;
-  width: 40px;
+  width: 44px;
   flex-shrink: 0;
 }
 
@@ -82,15 +94,18 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   padding: 0;
   margin: 0;
-  background: rgba(0, 0, 0, 0.06);
-  color: var(--color-neutral-600);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  color: var(--color-brand-600);
+  border: 1px solid var(--color-neutral-200);
   border-radius: 50%;
   cursor: pointer;
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.05),
+    0 4px 12px rgba(6, 27, 156, 0.06);
   transition:
     background 0.2s ease,
     color 0.2s ease,
@@ -100,13 +115,16 @@
 }
 
 .carouselArrow:hover:not(:disabled) {
-  background: rgba(0, 0, 0, 0.1);
-  color: var(--color-neutral-900);
-  border-color: rgba(0, 0, 0, 0.12);
+  background: color-mix(in srgb, var(--color-brand-50) 92%, #fff);
+  color: var(--color-brand-500);
+  border-color: color-mix(in srgb, var(--color-brand-500) 35%, var(--color-neutral-200));
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.06),
+    0 8px 20px color-mix(in srgb, var(--color-brand-500) 12%, transparent);
 }
 
 .carouselArrow:active:not(:disabled) {
-  transform: scale(0.96);
+  transform: scale(0.97);
 }
 
 .carouselArrow:focus-visible {
@@ -115,30 +133,33 @@
 }
 
 .carouselArrow svg {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   stroke-width: 2;
 }
 
 .carouselArrowDisabled {
-  opacity: 0.25;
+  opacity: 0.35;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
 .carouselArrowDisabled:hover {
-  background: rgba(0, 0, 0, 0.06);
-  color: var(--color-neutral-600);
-  border-color: rgba(0, 0, 0, 0.08);
+  background: #fff;
+  color: var(--color-neutral-400);
+  border-color: var(--color-neutral-200);
+  box-shadow: none;
 }
 
 /* ===== CONTENEDOR DE CARRUSEL (scroll horizontal) ===== */
 .carouselContainer {
   display: flex;
-  gap: 1rem; /* Espacio lateral entre cards (reducido para juntar más) */
+  gap: 1rem;
   overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
+  scroll-padding-inline: 0.75rem;
   padding: var(--spacing-3) var(--spacing-3) var(--spacing-5) var(--spacing-3);
 
   scrollbar-width: none;
@@ -195,7 +216,22 @@
   max-width: 300px;
   scroll-snap-align: start;
   scroll-snap-stop: always;
-  margin: 0 0.2rem; /* Mobile: cards más juntas */
+  margin: 0;
+  border-radius: var(--border-radius-lg);
+  transition:
+    transform 0.38s cubic-bezier(0.4, 0, 0.2, 1),
+    filter 0.38s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .cardWrapper:hover {
+    transform: translateY(-6px);
+    filter: drop-shadow(0 14px 28px color-mix(in srgb, var(--color-brand-500) 12%, transparent));
+  }
+
+  .cardWrapper:active {
+    transform: translateY(-3px);
+  }
 }
 
 .cardWrapper :global(.card) {
@@ -429,7 +465,6 @@
   .cardWrapper {
     min-width: 260px;
     max-width: 320px;
-    margin: 0 0.5rem; /* Tablet: cards más juntas */
   }
 
   .carouselCompact .cardWrapper {
@@ -471,7 +506,6 @@
     max-width: 270px;
     width: 270px;
     flex: 0 0 270px;
-    margin: 0 0.3rem;
   }
 
   /* CardSimilar: el root fija 320px; forzamos al ancho del wrapper y sin márgenes laterales */
@@ -496,7 +530,6 @@
     max-width: 320px;
     width: 320px;
     flex: 0 0 320px;
-    margin: 0 0.5rem; /* Desktop: cards más juntas */
   }
 
   .carouselCompact .cardWrapper {
@@ -560,5 +593,21 @@
 
   .carouselContainer {
     scroll-snap-type: x mandatory;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cardWrapper {
+    transition: none;
+  }
+
+  .cardWrapper:hover,
+  .cardWrapper:active {
+    transform: none;
+    filter: none;
+  }
+
+  .carouselTrack::after {
+    display: none;
   }
 }

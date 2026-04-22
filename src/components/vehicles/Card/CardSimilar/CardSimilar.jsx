@@ -29,6 +29,7 @@ import { KmIcon } from "../../../ui/icons/KmIcon";
 import { CajaIconDetalle } from "../../../ui/icons/CajaIconDetalle";
 import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import { buildVehicleDetailUrl } from "../../../../utils/vehicleSlug";
+import { getVehicleOfferDisplay } from "../../../../utils/vehicleOffer";
 import styles from "./CardSimilar.module.css";
 
 /**
@@ -126,6 +127,8 @@ export const CardSimilar = memo(({ auto, isPriority = false }) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const handleImageLoad = useCallback(() => setIsImageLoaded(true), []);
 
+  const offer = useMemo(() => getVehicleOfferDisplay(auto), [auto]);
+
   // ✅ VALIDAR DATOS DEL VEHÍCULO (después de todos los hooks)
   if (!auto || (!auto.id && !auto._id)) {
     return null;
@@ -149,6 +152,11 @@ export const CardSimilar = memo(({ auto, isPriority = false }) => {
     >
       {/* ===== IMAGEN PRINCIPAL ===== */}
       <div className={`${styles["card__image-container"]} ${!isImageLoaded ? styles["card__image-container--loading"] : ""}`}>
+        {offer.hasOffer && (
+          <span className={styles.discount_badge} aria-label="Oportunidad de oferta">
+            Oportunidad
+          </span>
+        )}
         <Image
           src={primaryImage}
           alt={altText}
@@ -219,7 +227,14 @@ export const CardSimilar = memo(({ auto, isPriority = false }) => {
           </div>
 
           <div className={styles.price_display}>
-            <span className={styles.price_value}>{formattedData.price}</span>
+            {offer.hasOffer ? (
+              <>
+                <span className={styles.price_original}>{offer.priceOriginal}</span>
+                <span className={styles.price_value}>{offer.priceOffer}</span>
+              </>
+            ) : (
+              <span className={styles.price_value}>{formattedData.price}</span>
+            )}
           </div>
         </div>
       </div>

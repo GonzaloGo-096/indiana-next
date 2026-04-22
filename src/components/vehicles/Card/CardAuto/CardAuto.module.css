@@ -39,8 +39,8 @@
     border-right: none;
     box-shadow: var(--card-shadow-base);
     
-    /* Comportamiento */
-    overflow: hidden;
+    /* Sombra en el Link: overflow visible. El recorte va en .cardInner (si no, la sombra se corta en los costados). */
+    overflow: visible;
     position: relative;
     margin: 0 auto;
     cursor: pointer;
@@ -80,6 +80,18 @@
 
 .card:focus:not(:focus-visible) {
     outline: none;
+}
+
+/* Recorte redondeado del contenido; la sombra queda en .card */
+.cardInner {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    border-radius: inherit;
+    background: var(--color-white);
 }
 
 /* ===== BADGE DE DESCUENTO ===== */

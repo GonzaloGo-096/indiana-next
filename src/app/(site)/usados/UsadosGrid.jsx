@@ -7,10 +7,11 @@
  * @version 1.0.0
  */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { formatPrice } from "../../../utils/formatters";
+import { getVehicleOfferDisplay } from "@/utils/vehicleOffer";
 import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
 import styles from "./usados.module.css";
 
@@ -30,6 +31,8 @@ function VehicleCard({ vehicle, isPriority = false, index = 0 }) {
   const [isImageLoaded, setIsImageLoaded] = useState(false);
   const handleImageLoad = useCallback(() => setIsImageLoaded(true), []);
 
+  const offer = useMemo(() => getVehicleOfferDisplay(vehicle), [vehicle]);
+
   const delay = `${Math.min(index * 0.06, 0.42)}s`;
 
   return (
@@ -39,6 +42,11 @@ function VehicleCard({ vehicle, isPriority = false, index = 0 }) {
       style={{ animationDelay: delay }}
     >
       <div className={`${styles.vehicleCardImage} ${imageUrl && !isImageLoaded ? styles.vehicleCardImageLoading : ""}`}>
+        {offer.hasOffer && (
+          <span className={styles.offerBadge} aria-label="Oportunidad de oferta">
+            Oportunidad
+          </span>
+        )}
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -75,7 +83,14 @@ function VehicleCard({ vehicle, isPriority = false, index = 0 }) {
         </div>
         {vehicle.precio && (
           <p className={styles.vehiclePrice}>
-            {formatPrice(vehicle.precio)}
+            {offer.hasOffer ? (
+              <>
+                <span className={styles.vehiclePriceOriginal}>{offer.priceOriginal}</span>
+                <span className={styles.vehiclePriceOffer}>{offer.priceOffer}</span>
+              </>
+            ) : (
+              formatPrice(vehicle.precio)
+            )}
           </p>
         )}
       </div>

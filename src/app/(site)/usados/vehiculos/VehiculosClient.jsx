@@ -32,6 +32,29 @@ import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import { VEHICLE_CONSTANTS } from "../../../../constants/vehicles";
 import { debugIngest } from "../../../../lib/debugIngestClient";
 
+/** Indicador mínimo (trazo fino, distinto del chevron de MultiSelect) */
+function BrandStripNudge({ direction }) {
+  const left = direction === "left";
+  return (
+    <svg
+      className="block"
+      width="8"
+      height="14"
+      viewBox="0 0 8 14"
+      aria-hidden
+    >
+      <path
+        d={left ? "M6.5 1 L1.5 7 L6.5 13" : "M1.5 1 L6.5 7 L1.5 13"}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.15"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 // ✅ Code splitting: BrandsCarousel solo se carga cuando es necesario
 const BrandsCarousel = dynamic(
   () => import("../../../../components/vehicles/BrandsCarousel"),
@@ -67,6 +90,14 @@ export default function VehiculosClient({
   const filterFormRef = useRef(null);
   const sortButtonRef = useRef(null);
   const sortButtonRefDesktop = useRef(null);
+  const brandsCarouselRef = useRef(null);
+  const [brandsScroll, setBrandsScroll] = useState({
+    canScrollLeft: false,
+    canScrollRight: true,
+  });
+  const handleBrandsScrollabilityChange = useCallback((next) => {
+    setBrandsScroll(next);
+  }, []);
 
   // ✅ OPTIMIZADO: Extraer todos los valores de searchParams en un solo useMemo
   // Esto reduce múltiples re-renders y puede ayudar con el error de Suspense
@@ -463,40 +494,93 @@ export default function VehiculosClient({
 
   const isSortDisabled = isLoading || (data.vehicles || []).length === 0;
 
+  const showBrandScrollArrows = useMemo(() => {
+    return brandsScroll.canScrollLeft || brandsScroll.canScrollRight;
+  }, [brandsScroll.canScrollLeft, brandsScroll.canScrollRight]);
+
   return (
-    <div className={styles.page}>
-      {/* Título */}
-      <div className={styles.titleContainer}>
-        <div className={styles.titleSection}>
-          <h1 className={styles.mainTitle}>Nuestros Usados</h1>
+    <div className={`${styles.page} w-full min-w-0 antialiased`}>
+      <div className={`${styles.titleContainer} w-full min-w-0`}>
+        <div className={`${styles.titleSection} w-full min-w-0`}>
+          <h1
+            className={`${styles.mainTitle} text-balance`}
+            id="vehiculos-lista-titulo"
+          >
+            Nuestros Usados
+          </h1>
         </div>
       </div>
 
-      {/* Sección del carrusel y filtros */}
-      <div className={styles.carouselSection}>
-        {/* ✅ BrandsCarousel usa dynamic() que ya maneja loading, no necesita Suspense adicional */}
-        <BrandsCarousel
-          selectedBrands={selectedBrands}
-          onBrandSelect={handleBrandSelect}
-        />
+      <div
+        className={`${styles.toolbarRegion} w-full min-w-0`}
+        aria-labelledby="vehiculos-lista-titulo"
+      >
+        <div className={`${styles.carouselSection} w-full min-w-0`}>
+          <div
+            className={`${styles.brandsCarouselRow} ${
+              showBrandScrollArrows ? styles.brandsCarouselRow_hasScroll : ""
+            }`}
+          >
+            {showBrandScrollArrows && (
+              <button
+                type="button"
+                className={styles.brandsToolbarArrow}
+                aria-label="Ver marcas anteriores"
+                disabled={!brandsScroll.canScrollLeft}
+                onClick={() => brandsCarouselRef.current?.scrollPrev?.()}
+              >
+                <BrandStripNudge direction="left" />
+              </button>
+            )}
+            <BrandsCarousel
+              ref={brandsCarouselRef}
+              selectedBrands={selectedBrands}
+              onBrandSelect={handleBrandSelect}
+              embedded
+              onScrollabilityChange={handleBrandsScrollabilityChange}
+            />
+            {showBrandScrollArrows && (
+              <button
+                type="button"
+                className={styles.brandsToolbarArrow}
+                aria-label="Ver más marcas"
+                disabled={!brandsScroll.canScrollRight}
+                onClick={() => brandsCarouselRef.current?.scrollNext?.()}
+              >
+                <BrandStripNudge direction="right" />
+              </button>
+            )}
+          </div>
 
-        {/* FilterFormSimple */}
-        <div className={styles.filtersWrapper}>
-          <FilterFormSimple
-            ref={filterFormRef}
-            currentFilters={currentFilters} // ✅ FIX SUSPENSE: Pasar filtros como prop (elimina useSearchParams del hijo)
-            onApplyFilters={handleApplyFilters}
-            isLoading={isLoading}
-            isError={!!error}
-            error={error ? { message: error } : null}
-            onRetry={() => {
-              setError(null);
-              handleApplyFilters(currentFilters);
-            }}
+          <div className={styles.filtersWrapper}>
+            <FilterFormSimple
+              ref={filterFormRef}
+              currentFilters={currentFilters}
+              onApplyFilters={handleApplyFilters}
+              isLoading={isLoading}
+              isError={!!error}
+              error={error ? { message: error } : null}
+              stripLayout
+              onRetry={() => {
+                setError(null);
+                handleApplyFilters(currentFilters);
+              }}
+            />
+          </div>
+
+          <ActionButtons
+            onFilterClick={handleFilterClick}
+            onSortClick={handleSortClick}
+            onSortChange={handleSortChange}
+            onCloseSortDropdown={handleCloseSortDropdown}
+            selectedSort={selectedSort}
+            isSortDisabled={isSortDisabled}
+            isSortDropdownOpen={isSortDropdownOpen}
+            sortButtonRef={sortButtonRef}
+            className={styles.actionButtons}
           />
         </div>
 
-        {/* Botones de acción - dentro del carrusel (mobile) */}
         <ActionButtons
           onFilterClick={handleFilterClick}
           onSortClick={handleSortClick}
@@ -505,27 +589,13 @@ export default function VehiculosClient({
           selectedSort={selectedSort}
           isSortDisabled={isSortDisabled}
           isSortDropdownOpen={isSortDropdownOpen}
-          sortButtonRef={sortButtonRef}
-          className={styles.actionButtons}
+          sortButtonRef={sortButtonRefDesktop}
+          className={styles.actionButtonsDesktop}
         />
       </div>
 
-      {/* Botones de acción - fuera del carrusel (desktop) */}
-      <ActionButtons
-        onFilterClick={handleFilterClick}
-        onSortClick={handleSortClick}
-        onSortChange={handleSortChange}
-        onCloseSortDropdown={handleCloseSortDropdown}
-        selectedSort={selectedSort}
-        isSortDisabled={isSortDisabled}
-        isSortDropdownOpen={isSortDropdownOpen}
-        sortButtonRef={sortButtonRefDesktop}
-        className={styles.actionButtonsDesktop}
-      />
-
-      <div className={styles.container}>
-        {/* Grid de vehículos */}
-        <div className={styles.vehiclesGrid}>
+      <div className={`${styles.container} w-full min-w-0`}>
+        <div className={`${styles.vehiclesGrid} w-full min-w-0`}>
           <AutosGrid
             vehicles={sortedVehicles}
             isLoading={isLoading}

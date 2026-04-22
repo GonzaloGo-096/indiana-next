@@ -326,7 +326,13 @@ export default async function VehiculosPage({ searchParams }) {
           />
         ) : null}
         {/* ✅ Suspense boundary para useSearchParams() */}
-        <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Cargando...</div>}>
+        <Suspense
+          fallback={
+            <div className="flex min-h-[40vh] w-full items-center justify-center px-4 text-center text-sm text-neutral-600">
+              Cargando…
+            </div>
+          }
+        >
           <VehiculosClient
             initialData={mappedData}
             initialFilters={filters}
@@ -354,7 +360,13 @@ export default async function VehiculosPage({ searchParams }) {
     // Para otros errores, pasar error a Client Component para manejo
     // ✅ IMPORTANTE: Envolver en Suspense también en caso de error
     return (
-      <Suspense fallback={<div style={{ padding: "2rem", textAlign: "center" }}>Cargando...</div>}>
+      <Suspense
+        fallback={
+          <div className="flex min-h-[40vh] w-full items-center justify-center px-4 text-center text-sm text-neutral-600">
+            Cargando…
+          </div>
+        }
+      >
         <VehiculosClient
           initialData={{
             vehicles: [],

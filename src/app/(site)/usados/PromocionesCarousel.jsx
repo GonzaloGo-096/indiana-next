@@ -84,10 +84,13 @@ export default function PromocionesCarousel() {
   }, [slideCount]);
 
   return (
-    <div className={styles.promosCarousel}>
+    <div className={`${styles.promosCarousel} w-full min-w-0`}>
       <div className={styles.promosCarouselTrack} style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
         {Array.from({ length: slideCount }).map((_, i) => (
-          <div key={i} className={styles.promosCarouselSlide}>
+          <div
+            key={i}
+            className={`${styles.promosCarouselSlide} ${i === currentSlide ? styles.promosCarouselSlideActive : ""}`}
+          >
             <picture>
               <source media="(min-width: 769px)" srcSet={PROMOS_IMAGES.desktop[i]} />
               <source media="(max-width: 768px)" srcSet={PROMOS_IMAGES.mobile[i]} />

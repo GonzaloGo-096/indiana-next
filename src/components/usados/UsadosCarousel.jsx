@@ -237,6 +237,13 @@ export const UsadosCarousel = ({
               <CardSimilar auto={vehicle} isPriority={index < 2} />
             </div>
           ))}
+          {viewportClip && (
+            <div
+              className={styles.carouselLeadSpacer}
+              aria-hidden
+              style={{ flexShrink: 0, minWidth: "2rem" }}
+            />
+          )}
         </>
       )}
     </div>

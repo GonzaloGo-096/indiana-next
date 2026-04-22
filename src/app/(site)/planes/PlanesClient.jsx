@@ -25,51 +25,101 @@ export function PlanesClient({ planesPorModelo }) {
 
   return (
     <>
-      {/* Navegación por modelos */}
-      <nav className={styles.modelosButtons} aria-label="Navegación por modelos">
-        {modelosDisponibles.map((modelo) => {
-          const modeloDisplay =
-            modelo.charAt(0).toUpperCase() + modelo.slice(1);
-          return (
-            <button
-              key={modelo}
-              className={styles.modeloButton}
-              onClick={() => scrollToModelo(modelo)}
-              aria-label={`Ver planes de Peugeot ${modeloDisplay}`}
+      <header
+        className={`${styles.planesHero} w-full min-w-0`}
+        aria-labelledby="planes-page-titulo"
+        aria-describedby="planes-page-subtitulo"
+      >
+        <div className={styles.planesHeroInner}>
+          <div className={styles.planesHeroCopy}>
+            <p className={styles.planesHeroKicker}>Financiación · Peugeot 0km</p>
+            <h1 id="planes-page-titulo" className={styles.planesHeroTitle}>
+              <span className={styles.planesHeroTitleLine}>
+                Financiá tu Peugeot 0km
+              </span>
+              <span className={styles.planesHeroTitleAccent}>
+                Cuotas claras · adjudicación pactada
+              </span>
+            </h1>
+            <p
+              id="planes-page-subtitulo"
+              className={styles.planesHeroLead}
             >
-              {modeloDisplay}
-            </button>
-          );
-        })}
-      </nav>
-
-      <div className={styles.content}>
-        {Object.entries(planesPorModelo).map(([modelo, planes]) => (
-          <div
-            key={modelo}
-            className={styles.modeloSectionAnchor}
-            ref={(el) => {
-              if (el) {
-                modeloRefs.current[modelo] = el;
-              }
-            }}
-          >
-            <ModeloSection modelo={modelo} planes={planes} />
+              Concesionario oficial Peugeot en Tucumán: compará los planes por
+              modelo y encontrá la opción que mejor se adapte a tu presupuesto.
+            </p>
           </div>
-        ))}
-      </div>
+        </div>
+      </header>
 
-      {/* Contacto al Final */}
-      <section className={styles.contactSection}>
+      <section
+        className={`${styles.planesListado} min-w-0 w-full`}
+        aria-label="Planes por modelo"
+      >
+        <nav
+          className={styles.planesModelosBar}
+          aria-labelledby="planes-modelos-label"
+        >
+          <p
+            id="planes-modelos-label"
+            className={styles.planesModelosBarLabel}
+          >
+            Ir a un modelo
+          </p>
+          <ul className={styles.planesModeloChipList} role="list">
+            {modelosDisponibles.map((modelo) => {
+              const modeloDisplay =
+                modelo.charAt(0).toUpperCase() + modelo.slice(1);
+              return (
+                <li key={modelo} className={styles.planesModeloChipItem}>
+                  <button
+                    type="button"
+                    className={styles.planesModeloChip}
+                    onClick={() => scrollToModelo(modelo)}
+                  >
+                    {modeloDisplay}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        <div className={`${styles.content} min-w-0 w-full`}>
+          {Object.entries(planesPorModelo).map(([modelo, planes]) => (
+            <div
+              key={modelo}
+              className={`${styles.modeloSectionAnchor} min-w-0`}
+              ref={(el) => {
+                if (el) {
+                  modeloRefs.current[modelo] = el;
+                }
+              }}
+            >
+              <ModeloSection modelo={modelo} planes={planes} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section
+        className={`${styles.contactSection} min-w-0 max-w-full shadow-sm`}
+        aria-labelledby="planes-contacto-titulo"
+      >
         <div className={styles.contactContent}>
-          <h3 className={styles.contactTitle}>¿Necesitás asesoramiento?</h3>
-          <p className={styles.contactText}>
+          <h3
+            id="planes-contacto-titulo"
+            className={`${styles.contactTitle} text-balance`}
+          >
+            ¿Necesitás asesoramiento?
+          </h3>
+          <p className={`${styles.contactText} text-pretty`}>
             Consultá con nuestros asesores sobre el plan que mejor se adapte a tu
             situación.
           </p>
           <a
             href="https://wa.me/543816295959?text=Hola!%20Quiero%20consultar%20sobre%20los%20planes%20de%20financiación%20Peugeot"
-            className={styles.contactButton}
+            className={`${styles.contactButton} shadow-sm transition-shadow hover:shadow-md`}
             target="_blank"
             rel="noopener noreferrer"
           >

@@ -14,7 +14,7 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import '../styles/variables.css';
 
-/* Tokens Indiana → utilidades Tailwind (bg-brand-500, text-brand-600, …) — después de :root */
+/* Tokens Indiana → utilidades Tailwind (bg-brand-500, text-neutral-600, …) — después de :root */
 @theme {
   --color-brand-50: var(--color-brand-50);
   --color-brand-100: var(--color-brand-100);
@@ -26,6 +26,14 @@
   --color-brand-700: var(--color-brand-700);
   --color-brand-800: var(--color-brand-800);
   --color-brand-900: var(--color-brand-900);
+  --color-neutral-50: var(--color-neutral-50);
+  --color-neutral-100: var(--color-neutral-100);
+  --color-neutral-200: var(--color-neutral-200);
+  --color-neutral-300: var(--color-neutral-300);
+  --color-neutral-500: var(--color-neutral-500);
+  --color-neutral-600: var(--color-neutral-600);
+  --color-neutral-700: var(--color-neutral-700);
+  --color-neutral-800: var(--color-neutral-800);
 }
 
 @import "tailwindcss/utilities.css" layer(utilities);

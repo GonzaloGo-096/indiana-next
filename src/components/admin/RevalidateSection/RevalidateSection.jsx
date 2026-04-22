@@ -92,11 +92,6 @@ export default function RevalidateSection() {
   }, [modalOpen])
 
   const handlePublish = useCallback(async () => {
-    if (dirtyIds.length === 0) {
-      setError('No hay cambios pendientes para publicar')
-      return
-    }
-
     const token = readAuthToken().trim()
     if (!token) {
       setError('No hay sesión de administrador. Iniciá sesión de nuevo.')
@@ -142,7 +137,8 @@ export default function RevalidateSection() {
 
   const pendingCount = dirtyIds.length
   const hasToken = authToken.trim().length > 0
-  const canPublish = pendingCount > 0 && hasToken && !isPublishing
+  /** Vacío en localStorage no significa que la CDN esté al día (otro navegador, datos borrados, etc.). */
+  const canPublish = hasToken && !isPublishing
 
   const openModal = useCallback(() => {
     setError(null)
@@ -195,18 +191,19 @@ export default function RevalidateSection() {
                   {pendingCount !== 1 ? 's' : ''}
                 </span>
               ) : (
-                <span className={styles.noPending}>La caché del sitio está al día con lo último publicado</span>
+                <span className={styles.noPending}>
+                  No hay IDs marcados en este navegador; igual podés <strong>forzar</strong> refresco del
+                  catálogo y fichas en el servidor (útil si el público no coincide con el panel).
+                </span>
               )}
             </p>
 
-            {pendingCount > 0 && (
-              <p className={styles.explainPending}>
-                Incluye <strong>altas, ediciones y bajas</strong>: el backend ya guardó el cambio, pero las
-                páginas públicas pueden seguir mostrando datos viejos hasta que publiqués acá. Por eso, al{' '}
-                <strong>eliminar</strong> un auto también queda pendiente (hay que refrescar listado y fichas
-                en caché).
-              </p>
-            )}
+            <p className={styles.explainPending}>
+              Incluye <strong>altas, ediciones y bajas</strong>: el backend ya guardó el cambio, pero las
+              páginas públicas pueden seguir mostrando datos viejos hasta que publiqués acá. Los pendientes
+              se guardan en <strong>este equipo/navegador</strong>; en otro no se ven, pero el botón sigue
+              sirviendo para invalidar caché. Al <strong>eliminar</strong> un auto también conviene publicar.
+            </p>
 
             {pendingCount > 0 && dirtyIds.length <= 10 && (
               <div className={styles.idList}>
@@ -227,14 +224,18 @@ export default function RevalidateSection() {
             disabled={!canPublish}
             className={styles.publishButton}
           >
-            {isPublishing ? 'Publicando...' : 'Actualizar caché del sitio'}
+            {isPublishing
+              ? 'Publicando...'
+              : pendingCount > 0
+                ? 'Actualizar caché del sitio'
+                : 'Forzar actualización (listado + fichas)'}
           </button>
 
           <p className={styles.whatButtonDoes}>
-            <strong>Qué hace el botón:</strong> pide al servidor que invalide la caché de Next de la lista de
-            usados y de cada ID listado arriba; luego intenta recargar esas URLs (si un auto fue borrado, la
-            ficha puede responder 404: igual la caché vieja se descarta). Al terminar bien, esta lista de
-            pendientes se vacía.
+            <strong>Qué hace el botón:</strong> invalida en el servidor la caché del listado de usados y de
+            todas las fichas; si hay IDs arriba, también las etiquetas por vehículo. Luego intenta precargar
+            URLs (un auto borrado puede dar 404 en el warmup: la caché igual se descarta). Si venías con
+            pendientes, al terminar bien esa lista se vacía.
           </p>
 
           <p className={styles.prodNote}>

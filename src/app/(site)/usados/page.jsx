@@ -116,23 +116,40 @@ export default async function UsadosPage() {
   }
 
   return (
-    <div className={styles.page}>
-      {/* Header: Carrusel de promociones */}
-      <header id="promociones" className={styles.usadosHeader} aria-label="Promociones usados">
+    <div className={`${styles.page} w-full min-w-0 antialiased`}>
+      <header
+        id="promociones"
+        className={`${styles.usadosHeader} w-full min-w-0 border-b border-neutral-100`}
+        aria-label="Promociones usados"
+      >
         <PromocionesCarousel />
       </header>
 
-      {/* Título arriba; carrusel debajo con inicio alineado al título */}
-      <section className={styles.vehiclesSection}>
-        <div className={styles.vehiclesContainer}>
-          <div className={styles.vehiclesStack}>
-            <div className={styles.vehiclesHeader}>
-              <h1 className={styles.vehiclesTitle}>Vehículos Usados</h1>
-              <Link href="/usados/vehiculos" className={styles.verTodosButton}>
+      <section
+        className={`${styles.vehiclesSection} w-full min-w-0 pt-10 pb-8 md:pt-14 md:pb-10 lg:pt-16 lg:pb-12`}
+        aria-labelledby="usados-vehiculos-titulo"
+      >
+        <div className={`${styles.vehiclesContainer} w-full min-w-0`}>
+          <div
+            className={`${styles.vehiclesStack} flex w-full min-w-0 flex-col gap-6 md:gap-8 lg:gap-10`}
+          >
+            <div
+              className={`${styles.vehiclesHeader} w-full min-w-0 items-center justify-between gap-x-4 gap-y-3`}
+            >
+              <h1
+                id="usados-vehiculos-titulo"
+                className={`${styles.vehiclesTitle} min-w-0 flex-1 text-balance text-2xl sm:text-3xl md:text-4xl`}
+              >
+                Vehículos Usados
+              </h1>
+              <Link
+                href="/usados/vehiculos"
+                className={`${styles.verTodosButton} shrink-0 text-sm sm:text-base shadow-sm transition-shadow hover:shadow-md`}
+              >
                 Ver todos
               </Link>
             </div>
-            <div className={styles.vehiclesCarouselSlot}>
+            <div className={`${styles.vehiclesCarouselSlot} w-full min-w-0`}>
               <UsadosPageCarousel vehicles={vehicles} />
             </div>
           </div>

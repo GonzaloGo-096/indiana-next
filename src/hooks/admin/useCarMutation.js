@@ -10,7 +10,8 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { AUTH_CONFIG } from '@/config/auth'
 import vehiclesAdminService from '@/lib/services/vehiclesAdminService'
-import { addDirtyVehicleId } from '@/utils/dirtyVehicleIds'
+import { revalidatePublicCache } from '@/lib/admin/revalidatePublicCache'
+import { addDirtyVehicleId, removeDirtyVehicleId } from '@/utils/dirtyVehicleIds'
 
 // ✅ HELPER: Obtener token de autorización
 const getAuthToken = () => {
@@ -64,6 +65,25 @@ const handleMutationError = (error, operation) => {
   return errorMessage
 }
 
+/**
+ * Tras guardar en el backend: revalida caché del sitio público.
+ * Si falla (red, token, etc.), deja el ID como pendiente para el botón manual.
+ */
+async function afterVehicleWrite(vehicleId) {
+  const ids = vehicleId != null && `${vehicleId}`.trim() !== '' ? [`${vehicleId}`.trim()] : []
+  const ok = await revalidatePublicCache({
+    vehicleIds: ids,
+    revalidateList: true,
+    warmup: true,
+  })
+  const idStr = ids[0]
+  if (ok && idStr) {
+    removeDirtyVehicleId(idStr)
+  } else if (idStr) {
+    addDirtyVehicleId(idStr)
+  }
+}
+
 export const useCarMutation = () => {
   const queryClient = useQueryClient()
   
@@ -98,16 +118,13 @@ export const useCarMutation = () => {
         console.info('[cars:mutation] Vehículo creado exitosamente')
       }
       queryClient.invalidateQueries({ queryKey: ['vehicles'] })
-      
-      // ✅ TRACKEAR ID PARA REVALIDACIÓN MANUAL
-      // El backend retorna el vehículo creado con _id
+
       const vehicleId = data?._id || data?.id || data?.vehicle?._id || data?.vehicle?.id
-      if (vehicleId) {
-        addDirtyVehicleId(vehicleId)
-        if (process.env.NODE_ENV === 'development') {
-          console.debug('[cars:mutation] ID trackeado para revalidación:', vehicleId)
+      void afterVehicleWrite(vehicleId).then(() => {
+        if (process.env.NODE_ENV === 'development' && vehicleId) {
+          console.debug('[cars:mutation] revalidación pública tras alta:', vehicleId)
         }
-      }
+      })
     },
     onError: (error) => {
       const msg = handleMutationError(error, 'crear')
@@ -149,14 +166,12 @@ export const useCarMutation = () => {
       }
       queryClient.invalidateQueries({ queryKey: ['vehicles'] })
       queryClient.invalidateQueries({ queryKey: ['vehicle', variables.id] })
-      
-      // ✅ TRACKEAR ID PARA REVALIDACIÓN MANUAL
-      if (variables.id) {
-        addDirtyVehicleId(variables.id)
-        if (process.env.NODE_ENV === 'development') {
-          console.debug('[cars:mutation] ID trackeado para revalidación:', variables.id)
+
+      void afterVehicleWrite(variables.id).then(() => {
+        if (process.env.NODE_ENV === 'development' && variables.id) {
+          console.debug('[cars:mutation] revalidación pública tras edición:', variables.id)
         }
-      }
+      })
     },
     onError: (error) => {
       const msg = handleMutationError(error, 'actualizar')
@@ -182,14 +197,12 @@ export const useCarMutation = () => {
       }
       queryClient.invalidateQueries({ queryKey: ['vehicles'] })
       queryClient.removeQueries({ queryKey: ['vehicle', id] })
-      
-      // ✅ TRACKEAR ID PARA REVALIDACIÓN MANUAL (también para eliminar, necesita limpiar cache)
-      if (id) {
-        addDirtyVehicleId(id)
-        if (process.env.NODE_ENV === 'development') {
-          console.debug('[cars:mutation] ID trackeado para revalidación (eliminado):', id)
+
+      void afterVehicleWrite(id).then(() => {
+        if (process.env.NODE_ENV === 'development' && id) {
+          console.debug('[cars:mutation] revalidación pública tras baja:', id)
         }
-      }
+      })
     },
     onError: (error) => {
       const msg = handleMutationError(error, 'eliminar')

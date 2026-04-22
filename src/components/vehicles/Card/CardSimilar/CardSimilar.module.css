@@ -81,6 +81,22 @@
     outline: none;
 }
 
+.discount_badge {
+  position: absolute;
+  top: var(--spacing-2);
+  left: var(--spacing-2);
+  z-index: 2;
+  font-size: clamp(0.8125rem, 2.4vw, 1rem);
+  font-weight: 700;
+  font-family: var(--font-condensed);
+  letter-spacing: 0.4px;
+  padding: 6px 10px;
+  background: #e63732;
+  color: var(--color-white);
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
 /* ===== CONTENEDOR DE IMAGEN (FOCO PRINCIPAL) ===== */
 .card__image-container {
     position: relative;
@@ -397,10 +413,26 @@
     
     flex: 0 0 var(--price-width);
     display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: flex-end;
+    gap: var(--spacing-2);
     padding: 0;
     padding-right: var(--spacing-3);
+}
+
+.price_original {
+    font-size: clamp(0.8125rem, 2.3vw, 1rem);
+    font-weight: var(--font-weight-medium);
+    font-family: var(--font-condensed);
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.75);
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+    letter-spacing: -0.2px;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .price_value {

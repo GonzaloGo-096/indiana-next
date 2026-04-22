@@ -516,6 +516,24 @@
   .formTitle {
     display: none;
   }
+
+  /* Lista usados: toolbar única (props stripLayout) — sin breakout 100vw ni caja blanca duplicada */
+  .filterContainerStrip.filterContainer {
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .filterContainerStrip .formWrapper {
+    background: transparent;
+    box-shadow: none;
+    border: none;
+    border-radius: 0;
+    border-top: 1px solid var(--vehiculos-strip-border-soft, rgba(15, 23, 42, 0.06));
+    /* El padre .toolbarRegion ya aplica padding-inline como el título */
+    padding: clamp(1.25rem, 2.5vw, 1.75rem) 0;
+  }
 }
 
 @media (max-width: 768px) {

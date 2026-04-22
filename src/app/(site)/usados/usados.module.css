@@ -1,8 +1,5 @@
 /**
- * usados.module.css - Estilos para página de Usados
- * 
- * @author Indiana Peugeot
- * @version 1.0.0
+ * usados.module.css — Usados: tokens y layout en module; página /usados suma Tailwind (min-w-0, text-balance, sombras).
  */
 
 .page {
@@ -10,10 +7,8 @@
   background: var(--color-white);
 }
 
-/* ===== SECCIÓN 1: VEHÍCULOS ===== */
+/* ===== SECCIÓN 1: VEHÍCULOS (padding vertical vía Tailwind en page.jsx) ===== */
 .vehiclesSection {
-  padding-top: clamp(3rem, 6vw, 5rem);
-  padding-bottom: clamp(1.5rem, 3vw, 2.5rem); /* Mitad del padding superior */
   padding-left: 0;
   padding-right: 0;
   background: var(--color-white);
@@ -34,13 +29,11 @@
 .vehiclesStack {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-5);
 }
 
 .vehiclesHeader {
   display: flex;
   align-items: center;
-  gap: var(--spacing-3);
   margin-bottom: 0;
   flex-wrap: wrap;
 }
@@ -48,11 +41,10 @@
 .vehiclesTitle {
   margin: 0;
   font-family: var(--font-condensed);
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
   font-weight: var(--font-weight-bold);
   color: var(--color-text-primary);
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.06em;
   line-height: 1.1;
   text-align: left;
 }
@@ -93,6 +85,12 @@
 .verTodosButton:focus-visible {
   outline: 2px solid var(--color-brand-500);
   outline-offset: 2px;
+}
+
+/* Contenedor del carrusel de stock (evita desbordes con scroll horizontal) */
+.vehiclesCarouselSlot {
+  width: 100%;
+  min-width: 0;
 }
 
 /* ===== HEADER USADOS — carrusel de promociones full-bleed ===== */
@@ -273,23 +271,64 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  border-radius: var(--border-radius-md);
+  border-radius: 1rem;
+  box-shadow:
+    0 4px 28px -14px color-mix(in srgb, var(--color-brand-500) 18%, transparent),
+    0 2px 10px -4px rgba(0, 0, 0, 0.06);
+}
+
+/* Viñeta interior muy suave (profundidad sin recargar) */
+.promosCarousel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 0 120px rgba(6, 27, 156, 0.06);
 }
 
 .promosCarouselTrack {
   display: flex;
-  transition: transform 0.4s ease-out;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .promosCarouselSlide {
   flex: 0 0 100%;
   min-width: 100%;
+  overflow: hidden;
 }
 
 .promosCarouselSlide .promocionesImage {
   width: 100%;
   height: auto;
   display: block;
+  transform-origin: 50% 40%;
+  will-change: transform;
+}
+
+/* Zoom lento solo en el slide visible (Ken Burns discreto) */
+.promosCarouselSlideActive .promocionesImage {
+  animation: promosKenBurns 18s ease-out forwards;
+}
+
+@keyframes promosKenBurns {
+  0% {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  100% {
+    transform: scale(1.055) translate3d(-0.4%, -0.25%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promosCarouselSlideActive .promocionesImage {
+    animation: none;
+  }
+
+  .promosCarouselTrack {
+    transition-duration: 0.01ms;
+  }
 }
 
 /* Header: mantener proporción natural de la imagen, sin deformar */
@@ -305,22 +344,39 @@
   top: 50%;
   left: var(--spacing-2);
   transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.5);
-  color: var(--color-white);
-  border: none;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--color-brand-600);
+  border: 1px solid color-mix(in srgb, var(--color-neutral-200) 90%, transparent);
   border-radius: 50%;
   cursor: pointer;
-  transition: background var(--transition-fast);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.08),
+    0 6px 16px color-mix(in srgb, var(--color-brand-500) 10%, transparent);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
   z-index: 2;
 }
 
 .promosCarouselArrow:hover {
-  background: rgba(0, 0, 0, 0.7);
+  background: #fff;
+  color: var(--color-brand-500);
+  border-color: color-mix(in srgb, var(--color-brand-500) 28%, var(--color-neutral-200));
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.1),
+    0 10px 24px color-mix(in srgb, var(--color-brand-500) 14%, transparent);
+}
+
+.promosCarouselArrow:active {
+  transform: translateY(-50%) scale(0.97);
 }
 
 .promosCarouselArrow:focus-visible {
@@ -340,29 +396,48 @@
   right: 0;
   display: flex;
   justify-content: center;
-  gap: var(--spacing-2);
-  padding: 0;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.75rem;
+  margin: 0 auto;
+  width: fit-content;
+  max-width: calc(100% - 2rem);
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
   z-index: 2;
 }
 
 .promosCarouselDot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid color-mix(in srgb, var(--color-neutral-400) 45%, transparent);
+  background: rgba(255, 255, 255, 0.85);
   cursor: pointer;
   padding: 0;
-  transition: all var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .promosCarouselDot:hover {
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--color-neutral-200);
+  border-color: var(--color-neutral-400);
 }
 
 .promosCarouselDotActive {
+  width: 22px;
+  border-radius: 9999px;
   background: var(--color-brand-500);
   border-color: var(--color-brand-500);
+}
+
+.promosCarouselDotActive:hover {
+  background: var(--color-brand-600);
+  border-color: var(--color-brand-600);
 }
 
 .promocionesTitle {
@@ -552,6 +627,22 @@
   background: var(--color-neutral-100);
 }
 
+.offerBadge {
+  position: absolute;
+  top: var(--spacing-2);
+  left: var(--spacing-2);
+  z-index: 2;
+  font-size: clamp(0.8125rem, 2.2vw, 0.9375rem);
+  font-weight: 700;
+  font-family: var(--font-condensed);
+  letter-spacing: 0.4px;
+  padding: 6px 10px;
+  background: #e63732;
+  color: var(--color-white);
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
 .vehicleCardImageLoading {
   background: linear-gradient(
     90deg,
@@ -614,10 +705,29 @@
 }
 
 .vehiclePrice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--spacing-2);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
   color: var(--color-brand-500);
   margin: var(--spacing-2) 0 0 0;
+}
+
+.vehiclePriceOriginal {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  font-style: italic;
+  color: var(--color-text-secondary);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+.vehiclePriceOffer {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-brand-500);
 }
 
 /* ===== FILTROS ===== */

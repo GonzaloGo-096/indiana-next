@@ -105,24 +105,13 @@ export default function PlanesPage() {
   const jsonLd = getPlanesListJsonLd(allPlanes);
 
   return (
-    <div className={styles.planesPage}>
-      {/* Structured Data (JSON-LD) para SEO */}
+    <div className={`${styles.planesPage} w-full min-w-0 antialiased`}>
       {jsonLd && (
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      {/* Header / Hero Liviano */}
-      <header className={styles.header}>
-        <h1 className={styles.title}>Financiá tu Peugeot 0km</h1>
-        <p className={styles.subtitle}>
-          Planes de financiación flexibles en Tucumán. Concesionaria oficial
-          Peugeot con cuotas adaptadas a tu presupuesto y adjudicación pactada.
-        </p>
-      </header>
-
-      {/* Contenido con carruseles por modelo */}
       <PlanesClient planesPorModelo={planesPorModelo} />
     </div>
   );

@@ -1,15 +1,22 @@
 /**
- * vehiculos.module.css - Estilos para página de vehículos
- * 
- * Migrado desde React: Vehiculos.module.css
- * 
- * @author Indiana Peugeot
- * @version 2.0.0 - Migración desde React
+ * vehiculos.module.css — Lista /usados/vehiculos; VehiculosClient suma Tailwind (min-w-0, text-balance).
+ *
+ * Tokens de la franja herramientas (carrusel marcas + filtros + acciones): heredan a hijos vía CSS.
  */
 
-/* ===== PAGE CONTAINER ===== */
+/* ===== PAGE + TOKENS (hijos como BrandsCarousel leen var(--vehiculos-*) ) ===== */
 .page {
-  /* ✅ Migrado: Fondo principal → token semántico surface */
+  /* Superficie: ligero tinte frío, menos “plancha blanca” */
+  --vehiculos-strip-surface: color-mix(in srgb, var(--color-neutral-50, #f8fafc) 88%, #ffffff);
+  --vehiculos-strip-surface-strong: color-mix(in srgb, var(--color-neutral-100, #f1f5f9) 55%, #ffffff);
+  --vehiculos-strip-border: color-mix(in srgb, var(--color-neutral-900, #0f172a) 9%, transparent);
+  --vehiculos-strip-border-soft: color-mix(in srgb, var(--color-neutral-900, #0f172a) 5%, transparent);
+  /* Elevación: capa única + profundidad suave (mejor performance que múltiples inset) */
+  --vehiculos-strip-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.65) inset,
+    0 1px 2px rgba(15, 23, 42, 0.05),
+    0 12px 32px -16px rgba(15, 23, 42, 0.12);
+  --vehiculos-strip-radius: clamp(12px, 2.2vw, 16px);
   background-color: var(--color-surface, #ffffff);
   min-height: 100vh;
   padding-bottom: var(--spacing-6);
@@ -23,89 +30,193 @@
 
 /* ===== TITLE CONTAINER ===== */
 .titleContainer {
-  max-width: var(--container-max-width, 1400px);
-  margin-left: 16px;
-  margin-right: auto;
-  margin-top: 0;
-  margin-bottom: 0;
-  padding-top: 6px;
-  padding-bottom: 0;
-  padding-left: 0;
-  padding-right: 15px;
+  box-sizing: border-box;
   width: 100%;
+  max-width: var(--container-max-width, 1400px);
+  margin-left: auto;
+  margin-right: auto;
+  padding: clamp(0.5rem, 1.5vw, 0.75rem) var(--container-padding-mobile) 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+}
+
+@media (min-width: 768px) {
+  .titleContainer {
+    padding-left: var(--container-padding-desktop);
+    padding-right: var(--container-padding-desktop);
+  }
 }
 
 .titleSection {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 0.5rem;
   text-align: left;
   justify-content: flex-start;
   align-items: flex-start;
-  margin-bottom: 12px;
-  margin-top: 40px;
-  margin-left: 0;
-  margin-right: 0;
-  padding: 5px 0 0 15px;
+  margin: clamp(1.5rem, 4vw, 2.5rem) 0 0.75rem;
+  padding: 0;
   width: 100%;
   max-width: 100%;
 }
 
 .mainTitle {
-  font-size: 2.53125rem;
+  font-size: clamp(1.75rem, 4.2vw, 2.75rem);
   font-weight: var(--font-weight-bold, 700);
   color: var(--color-text-primary, #1a1a1a);
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 0.06em;
+  line-height: 1.1;
   font-family: var(--font-condensed, "Barlow Condensed", sans-serif);
   position: relative;
+}
+
+/* ===== BLOQUE HERRAMIENTAS: carrusel + filtros + botones (una sola pieza visual) ===== */
+/* Misma lógica que .titleContainer: max-width + padding-inline (evita desalinear derecha/izquierda vs el título) */
+.toolbarRegion {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: var(--container-max-width, 1400px);
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: clamp(1.25rem, 3vw, 1.75rem);
+  padding: 0 var(--container-padding-mobile);
+  position: relative;
+  z-index: 10;
+  background: var(--vehiculos-strip-surface);
+  border: 1px solid var(--vehiculos-strip-border-soft);
+  border-radius: var(--vehiculos-strip-radius);
+  box-shadow: var(--vehiculos-strip-shadow);
+}
+
+@media (min-width: 768px) {
+  .toolbarRegion {
+    padding-left: var(--container-padding-desktop);
+    padding-right: var(--container-padding-desktop);
+  }
 }
 
 /* ===== CAROUSEL SECTION ===== */
 .carouselSection {
   width: 100%;
-  background: transparent; /* ✅ Sin fondo para evitar doble borde */
-  padding: 0; /* ✅ Sin padding para evitar doble borde */
+  background: transparent;
+  padding: 0;
   position: relative;
-  z-index: 20; /* ✅ Por encima de los botones para que los dropdowns de los selects se vean arriba */
+  z-index: 20;
   display: flex;
   flex-direction: column;
-  gap: 0; /* ✅ Sin gap para evitar espacios */
-  border-radius: 0; /* ✅ Bordes rectos */
-  margin-bottom: 24px; /* ✅ Separación de la lista */
-  box-shadow: none; /* ✅ Sin sombra para evitar doble borde */
-  border: none; /* ✅ Sin borde */
+  gap: 0;
+  border-radius: 0;
+  margin-bottom: 0;
+  box-shadow: none;
+  border: none;
+}
+
+/* Carrusel de marcas: una columna si no hay overflow; con scroll, márgenes mínimos a los lados */
+.brandsCarouselRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+}
+
+.brandsCarouselRow_hasScroll {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0 0.2rem;
+  align-items: stretch;
+}
+
+/* Afinación horizontal: sin círculo ni borde; trazo fino (SVG) para no competir con chevrons de MultiSelect */
+.brandsToolbarArrow {
+  flex-shrink: 0;
+  place-self: center stretch;
+  width: 1.5rem;
+  min-width: 1.5rem;
+  max-width: 1.75rem;
+  margin: 0;
+  padding: 0 1px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: color-mix(in srgb, var(--color-neutral-500, #64748b) 52%, transparent);
+  z-index: 2;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease,
+    opacity 0.15s ease;
+}
+
+.brandsToolbarArrow:hover:not(:disabled) {
+  color: color-mix(in srgb, var(--color-neutral-600, #475569) 78%, transparent);
+  background-color: color-mix(in srgb, var(--color-neutral-900, #0f172a) 3.5%, transparent);
+}
+
+.brandsToolbarArrow:active:not(:disabled) {
+  background-color: color-mix(in srgb, var(--color-neutral-900, #0f172a) 6%, transparent);
+}
+
+.brandsToolbarArrow:disabled {
+  opacity: 0.2;
+  cursor: default;
+}
+
+@media (max-width: 768px) {
+  .brandsCarouselRow,
+  .brandsCarouselRow_hasScroll {
+    display: block;
+  }
+
+  .brandsToolbarArrow {
+    display: none;
+  }
+}
+
+@media (min-width: 769px) {
+  .brandsToolbarArrow:focus-visible {
+    outline: 1px solid color-mix(in srgb, var(--color-neutral-500, #64748b) 45%, transparent);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brandsToolbarArrow {
+    transition: none;
+  }
 }
 
 .filtersWrapper {
-  padding: 0 24px;
+  padding: 0;
+  width: 100%;
 }
 
 .actionButtons {
-  /* ✅ MOBILE-FIRST: Visible por defecto en mobile */
   display: flex;
-  gap: 0; /* ✅ Mobile: sin gap, pegados entre sí */
-  align-items: stretch; /* ✅ Mobile: estirar para ocupar toda la altura */
+  gap: 0;
+  align-items: stretch;
   position: relative;
-  z-index: 1; /* ✅ Por debajo del carouselSection para que los dropdowns de los selects queden arriba */
+  z-index: 1;
   border: none;
-  border-radius: 0; /* ✅ Bordes rectos */
-  /* ✅ Mobile: ancho completo */
+  border-radius: 0;
   width: 100%;
-  /* ✅ Mismo color de fondo que la página (no blanco del carrusel) */
-  background: var(--color-surface, #ffffff);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
-  margin-top: 0; /* ✅ Pegado al carrusel */
-  margin-bottom: 24px; /* ✅ Separación de la lista */
-  /* ✅ Mobile: padding adaptado, sin padding lateral para que quede pegado */
-  padding-left: 0;
-  padding-right: 0;
-  padding-top: 0; /* ✅ Sin padding superior para quedar pegado al carrusel */
-  padding-bottom: 12px; /* ✅ Mobile: padding inferior touch-friendly */
+  background: var(--vehiculos-strip-surface-strong);
+  box-shadow: none;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
+  border-top: 1px solid var(--vehiculos-strip-border-soft);
+}
+
+.toolbarRegion .actionButtons {
+  border-bottom-left-radius: var(--vehiculos-strip-radius);
+  border-bottom-right-radius: var(--vehiculos-strip-radius);
 }
 
 /* ✅ Desktop: Botones fuera del carrusel */
@@ -121,43 +232,42 @@
 }
 
 .actionButton {
-  /* ✅ Mobile: ocupa exactamente 50% del espacio (flex: 1 en su contenedor) */
   flex: 1;
-  width: 100%; /* ✅ Ancho completo del contenedor */
-  background: var(--color-surface, #ffffff);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  font-size: 0.875rem; /* ✅ Mobile: tamaño más pequeño para mejor legibilidad */
+  width: 100%;
+  background: transparent;
+  border: none;
+  font-size: 0.875rem;
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
   text-transform: none;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.03em;
   cursor: pointer;
-  padding: 12px 8px;
-  min-height: 48px;
-  border-radius: 8px;
-  border-right: 1px solid rgba(0, 0, 0, 0.08);
-  /* ✅ Sombra sutil para elegancia y profundidad */
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 14px 10px;
+  min-height: 50px;
+  border-radius: 0;
+  border-right: 1px solid var(--vehiculos-strip-border-soft);
+  box-shadow: none;
+  transition:
+    background-color 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    color 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.22s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
   font-family: var(--font-display);
   white-space: nowrap;
 }
 
-/* ✅ Radio en borde externo de cada botón (pegados en el centro) */
 .actionButtons > div:first-child .actionButton,
 .actionButtons > button:first-child {
-  border-radius: 8px 0 0 8px;
+  border-radius: 0;
 }
 .actionButtons > div:last-child .actionButton,
 .actionButtons > button:last-child {
   border-right: none;
-  border-radius: 0 8px 8px 0;
+  border-radius: 0;
 }
 
 /* ✅ Botones directos (sin contenedor): borde y radius */
@@ -168,17 +278,34 @@
   border-right: none;
 }
 
-.actionButton:hover {
-  background-color: var(--color-brand-500-rgba-10);
+.actionButton:hover:not(:disabled) {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-brand-500, #0066cc) 14%, #ffffff) 0%,
+    color-mix(in srgb, var(--color-brand-500, #0066cc) 9%, transparent) 100%
+  );
   color: var(--color-brand-600);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.actionButton:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-brand-500) 55%, transparent);
+  outline-offset: -2px;
+  z-index: 2;
 }
 
 .actionButton.active {
-  background: var(--color-brand-500-rgba-15);
+  background: color-mix(in srgb, var(--color-brand-500, #0066cc) 16%, transparent);
   color: var(--color-brand-600);
-  border-color: rgba(0, 102, 204, 0.25);
-  box-shadow: 0 1px 3px rgba(0, 102, 204, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.actionButton.active:hover:not(:disabled) {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-brand-500, #0066cc) 20%, #ffffff) 0%,
+    color-mix(in srgb, var(--color-brand-500, #0066cc) 12%, transparent) 100%
+  );
 }
 
 .actionButton svg {
@@ -201,20 +328,17 @@
 
 /* ===== CONTAINER ===== */
 .container {
+  box-sizing: border-box;
+  width: 100%;
   max-width: var(--container-max-width, 1400px);
   margin: 0 auto;
-  padding-top: 40px; /* ✅ Bastante más espacio arriba (mobile) */
-  padding-bottom: var(--spacing-6); /* ✅ Padding bottom mobile */
-  padding-left: 15px;
-  padding-right: 15px;
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
+  padding: clamp(2rem, 4vw, 3rem) var(--container-padding-mobile) var(--spacing-6);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  overflow-x: hidden;
+  /* No overflow-x: hidden — recortaba la 3ª columna cuando el grid superaba el ancho útil */
+  min-width: 0;
 }
 
 @media (min-width: 769px) {
@@ -226,7 +350,8 @@
 /* ===== VEHICLES GRID ===== */
 .vehiclesGrid {
   width: 100%;
-  padding-left: 0;
+  min-width: 0;
+  overflow: visible;
 }
 
 /* ===== PLACEHOLDERS (temporal) ===== */
@@ -293,17 +418,13 @@
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .container {
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: var(--container-padding-mobile);
+    padding-right: var(--container-padding-mobile);
   }
 
   .carouselSection {
-    border-radius: 0; /* ✅ Bordes rectos en mobile también */
+    border-radius: 0;
     padding-bottom: 0;
-  }
-
-  .filtersWrapper {
-    padding: 0 12px;
   }
 }
 
@@ -312,15 +433,12 @@
 /* Ambos deben usar 769px para mantener sincronización de botones y drawer */
 @media (min-width: 992px) {
   .container {
-    padding-top: 48px; /* ✅ Bastante más espacio arriba (desktop) */
+    padding-left: var(--container-padding-desktop);
+    padding-right: var(--container-padding-desktop);
+    padding-top: clamp(2.5rem, 4vw, 3rem);
     padding-bottom: 0;
   }
-  
-  .mainTitle {
-    /* ✅ Desktop: Título más grande */
-    font-size: 2.7rem;
-  }
-  
+
   .titleSection {
     /* ✅ Desktop: Fila horizontal */
     flex-direction: row;
@@ -340,22 +458,27 @@
     display: none;
   }
   
-  /* ✅ Desktop: Botones Filtrar y Ordenar con estilo coherente al carrusel */
+  /* Desktop: misma franja que el carrusel (toolbarRegion aporta caja + sombra) */
   .actionButtonsDesktop {
     display: flex !important;
     gap: 0;
     align-items: stretch;
     padding: 0;
-    margin-bottom: 32px;
+    margin-bottom: 0;
     margin-left: 0;
     width: 100%;
     position: relative;
-    z-index: 1; /* ✅ Por debajo del carouselSection para que los dropdowns de los selects queden arriba */
-    background: var(--color-surface, #ffffff);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
-    border-radius: 0 0 12px 0;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    z-index: 1;
+    background: var(--vehiculos-strip-surface-strong);
+    box-shadow: none;
+    border: none;
+    border-top: 1px solid var(--vehiculos-strip-border-soft);
+    border-radius: 0;
+  }
+
+  .toolbarRegion .actionButtonsDesktop {
+    border-bottom-left-radius: var(--vehiculos-strip-radius);
+    border-bottom-right-radius: var(--vehiculos-strip-radius);
   }
   
   .actionButtonsDesktop > div {
@@ -368,23 +491,26 @@
     flex: 1;
     width: 100%;
     font-size: 0.9375rem;
-    padding: 12px 20px;
+    padding: 14px 22px;
     min-height: 52px;
-    border-right: 1px solid rgba(0, 0, 0, 0.08);
+    border-right: 1px solid var(--vehiculos-strip-border-soft);
     gap: 8px;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.04em;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
   }
   
   .actionButtonsDesktop > div:first-child .actionButton,
   .actionButtonsDesktop > button:first-child {
-    border-radius: 8px 0 0 8px;
+    border-radius: 0;
   }
   
   .actionButtonsDesktop .actionButton:last-child,
   .actionButtonsDesktop > div:last-child .actionButton,
   .actionButtonsDesktop > button:last-child {
     border-right: none;
-    border-radius: 0 8px 8px 0;
+    border-radius: 0;
   }
   
   .actionButtonsDesktop > button:first-child {

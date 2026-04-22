@@ -1,3 +1,5 @@
+/* /planes — hero (solo copy); barra de modelos + carruseles en .planesListado */
+
 /* ===== PÁGINA PRINCIPAL ===== */
 .planesPage {
   width: 100%;
@@ -6,104 +8,252 @@
   background: var(--color-white);
 }
 
-/* ===== HEADER ===== */
-.header {
-  text-align: center;
-  margin-top: clamp(48px, 5vw, 64px);
-  margin-bottom: 0;
-  padding: 0 0 var(--spacing-2) 0;
-  min-height: auto;
+/*
+  Escala fluida (ratio ~1.2): kicker < lead < title
+  --hero-s-1: kicker · --hero-s-2: lead · --hero-s-3: título principal
+*/
+.planesHero {
+  --hero-s-1: clamp(0.6875rem, 0.6rem + 0.35vw, 0.75rem);
+  --hero-s-2: clamp(0.9375rem, 0.88rem + 0.35vw, 1.0625rem);
+  --hero-s-3: clamp(1.75rem, 1.35rem + 2vw, 2.625rem);
+  --hero-s-4: clamp(1rem, 0.92rem + 0.45vw, 1.1875rem);
+  --hero-gap-1: 0.5rem;
+  --hero-gap-2: 0.75rem;
+  --hero-gap-3: 1rem;
+  --hero-gap-4: 1.5rem;
+  --hero-gap-5: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem);
+  --hero-max: min(100%, 42rem);
+  --hero-accent: var(--color-brand-500);
+  --hero-accent-soft: var(--color-brand-50);
+
+  /* Banda a ancho de viewport: se funde con el fondo, sin caja ni borde */
+  position: relative;
+  width: 100vw;
+  max-width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  margin-top: clamp(0.25rem, 1.5vw, 0.75rem);
+  margin-bottom: clamp(2rem, 4vw, 2.75rem);
+  padding-top: clamp(1.5rem, 4vw, 2.5rem);
+  padding-bottom: clamp(1.75rem, 4vw, 2.75rem);
+  padding-left: max(var(--spacing-4), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--spacing-4), env(safe-area-inset-right, 0px));
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--hero-accent-soft) 92%, #fff) 0%,
+    #ffffff 55%,
+    #ffffff 100%
+  );
 }
 
-@media (max-width: 768px) {
-  .header {
-    margin-top: clamp(32px, 4vw, 48px);
-    margin-bottom: 0;
-    padding: 0 0 var(--spacing-6) 0;
-    min-height: auto;
-  }
-}
-
-.title {
-  font-size: clamp(2rem, 5vw, 3rem);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  font-family: var(--font-display);
-  margin: 0 0 var(--spacing-3) 0;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
-  color: var(--color-text-secondary);
-  margin: 0 auto var(--spacing-3);
-  font-weight: var(--font-weight-medium);
-  max-width: 45ch;
-  line-height: 1.5;
-  text-align: center;
-}
-
-/* ===== BOTONES DE MODELOS ===== */
-.modelosButtons {
+.planesHeroInner {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--spacing-3);
-  margin-top: var(--spacing-4);
-  margin-bottom: var(--spacing-6);
+  flex-direction: column;
+  gap: 0;
+  max-width: var(--hero-max);
+  margin-inline: auto;
 }
 
-.modeloButton {
-  --modelo-btn-violet: #3F45C6;
-  padding: var(--spacing-3) var(--spacing-5);
-  background: #ffffff;
-  color: var(--modelo-btn-violet);
-  border: 2px solid var(--modelo-btn-violet);
-  border-radius: var(--border-radius-md);
-  font-size: clamp(0.875rem, 2vw, 1rem);
+.planesHeroCopy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hero-gap-3);
+  text-align: center;
+}
+
+.planesHeroKicker {
+  margin: 0;
+  align-self: center;
+  padding: 0.35rem 0.75rem;
+  font-size: var(--hero-s-1);
   font-weight: var(--font-weight-semibold);
   font-family: var(--font-display);
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+  color: var(--color-brand-600);
+  background: color-mix(in srgb, var(--color-brand-100) 50%, #fff);
+  border: none;
+  border-radius: 9999px;
 }
 
-.modeloButton:hover {
-  background: var(--modelo-btn-violet);
-  color: var(--color-white);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+.planesHeroTitle {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--hero-gap-2);
+  font-family: var(--font-display);
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: var(--color-neutral-900);
 }
 
-.modeloButton:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.planesHeroTitleLine {
+  font-size: var(--hero-s-3);
+  font-weight: var(--font-weight-bold);
+  text-wrap: balance;
 }
 
-.modeloButton:focus-visible {
-  outline: 2px solid var(--modelo-btn-violet);
-  outline-offset: 2px;
+.planesHeroTitleAccent {
+  font-size: var(--hero-s-4);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.02em;
+  color: var(--hero-accent);
+  text-wrap: balance;
 }
 
-@media (max-width: 768px) {
-  .modelosButtons {
-    gap: var(--spacing-2);
-  }
-  
-  .modeloButton {
-    padding: var(--spacing-2) var(--spacing-4);
-    font-size: 0.875rem;
-  }
+.planesHeroLead {
+  margin: 0;
+  max-width: 38rem;
+  margin-inline: auto;
+  font-size: var(--hero-s-2);
+  line-height: 1.65;
+  font-weight: var(--font-weight-normal);
+  color: var(--color-neutral-600);
+  text-wrap: pretty;
 }
 
-/* ===== CONTENIDO ===== */
-.content {
+/* Listado: barra de saltos a modelo + carruseles (mismo ancho máximo) */
+.planesListado {
+  --hero-s-1: clamp(0.6875rem, 0.6rem + 0.35vw, 0.75rem);
+  --hero-gap-1: 0.5rem;
+  --hero-gap-2: 0.75rem;
+  --hero-gap-3: 1rem;
+  --hero-gap-4: 1.5rem;
+
   width: 100%;
   max-width: 1400px;
   margin: 0 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+}
+
+/* Barra de modelos: vive con el contenido de planes, no en el hero */
+.planesModelosBar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--hero-gap-3);
+  width: 100%;
+  min-width: 0;
+}
+
+.planesModelosBarLabel {
+  margin: 0;
+  text-align: center;
+  font-size: var(--hero-s-1);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-display);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+}
+
+.planesModeloChipList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--hero-gap-2);
+}
+
+.planesModeloChipItem {
+  margin: 0;
+  padding: 0;
+}
+
+.planesModeloChip {
+  --chip: var(--color-brand-500);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.5rem 1.125rem;
+  font-size: clamp(0.8125rem, 0.78rem + 0.2vw, 0.9375rem);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+  color: var(--color-neutral-800);
+  background: color-mix(in srgb, var(--color-neutral-100) 92%, #fff);
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: none;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform 160ms ease;
+}
+
+.planesModeloChip:hover {
+  background: var(--chip);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px color-mix(in srgb, var(--chip) 20%, transparent);
+}
+
+.planesModeloChip:active {
+  transform: translateY(0);
+}
+
+.planesModeloChip:focus-visible {
+  outline: 2px solid var(--chip);
+  outline-offset: 3px;
+}
+
+@media (min-width: 768px) {
+  .planesHeroCopy {
+    text-align: left;
+    align-items: flex-start;
+  }
+
+  .planesHeroKicker {
+    align-self: flex-start;
+  }
+
+  .planesHeroTitle {
+    align-items: flex-start;
+  }
+
+  .planesHeroLead {
+    margin-inline: 0;
+    text-align: left;
+  }
+
+  .planesModelosBarLabel {
+    text-align: left;
+  }
+
+  .planesModeloChipList {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 767px) {
+  .planesHero {
+    margin-bottom: var(--spacing-6);
+    padding-top: clamp(1.25rem, 4vw, 1.75rem);
+    padding-bottom: clamp(1.5rem, 4vw, 2rem);
+  }
+
+  .planesModeloChip {
+    min-height: 2.375rem;
+    padding: 0.4375rem 1rem;
+  }
+}
+
+/* ===== CARRUSELES POR MODELO (dentro de .planesListado) ===== */
+.content {
+  width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: clamp(0.75rem, 1.5vw, 1.25rem);

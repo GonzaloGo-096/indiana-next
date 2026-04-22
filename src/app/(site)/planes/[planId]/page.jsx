@@ -290,19 +290,28 @@ export default async function PlanDetallePage({ params }) {
   const imagenModelo = modeloSlug ? obtenerImagenPorModelo(modeloSlug) : null;
 
   return (
-    <div className={styles.container}>
-      {/* Botón de volver - Igual que usados */}
-      <div className={styles.backButton}>
+    <div
+      className={`${styles.container} w-full min-w-0 antialiased`}
+    >
+      <div className={`${styles.backRow} w-full`}>
         <Link href="/planes" className={styles.backLink}>
-          Todos los planes
+          <span className={styles.backChevron} aria-hidden>
+            ←
+          </span>
+          <span>Todos los planes</span>
         </Link>
       </div>
 
-      {/* Sección de plan - Mismo diseño visual que PlanCard expandido al viewport, sin contenedor tipo card */}
-      <section className={styles.planSection}>
-        {/* Header del plan - Alineado a la izquierda */}
+      {/* Sección de plan — CSS module (tipografía/cuotas/cubículos) + Tailwind (layout, a11y) */}
+      <section
+        className={`${styles.planSection} w-full min-w-0`}
+        aria-labelledby="plan-detalle-titulo"
+      >
         <div className={styles.planHeader}>
-          <h1 className={styles.planTitle}>
+          <h1
+            id="plan-detalle-titulo"
+            className={`${styles.planTitle} text-balance max-w-[42rem] mx-auto`}
+          >
             Plan {nombrePlan}
             {version && (
               <>
@@ -318,9 +327,14 @@ export default async function PlanDetallePage({ params }) {
         </div>
 
         {/* Grid principal: imagen izquierda, info derecha (desktop) */}
-        <div className={styles.planMainGrid}>
+        <div className={`${styles.planMainGrid} min-w-0`}>
           {/* Columna izquierda: Imagen del auto (solo desktop - Client Component para evitar carga en mobile) */}
-          {imagenModelo && <PlanImageDesktop imagenModelo={imagenModelo} />}
+          {imagenModelo && (
+            <PlanImageDesktop
+              imagenModelo={imagenModelo}
+              modeloSlug={modeloSlug || undefined}
+            />
+          )}
 
           {/* Columna derecha: Información del plan */}
           <div className={styles.planInfoColumn}>
@@ -397,7 +411,10 @@ export default async function PlanDetallePage({ params }) {
 
         {/* Una sola fila de cubículos: todos los datos distribuidos en el ancho */}
         {caracteristicas && (
-          <div className={styles.planDetailsSection}>
+          <div
+            className={`${styles.planDetailsSection} min-w-0`}
+            aria-label="Detalle de condiciones del plan"
+          >
               {/* Licitación mínima */}
               {caracteristicas.licitacion_minima && (
                 <div className={`${styles.detailCubicle} ${styles.detailCubicleWide}`}>
@@ -514,13 +531,14 @@ export default async function PlanDetallePage({ params }) {
         )}
       </section>
 
-      {/* Botón de contacto por WhatsApp */}
-      <section className={styles.contactSection}>
+      <section
+        className={`${styles.contactSection} border-t border-neutral-200/90 bg-neutral-50/90 rounded-b-lg`}
+      >
         <a
           href={`https://wa.me/543816295959?text=${encodeURIComponent(
             `Hola! Quiero consultar sobre el Plan ${plan.plan} - financiación Peugeot`
           )}`}
-          className={styles.contactButton}
+          className={`${styles.contactButton} shadow-sm transition-shadow hover:shadow-md`}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Consultar por WhatsApp"

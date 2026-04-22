@@ -43,9 +43,16 @@ export default function VehicleDetailClient({ vehicle }) {
 
   return (
     <div className={styles.container}>
-      <div className={styles.backButton}>
-        <button onClick={handleBack} className={styles.backLink}>
-          Lista completa
+      <div className={styles.backRow}>
+        <button
+          type="button"
+          onClick={handleBack}
+          className={styles.backLink}
+        >
+          <span className={styles.backChevron} aria-hidden>
+            ←
+          </span>
+          <span>Lista completa</span>
         </button>
       </div>
 

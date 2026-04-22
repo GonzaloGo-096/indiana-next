@@ -151,10 +151,12 @@ export async function POST(request) {
     // ✅ REVALIDAR TAGS
     const revalidated = []
 
-    // Revalidar lista de vehículos
+    // Revalidar lista de vehículos + todas las fichas (comparten tag `vehicle-detail` en vehiclesApi.server)
     if (revalidateList) {
       revalidateTag('vehicles-list')
       revalidated.push('vehicles-list')
+      revalidateTag('vehicle-detail')
+      revalidated.push('vehicle-detail')
     }
 
     // Revalidar vehículos individuales
