@@ -119,6 +119,7 @@ MemoizedCardAuto.displayName = "MemoizedCardAuto";
 const AutosGrid = memo(
   ({
     vehicles,
+    totalVehicles = 0,
     isLoading,
     isError,
     error,
@@ -171,6 +172,13 @@ const AutosGrid = memo(
       });
     }, [vehicles]);
 
+    const loadedCount = vehicles?.length || 0;
+    const totalCount = Number(totalVehicles) > 0 ? Number(totalVehicles) : 0;
+    const loadMoreLabel =
+      totalCount > 0
+        ? `${loadedCount.toLocaleString("es-AR")} / ${totalCount.toLocaleString("es-AR")}`
+        : `${loadedCount.toLocaleString("es-AR")}`;
+
     // Estado de carga inicial
     if (isLoading && (!vehicles || vehicles.length === 0)) {
       return <ListAutosSkeleton />;
@@ -203,21 +211,27 @@ const AutosGrid = memo(
         {/* Grid de vehículos */}
         <div className={styles.grid}>{vehiclesGrid}</div>
 
-        {/* ✅ BOTÓN "CARGAR MÁS" */}
-        {hasNextPage && (
+        {/* ✅ CONTADOR + BOTÓN "CARGAR MÁS" */}
+        {loadedCount > 0 && (
           <div className={styles.loadMoreSection}>
-            <button
-              type="button"
-              className={styles.loadMoreButton}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                handleLoadMore();
-              }}
-              disabled={isLoadingMore}
-            >
-              {isLoadingMore ? "Cargando..." : "Cargar más vehículos"}
-            </button>
+            <p className={styles.loadMoreMeta}>{loadMoreLabel}</p>
+            {hasNextPage && (
+              <button
+                type="button"
+                className={styles.loadMoreButton}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleLoadMore();
+                }}
+                disabled={isLoadingMore}
+              >
+                <span className={styles.loadMoreInner}>
+                  {isLoadingMore && <span className={styles.loadMoreSpinner} aria-hidden="true" />}
+                  <span>{isLoadingMore ? "Cargando vehículos..." : "Cargar más vehículos"}</span>
+                </span>
+              </button>
+            )}
           </div>
         )}
       </div>

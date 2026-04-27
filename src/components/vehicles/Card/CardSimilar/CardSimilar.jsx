@@ -38,8 +38,9 @@ import styles from "./CardSimilar.module.css";
  * @param {Object} props
  * @param {Object} props.auto - Datos del vehículo
  * @param {boolean} props.isPriority - Si es una de las primeras imágenes (LCP)
+ * @param {boolean} props.usadosCarousel - Más padding/gap en cuerpo (solo carrusel Usados)
  */
-export const CardSimilar = memo(({ auto, isPriority = false }) => {
+export const CardSimilar = memo(({ auto, isPriority = false, usadosCarousel = false }) => {
   const router = useRouter();
 
   const vehicleId = auto?.id || auto?._id;
@@ -136,7 +137,7 @@ export const CardSimilar = memo(({ auto, isPriority = false }) => {
 
   return (
     <div
-      className={styles.card}
+      className={`${styles.card}${usadosCarousel ? ` ${styles.cardUsadosCarousel}` : ""}`}
       data-testid="vehicle-card-similar"
       data-vehicle-id={vehicleId}
       onClick={handleCardClick}

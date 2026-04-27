@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { CardDetalle } from "../../../../components/vehicles/Detail/CardDetalle/CardDetalle";
 import SimilarVehiclesCarousel from "../../../../components/vehicles/SimilarVehiclesCarousel/SimilarVehiclesCarousel";
 import PriceRangeCarousel from "../../../../components/vehicles/PriceRangeCarousel/PriceRangeCarousel";
+import cta from "@/components/home/HomeSectionCtas.module.css";
 import styles from "./vehicle-detail.module.css";
 
 export default function VehicleDetailClient({ vehicle }) {
@@ -47,12 +48,10 @@ export default function VehicleDetailClient({ vehicle }) {
         <button
           type="button"
           onClick={handleBack}
-          className={styles.backLink}
+          className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline}`}
+          aria-label="Volver al listado de usados"
         >
-          <span className={styles.backChevron} aria-hidden>
-            ←
-          </span>
-          <span>Lista completa</span>
+          Atrás
         </button>
       </div>
 

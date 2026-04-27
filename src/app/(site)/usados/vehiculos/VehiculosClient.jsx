@@ -18,6 +18,7 @@
  */
 
 import { useState, useCallback, useMemo, useEffect, useLayoutEffect, useRef } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   buildSearchParams,
@@ -29,6 +30,7 @@ import {
 } from "../../../../utils/filters";
 import { vehiclesService } from "../../../../lib/services/vehiclesApi";
 import { mapVehiclesPage } from "../../../../lib/mappers/vehicleMapper";
+import cta from "@/components/home/HomeSectionCtas.module.css";
 import styles from "./vehiculos.module.css";
 
 import dynamic from "next/dynamic";
@@ -540,6 +542,15 @@ export default function VehiculosClient({
 
   return (
     <div className={`${styles.page} w-full min-w-0 antialiased`}>
+      <div className={`${styles.backRow} w-full min-w-0`}>
+        <Link
+          href="/usados"
+          className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline}`}
+          aria-label="Volver a usados"
+        >
+          Atrás
+        </Link>
+      </div>
       <div className={`${styles.titleContainer} w-full min-w-0`}>
         <div className={`${styles.titleSection} w-full min-w-0`}>
           <h1
@@ -667,6 +678,7 @@ export default function VehiculosClient({
         <div className={`${styles.vehiclesGrid} w-full min-w-0`}>
           <AutosGrid
             vehicles={sortedVehicles}
+            totalVehicles={data?.totalDocs || data?.total || 0}
             isLoading={isLoading}
             hasNextPage={data?.hasNextPage ?? false}
             isLoadingMore={isLoadingMore}

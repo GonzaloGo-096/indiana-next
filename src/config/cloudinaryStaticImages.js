@@ -9,11 +9,12 @@
  * - nav: Logo de navegación
  * - usados: Placeholder para vehículos
  * - postventa: Hero y servicios
- * - ceroKm: Modelos 0km
  * - footer: (reservado)
+ *
+ * Imágenes de tarjetas 0km (carruseles): ver getHomeCeroKmCardImage en data/modelos (catálogo COLORES).
  * 
  * @author Indiana Usados
- * @version 2.0.0 - Agregado ceroKm
+ * @version 2.1.0 - ceroKm movido a data/modelos (COLORES)
  */
 
 export const staticImages = {
@@ -67,51 +68,6 @@ export const staticImages = {
     hero: {
       src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1772030637/RRHH-desktop_ik9yap.webp",
       alt: "Trabajá con nosotros en Indiana Peugeot - Concesionaria oficial Peugeot",
-    },
-  },
-
-  ceroKm: {
-    modelos: {
-      "208": {
-        src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1766786931/208-blanco_au72bz.webp",
-        alt: "Peugeot 208 0km",
-        titulo: "208",
-      },
-      "2008": {
-        src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1766786948/2008-negro_utp7gx.webp",
-        alt: "Peugeot 2008 0km",
-        titulo: "2008",
-      },
-      "3008": {
-        src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1766786949/3008-azul_anat7b.webp",
-        alt: "Peugeot 3008 0km",
-        titulo: "3008",
-      },
-      "408": {
-        src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1767024250/408-gris_fsi73k.webp",
-        alt: "Peugeot 408 0km",
-        titulo: "408",
-      },
-      "5008": {
-        src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1766786949/5008-azul_sbtpad.png",
-        alt: "Peugeot 5008 0km",
-        titulo: "5008",
-      },
-      partner: {
-        src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1766786956/partner_blanca_epe2vd.webp",
-        alt: "Peugeot Partner 0km",
-        titulo: "Partner",
-      },
-      expert: {
-        src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1766786957/expert-blanca_bpowxc.webp",
-        alt: "Peugeot Expert 0km",
-        titulo: "Expert",
-      },
-      boxer: {
-        src: "https://res.cloudinary.com/drbeomhcu/image/upload/v1766786948/boxer-blanca_zsb84z.webp",
-        alt: "Peugeot Boxer 0km",
-        titulo: "Boxer",
-      },
     },
   },
 

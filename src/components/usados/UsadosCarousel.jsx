@@ -256,7 +256,7 @@ export const UsadosCarousel = ({
           )}
           {vehicles.map((vehicle, index) => (
             <div key={vehicle.id || vehicle._id} className={styles.cardWrapper}>
-              <CardSimilar auto={vehicle} isPriority={index < 2} />
+              <CardSimilar auto={vehicle} isPriority={index < 2} usadosCarousel />
             </div>
           ))}
           {viewportClip && (

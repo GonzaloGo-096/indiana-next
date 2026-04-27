@@ -15,6 +15,7 @@ import { vehiclesService } from "../../../lib/services/vehiclesApi.server";
 import { mapVehiclesPage } from "../../../lib/mappers/vehicleMapper";
 import UsadosPageCarousel from "./UsadosPageCarousel";
 import PromocionesCarousel from "./PromocionesCarousel";
+import cta from "@/components/home/HomeSectionCtas.module.css";
 import styles from "./usados.module.css";
 
 /**
@@ -145,7 +146,7 @@ export default async function UsadosPage() {
               <div className={styles.vehiclesHeaderRest}>
                 <Link
                   href="/usados/vehiculos"
-                  className={styles.verTodosButton}
+                  className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline} ${cta.buttonCompact}`}
                 >
                   Ver todos
                 </Link>

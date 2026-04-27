@@ -1,6 +1,7 @@
 import Image from "next/image";
 import styles from "./Hero.module.css";
 import { staticImages } from "../../config/cloudinaryStaticImages";
+import cta from "../home/HomeSectionCtas.module.css";
 
 /**
  * Hero - Sección principal de la página de inicio
@@ -49,6 +50,21 @@ const Hero = ({ className }) => {
         <p className={styles.subtitle}>
           Financiación a medida y asesoramiento profesional
         </p>
+
+        <div className={styles.heroCtas} role="navigation" aria-label="Ir a secciones">
+          <a
+            href="#home-0km"
+            className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline} ${styles.heroCtaButton}`}
+          >
+            Peugeot 0 km
+          </a>
+          <a
+            href="#home-usados"
+            className={`${cta.button} ${cta.buttonOnDark} ${cta.buttonInline} ${styles.heroCtaButton}`}
+          >
+            Usados
+          </a>
+        </div>
       </div>
     </section>
   );

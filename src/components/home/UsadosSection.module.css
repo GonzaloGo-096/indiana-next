@@ -1,15 +1,39 @@
 /**
  * UsadosSection.module.css - Estilos para sección Usados Multimarca
  * 
- * Diseño: Fondo claro, contenido centrado
+ * Fondo: leve gris en costados, centro más blanco; mitad inferior casi blanco puro
  * 
  * @author Indiana Peugeot
  * @version 1.0.0
  */
 
 .section {
+  scroll-margin-top: 5rem;
   padding: clamp(3rem, 7vw, 4.5rem) 0; /* Más comprimido arriba y abajo del logo */
-  background: var(--color-white);
+  /* Continuidad con CeroKmSection: mismo fondo + evita línea de 1px entre secciones */
+  margin-top: -1px;
+  /* Suelo: gris muy suave en costados + centro claro; desde ~mitad hacia abajo casi blanco */
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent 38%,
+      rgba(255, 255, 255, 0.45) 48%,
+      rgba(255, 255, 255, 0.82) 56%,
+      #ffffff 64%,
+      #ffffff 100%
+    ),
+    linear-gradient(
+      90deg,
+      #e9ecf2 0%,
+      #f0f2f7 8%,
+      #f7f8fb 22%,
+      #ffffff 50%,
+      #f7f8fb 78%,
+      #f0f2f7 92%,
+      #e9ecf2 100%
+    );
   color: var(--color-text-primary);
   position: relative;
   overflow: hidden;
@@ -37,32 +61,13 @@
   }
 }
 
-/* ✅ Efecto de transición muy sutil desde la sección negra (fade in desde arriba) */
-.section::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 30px;
-  background: linear-gradient(
-    to bottom,
-    rgba(10, 13, 20, 0.5) 0%,
-    rgba(10, 13, 20, 0.2) 50%,
-    rgba(255, 255, 255, 0.4) 80%,
-    rgba(255, 255, 255, 1) 100%
-  );
-  z-index: 0;
-  pointer-events: none;
-}
-
 .content {
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-5); /* Más comprimido que spacing-6 */
+  gap: var(--spacing-5);
   text-align: center;
   max-width: 1000px;
   margin: 0 auto;
@@ -75,121 +80,223 @@
   }
 }
 
-/* Bloque logo + título - más comprimido arriba y abajo del logo */
-.titleBlock {
+/* Encabezado al estilo CeroKm: logo izquierda, título + texto derecha */
+.headerIntro {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: clamp(0.15rem, 0.75vw, 0.55rem);
+  width: 100%;
+  max-width: min(52rem, 100%);
+  align-self: center;
+  text-align: left;
+}
+
+/* Logo: solo este bloque se acerca a la línea (::before en .headerCopy) */
+.headerLogo {
+  flex-shrink: 0;
+  width: clamp(82px, 12.8vw, 124px);
+  margin-right: clamp(-1.35rem, -3.5vw, -0.75rem);
+  filter: drop-shadow(0 6px 20px rgba(15, 23, 42, 0.08));
+}
+
+.headerLogoGradient {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  display: block;
+  background: linear-gradient(
+    135deg,
+    var(--color-brand-700, #040a5c) 0%,
+    var(--color-brand-600, #050f7a) 45%,
+    #1b5fd0 100%
+  );
+  -webkit-mask-image: url("/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp");
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-image: url("/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp");
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+  transform: scale(1.3);
+  /* Crece hacia la separación, no hacia afuera de la sección */
+  transform-origin: right center;
+}
+
+.headerCopy {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  padding-left: clamp(0.85rem, 2.2vw, 1.25rem);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-2);
-  text-align: center;
+  gap: 0;
+  font-family: var(--font-poppins, system-ui, sans-serif);
 }
 
-/* Wrapper con tamaño fijo; la imagen rellena con 100% width para evitar aviso de Next/Image */
-.titleLogoWrap {
-  width: clamp(100px, 16vw, 148px);
-  margin: 2px 0;
-  display: block;
+.headerCopy::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.15rem;
+  bottom: 0.25rem;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--color-neutral-200, #e5e7eb);
 }
 
-.titleLogoImg {
-  display: block;
-  object-fit: contain;
-}
-
+/* Misma jerarquía visual que CeroKm .heroTitle + .heroTitleRow */
 .title {
-  margin: 0;
-  font-family: var(--font-condensed);
-  font-size: clamp(2rem, 6vw, 3rem);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
+  margin: 0 0 clamp(0.65rem, 2vw, 1rem);
+  line-height: 1;
+}
+
+.titleRow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.28rem;
+}
+
+/* Kicker primero en DOM + row-reverse → orden visual regla|kicker y baseline del texto */
+.titleTail {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
+.titleBrand {
+  font-family: var(--font-condensed, system-ui, sans-serif);
+  font-size: clamp(2rem, 5.2vw, 3.15rem);
+  font-weight: 700;
+  color: var(--color-brand-800, #030714);
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  line-height: 1.02;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85),
+    0 10px 18px rgba(15, 23, 42, 0.14);
+}
+
+.titleRule {
+  flex: 0 0 auto;
+  width: 1px;
+  height: clamp(1.4rem, 3.8vw, 2.1rem);
+  margin-block: 0;
+  /* Solo más separación regla ↔ “Multimarca”; lado marca sigue cerrado */
+  margin-inline-start: clamp(0.12rem, 0.45vw, 0.3rem);
+  margin-inline-end: clamp(0.48rem, 1.45vw, 0.9rem);
+  align-self: center;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    rgba(209, 213, 219, 0) 0%,
+    #c4cedd 20%,
+    #aebccf 50%,
+    #c4cedd 80%,
+    rgba(209, 213, 219, 0) 100%
+  );
+}
+
+.titleKicker {
+  font-family: var(--font-condensed, system-ui, sans-serif);
+  font-size: clamp(1.35rem, 3.8vw, 2rem);
+  font-weight: 600;
+  color: var(--color-brand-600, #050f7a);
+  letter-spacing: 0.02em;
   line-height: 1.1;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.75),
+    0 8px 16px rgba(5, 15, 122, 0.18);
 }
 
 .description {
   margin: 0;
-  font-family: var(--font-poppins);
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
-  line-height: 1.7;
-  color: var(--color-text-secondary);
+  font-family: var(--font-poppins, system-ui, sans-serif);
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+  color: var(--color-neutral-700, #334155);
+  max-width: 38rem;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.72),
+    0 6px 14px rgba(15, 23, 42, 0.08);
+}
+
+/* Mismo criterio que CeroKm .heroLead: peso + color marca, sin subrayado */
+.descriptionLead {
+  font-weight: 600;
+  color: var(--color-brand-700, #040a5c);
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.68),
+    0 5px 12px rgba(4, 10, 92, 0.14);
+}
+
+/* Móvil: ajuste suave (mitad de intensidad): un poco más de logo, tipografía ligeramente menor */
+@media (max-width: 767px) {
+  .headerIntro {
+    align-items: center;
+    gap: clamp(0.2rem, 0.65vw, 0.45rem);
+  }
+
+  .headerLogo {
+    width: clamp(84px, 17.8vw, 122px);
+    margin-right: clamp(-0.95rem, -3.15vw, -0.535rem);
+  }
+
+  .headerCopy {
+    padding-left: clamp(0.75rem, 2vw, 1.125rem);
+  }
+
+  .title {
+    margin: 0 0 clamp(0.55rem, 1.8vw, 0.875rem);
+  }
+
+  .titleBrand {
+    font-size: clamp(1.775rem, 4.85vw, 2.75rem);
+  }
+
+  .titleKicker {
+    font-size: clamp(1.185rem, 3.4vw, 1.74rem);
+  }
+
+  .titleRule {
+    height: clamp(1.25rem, 3.4vw, 1.875rem);
+    margin-block: 0;
+    margin-inline-start: clamp(0.1rem, 0.4vw, 0.26rem);
+    margin-inline-end: clamp(0.42rem, 1.25vw, 0.78rem);
+  }
+
+  .description {
+    font-size: clamp(0.94rem, 2.08vw, 1.07rem);
+    line-height: 1.6;
+  }
+}
+
+@media (max-width: 420px) {
+  .headerIntro {
+    gap: 0.24rem;
+  }
+
+  .headerLogo {
+    width: clamp(78px, 21.5vw, 104px);
+    margin-right: clamp(-0.74rem, -4vw, -0.415rem);
+  }
 }
 
 .carouselSlot {
   width: 100%;
-  margin: var(--spacing-2) 0;
+  margin-top: clamp(1.5rem, 4vw, 2.75rem);
+  margin-bottom: var(--spacing-2);
   text-align: left; /* Evita herencia de text-align: center del .content (corrige posición de versión en cards) */
 }
 
-.buttonsContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-4);
-  justify-content: center;
-  align-items: center;
-}
-
-.button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-3) var(--spacing-6);
-  min-width: clamp(160px, 28vw, 240px);
-  height: clamp(44px, 7vw, 52px);
-  background: var(--color-white);
-  color: var(--color-brand-500);
-  border: 2px solid var(--color-brand-500);
-  border-radius: var(--border-radius-md);
-  text-decoration: none;
-  text-transform: none;
-  letter-spacing: 0.3px;
-  font-family: var(--font-condensed);
-  font-weight: var(--font-weight-bold);
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
-  line-height: 1;
-  transition: all var(--transition-fast);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  white-space: nowrap;
-}
-
-.button:hover {
-  background: var(--color-brand-500);
-  color: var(--color-white);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
-}
-
-.button:active {
-  transform: translateY(0);
-}
-
-.button:focus-visible {
-  outline: 2px solid var(--color-brand-500);
-  outline-offset: 2px;
-}
-
-/* Mobile: botones lado a lado, centrados con margen lateral */
 @media (max-width: 767px) {
   .section {
     overflow-x: hidden;
   }
-
-  .buttonsContainer {
-    flex-wrap: nowrap;
-    gap: var(--spacing-3);
-    width: 100%;
-    justify-content: center;
-    padding: 0 1.25rem;
-    box-sizing: border-box;
-  }
-
-  .button {
-    min-width: 0;
-    flex: 1;
-    max-width: 180px;
-    padding: var(--spacing-2) var(--spacing-4);
-    height: 42px;
-  }
 }
-

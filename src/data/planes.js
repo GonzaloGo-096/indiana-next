@@ -173,7 +173,7 @@ export const PLANES = [
       derecho_inscripcion_prorrateado: 12,
       sellado_prorrateado: 12,
       diferimiento_comercial: { "cuotas_1_12": "10%" },
-      recupero_diferimiento: { "cuotas_19_42": "5% de la alícuota" },
+      recupero_diferimiento: { "cuotas_19_42": "5%" },
     },
   },
   {
@@ -221,7 +221,7 @@ export const PLANES = [
         "cuotas_1_12": "20%",
         "cuotas_13_18": "10%",
       },
-      recupero_diferimiento: { "cuotas_25_72": "6.3% de la alícuota" },
+      recupero_diferimiento: { "cuotas_25_72": "6.3%" },
     },
   },
   {
@@ -242,7 +242,7 @@ export const PLANES = [
       derecho_inscripcion_prorrateado: 12,
       sellado_prorrateado: 12,
       diferimiento_comercial: { "cuotas_1_12": "10%" },
-      recupero_diferimiento: { "cuotas_19_42": "5% de la alícuota" },
+      recupero_diferimiento: { "cuotas_19_42": "5%" },
     },
   },
   {
@@ -265,7 +265,7 @@ export const PLANES = [
       derecho_inscripcion_prorrateado: 12,
       sellado_prorrateado: 12,
       diferimiento_comercial: { "cuotas_1_12": "10%" },
-      recupero_diferimiento: { "cuotas_19_42": "5% de la alícuota" },
+      recupero_diferimiento: { "cuotas_19_42": "5%" },
     },
   },
   {
@@ -290,7 +290,7 @@ export const PLANES = [
         "cuotas_1_12": "20%",
         "cuotas_13_18": "10%",
       },
-      recupero_diferimiento: { "cuotas_25_72": "6.3% de la alícuota" },
+      recupero_diferimiento: { "cuotas_25_72": "6.3%" },
     },
   },
 ]

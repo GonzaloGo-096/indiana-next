@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Hero from "../../components/Hero";
+import cta from "../../components/home/HomeSectionCtas.module.css";
 import { CeroKmSection } from "../../components/home/CeroKmSection";
 import { HomeUsadosSectionClient } from "../../components/home/HomeUsadosSectionClient";
 import { staticImages } from "../../config/cloudinaryStaticImages";
@@ -120,7 +121,7 @@ export default async function Home() {
                 </p>
                 <Link
                   href="/postventa"
-                  className={styles.postventaButton}
+                  className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline} ${styles.postventaButton}`}
                   aria-label="Conocé más sobre Post-venta"
                 >
                   Conocé más

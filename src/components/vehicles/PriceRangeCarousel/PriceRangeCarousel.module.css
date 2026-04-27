@@ -51,14 +51,16 @@
   flex-wrap: wrap;
 }
 
+/* Misma escala tipográfica que “Marca similar” (SimilarVehiclesCarousel .titleLabel) */
 .title {
-  font-size: clamp(1.25rem, 4vw, 1.75rem);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
   margin: 0;
   font-family: var(--font-condensed);
-  letter-spacing: 0.5px;
+  font-size: clamp(1.5rem, 4.8vw, 2.35rem);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
   text-transform: uppercase;
+  color: var(--color-text-primary);
+  line-height: 1.05;
 }
 
 .subtitle {
@@ -500,7 +502,7 @@
   }
 
   .title {
-    font-size: 1.125rem;
+    font-size: 1.35rem;
   }
 
   .subtitle {

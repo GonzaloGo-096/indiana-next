@@ -8,9 +8,11 @@
  * - Imágenes 2 y 3: se cargan después del load de la página (requestIdleCallback)
  * - Controles (flechas/dots): solo visibles cuando hay al menos 2 slides listos
  *
+ * Navegación: scroll horizontal con snap (touch / arrastre); flechas discretas.
+ *
  * @author Indiana Peugeot
  */
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { ChevronIcon } from "../../../components/ui/icons/ChevronIcon";
 import styles from "./usados.module.css";
 
@@ -41,9 +43,35 @@ function preloadImage(src) {
 export default function PromocionesCarousel() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showControls, setShowControls] = useState(false);
-  const [slideCount, setSlideCount] = useState(1); // Solo 1 slide hasta que carguen las demás
+  const [slideCount, setSlideCount] = useState(1);
+  const scrollerRef = useRef(null);
+  const scrollRaf = useRef(null);
 
-  // Preload imágenes 2 y 3 (desktop y mobile) después del load de la página
+  useEffect(
+    () => () => {
+      if (scrollRaf.current) cancelAnimationFrame(scrollRaf.current);
+    },
+    []
+  );
+
+  const syncSlideFromScroll = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const w = el.clientWidth;
+    if (w <= 0) return;
+    const idx = Math.round(el.scrollLeft / w);
+    const clamped = Math.max(0, Math.min(slideCount - 1, idx));
+    setCurrentSlide(clamped);
+  }, [slideCount]);
+
+  const onScroll = useCallback(() => {
+    if (scrollRaf.current) return;
+    scrollRaf.current = requestAnimationFrame(() => {
+      scrollRaf.current = null;
+      syncSlideFromScroll();
+    });
+  }, [syncSlideFromScroll]);
+
   useEffect(() => {
     const loadExtraImages = () => {
       const toPreload = [
@@ -75,17 +103,46 @@ export default function PromocionesCarousel() {
     }
   }, []);
 
-  const goPrev = useCallback(() => {
-    setCurrentSlide((s) => (s <= 0 ? slideCount - 1 : s - 1));
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    queueMicrotask(() => {
+      el.scrollLeft = 0;
+      setCurrentSlide(0);
+    });
   }, [slideCount]);
 
+  const goPrev = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const w = el.clientWidth;
+    if (w <= 0) return;
+    el.scrollBy({ left: -w, behavior: "smooth" });
+  }, []);
+
   const goNext = useCallback(() => {
-    setCurrentSlide((s) => (s >= slideCount - 1 ? 0 : s + 1));
-  }, [slideCount]);
+    const el = scrollerRef.current;
+    if (!el) return;
+    const w = el.clientWidth;
+    if (w <= 0) return;
+    el.scrollBy({ left: w, behavior: "smooth" });
+  }, []);
+
+  const goToSlide = useCallback((index) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const w = el.clientWidth;
+    if (w <= 0) return;
+    el.scrollTo({ left: index * w, behavior: "smooth" });
+  }, []);
 
   return (
     <div className={`${styles.promosCarousel} w-full min-w-0`}>
-      <div className={styles.promosCarouselTrack} style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
+      <div
+        ref={scrollerRef}
+        className={styles.promosCarouselScroller}
+        onScroll={onScroll}
+      >
         {Array.from({ length: slideCount }).map((_, i) => (
           <div
             key={i}
@@ -100,6 +157,7 @@ export default function PromocionesCarousel() {
                 loading={i === 0 ? "eager" : "lazy"}
                 fetchPriority={i === 0 ? "high" : "low"}
                 decoding="async"
+                draggable={false}
                 className={styles.promocionesImage}
               />
             </picture>
@@ -115,7 +173,7 @@ export default function PromocionesCarousel() {
             onClick={goPrev}
             aria-label="Ver promoción anterior"
           >
-            <ChevronIcon direction="left" size={24} />
+            <ChevronIcon direction="left" size={18} />
           </button>
           <button
             type="button"
@@ -123,7 +181,7 @@ export default function PromocionesCarousel() {
             onClick={goNext}
             aria-label="Ver siguiente promoción"
           >
-            <ChevronIcon direction="right" size={24} />
+            <ChevronIcon direction="right" size={18} />
           </button>
           <div className={styles.promosCarouselDots} role="tablist" aria-label="Navegación de promociones">
             {Array.from({ length: slideCount }).map((_, i) => (
@@ -134,7 +192,7 @@ export default function PromocionesCarousel() {
                 aria-selected={currentSlide === i}
                 aria-label={`Promoción ${i + 1}`}
                 className={`${styles.promosCarouselDot} ${currentSlide === i ? styles.promosCarouselDotActive : ""}`}
-                onClick={() => setCurrentSlide(i)}
+                onClick={() => goToSlide(i)}
               />
             ))}
           </div>

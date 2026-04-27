@@ -31,65 +31,13 @@
   }
 }
 
-/* ===== Volver al listado — mismo patrón que detalle usados (texto + flecha, sin borde) ===== */
+/* ===== Volver al listado — espacio; aspecto del botón: HomeSectionCtas en page.jsx ===== */
 .backRow {
   margin-top: var(--spacing-2);
   margin-bottom: 0;
   padding: 0 0 var(--spacing-4);
   width: 100%;
   box-sizing: border-box;
-}
-
-.backLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin: 0;
-  padding: 0.5rem 0.25rem 0.5rem 0;
-  min-height: 44px;
-  box-sizing: border-box;
-  background: none;
-  border: none;
-  border-radius: var(--border-radius-sm);
-  cursor: pointer;
-  font-family: var(--font-condensed);
-  font-size: clamp(0.9375rem, 1.8vw, 1rem);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-  letter-spacing: 0.02em;
-  text-decoration: none;
-  text-underline-offset: 3px;
-  transition: color var(--transition-fast);
-}
-
-.backChevron {
-  display: inline-block;
-  font-size: 1.05em;
-  line-height: 1;
-  color: var(--color-text-secondary);
-  opacity: 0.85;
-  transition:
-    color var(--transition-fast),
-    transform var(--transition-fast);
-}
-
-.backLink:hover {
-  color: var(--color-brand-500);
-}
-
-.backLink:hover .backChevron {
-  color: var(--color-brand-500);
-  opacity: 1;
-  transform: translateX(-2px);
-}
-
-.backLink:active .backChevron {
-  transform: translateX(-3px);
-}
-
-.backLink:focus-visible {
-  outline: 2px solid var(--color-brand-500);
-  outline-offset: 3px;
 }
 
 /* ===== SECCIÓN DE PLAN - Full viewport, sin apariencia de card ===== */
@@ -177,7 +125,7 @@
   align-items: flex-start;
 }
 
-/* Encaja al tamaño real de la imagen (no estira más allá del asset) */
+/* Desktop: encaja al asset. Mobile: ancho completo para que la foto no quede minúscula */
 .planImageInner {
   width: fit-content;
   max-width: 100%;
@@ -187,55 +135,9 @@
   gap: var(--spacing-3);
 }
 
+/* Estilo del enlace: HomeSectionCtas; solo posición en columna */
 .verModeloLink {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   align-self: flex-start;
-  padding: 0.5rem 1rem;
-  font-family: var(--font-condensed);
-  font-size: clamp(0.875rem, 1.6vw, 0.9375rem);
-  font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: var(--color-brand-500);
-  background: var(--color-white);
-  border: 1px solid rgba(63, 69, 198, 0.35);
-  border-radius: var(--border-radius-md);
-  transition:
-    background-color var(--transition-fast),
-    border-color var(--transition-fast),
-    color var(--transition-fast);
-}
-
-.verModeloLink:hover {
-  background: rgba(63, 69, 198, 0.06);
-  border-color: var(--color-brand-500);
-  color: var(--color-brand-600);
-}
-
-.verModeloLink:focus-visible {
-  outline: 2px solid var(--color-brand-500);
-  outline-offset: 2px;
-}
-
-/* Mobile: imagen arriba del contenido; tamaño = la foto, sin forzar ancho extra */
-@media (max-width: 1023px) {
-  .planImageColumn {
-    order: -1;
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto var(--spacing-4);
-    justify-content: center;
-  }
-}
-
-@media (min-width: 1024px) {
-  .planImageColumn {
-    display: flex;
-    justify-content: flex-start;
-  }
 }
 
 .planImage {
@@ -244,6 +146,38 @@
   height: auto;
   display: block;
   object-fit: contain;
+}
+
+/* Mobile: imagen arriba; ocupa todo el ancho útil (evita img “encogida” por fit-content + min-w-0) */
+@media (max-width: 1023px) {
+  .planImageColumn {
+    order: -1;
+    width: 100%;
+    max-width: 100%;
+    min-width: 100%;
+    margin: 0 auto var(--spacing-4);
+    justify-content: center;
+  }
+
+  .planImageInner {
+    width: 100%;
+    max-width: 100%;
+    align-items: center;
+  }
+
+  .planImage {
+    width: 100%;
+    max-width: min(100%, 42rem);
+    height: auto;
+    margin-inline: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .planImageColumn {
+    display: flex;
+    justify-content: flex-start;
+  }
 }
 
 /* ===== COLUMNA DERECHA: Información del plan ===== */
@@ -277,13 +211,14 @@
   gap: var(--spacing-4);
   margin-top: 20px;
   padding-top: var(--spacing-10);
+  text-align: left;
 }
 
-/* Desktop: todos los cubículos en una sola fila; Licitación mínima con más ancho */
+/* Desktop: fila de cubículos; primera columna al ancho del contenido (licitación sin ancho fijo) */
 @media (min-width: 768px) {
   .planDetailsSection {
     display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: max-content repeat(4, minmax(0, 1fr));
     align-items: start;
     padding-top: 3rem;
     margin-top: 1.5rem;
@@ -315,21 +250,14 @@
 }
 
 .detailCubicle {
-  flex: 1 1 160px;
-  min-width: 160px;
-  padding: var(--spacing-4) var(--spacing-3);
-  border-left: 1px solid rgba(0, 0, 0, 0.06);
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: var(--spacing-3) 0;
+  text-align: left;
 }
 
 .detailCubicle:first-child {
-  border-left: none;
   padding-left: 0;
-}
-
-/* Licitación mínima: más ancho para aprovechar espacio y meter las cuotas en fila */
-.detailCubicleWide {
-  flex: 2 1 280px;
-  min-width: 280px;
 }
 
 /* ===== CUOTA DESDE - Mismo fondo que precio en CardAuto, texto blanco ===== */
@@ -399,18 +327,19 @@
   text-rendering: optimizeLegibility;
 }
 
-/* ===== FILA INFERIOR - Grid 2x2: arriba valores móvil, abajo tipo plan y adjudicación (igual que PlanCard) ===== */
+/* ===== Cuatro datos: dos filas (cada fila = dos datos en línea), no grid 2×2 único ===== */
+/* Cuatro datos: grid 2×2 centrado (como antes) */
 .infoBottomRow {
   --info-row-gap: var(--spacing-5);
   --info-row-margin-bottom: var(--spacing-2);
-  
+
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* ✅ Grid de 2 columnas */
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--info-row-gap);
   margin-bottom: var(--info-row-margin-bottom);
   width: 100%;
   align-items: start;
-  justify-items: center; /* ✅ Centra el contenedor de cada item */
+  justify-items: center;
 }
 
 @media (max-width: 480px) {
@@ -419,21 +348,20 @@
   }
 }
 
-/* Eliminar layout de grid de infoBottomRowItem para que sus hijos participen del grid padre */
 .infoBottomRowItem {
-  display: contents; /* ✅ Sus hijos participan directamente del grid del padre */
+  display: contents;
 }
 
 .infoBottomItem {
   --info-item-gap: 0.375rem;
-  
+
   display: flex;
   flex-direction: column;
   gap: var(--info-item-gap);
   width: 100%;
   min-width: 0;
-  align-items: center; /* ✅ Centrado horizontal */
-  text-align: center; /* ✅ Texto centrado */
+  align-items: center;
+  text-align: center;
   justify-content: flex-start;
 }
 
@@ -528,22 +456,31 @@
   gap: var(--spacing-3);
 }
 
-/* Cubículos con poco contenido: una columna */
+/* Cubículos con poco contenido: una columna; contenido alineado a la izquierda */
 .detailCubicle .additionalSectionContent {
   grid-template-columns: 1fr;
   gap: var(--spacing-2);
+  justify-items: start;
 }
 
-/* Licitación mínima: 4 por fila, muy juntos y comprimidos */
+/* Licitación mínima: ancho natural por ítem (sin columnas 1fr fijas) */
 .detailCubicle .additionalSectionContent.hasMultipleItems {
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--spacing-1) var(--spacing-2);
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--spacing-2) var(--spacing-4);
+  align-items: flex-start;
+  justify-content: flex-start;
 }
 
 .detailCubicle .additionalSectionContent.hasMultipleItems .additionalItem {
+  flex: 0 0 auto;
+  width: auto;
   padding: var(--spacing-1) 0;
   gap: 0;
   min-width: 0;
+  align-items: flex-start;
+  text-align: left;
 }
 
 .detailCubicle .additionalSectionContent.hasMultipleItems .additionalItemLabel,
@@ -566,6 +503,11 @@
   padding: var(--spacing-3);
 }
 
+.detailCubicle .additionalItem {
+  align-items: flex-start;
+  text-align: left;
+}
+
 /* Misma línea: label | porcentaje (diferimiento / recupero) */
 .additionalItemRow {
   display: flex;
@@ -573,6 +515,12 @@
   align-items: center;
   gap: 8px;
   padding: var(--spacing-3);
+}
+
+.detailCubicle .additionalItemRow {
+  justify-content: flex-start;
+  align-items: baseline;
+  text-align: left;
 }
 
 .additionalItemSeparator {
@@ -720,10 +668,10 @@
 /* ===== BOTÓN DE CONTACTO WHATSAPP ===== */
 .contactSection {
   width: 100%;
-  margin-top: 4rem;
-  margin-bottom: var(--spacing-12);
-  padding-top: var(--spacing-12);
-  padding-bottom: var(--spacing-12);
+  margin-top: var(--spacing-8);
+  margin-bottom: var(--spacing-8);
+  padding-top: var(--spacing-4);
+  padding-bottom: var(--spacing-6);
   padding-left: 0;
   padding-right: 0;
   display: flex;
@@ -732,67 +680,28 @@
   box-sizing: border-box;
 }
 
-.contactButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  padding: clamp(0.875rem, 2vw, 1.125rem) clamp(2rem, 4vw, 2.5rem);
-  background: var(--color-white);
-  color: var(--color-text-primary);
-  border: 2px solid #25D366;
-  border-radius: var(--border-radius-md);
-  font-family: var(--font-display);
-  font-weight: var(--font-weight-semibold);
-  font-size: clamp(1rem, 2vw, 1.125rem);
-  line-height: 1;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background 0.2s, border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+/* WhatsApp: ContactButtons.module.css */
+
+/* CTA WhatsApp: un escalón por encima del .button genérico (solo esta página) */
+.planContactWhatsapp {
+  padding: 0.9375rem 1.875rem;
+  min-height: 3.125rem;
+  font-size: clamp(0.75rem, 1.55vw, 0.90625rem);
+  letter-spacing: 0.09em;
+  gap: 0.625rem;
 }
 
-.contactButton:hover {
-  background: #f0f0f0;
-  border-color: #128C7E;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
-}
-
-.contactButton:focus-visible {
-  outline: 2px solid #25D366;
-  outline-offset: 2px;
-}
-
-.contactButton:active {
-  transform: translateY(0);
-  background: #e5e5e5;
-}
-
-.whatsappIcon {
-  width: 24px;
-  height: 24px;
-  color: var(--color-text-primary);
+.planContactWhatsapp svg {
+  width: 1.5rem;
+  height: 1.5rem;
   flex-shrink: 0;
 }
 
 @media (max-width: 767px) {
   .contactSection {
-    margin-top: 3.5rem;
-    margin-bottom: var(--spacing-10);
-    padding-top: var(--spacing-10);
-    padding-bottom: var(--spacing-10);
-  }
-
-  .contactButton {
-    width: 100%;
-    max-width: 340px;
-    padding: 1rem 1.75rem;
-    font-size: 1.0625rem;
-    gap: 0.625rem;
-  }
-
-  .whatsappIcon {
-    width: 22px;
-    height: 22px;
+    margin-top: var(--spacing-6);
+    margin-bottom: var(--spacing-6);
+    padding-top: var(--spacing-3);
+    padding-bottom: var(--spacing-5);
   }
 }

@@ -17,7 +17,7 @@
   min-height: 500px;
   max-height: 900px;
   display: flex;
-  /* Mobile: contenido arriba */
+  /* Mobile: bloque centrado; desktop: bloque a la derecha (.content con texto alineado a la izquierda) */
   align-items: flex-start;
   justify-content: center;
   padding-top: 10vh;
@@ -52,6 +52,45 @@
   animation: slideUpFadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.7s forwards;
 }
 
+/* CTAs estilo HomeSectionCtas (misma animación que .ctaContainer) */
+.heroCtas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(0.75rem, 2vw, 1.2rem);
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: var(--spacing-4);
+  width: 100%;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: slideUpFadeIn 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.7s forwards;
+  position: relative;
+  z-index: 2;
+}
+
+/* Un escalón más grande que el CTA base (.heroCtas anida → gana sobre @media de HomeSectionCtas) */
+.heroCtas .heroCtaButton {
+  padding: 0.9rem 1.75rem;
+  min-height: 3.05rem;
+  font-size: clamp(0.74rem, 1.65vw, 0.88rem);
+  letter-spacing: 0.11em;
+}
+
+@media (max-width: 767px) {
+  .heroCtas .heroCtaButton {
+    padding: 0.8rem 1.25rem;
+    min-height: 2.9rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .heroCtas .heroCtaButton {
+    padding: 1.05rem 2.15rem;
+    min-height: 3.25rem;
+    font-size: clamp(0.78rem, 1.2vw, 0.92rem);
+  }
+}
+
 /* ===== IMAGEN DE FONDO ===== */
 /* Nota: opacity y transition están en la sección de animación arriba */
 .backgroundPicture {
@@ -68,10 +107,40 @@
 /* Mostrar mobile por defecto, desktop en pantallas grandes */
 .backgroundImageMobile {
   display: block;
+  transform: scale(1.22);
+  transform-origin: center center;
+  object-position: center 62%;
 }
 
 .backgroundImageDesktop {
   display: none;
+  /* Zoom interno del 408 sin modificar el tamaño del Hero */
+  transform: scale(1.38);
+  transform-origin: center center;
+  object-position: center 64%;
+}
+
+/* Pie del hero: más claro al centro del borde inferior, más sutil hacia los costados */
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(
+      ellipse 85% 52% at 50% 100%,
+      rgba(248, 252, 255, 0.5) 0%,
+      rgba(230, 240, 252, 0.22) 42%,
+      transparent 72%
+    ),
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent 58%,
+      rgba(228, 236, 248, 0.1) 74%,
+      rgba(200, 216, 236, 0.26) 100%
+    );
 }
 
 @media (min-width: 768px) {
@@ -91,35 +160,57 @@
   max-width: 600px;
   width: 100%;
   padding: 0 var(--spacing-4);
-  /* Mobile: centrado horizontal */
-  text-align: center;
+  text-align: left;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--spacing-4);
 }
 
 /* ===== TÍTULO ===== */
 .title {
   margin: 0;
-  color: var(--color-white);
+  color: #f8fbff;
   font-family: var(--font-condensed);
   font-size: clamp(2rem, 8vw, 3.5rem);
   font-weight: var(--font-weight-bold);
   line-height: 1.1;
   letter-spacing: 0.02em;
   text-transform: uppercase;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.22),
+    0 10px 24px rgba(2, 6, 23, 0.48),
+    0 3px 10px rgba(2, 6, 23, 0.36);
 }
 
 /* ===== SUBTÍTULO ===== */
 .subtitle {
   margin: 0;
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(246, 250, 255, 0.96);
   font-family: var(--font-condensed);
   font-size: clamp(1rem, 3vw, 1.25rem);
   font-weight: var(--font-weight-normal);
   line-height: 1.5;
   max-width: 500px;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.16),
+    0 7px 18px rgba(2, 6, 23, 0.44),
+    0 2px 8px rgba(2, 6, 23, 0.32);
+}
+
+@media (max-width: 767px) {
+  .content {
+    gap: calc((var(--spacing-3) + var(--spacing-4)) / 2);
+  }
+
+  .title {
+    font-size: clamp(1.84rem, 7.25vw, 3.1rem);
+  }
+
+  .subtitle {
+    font-size: clamp(0.94rem, 2.78vw, 1.15rem);
+    line-height: 1.475;
+  }
 }
 
 /* ===== CONTENEDOR CTAs ===== */
@@ -191,24 +282,28 @@
 /* Tablet: 768px+ */
 @media (min-width: 768px) {
   .hero {
-    /* Tablet/Desktop: contenido centrado verticalmente, a la derecha */
+    /* Bloque del copy a la derecha del viewport */
     align-items: center;
     justify-content: flex-end;
     padding-top: 0;
     padding-right: 5%;
+    padding-left: var(--spacing-4);
   }
 
   .content {
-    /* Alineado a la derecha */
-    text-align: right;
-    align-items: flex-end;
+    text-align: left;
+    align-items: flex-start;
     gap: var(--spacing-5);
     max-width: 500px;
   }
 
+  .heroCtas {
+    justify-content: flex-start;
+  }
+
   .ctaContainer {
     flex-direction: row;
-    justify-content: flex-end;
+    justify-content: flex-start;
     max-width: none;
     gap: var(--spacing-4);
   }
@@ -223,6 +318,7 @@
   .hero {
     height: 85vh;
     padding-right: 8%;
+    padding-left: var(--spacing-4);
   }
 
   .content {

@@ -27,6 +27,22 @@
   }
 }
 
+/* ===== Atrás — alineado al título; estilo del enlace: HomeSectionCtas ===== */
+.backRow {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--container-max-width, 1400px);
+  margin: 0 auto;
+  padding: clamp(0.75rem, 2vw, 1rem) var(--container-padding-mobile) 0;
+}
+
+@media (min-width: 768px) {
+  .backRow {
+    padding-left: var(--container-padding-desktop);
+    padding-right: var(--container-padding-desktop);
+  }
+}
+
 /* ===== TITLE CONTAINER ===== */
 .titleContainer {
   box-sizing: border-box;

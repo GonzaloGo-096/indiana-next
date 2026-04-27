@@ -89,6 +89,60 @@
   flex: 0 0 auto;
 }
 
+/* ===== Variant: Planes (/planes — carruseles por modelo) ===== */
+.dotsPlanes {
+  gap: 0.4rem;
+  padding: 0.28rem 0.5rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--color-neutral-100, #f3f4f6) 88%, #fff);
+  border: 1px solid color-mix(in srgb, var(--color-neutral-200, #e5e7eb) 65%, transparent);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.dotPlanes {
+  padding: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  box-sizing: content-box;
+  display: inline-block;
+  width: 7px;
+  height: 2.5px;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.16);
+  opacity: 0.85;
+  cursor: default;
+  transition:
+    width 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.3s ease;
+}
+
+.dotPlanes.clickable {
+  cursor: pointer;
+}
+
+.dotPlanes:hover {
+  background: rgba(15, 23, 42, 0.24);
+  opacity: 0.95;
+}
+
+.dotPlanesActive {
+  width: 15px;
+  background: color-mix(in srgb, var(--color-brand-700, #040a5c) 28%, rgba(15, 23, 42, 0.22));
+  opacity: 1;
+}
+
+.dotPlanesActive:hover {
+  background: color-mix(in srgb, var(--color-brand-700, #040a5c) 38%, rgba(15, 23, 42, 0.26));
+}
+
+.dotPlanes:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--color-brand-500, #061b9c) 38%, transparent);
+  outline-offset: 3px;
+}
+
 /* ===== Variant: Micro-Dash (2b) ===== */
 .dotDash {
   width: 10px;
@@ -231,6 +285,9 @@
     transition: none;
   }
   .dotMd3 {
+    transition: none;
+  }
+  .dotPlanes {
     transition: none;
   }
   .cometGroup {

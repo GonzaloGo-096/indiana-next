@@ -60,13 +60,16 @@
 
 .postventaTitle {
   margin: 0;
-  color: var(--color-text-primary);
+  color: var(--color-brand-800, #030714);
   font-family: var(--font-condensed);
   font-size: clamp(2rem, 6vw, 3rem);
   font-weight: var(--font-weight-bold);
   letter-spacing: 0.02em;
   text-align: center;
   text-transform: uppercase;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85),
+    0 10px 18px rgba(15, 23, 42, 0.12);
 }
 
 .postventaBanner {
@@ -142,41 +145,9 @@
   z-index: 0;
 }
 
+/* Capa sobre el banner; estilo en HomeSectionCtas (.button + .buttonWhite) */
 .postventaButton {
   position: relative;
   z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-3) var(--spacing-6);
-  background: var(--color-white);
-  color: var(--color-neutral-900);
-  border: 2px solid var(--color-white);
-  border-radius: var(--border-radius-md);
-  text-decoration: none;
-  text-transform: none;
-  letter-spacing: 0.3px;
-  font-family: var(--font-condensed);
-  font-weight: var(--font-weight-bold);
-  font-size: clamp(0.875rem, 2vw, 1rem);
-  line-height: 1;
-  transition: all var(--transition-fast);
   width: max-content;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-.postventaButton:hover {
-  background: transparent;
-  color: var(--color-white);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-}
-
-.postventaButton:active {
-  transform: translateY(0);
-}
-
-.postventaButton:focus-visible {
-  outline: 2px solid var(--color-white);
-  outline-offset: 2px;
 }

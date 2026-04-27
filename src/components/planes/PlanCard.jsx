@@ -4,6 +4,7 @@ import { memo } from "react";
 import Link from "next/link";
 import { formatPrice } from "../../utils/formatters";
 import { getModelo } from "../../data/modelos";
+import cta from "../home/HomeSectionCtas.module.css";
 import styles from "./PlanCard.module.css";
 
 /**
@@ -138,7 +139,10 @@ const PlanCardComponent = ({ plan, modelo }) => {
 
         {/* Botones de acción - siempre abajo con margin-top: auto */}
         <div className={styles.planActions}>
-          <Link href={`/planes/${plan.id}`} className={styles.actionButton}>
+          <Link
+            href={`/planes/${plan.id}`}
+            className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInCard} ${styles.actionButton}`}
+          >
             Ver plan
           </Link>
         </div>

@@ -127,12 +127,12 @@
 /* ===== CONTENEDOR DE CARRUSEL (scroll horizontal) ===== */
 .carouselContainer {
   display: flex;
-  gap: 1rem;
+  gap: clamp(1.15rem, 2.4vw, 1.5rem);
   overflow-x: auto;
   overflow-y: hidden;
   scroll-behavior: smooth;
   scroll-snap-type: x mandatory;
-  scroll-padding-inline: 0.75rem;
+  scroll-padding-inline: 1rem;
   padding: var(--spacing-3) var(--spacing-3) var(--spacing-5) var(--spacing-3);
 
   scrollbar-width: none;
@@ -212,9 +212,9 @@
   min-width: 240px;
 }
 
-/* Compact: cards más pequeñas (home), espaciado reducido entre ellas */
+/* Compact: cards más pequeñas (home mobile), más aire entre tarjetas */
 .carouselCompact .carouselContainer {
-  gap: 1.25rem;
+  gap: clamp(1.1rem, 3.2vw, 1.45rem);
 }
 
 .carouselCompact .cardWrapper {
@@ -222,8 +222,18 @@
   max-width: 260px;
 }
 
+/* Inicio usados (móvil): algo más de ancho por card */
+.carouselHomeDesktopFour.carouselCompact .cardWrapper {
+  min-width: 212px;
+  max-width: 268px;
+}
+
 .carouselCompact .cardWrapper :global(.card) {
   min-width: 200px;
+}
+
+.carouselHomeDesktopFour.carouselCompact .cardWrapper :global(.card) {
+  min-width: 212px;
 }
 
 /* ===== SKELETON LOADING ===== */
@@ -431,7 +441,7 @@
 /* ===== RESPONSIVE: TABLET Y DESKTOP ===== */
 @media (min-width: 768px) {
   .carouselContainer {
-    gap: 1.25rem;
+    gap: clamp(1.35rem, 2.2vw, 1.65rem);
     padding: var(--spacing-4) var(--spacing-4) var(--spacing-6) var(--spacing-4);
   }
 
@@ -450,7 +460,24 @@
   }
 
   .carouselCompact .carouselContainer {
-    gap: 1.25rem;
+    gap: clamp(1.25rem, 2.4vw, 1.55rem);
+  }
+
+  /* Inicio usados (tablet): cards un poco más anchas que el compact genérico */
+  .carouselHomeDesktopFour .cardWrapper {
+    min-width: 276px;
+    max-width: 292px;
+    width: 286px;
+    flex: 0 0 286px;
+  }
+
+  .carouselHomeDesktopFour .cardWrapper > :first-child {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 0 0 auto !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
   }
 
   .skeletonCard {
@@ -470,15 +497,15 @@
 /* Inicio desktop: ~4 cards; anchos acordes al sectionInner intermedio del home */
 @media (min-width: 992px) {
   .carouselHomeDesktopFour .carouselContainer {
-    gap: 0.75rem;
+    gap: clamp(1.25rem, 2.2vw, 1.75rem);
     padding: var(--spacing-4) var(--spacing-4) var(--spacing-6) var(--spacing-4);
   }
 
   .carouselHomeDesktopFour .cardWrapper {
-    min-width: 270px;
-    max-width: 270px;
-    width: 270px;
-    flex: 0 0 270px;
+    min-width: 294px;
+    max-width: 294px;
+    width: 294px;
+    flex: 0 0 294px;
   }
 
   /* CardSimilar: el root fija 320px; forzamos al ancho del wrapper y sin márgenes laterales */
@@ -494,7 +521,7 @@
 
 @media (min-width: 992px) {
   .carouselContainer {
-    gap: 1.25rem;
+    gap: clamp(1.35rem, 2vw, 1.65rem);
     padding: var(--spacing-4) var(--spacing-4) var(--spacing-6) var(--spacing-4);
   }
 
@@ -517,7 +544,7 @@
   }
 
   .carouselCompact .carouselContainer {
-    gap: 1.25rem;
+    gap: clamp(1.25rem, 2.4vw, 1.55rem);
   }
 
   .skeletonCard {
@@ -537,7 +564,7 @@
 /* ===== MOBILE: Ajustes específicos para pantallas pequeñas ===== */
 @media (max-width: 576px) {
   .carouselContainer {
-    gap: 0.75rem;
+    gap: clamp(0.95rem, 3.5vw, 1.25rem);
     padding: var(--spacing-2) var(--spacing-2) var(--spacing-3) var(--spacing-2);
   }
 
@@ -551,12 +578,21 @@
     max-width: 240px;
   }
 
+  .carouselHomeDesktopFour.carouselCompact .cardWrapper {
+    min-width: 192px;
+    max-width: 252px;
+  }
+
   .carouselCompact .cardWrapper :global(.card) {
     min-width: 180px;
   }
 
+  .carouselHomeDesktopFour.carouselCompact .cardWrapper :global(.card) {
+    min-width: 192px;
+  }
+
   .carouselCompact .carouselContainer {
-    gap: 0.75rem;
+    gap: clamp(0.95rem, 3.5vw, 1.25rem);
   }
 
   .skeletonCard {

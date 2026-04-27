@@ -19,6 +19,7 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 var(--spacing-4);
+  min-width: 0;
 }
 
 @media (min-width: 1024px) {
@@ -53,38 +54,12 @@
   min-width: 0;
 }
 
+/* Posición en cabecera; aspecto en HomeSectionCtas (.button) */
 .verTodosButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-2) var(--spacing-4);
-  background: var(--color-brand-500);
-  color: var(--color-white);
-  text-decoration: none;
-  font-size: clamp(0.8125rem, 2vw, 0.9375rem);
-  font-weight: var(--font-weight-semibold);
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-radius: var(--border-radius-md);
-  transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  white-space: nowrap;
   flex-shrink: 0;
-  margin-right: var(--spacing-3); /* ✅ Espacio del logo blanco */
-  will-change: transform, box-shadow; /* ✅ Optimización: GPU acceleration para hover */
-}
-
-.verTodosButton:hover {
-  background: var(--color-brand-600);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(6, 27, 156, 0.15);
-}
-
-.verTodosButton:active {
-  transform: translateY(0);
-  box-shadow: 0 1px 4px rgba(6, 27, 156, 0.1);
+  margin-right: var(--spacing-3);
+  white-space: nowrap;
+  align-self: center;
 }
 
 .modeloTitleIcon {
@@ -92,78 +67,49 @@
   display: block;
 }
 
-/* ===== CARRUSEL DE CARDS ===== */
-.carouselContainer {
-  width: 100%;
-  position: relative;
+/* ===== CARRUSEL (track + slides): botones vía 0km.module.css (.scrollButton) ===== */
+.planesCarouselSection {
+  padding: 0;
+  margin: 0;
   margin-top: var(--spacing-5);
-  overflow: visible;
 }
 
+.carouselWrapperInPlanes {
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* Ajustes sobre el track global .carousel de 0km */
 .carouselTrack {
-  display: flex;
   align-items: stretch;
-  gap: var(--spacing-5);
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-  padding: var(--spacing-2) 0;
-  scroll-padding: var(--spacing-2);
-  /* Espacio extra al final para que el último ítem llegue al centro y no quede cortado */
+  min-width: 0;
+  scroll-padding-inline: var(--spacing-2);
   padding-inline-end: max(var(--spacing-6), calc(50vw - 150px));
 }
 
-.carouselTrack::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
-}
-
-/* ===== FLECHAS - Siempre absolute, no quitan espacio al carrusel ===== */
-.arrowButton {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: none;
+/* Cada plan: en mobile el ancho lo define la PlanCard; en desktop ~52% del track */
+.carouselSlide {
+  flex: 0 0 auto;
   display: flex;
-  align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  z-index: 20;
-  background: var(--color-neutral-900);
-  color: var(--color-white);
+  min-width: 0;
 }
 
-.arrowButton:hover {
-  background: var(--color-neutral-800);
-  transform: translateY(-50%) scale(1.1);
-}
+@media (min-width: 769px) {
+  .carouselSlide {
+    flex: 0 0 calc((100% - var(--spacing-5)) * 0.52);
+    scroll-snap-align: start;
+    box-sizing: border-box;
+  }
 
-.arrowButton:active {
-  transform: translateY(-50%) scale(0.95);
-}
+  .carouselSlide:only-child {
+    flex: 0 0 auto;
+    scroll-snap-align: none;
+  }
 
-.arrowButton:disabled {
-  opacity: 0.25;
-  cursor: not-allowed;
-}
-
-.arrowButton:first-of-type {
-  left: 4px;
-}
-
-.arrowButton.arrowRight {
-  right: 4px;
-  left: auto;
-}
-
-/* Ocultar flechas en mobile */
-@media (max-width: 768px) {
-  .arrowButton {
-    display: none;
+  .carouselTrack:has(> :only-child) {
+    scroll-snap-type: none;
   }
 }
 

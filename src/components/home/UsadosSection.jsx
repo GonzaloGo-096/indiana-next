@@ -1,7 +1,7 @@
 import Link from "next/link";
-import Image from "next/image";
 import { HomeUsadosCarousel } from "./HomeUsadosCarousel";
 import styles from "./UsadosSection.module.css";
+import cta from "./HomeSectionCtas.module.css";
 
 /**
  * UsadosSection - Sección de Usados Multimarca en la página de inicio
@@ -14,42 +14,51 @@ import styles from "./UsadosSection.module.css";
 export function UsadosSection({ vehicles = [] }) {
   return (
     <section
+      id="home-usados"
       className={styles.section}
       aria-labelledby="usados-title"
     >
       <div className={styles.sectionInner}>
         <div className={styles.content}>
-          <div className={styles.titleBlock}>
-            <div className={styles.titleLogoWrap}>
-              <Image
-                src="/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp"
-                alt="Logo Indiana"
-                width={128}
-                height={128}
-                className={styles.titleLogoImg}
-                style={{ width: "100%", height: "auto", objectFit: "contain" }}
-                loading="lazy"
-                quality={90}
+          <div className={styles.headerIntro}>
+            {/* Misma familia que azul-solo (0 km); variante chica sin “INDIANA” arriba — mismo folder */}
+            <div className={styles.headerLogo}>
+              <span
+                className={styles.headerLogoGradient}
+                role="img"
+                aria-label="Logo Indiana Usados"
               />
             </div>
-            <h2 id="usados-title" className={styles.title}>
-              USADOS MULTIMARCA
-            </h2>
+            <div className={styles.headerCopy}>
+              <h2 id="usados-title" className={styles.title}>
+                <span className={styles.titleRow}>
+                  <span className={styles.titleBrand}>Usados</span>
+                  <span className={styles.titleTail}>
+                    <span className={styles.titleKicker}>Multimarca</span>
+                    <span className={styles.titleRule} aria-hidden="true" />
+                  </span>
+                </span>
+              </h2>
+              <p className={styles.description}>
+                <strong className={styles.descriptionLead}>Usados seleccionados</strong> al mejor
+                precio.{" "}
+                <strong className={styles.descriptionLead}>
+                  Con garantía, financiación y listos para retirar
+                </strong>
+                .
+              </p>
+            </div>
           </div>
-          <p className={styles.description}>
-            Amplia selección de vehículos usados de todas las marcas. Garantía
-            incluida, financiación disponible. Encontrá el auto que buscás al mejor precio.
-          </p>
           {vehicles.length > 0 && (
             <div className={styles.carouselSlot}>
               <HomeUsadosCarousel vehicles={vehicles} />
             </div>
           )}
-          <div className={styles.buttonsContainer}>
-            <Link href="/usados" className={styles.button}>
+          <div className={cta.buttonsContainer}>
+            <Link href="/usados/vehiculos" className={`${cta.button} ${cta.buttonWhite}`}>
               Ver todos los usados
             </Link>
-            <Link href="/usados#promociones" className={styles.button}>
+            <Link href="/usados" className={`${cta.button} ${cta.buttonWhite}`}>
               Ver promociones
             </Link>
           </div>

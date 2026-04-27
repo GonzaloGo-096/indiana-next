@@ -19,11 +19,9 @@
  */
 
 import React, { useMemo, useRef, useCallback, useState, useEffect } from "react";
-import Image from "next/image";
 import { CardSimilar } from "../Card/CardSimilar/CardSimilar";
 import { useSimilarVehicles } from "../../../hooks/useSimilarVehicles";
 import { ChevronIcon } from "../../ui/icons/ChevronIcon";
-import { getBrandLogo } from "../../../utils/getBrandLogo";
 import styles from "./SimilarVehiclesCarousel.module.css";
 
 /**
@@ -217,10 +215,10 @@ export const SimilarVehiclesCarousel = ({ currentVehicle }) => {
     return vehicles && vehicles.length > 0;
   }, [vehicles, isLoading]);
 
-  // ✅ Obtener logo de la marca
-  const brandLogo = useMemo(() => {
-    if (!currentVehicle?.marca) return null;
-    return getBrandLogo(currentVehicle.marca);
+  const marcaLabel = useMemo(() => {
+    const m = currentVehicle?.marca;
+    if (!m || typeof m !== "string") return "";
+    return m.trim();
   }, [currentVehicle]);
 
   if (!shouldShow && !isLoading) {
@@ -230,23 +228,18 @@ export const SimilarVehiclesCarousel = ({ currentVehicle }) => {
   return (
     <section className={styles.section} data-testid="similar-vehicles-carousel">
       <div className={styles.container}>
-        {/* Título: solo logo de la marca + "más" grande */}
         <div className={styles.header}>
-          <div className={styles.titleContainer}>
-            {brandLogo && (
-              <div className={styles.brandLogoWrapper}>
-                <Image
-                  src={brandLogo.src}
-                  alt={brandLogo.alt}
-                  width={80}
-                  height={80}
-                  className={styles.brandLogo}
-                  loading="lazy"
-                />
-              </div>
-            )}
-            <span className={styles.titleMas} aria-hidden="true">+</span>
-          </div>
+          <h2 className={styles.titleContainer}>
+            <span className={styles.titleLabel}>Marca similar</span>
+            {marcaLabel ? (
+              <>
+                <span className={styles.titleSep} aria-hidden="true">
+                  ·
+                </span>
+                <span className={styles.titleBrand}>{marcaLabel}</span>
+              </>
+            ) : null}
+          </h2>
         </div>
 
         {/* Carrusel horizontal */}

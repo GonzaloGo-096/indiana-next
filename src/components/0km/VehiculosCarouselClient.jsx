@@ -16,6 +16,11 @@ import styles from "../../app/(site)/0km/0km.module.css";
  * @param {boolean} props.compact - Cards más pequeñas (para home)
  * @param {boolean} props.fillParentWidth - Ancho del track = padre (home)
  * @param {boolean} props.softSurface - Cards menos contrastadas + más grandes y separadas (solo home / fondo oscuro)
+ * @param {boolean} props.frameless - Sin fondo ni borde de card (solo home / degradé)
+ * @param {boolean} props.bleedEdges - Ancho viewport, track al borde (home 0 km)
+ * @param {boolean} props.showActionButtons - Mostrar CTAs debajo de cada auto
+ * @param {boolean} props.fullViewport - Sección a ancho completo del viewport
+ * @param {boolean} props.okmShowcase - Estilos exclusivos para /0km
  */
 export function VehiculosCarouselClient({
   cards,
@@ -23,10 +28,16 @@ export function VehiculosCarouselClient({
   compact = false,
   fillParentWidth = false,
   softSurface = false,
+  frameless = false,
+  bleedEdges = false,
+  showActionButtons = false,
+  fullViewport = false,
+  okmShowcase = false,
 }) {
   const carouselRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const checkScrollButtons = useCallback(() => {
     const carousel = carouselRef.current;
@@ -35,6 +46,24 @@ export function VehiculosCarouselClient({
     const { scrollLeft, scrollWidth, clientWidth } = carousel;
     setCanScrollLeft(scrollLeft > 0);
     setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10);
+
+    const items = Array.from(carousel.children);
+    if (!items.length) {
+      setActiveIndex(0);
+      return;
+    }
+    const viewportCenter = scrollLeft + clientWidth / 2;
+    let closestIdx = 0;
+    let closestDist = Number.POSITIVE_INFINITY;
+    items.forEach((item, idx) => {
+      const itemCenter = item.offsetLeft + item.clientWidth / 2;
+      const dist = Math.abs(itemCenter - viewportCenter);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestIdx = idx;
+      }
+    });
+    setActiveIndex(closestIdx);
   }, []);
 
   useEffect(() => {
@@ -75,10 +104,18 @@ export function VehiculosCarouselClient({
     const carousel = carouselRef.current;
     if (!carousel) return;
 
-    const step = softSurface ? 820 : 650;
+    const step = softSurface ? 960 : 650;
     const scrollAmount = direction === "left" ? -step : step;
     carousel.scrollBy({ left: scrollAmount, behavior: "smooth" });
   };
+
+  const scrollToIndex = useCallback((index) => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+    const item = carousel.children[index];
+    if (!(item instanceof HTMLElement)) return;
+    item.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, []);
 
   const sectionClass = [
     styles.carouselSection,
@@ -86,6 +123,8 @@ export function VehiculosCarouselClient({
     variant === "dark" ? styles.carouselSectionDark : "",
     fillParentWidth ? styles.carouselSectionHomeDesktop : "",
     fillParentWidth && softSurface ? styles.carouselSectionHomeSpacious : "",
+    bleedEdges ? styles.carouselSectionBleed : "",
+    fullViewport ? styles.carouselSectionFullViewport : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -95,6 +134,23 @@ export function VehiculosCarouselClient({
       className={sectionClass}
       aria-label="Gama de Vehículos Peugeot 0km"
     >
+      {cards.length > 1 && (
+        <div className={styles.carouselProgressDots} aria-label="Posición del carrusel">
+          {cards.map((card, idx) => {
+            const isActive = idx === activeIndex;
+            return (
+              <button
+                key={`${card.key}-dot`}
+                type="button"
+                className={`${styles.carouselProgressDot} ${isActive ? styles.carouselProgressDotActive : ""}`}
+                onClick={() => scrollToIndex(idx)}
+                aria-label={`Ir al auto ${idx + 1}`}
+                aria-current={isActive ? "true" : "false"}
+              />
+            );
+          })}
+        </div>
+      )}
       <div
         className={`${styles.carouselWrapper}${fillParentWidth ? ` ${styles.carouselWrapperHome}` : ""}`}
       >
@@ -129,8 +185,13 @@ export function VehiculosCarouselClient({
                 alt={card.alt}
                 titulo={card.titulo}
                 slug={card.slug}
+                versionLabels={card.versionLabels}
+                hasPlanes={card.hasPlanes}
+                showActionButtons={showActionButtons}
+                okmShowcase={okmShowcase}
                 compact={compact}
                 softSurface={softSurface}
+                frameless={frameless}
               />
             </div>
           ))}

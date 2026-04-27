@@ -2,6 +2,7 @@
 
 /* ===== PÁGINA PRINCIPAL ===== */
 .planesPage {
+  --planes-content-max: 1400px;
   width: 100%;
   min-height: 100vh;
   padding: var(--spacing-6) var(--spacing-4);
@@ -22,7 +23,6 @@
   --hero-gap-3: 1rem;
   --hero-gap-4: 1.5rem;
   --hero-gap-5: clamp(1.5rem, 1.2rem + 1.5vw, 2.25rem);
-  --hero-max: min(100%, 42rem);
   --hero-accent: var(--color-brand-500);
   --hero-accent-soft: var(--color-brand-50);
 
@@ -53,67 +53,77 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  max-width: var(--hero-max);
+  width: 100%;
+  max-width: var(--planes-content-max);
   margin-inline: auto;
+  box-sizing: border-box;
 }
 
 .planesHeroCopy {
   display: flex;
   flex-direction: column;
-  gap: var(--hero-gap-3);
-  text-align: center;
+  align-items: flex-start;
+  text-align: left;
+  gap: clamp(0.55rem, 1.5vw, 0.85rem);
 }
 
-.planesHeroKicker {
-  margin: 0;
-  align-self: center;
-  padding: 0.35rem 0.75rem;
-  font-size: var(--hero-s-1);
+/* Antes “pill” kicker; ahora línea editorial como secciones home */
+.planesHeroEyebrow {
+  margin: 0 0 clamp(0.15rem, 0.5vw, 0.35rem);
+  font-family: var(--font-condensed, system-ui, sans-serif);
+  font-size: clamp(0.6875rem, 0.55rem + 0.45vw, 0.8125rem);
   font-weight: var(--font-weight-semibold);
-  font-family: var(--font-display);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-brand-600);
-  background: color-mix(in srgb, var(--color-brand-100) 50%, #fff);
-  border: none;
-  border-radius: 9999px;
+  color: var(--color-neutral-600);
+  line-height: 1.35;
 }
 
-.planesHeroTitle {
-  margin: 0;
+.planesHeroHeading {
+  margin: 0 0 clamp(0.45rem, 1.4vw, 0.75rem);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: var(--hero-gap-2);
-  font-family: var(--font-display);
-  line-height: 1.08;
-  letter-spacing: -0.03em;
+  align-items: flex-start;
+  gap: clamp(0.35rem, 1vw, 0.55rem);
+  font-family: var(--font-condensed, system-ui, sans-serif);
+  line-height: 1.05;
   color: var(--color-neutral-900);
 }
 
-.planesHeroTitleLine {
-  font-size: var(--hero-s-3);
+.planesHeroTitleMain {
+  margin: 0;
+  font-size: clamp(1.85rem, 4.8vw, 2.85rem);
   font-weight: var(--font-weight-bold);
+  letter-spacing: 0.03em;
   text-wrap: balance;
 }
 
-.planesHeroTitleAccent {
-  font-size: var(--hero-s-4);
+.planesHeroTitleTagline {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.85vw, 1.5rem);
   font-weight: var(--font-weight-semibold);
-  letter-spacing: -0.02em;
-  color: var(--hero-accent);
+  letter-spacing: 0.02em;
+  color: var(--color-brand-600, #050f7a);
+  line-height: 1.15;
   text-wrap: balance;
 }
 
 .planesHeroLead {
   margin: 0;
   max-width: 38rem;
-  margin-inline: auto;
-  font-size: var(--hero-s-2);
+  font-family: var(--font-poppins, system-ui, sans-serif);
+  font-size: clamp(0.9375rem, 0.88rem + 0.35vw, 1.0625rem);
   line-height: 1.65;
   font-weight: var(--font-weight-normal);
+  letter-spacing: 0.01em;
   color: var(--color-neutral-600);
   text-wrap: pretty;
+}
+
+/* Mismo criterio que CeroKm .heroLead / Usados .descriptionLead */
+.planesHeroLeadStrong {
+  font-weight: 600;
+  color: var(--color-brand-700, #040a5c);
 }
 
 /* Listado: barra de saltos a modelo + carruseles (mismo ancho máximo) */
@@ -125,7 +135,7 @@
   --hero-gap-4: 1.5rem;
 
   width: 100%;
-  max-width: 1400px;
+  max-width: var(--planes-content-max);
   margin: 0 auto;
   min-width: 0;
   display: flex;
@@ -169,65 +179,7 @@
   padding: 0;
 }
 
-.planesModeloChip {
-  --chip: var(--color-brand-500);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 2.5rem;
-  padding: 0.5rem 1.125rem;
-  font-size: clamp(0.8125rem, 0.78rem + 0.2vw, 0.9375rem);
-  font-weight: var(--font-weight-semibold);
-  font-family: var(--font-display);
-  letter-spacing: 0.01em;
-  color: var(--color-neutral-800);
-  background: color-mix(in srgb, var(--color-neutral-100) 92%, #fff);
-  border: none;
-  border-radius: 9999px;
-  cursor: pointer;
-  box-shadow: none;
-  transition:
-    background var(--transition-fast),
-    color var(--transition-fast),
-    box-shadow var(--transition-fast),
-    transform 160ms ease;
-}
-
-.planesModeloChip:hover {
-  background: var(--chip);
-  color: #fff;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--chip) 20%, transparent);
-}
-
-.planesModeloChip:active {
-  transform: translateY(0);
-}
-
-.planesModeloChip:focus-visible {
-  outline: 2px solid var(--chip);
-  outline-offset: 3px;
-}
-
 @media (min-width: 768px) {
-  .planesHeroCopy {
-    text-align: left;
-    align-items: flex-start;
-  }
-
-  .planesHeroKicker {
-    align-self: flex-start;
-  }
-
-  .planesHeroTitle {
-    align-items: flex-start;
-  }
-
-  .planesHeroLead {
-    margin-inline: 0;
-    text-align: left;
-  }
-
   .planesModelosBarLabel {
     text-align: left;
   }
@@ -244,10 +196,6 @@
     padding-bottom: clamp(1.5rem, 4vw, 2rem);
   }
 
-  .planesModeloChip {
-    min-height: 2.375rem;
-    padding: 0.4375rem 1rem;
-  }
 }
 
 /* ===== CARRUSELES POR MODELO (dentro de .planesListado) ===== */
@@ -337,53 +285,7 @@
   letter-spacing: 0.2px;
 }
 
-.contactButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: clamp(0.625rem, 1.5vw, 0.75rem) clamp(1.25rem, 3vw, 1.5rem);
-  background: var(--color-white);
-  color: var(--color-text-primary);
-  border: 2px solid #25D366;
-  border-radius: var(--border-radius-md);
-  font-family: var(--font-display);
-  font-weight: var(--font-weight-semibold);
-  font-size: clamp(0.9rem, 1.8vw, 1rem);
-  line-height: 1;
-  text-decoration: none;
-  white-space: nowrap;
-  cursor: pointer;
-  transition: 
-    background var(--transition-fast),
-    border-color var(--transition-fast),
-    transform var(--transition-fast),
-    box-shadow var(--transition-fast);
-}
-
-.contactButton:hover {
-  background: #f0f0f0;
-  border-color: #128C7E;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
-}
-
-.contactButton:focus-visible {
-  outline: 2px solid #25D366;
-  outline-offset: 2px;
-}
-
-.contactButton:active {
-  transform: translateY(0);
-  background: #e5e5e5;
-}
-
-.whatsappIcon {
-  width: 20px;
-  height: 20px;
-  color: var(--color-text-primary);
-  flex-shrink: 0;
-}
+/* WhatsApp: ContactButtons.module.css */
 
 @media (max-width: var(--mobile-max)) {
   .trustSection {
@@ -394,17 +296,6 @@
   .contactSection {
     margin: clamp(40px, 5vw, 56px) auto;
     padding: clamp(32px, 4vw, 40px) clamp(20px, 4vw, 28px);
-  }
-  
-  .contactButton {
-    padding: 0.625rem 1.25rem;
-    font-size: 0.9rem;
-    gap: 0.375rem;
-  }
-  
-  .whatsappIcon {
-    width: 18px;
-    height: 18px;
   }
 }
 

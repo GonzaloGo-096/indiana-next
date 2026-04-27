@@ -17,65 +17,13 @@
   overflow-x: hidden;
 }
 
-/* ===== Volver al listado (texto + flecha, sin borde) ===== */
+/* ===== Volver al listado — espacio; botón: HomeSectionCtas en VehicleDetailClient ===== */
 .backRow {
   margin-top: var(--spacing-2);
   margin-bottom: 0;
   padding: 0 0 var(--spacing-4);
   width: 100%;
   box-sizing: border-box;
-}
-
-.backLink {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin: 0;
-  padding: 0.5rem 0.25rem 0.5rem 0;
-  min-height: 44px;
-  box-sizing: border-box;
-  background: none;
-  border: none;
-  border-radius: var(--border-radius-sm);
-  cursor: pointer;
-  font-family: var(--font-condensed);
-  font-size: clamp(0.9375rem, 1.8vw, 1rem);
-  font-weight: var(--font-weight-medium);
-  color: var(--color-text-secondary);
-  letter-spacing: 0.02em;
-  text-decoration: none;
-  text-underline-offset: 3px;
-  transition: color var(--transition-fast);
-}
-
-.backChevron {
-  display: inline-block;
-  font-size: 1.05em;
-  line-height: 1;
-  color: var(--color-text-secondary);
-  opacity: 0.85;
-  transition:
-    color var(--transition-fast),
-    transform var(--transition-fast);
-}
-
-.backLink:hover {
-  color: var(--color-brand-500);
-}
-
-.backLink:hover .backChevron {
-  color: var(--color-brand-500);
-  opacity: 1;
-  transform: translateX(-2px);
-}
-
-.backLink:active .backChevron {
-  transform: translateX(-3px);
-}
-
-.backLink:focus-visible {
-  outline: 2px solid var(--color-brand-500);
-  outline-offset: 3px;
 }
 
 .content {
@@ -176,24 +124,6 @@
 
 .specValue {
   color: var(--color-text-primary);
-}
-
-.whatsappButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-2);
-  padding: var(--spacing-3) var(--spacing-5);
-  background: #25d366;
-  color: white;
-  text-decoration: none;
-  border-radius: var(--border-radius-md);
-  font-weight: var(--font-weight-semibold);
-  transition: background var(--transition-fast);
-}
-
-.whatsappButton:hover {
-  background: #20ba5a;
 }
 
 @media (min-width: 768px) {

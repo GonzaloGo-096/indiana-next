@@ -33,20 +33,17 @@
 
 .vehiclesHeader {
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.65rem 0.85rem;
   margin-bottom: 0;
-  flex-wrap: wrap;
-}
-
-@media (min-width: 640px) {
-  .vehiclesHeader {
-    flex-wrap: nowrap;
-  }
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 .vehiclesTitle {
   margin: 0;
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   align-self: center;
   min-width: 0;
   font-family: var(--font-condensed);
@@ -58,71 +55,18 @@
   text-align: left;
 }
 
-/* Zona a la derecha del título: “Ver todos” */
+/* “Ver todos”: misma fila que el título (mobile y desktop) */
 .vehiclesHeaderRest {
   position: relative;
-  flex: 1 1 auto;
+  flex: 0 0 auto;
   min-width: 0;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  align-self: stretch;
+  justify-content: flex-end;
+  align-self: center;
   box-sizing: border-box;
-  flex-basis: 100%;
-  padding: 0.4rem 0 0 0;
+  padding: 0;
   margin: 0;
-}
-
-@media (min-width: 640px) {
-  .vehiclesHeaderRest {
-    flex: 1 1 12rem;
-    flex-basis: auto;
-    justify-content: flex-start;
-    align-items: center;
-    padding: 0;
-  }
-}
-
-/* Ver todos: discreto, algo más chico, neutro con leve acento marca al hover */
-.verTodosButton {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.3rem 0.75rem;
-  min-height: 34px;
-  background: color-mix(in srgb, var(--color-neutral-100, #f1f5f9) 55%, #ffffff);
-  border: 1px solid color-mix(in srgb, var(--color-neutral-900, #0f172a) 9%, transparent);
-  color: color-mix(in srgb, var(--color-neutral-700, #404040) 88%, var(--color-brand-600, #0052a3));
-  text-decoration: none;
-  font-family: var(--font-condensed);
-  font-size: clamp(0.75rem, 1.65vw, 0.8125rem);
-  font-weight: var(--font-weight-semibold);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  border-radius: 9999px;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-  white-space: nowrap;
-  box-shadow: none;
-}
-
-.verTodosButton:hover {
-  background: color-mix(in srgb, var(--color-brand-500, #0066cc) 7%, #ffffff);
-  color: var(--color-brand-600, #0052a3);
-  border-color: color-mix(in srgb, var(--color-brand-500) 28%, var(--color-neutral-200));
-  box-shadow: 0 1px 3px color-mix(in srgb, var(--color-neutral-900) 6%, transparent);
-}
-
-.verTodosButton:active {
-  background: color-mix(in srgb, var(--color-brand-500) 11%, #ffffff);
-}
-
-.verTodosButton:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--color-brand-500) 40%, transparent);
-  outline-offset: 2px;
 }
 
 /* Contenedor del carrusel de stock (evita desbordes con scroll horizontal) */
@@ -309,7 +253,8 @@
   position: relative;
   width: 100%;
   overflow: hidden;
-  border-radius: 1rem;
+  /* Arriba a ras del nav; abajo mantiene redondeo */
+  border-radius: 0 0 1rem 1rem;
   box-shadow:
     0 4px 28px -14px color-mix(in srgb, var(--color-brand-500) 18%, transparent),
     0 2px 10px -4px rgba(0, 0, 0, 0.06);
@@ -323,18 +268,40 @@
   z-index: 1;
   pointer-events: none;
   border-radius: inherit;
-  box-shadow: inset 0 0 120px rgba(6, 27, 156, 0.06);
+  box-shadow: inset 0 0 100px rgba(6, 27, 156, 0.035);
 }
 
-.promosCarouselTrack {
+/* Carril con scroll horizontal + snap (touch / trackpad / arrastre) */
+.promosCarouselScroller {
   display: flex;
-  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-direction: row;
+  flex-wrap: nowrap;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+}
+
+.promosCarouselScroller:active {
+  cursor: grabbing;
+}
+
+.promosCarouselScroller::-webkit-scrollbar {
+  display: none;
 }
 
 .promosCarouselSlide {
   flex: 0 0 100%;
   min-width: 100%;
+  width: 100%;
   overflow: hidden;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
 }
 
 .promosCarouselSlide .promocionesImage {
@@ -343,6 +310,13 @@
   display: block;
   transform-origin: 50% 40%;
   will-change: transform;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Anula el border-radius de .promocionesImage en desktop: el clip lo define solo el contenedor */
+.promosCarousel .promocionesImage {
+  border-radius: 0;
 }
 
 /* Zoom lento solo en el slide visible (Ken Burns discreto) */
@@ -364,8 +338,8 @@
     animation: none;
   }
 
-  .promosCarouselTrack {
-    transition-duration: 0.01ms;
+  .promosCarouselScroller {
+    scroll-behavior: auto;
   }
 }
 
@@ -382,39 +356,39 @@
   top: 50%;
   left: var(--spacing-2);
   transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.94);
-  color: var(--color-brand-600);
-  border: 1px solid color-mix(in srgb, var(--color-neutral-200) 90%, transparent);
+  background: rgba(255, 255, 255, 0.42);
+  color: color-mix(in srgb, var(--color-brand-700) 72%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-neutral-300) 55%, transparent);
   border-radius: 50%;
   cursor: pointer;
-  box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.08),
-    0 6px 16px color-mix(in srgb, var(--color-brand-500) 10%, transparent);
+  opacity: 0.88;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  backdrop-filter: blur(5px);
   transition:
     background var(--transition-fast),
     color var(--transition-fast),
     border-color var(--transition-fast),
     box-shadow var(--transition-fast),
+    opacity var(--transition-fast),
     transform var(--transition-fast);
   z-index: 2;
 }
 
 .promosCarouselArrow:hover {
-  background: #fff;
-  color: var(--color-brand-500);
-  border-color: color-mix(in srgb, var(--color-brand-500) 28%, var(--color-neutral-200));
-  box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.1),
-    0 10px 24px color-mix(in srgb, var(--color-brand-500) 14%, transparent);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--color-brand-600);
+  border-color: color-mix(in srgb, var(--color-neutral-400) 50%, transparent);
+  opacity: 1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .promosCarouselArrow:active {
-  transform: translateY(-50%) scale(0.97);
+  transform: translateY(-50%) scale(0.96);
 }
 
 .promosCarouselArrow:focus-visible {
@@ -435,47 +409,52 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.75rem;
+  gap: 0.4rem;
+  padding: 0.32rem 0.5rem;
   margin: 0 auto;
   width: fit-content;
   max-width: calc(100% - 2rem);
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(6px);
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.035);
   z-index: 2;
 }
 
+/* Segmentos finos: el activo alarga con transición suave (sin “pastilla” fuerte) */
 .promosCarouselDot {
   width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--color-neutral-400) 45%, transparent);
-  background: rgba(255, 255, 255, 0.85);
+  height: 2.5px;
+  border-radius: 9999px;
+  border: none;
+  background: rgba(15, 23, 42, 0.18);
   cursor: pointer;
   padding: 0;
+  opacity: 0.85;
   transition:
-    background var(--transition-fast),
-    border-color var(--transition-fast),
-    transform var(--transition-fast);
+    width 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.35s ease;
 }
 
 .promosCarouselDot:hover {
-  background: var(--color-neutral-200);
-  border-color: var(--color-neutral-400);
+  background: rgba(15, 23, 42, 0.28);
+  opacity: 0.95;
 }
 
 .promosCarouselDotActive {
-  width: 22px;
-  border-radius: 9999px;
-  background: var(--color-brand-500);
-  border-color: var(--color-brand-500);
+  width: 15px;
+  background: color-mix(in srgb, var(--color-brand-700, #040a5c) 32%, rgba(15, 23, 42, 0.28));
+  opacity: 1;
 }
 
 .promosCarouselDotActive:hover {
-  background: var(--color-brand-600);
-  border-color: var(--color-brand-600);
+  background: color-mix(in srgb, var(--color-brand-700, #040a5c) 42%, rgba(15, 23, 42, 0.32));
+}
+
+.promosCarouselDot:focus-visible {
+  outline: 1px solid color-mix(in srgb, var(--color-brand-500, #061b9c) 40%, transparent);
+  outline-offset: 3px;
 }
 
 .promocionesTitle {

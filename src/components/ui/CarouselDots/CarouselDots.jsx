@@ -4,6 +4,7 @@
  * - count: cantidad de páginas (no elementos)
  * - activeIndex: índice activo actual
  * - onDotClick?: callback opcional para desplazar a una página
+ * - variant "planes": segmentos finos (página /planes, carruseles por modelo)
  */
 import React from "react";
 import styles from "./CarouselDots.module.css";
@@ -14,6 +15,9 @@ export const CarouselDots = ({
   onDotClick = null,
   variant = "pill",
 }) => {
+  const dotsClassName = [styles.dots, variant === "planes" ? styles.dotsPlanes : ""]
+    .filter(Boolean)
+    .join(" ");
   if (!count || count <= 1) return null;
   // Variante especial: 'comet' usa progress continuo en vez de índices discretos
   if (variant === "comet") {
@@ -38,7 +42,7 @@ export const CarouselDots = ({
   }
   const indices = Array.from({ length: count }, (_, i) => i);
   return (
-    <div className={styles.dots} role="tablist" aria-label="Indicador de carrusel">
+    <div className={dotsClassName} role="tablist" aria-label="Indicador de carrusel">
       {/* Marcador gris sutil al inicio y al final (solo variante autocity) */}
       {variant === "autocity" && (
         <span className={styles.edgeMarker} aria-hidden="true" />
@@ -56,6 +60,9 @@ export const CarouselDots = ({
         } else if (variant === "md3") {
           baseClass = styles.dotMd3;
           activeClass = styles.dotMd3Active;
+        } else if (variant === "planes") {
+          baseClass = styles.dotPlanes;
+          activeClass = styles.dotPlanesActive;
         } else if (variant === "autocity") {
           baseClass = styles.dotAuto;
           activeClass = styles.dotAutoActive;

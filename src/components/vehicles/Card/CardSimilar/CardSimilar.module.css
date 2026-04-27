@@ -510,6 +510,24 @@
     }
 }
 
+/* Carrusel Usados (home + /usados): cuerpo de tarjeta con más respiro */
+.cardUsadosCarousel {
+    --card-padding-base: var(--spacing-4);
+    --card-gap-base: var(--spacing-3);
+    --card-padding-compact: var(--spacing-3);
+    --card-gap-compact: var(--spacing-3);
+}
+
+.cardUsadosCarousel .container1_row3 {
+    --data-margin-top: var(--spacing-3);
+}
+
+@media (min-width: 768px) {
+    .cardUsadosCarousel .card__body {
+        --body-gap: var(--spacing-3);
+    }
+}
+
 /* ===== ACCESIBILIDAD: REDUCED MOTION ===== */
 @media (prefers-reduced-motion: reduce) {
     .card,

@@ -9,6 +9,7 @@
  */
 
 import Image from "next/image";
+import contact from "../ui/ContactButtons.module.css";
 import styles from "./PostventaServiceCard.module.css";
 import { staticImages } from "../../config/cloudinaryStaticImages";
 
@@ -74,13 +75,13 @@ export default function PostventaServiceCard({
         <div className={styles.buttonContainer}>
           <a
             href={whatsappUrl}
-            className={styles.whatsappButton}
+            className={`${contact.buttonWhatsapp} ${contact.buttonWhatsappFull}`}
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Contactar por WhatsApp sobre ${title}`}
           >
             <svg
-              className={styles.whatsappIcon}
+              className={contact.whatsappIcon}
               width="20"
               height="20"
               viewBox="0 0 24 24"

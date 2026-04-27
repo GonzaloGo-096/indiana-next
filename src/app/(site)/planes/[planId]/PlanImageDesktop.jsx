@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import cta from "@/components/home/HomeSectionCtas.module.css";
 import styles from "./plan-detalle.module.css";
 
 /**
@@ -33,7 +34,7 @@ export function PlanImageDesktop({ imagenModelo, modeloSlug }) {
   const modeloHref = modeloSlug ? `/0km/${encodeURIComponent(modeloSlug)}` : null;
 
   return (
-    <div className={`${styles.planImageColumn} min-w-0`}>
+    <div className={styles.planImageColumn}>
       <div className={styles.planImageInner}>
         <Image
           src={imagenModelo.url}
@@ -41,14 +42,13 @@ export function PlanImageDesktop({ imagenModelo, modeloSlug }) {
           width={960}
           height={640}
           className={styles.planImage}
-          sizes="(max-width: 1023px) 96vw, (max-width: 1280px) 45vw, 640px"
-          style={{ width: "auto", maxWidth: "100%", height: "auto" }}
+          sizes="(max-width: 1023px) 100vw, (max-width: 1280px) 50vw, 640px"
           loading="lazy"
         />
         {modeloHref && (
           <Link
             href={modeloHref}
-            className={styles.verModeloLink}
+            className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline} ${styles.verModeloLink}`}
             aria-label={`Ver ficha del modelo en 0km`}
           >
             Ver modelo

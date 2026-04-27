@@ -1,10 +1,10 @@
-import { getAllModelos } from "../../../data/modelos";
-import { staticImages } from "../../../config/cloudinaryStaticImages";
+import { getAllModelos, getHomeCeroKmCardImage } from "../../../data/modelos";
+import { getPlanesPorModelo } from "../../../data/planes";
 import { VehiculosCarouselClient } from "../../../components/0km/VehiculosCarouselClient";
 import { UtilitariosCarouselClient } from "../../../components/0km/UtilitariosCarouselClient";
 import { getSiteUrl, absoluteUrl } from "../../../lib/site-url";
-import Image from "next/image";
 import Link from "next/link";
+import cta from "../../../components/home/HomeSectionCtas.module.css";
 import styles from "./0km.module.css";
 
 /**
@@ -97,33 +97,65 @@ export default function CeroKilometrosPage() {
     (m) => !utilitariosKeys.includes(lower(m.slug))
   );
 
-  const vehiculosCards = veh.map((modelo) => {
-    const staticImage = staticImages.ceroKm.modelos[modelo.slug];
-    const imageSrc = staticImage?.src || modelo.heroImage?.url || "";
-    const imageAlt = staticImage?.alt || modelo.heroImage?.alt || modelo.nombre;
-    const titulo = staticImage?.titulo || modelo.nombre;
+  // Intercambiar posición de 2008 y 408 en el carrusel de vehículos
+  const vehOrdered = [...veh];
+  const idx2008 = vehOrdered.findIndex((m) => lower(m.slug) === "2008");
+  const idx408 = vehOrdered.findIndex((m) => lower(m.slug) === "408");
+  if (idx2008 >= 0 && idx408 >= 0) {
+    [vehOrdered[idx2008], vehOrdered[idx408]] = [vehOrdered[idx408], vehOrdered[idx2008]];
+  }
 
+  const getVersionLabels = (modelo) => {
+    const labels = (modelo?.versiones || [])
+      .map((v) => v?.nombreCorto || v?.nombre || "")
+      .map((name) => String(name).trim())
+      .filter(Boolean);
+
+    // 208: dejar una sola variante "ALLURE" y completar con el resto principal
+    if (String(modelo?.slug || "").toLowerCase() === "208") {
+      const unique208 = [];
+      let allureIncluded = false;
+
+      for (const label of labels) {
+        const isAllure = label.toUpperCase().startsWith("ALLURE");
+        if (isAllure) {
+          if (allureIncluded) continue;
+          unique208.push("ALLURE");
+          allureIncluded = true;
+          continue;
+        }
+        unique208.push(label);
+      }
+
+      return unique208.slice(0, 3);
+    }
+
+    return labels.slice(0, 3);
+  };
+
+  const vehiculosCards = vehOrdered.map((modelo) => {
+    const img = getHomeCeroKmCardImage(modelo);
     return {
       key: modelo.slug,
-      src: imageSrc,
-      alt: imageAlt,
-      titulo: titulo,
+      src: img?.url || "",
+      alt: img?.alt || modelo.nombre,
+      titulo: modelo.nombre,
       slug: modelo.slug,
+      versionLabels: getVersionLabels(modelo),
+      hasPlanes: getPlanesPorModelo(modelo.slug)?.length > 0,
     };
   });
 
   const utilitariosCards = util.map((modelo) => {
-    const staticImage = staticImages.ceroKm.modelos[modelo.slug];
-    const imageSrc = staticImage?.src || modelo.heroImage?.url || "";
-    const imageAlt = staticImage?.alt || modelo.heroImage?.alt || modelo.nombre;
-    const titulo = staticImage?.titulo || modelo.nombre;
-
+    const img = getHomeCeroKmCardImage(modelo);
     return {
       key: modelo.slug,
-      src: imageSrc,
-      alt: imageAlt,
-      titulo: titulo,
+      src: img?.url || "",
+      alt: img?.alt || modelo.nombre,
+      titulo: modelo.nombre,
       slug: modelo.slug,
+      versionLabels: getVersionLabels(modelo),
+      hasPlanes: getPlanesPorModelo(modelo.slug)?.length > 0,
     };
   });
 
@@ -141,57 +173,58 @@ export default function CeroKilometrosPage() {
         />
       )}
 
-      <div className={styles.sectionHeader}>
-        <div className={styles.sectionContent}>
-          <div className={styles.sectionLogoWrapper}>
-            <div className={styles.sectionLine}></div>
-            <Image
-              src="/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp"
-              alt="Logo Indiana Peugeot"
-              width={150}
-              height={150}
-              className={styles.sectionLogo}
-              style={{ width: "auto", height: "auto" }}
-              sizes="(max-width: 768px) 100px, 150px"
-              priority
-            />
-            <div className={styles.sectionLine}></div>
-          </div>
-          <h2 className={styles.sectionTitle}>Vehículos</h2>
-        </div>
-      </div>
-      <VehiculosCarouselClient cards={vehiculosCards} />
+      <header className={styles.pageIntro} aria-label="Presentación catálogo 0km">
+        <p className={styles.pageIntroKicker}>Catálogo Peugeot 0km</p>
+        <h1 className={styles.pageIntroTitle}>
+          Elegí tu <span className={styles.pageIntroTitleAccent}>Peugeot 0km</span>
+        </h1>
+        <p className={styles.pageIntroText}>
+          <strong className={styles.pageIntroLead}>
+            Compare modelos y versiones en una única presentación clara y ordenada
+          </strong>
+          . Seleccione la alternativa que mejor se adapte a su necesidad.
+        </p>
+      </header>
 
-      <div className={styles.sectionHeader}>
-        <div className={styles.sectionContent}>
-          <div className={styles.sectionLogoWrapper}>
-            <div className={styles.sectionLine}></div>
-            <Image
-              src="/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp"
-              alt="Logo Indiana Peugeot"
-              width={150}
-              height={150}
-              className={styles.sectionLogo}
-              style={{ width: "auto", height: "auto" }}
-              sizes="(max-width: 768px) 100px, 150px"
-              loading="lazy"
-            />
-            <div className={styles.sectionLine}></div>
-          </div>
-          <h2 className={styles.sectionTitle}>Utilitarios</h2>
-        </div>
+      <div className={styles.sectionHeaderTextOnly}>
+        <h2 className={styles.sectionTitle}>Vehículos</h2>
       </div>
+      <VehiculosCarouselClient
+        cards={vehiculosCards}
+        compact
+        softSurface
+        frameless
+        showActionButtons
+        fullViewport
+        okmShowcase
+      />
+
+      <div className={styles.sectionHeaderTextOnly}>
+        <h2 className={styles.sectionTitle}>Utilitarios</h2>
+      </div>
+
       {/* ✅ Client Component para interactividad del carrusel */}
-      <UtilitariosCarouselClient cards={utilitariosCards} />
+      <UtilitariosCarouselClient
+        cards={utilitariosCards}
+        compact
+        softSurface
+        frameless
+        showActionButtons
+        fullViewport
+        okmShowcase
+      />
 
       <section className={styles.financingBridge} aria-labelledby="financiacion-heading">
         <h3 id="financiacion-heading" className={styles.financingTitle}>Financiación disponible</h3>
         <div className={styles.financingContent}>
           <p className={styles.financingText}>
-            Consultá nuestros planes de financiación para modelos Peugeot 0km.
-            Opciones flexibles adaptadas a tu necesidad.
+            Conocé nuestros planes disponibles y elegí la alternativa que mejor te conviene
+            para financiar tu próximo 0km.
           </p>
-          <Link href="/planes" className={styles.financingLink}>
+          <Link
+            href="/planes"
+            className={`${cta.button} ${cta.buttonInline} ${styles.financingLink}`}
+          >
             Ver planes
           </Link>
         </div>

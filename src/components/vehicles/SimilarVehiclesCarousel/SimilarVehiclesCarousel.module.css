@@ -45,60 +45,46 @@
 
 .titleContainer {
   display: flex;
-  align-items: center;
-  justify-content: flex-start; /* ✅ Alineado a la izquierda */
-  gap: var(--spacing-3);
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 0.35rem 0.5rem;
   flex-wrap: wrap;
+  margin: 0;
+  font: inherit;
+  font-weight: inherit;
 }
 
-.brandLogoWrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.brandLogo {
-  width: 60px; /* ✅ Logo más grande */
-  height: 60px; /* ✅ Logo más grande */
-  object-fit: contain;
-  opacity: 0.9;
-}
-
-@media (min-width: 769px) {
-  .brandLogo {
-    width: 80px; /* ✅ Logo aún más grande en desktop */
-    height: 80px; /* ✅ Logo aún más grande en desktop */
-  }
-}
-
-.title {
-  font-size: clamp(1.25rem, 4vw, 1.75rem);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
+.titleLabel {
   margin: 0;
   font-family: var(--font-condensed);
-  letter-spacing: 0.5px;
+  font-size: clamp(1.5rem, 4.8vw, 2.35rem);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
   text-transform: uppercase;
+  color: var(--color-text-primary);
+  line-height: 1.05;
 }
 
-/* Solo logo + "más" muy grande como título */
-.titleMas {
-  font-size: clamp(2.5rem, 8vw, 4rem);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
+.titleSep {
   margin: 0;
   font-family: var(--font-condensed);
-  letter-spacing: -0.02em;
-  text-transform: lowercase;
-  line-height: 1;
+  font-size: clamp(1.15rem, 3.2vw, 1.65rem);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-secondary);
+  opacity: 0.4;
+  user-select: none;
 }
 
-.subtitle {
-  font-size: clamp(0.875rem, 2.5vw, 1rem);
-  color: var(--color-text-secondary);
+.titleBrand {
   margin: 0;
-  font-weight: var(--font-weight-normal);
+  font-family: var(--font-condensed);
+  font-size: clamp(0.75rem, 1.85vw, 0.875rem);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  line-height: 1.25;
+  opacity: 0.92;
 }
 
 /* ===== CARRUSEL WRAPPER ===== */
@@ -530,12 +516,12 @@
     margin-bottom: var(--spacing-4);
   }
 
-  .title {
-    font-size: 1.125rem;
+  .titleLabel {
+    font-size: 1.35rem;
   }
 
-  .subtitle {
-    font-size: 0.8125rem;
+  .titleBrand {
+    font-size: 0.75rem;
   }
 
   /*

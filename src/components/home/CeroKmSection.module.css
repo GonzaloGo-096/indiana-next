@@ -1,22 +1,121 @@
 /**
- * Peugeot 0 km — home. Misma grilla de ancho que Usados para continuidad visual.
+ * Peugeot 0 km — home. Mismo stack de fondo que Usados (continuidad sin costura).
  */
 
 .section {
-  /* Sin overlay tipo ::before: evitaba una franja horizontal bajo el hero */
-  padding: clamp(4.2rem, 9.6vw, 6rem) 0;
-  background: linear-gradient(
-    168deg,
-    #1e232b 0%,
-    #181c24 42%,
-    #12161e 100%
-  );
-  color: var(--color-white);
+  scroll-margin-top: 5rem;
+  padding: clamp(3.25rem, 7.5vw, 5.25rem) 0 clamp(3.5rem, 8vw, 5rem);
+  background-color: #ffffff;
+  background-image:
+    /*
+     * Misma capa vertical que UsadosSection (mismos stops).
+     * El velo se diluye antes del 100% para que en el pie se vea el suelo horizontal
+     * igual que en la primera fila de píxeles de Usados → sin “costura”.
+     */
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent 38%,
+      rgba(255, 255, 255, 0.45) 48%,
+      rgba(255, 255, 255, 0.82) 56%,
+      #ffffff 64%,
+      rgba(255, 255, 255, 0.55) 72%,
+      rgba(255, 255, 255, 0) 80%,
+      transparent 100%
+    ),
+    /* Refuerzo suave del carril central (carrusel) */
+    radial-gradient(
+      ellipse 115% 50% at 50% 74%,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(252, 253, 255, 0.22) 42%,
+      transparent 70%
+    ),
+    /* Cabecera: luz superior continua con el hero */
+    radial-gradient(
+      ellipse 88% 95% at 50% 8%,
+      rgba(255, 255, 255, 0.38) 0%,
+      rgba(250, 251, 253, 0.14) 46%,
+      transparent 76%
+    ),
+    /* Suelo horizontal = UsadosSection.section (costados gris muy leve, centro blanco) */
+    linear-gradient(
+      90deg,
+      #e9ecf2 0%,
+      #f0f2f7 8%,
+      #f7f8fb 22%,
+      #ffffff 50%,
+      #f7f8fb 78%,
+      #f0f2f7 92%,
+      #e9ecf2 100%
+    );
+  color: var(--color-neutral-900);
   position: relative;
-  overflow: hidden;
+  margin-top: -1px;
+  overflow-x: visible;
+  overflow-y: hidden;
+}
+
+/* Refuerzo de luz en el centro superior */
+.section::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 48%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 78% 95% at 50% 0%,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(248, 252, 255, 0.22) 52%,
+    rgba(255, 255, 255, 0) 86%
+  );
+}
+
+/*
+ * Leve énfasis en costados solo en la franja del carrusel (no oscurece hero ni pie).
+ * Misma familia cromática que el suelo (#e9ecf2), un poco más presente a los lados.
+ */
+.section::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(200, 210, 224, 0.45) 0%,
+    rgba(218, 224, 234, 0.2) 10%,
+    transparent 20%,
+    transparent 80%,
+    rgba(218, 224, 234, 0.2) 90%,
+    rgba(200, 210, 224, 0.45) 100%
+  );
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 42%,
+    #000 50%,
+    #000 78%,
+    transparent 86%
+  );
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 42%,
+    #000 50%,
+    #000 78%,
+    transparent 86%
+  );
 }
 
 .sectionInner {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: var(--container-max-width);
   margin: 0 auto;
@@ -56,137 +155,236 @@
   }
 }
 
-.titleBlock {
+/* Cabecera: escudo a la izquierda, título + subtítulo a la derecha */
+.heroIntro {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
-  gap: var(--spacing-2);
-  text-align: center;
+  gap: clamp(0.85rem, 2.8vw, 1.85rem);
+  width: 100%;
+  max-width: min(52rem, 100%);
+  align-self: center;
+  text-align: left;
 }
 
-.titleLogoWrap {
+.heroShield {
+  flex-shrink: 0;
   width: clamp(72px, 12vw, 112px);
-  margin: 2px 0;
-  display: block;
+  animation: ceroKmHeroShield 0.78s cubic-bezier(0.22, 1, 0.36, 1) both;
+  filter: drop-shadow(0 6px 20px rgba(15, 23, 42, 0.08));
 }
 
-.titleLogoImg {
+.heroShieldImg {
   width: 100%;
   height: auto;
   display: block;
   object-fit: contain;
 }
 
-.title {
-  margin: 0;
-  font-family: var(--font-condensed);
-  font-size: clamp(2rem, 6vw, 3rem);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-white);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  line-height: 1.1;
-  text-align: center;
+.heroCopy {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  padding-left: clamp(0.85rem, 2.2vw, 1.25rem);
+  animation: ceroKmHeroCopy 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+  font-family: var(--font-poppins, system-ui, sans-serif);
 }
 
-.titleSeparator {
-  color: var(--color-neutral-500);
-  margin: 0 0.15em;
-  font-weight: var(--font-weight-normal);
-  opacity: 0.85;
+.heroCopy::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.15rem;
+  bottom: 0.25rem;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--color-neutral-200, #e5e7eb);
 }
 
-.description {
-  margin: 0;
-  font-family: var(--font-poppins);
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
-  line-height: 1.7;
-  color: var(--color-neutral-200);
-}
-
-.carouselSlot {
-  width: 100%;
-  margin: var(--spacing-2) 0;
-  text-align: left;
-}
-
-.buttonsContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-4);
-  justify-content: center;
-  align-items: center;
-}
-
-.button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-4) var(--spacing-8);
-  min-width: clamp(200px, 32vw, 280px);
-  height: clamp(52px, 8vw, 60px);
-  background: var(--color-white);
-  color: var(--color-neutral-900);
-  border: 2px solid var(--color-white);
-  border-radius: var(--border-radius-md);
-  text-decoration: none;
-  text-transform: none;
-  letter-spacing: 0.3px;
-  font-family: var(--font-condensed);
-  font-weight: var(--font-weight-bold);
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
+.heroTitle {
+  margin: 0 0 clamp(0.65rem, 2vw, 1rem);
   line-height: 1;
-  transition: all var(--transition-fast);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  white-space: nowrap;
 }
 
-.button:hover {
-  background: transparent;
-  color: var(--color-white);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+.heroTitleRow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.28rem;
 }
 
-.button:active {
-  transform: translateY(0);
+.heroTitleTail {
+  display: inline-flex;
+  flex-direction: row-reverse;
+  flex-wrap: nowrap;
+  align-items: center;
 }
 
-.button:focus-visible {
-  outline: 2px solid var(--color-white);
-  outline-offset: 2px;
+/* Marca principal — display, mismo eje que el sitio */
+.heroTitleBrand {
+  font-family: var(--font-condensed, system-ui, sans-serif);
+  font-size: clamp(2rem, 5.2vw, 3.15rem);
+  font-weight: 700;
+  color: var(--color-brand-800, #030714);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.02;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.85),
+    0 10px 18px rgba(15, 23, 42, 0.14);
+}
+
+/* Regla fina editorial entre marca y “0 km” */
+.heroTitleRule {
+  flex: 0 0 auto;
+  width: 1px;
+  height: clamp(1.4rem, 3.8vw, 2.1rem);
+  margin-block: 0;
+  margin-inline-start: clamp(0.12rem, 0.45vw, 0.3rem);
+  margin-inline-end: clamp(0.48rem, 1.45vw, 0.9rem);
+  align-self: center;
+  border-radius: 999px;
+  /* Gris azulado suave, leve acento de marca en el centro */
+  background: linear-gradient(
+    180deg,
+    rgba(209, 213, 219, 0) 0%,
+    #c4cedd 20%,
+    #aebccf 50%,
+    #c4cedd 80%,
+    rgba(209, 213, 219, 0) 100%
+  );
+}
+
+/* “0 km”: secundario de marca, sin recuadro */
+.heroTitleKicker {
+  font-family: var(--font-condensed, system-ui, sans-serif);
+  font-size: clamp(1.35rem, 3.8vw, 2rem);
+  font-weight: 600;
+  color: var(--color-brand-600, #050f7a);
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.75),
+    0 8px 16px rgba(5, 15, 122, 0.18);
+}
+
+.heroSubtitle {
+  margin: 0;
+  font-size: clamp(1rem, 2.2vw, 1.125rem);
+  font-weight: 400;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+  color: var(--color-neutral-700, #334155);
+  max-width: 38rem;
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.72),
+    0 6px 14px rgba(15, 23, 42, 0.08);
+}
+
+/* Énfasis: solo peso y color de marca — sin subrayado */
+.heroLead {
+  font-weight: 600;
+  color: var(--color-brand-700, #040a5c);
+  text-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.68),
+    0 5px 12px rgba(4, 10, 92, 0.14);
+}
+
+@keyframes ceroKmHeroShield {
+  from {
+    opacity: 0;
+    transform: translateX(-18px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes ceroKmHeroCopy {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .button {
-    transition: none;
-  }
-
-  .button:hover {
-    transform: none;
+  .heroShield,
+  .heroCopy {
+    animation: none;
   }
 }
 
-/* Mobile: botones centrados con margen lateral */
+/* Móvil: mismo criterio que Usados, intensidad a mitad */
+@media (max-width: 767px) {
+  .heroIntro {
+    gap: clamp(0.55rem, 1.25vw, 1rem);
+  }
+
+  .heroShield {
+    width: clamp(84px, 18vw, 122px);
+  }
+
+  .heroTitle {
+    margin: 0 0 clamp(0.55rem, 1.8vw, 0.875rem);
+  }
+
+  .heroTitleBrand {
+    font-size: clamp(1.775rem, 4.85vw, 2.75rem);
+  }
+
+  .heroTitleKicker {
+    font-size: clamp(1.185rem, 3.4vw, 1.74rem);
+  }
+
+  .heroTitleRule {
+    height: clamp(1.25rem, 3.4vw, 1.875rem);
+    margin-block: 0;
+    margin-inline-start: clamp(0.1rem, 0.4vw, 0.26rem);
+    margin-inline-end: clamp(0.42rem, 1.25vw, 0.78rem);
+  }
+
+  .heroSubtitle {
+    font-size: clamp(0.94rem, 2.08vw, 1.07rem);
+    line-height: 1.6;
+  }
+
+  .heroCopy {
+    padding-left: clamp(0.75rem, 2vw, 1.125rem);
+  }
+}
+
+@media (max-width: 420px) {
+  .heroIntro {
+    gap: 0.525rem;
+  }
+
+  .heroShield {
+    width: clamp(76px, 21.5vw, 102px);
+  }
+}
+
+/* Carrusel a ancho viewport (fuera del max-width del hero) */
+.carouselFullBleed {
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  margin: var(--spacing-2) 0;
+}
+
+/* Acerca CTAs al carrusel (estilos de botón en HomeSectionCtas.module.css) */
+.ceroCtaPull {
+  margin-top: clamp(-1.5rem, -3.5vw, -0.5rem);
+}
+
 @media (max-width: 767px) {
   .section {
-    padding-top: clamp(2rem, 5vw, 2.5rem);
+    padding-top: clamp(2.5rem, 6vw, 3.25rem);
     overflow-x: hidden;
-  }
-
-  .buttonsContainer {
-    flex-wrap: nowrap;
-    gap: var(--spacing-3);
-    width: 100%;
-    justify-content: center;
-    padding: 0 1.25rem;
-    box-sizing: border-box;
-  }
-
-  .button {
-    min-width: 0;
-    flex: 1;
-    max-width: 180px;
   }
 }

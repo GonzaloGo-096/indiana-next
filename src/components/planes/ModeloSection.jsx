@@ -6,9 +6,10 @@ import Link from "next/link";
 import { getModelo, COLORES } from "../../data/modelos";
 import { PlanCard } from "./PlanCard";
 import { CarouselDots } from "../ui/CarouselDots/CarouselDots";
-import { ChevronIcon } from "../ui/icons/ChevronIcon";
 import { PeugeotIcon } from "../ui/icons/PeugeotIcon";
 import { getClosestChildIndex, scrollToChildIndex } from "../../utils/carouselActiveIndex";
+import cta from "../home/HomeSectionCtas.module.css";
+import kmStyles from "../../app/(site)/0km/0km.module.css";
 import styles from "./ModeloSection.module.css";
 
 /**
@@ -156,7 +157,10 @@ export const ModeloSection = ({ modelo, planes }) => {
             sizes="(max-width: 768px) 380px, 500px"
           />
           <div className={styles.modeloImageButtonContainer}>
-            <Link href={`/0km/${modelo}`} className={styles.modeloImageButton}>
+            <Link
+              href={`/0km/${modelo}`}
+              className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline} ${styles.modeloImageButton}`}
+            >
               Ver modelo
             </Link>
           </div>
@@ -192,10 +196,8 @@ export const ModeloSection = ({ modelo, planes }) => {
     setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10); // 10px de tolerancia
   };
 
-  // Indicador por ÍTEM (fotos + planes)
+  // Indicador por ítem (fotos + planes)
   const itemCount = (fotosColores?.length || 0) + (planes?.length || 0);
-  // Flechas solo en desktop cuando hay 4 o más ítems en el carrusel
-  const showArrows = itemCount >= 4;
   const [activeItem, setActiveItem] = useState(0);
   const checkActiveItem = () => {
     if (!scrollContainerRef.current) return;
@@ -239,23 +241,18 @@ export const ModeloSection = ({ modelo, planes }) => {
     }
   }, [planes, fotosColores]);
 
-  const scrollLeft = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: -400,
-        behavior: "smooth",
-      });
-    }
-  };
+  const scrollByPage = useCallback((direction) => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const step = Math.max(320, Math.round(el.clientWidth * 0.55));
+    el.scrollBy({
+      left: direction * step,
+      behavior: "smooth",
+    });
+  }, []);
 
-  const scrollRight = () => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: 400,
-        behavior: "smooth",
-      });
-    }
-  };
+  const scrollLeft = useCallback(() => scrollByPage(-1), [scrollByPage]);
+  const scrollRight = useCallback(() => scrollByPage(1), [scrollByPage]);
 
   return (
     <section className={`${styles.modeloSection} min-w-0 w-full`}>
@@ -264,45 +261,51 @@ export const ModeloSection = ({ modelo, planes }) => {
         Planes {modeloDisplay}
       </h2>
 
-      {/* Carrusel de cards */}
-      <div className={styles.carouselContainer}>
-        {/* Flecha izquierda - solo desktop, 3+ items */}
-        {showArrows && canScrollLeft && (
+      <section
+        className={`${kmStyles.carouselSection} ${styles.planesCarouselSection}`}
+        aria-label={`Planes ${modeloDisplay}`}
+      >
+        <div className={`${kmStyles.carouselWrapper} ${styles.carouselWrapperInPlanes}`}>
           <button
-            className={styles.arrowButton}
+            type="button"
+            className={`${kmStyles.scrollButton} ${kmStyles.scrollButtonLeft}`}
             onClick={scrollLeft}
+            disabled={!canScrollLeft}
             aria-label="Anterior"
           >
-            <ChevronIcon direction="left" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
           </button>
-        )}
 
-        {/* Contenedor de cards con scroll */}
-        <div ref={scrollContainerRef} className={styles.carouselTrack}>
-          {/* Primero: una foto del auto */}
-          {fotosCards}
-          {/* Luego: cards de planes */}
-          {planesCards}
-        </div>
+          <div
+            ref={scrollContainerRef}
+            className={`${kmStyles.carousel} ${styles.carouselTrack}`}
+          >
+            {fotosCards}
+            {planesCards}
+          </div>
 
-        {/* Flecha derecha - solo desktop, 3+ items */}
-        {showArrows && canScrollRight && (
           <button
-            className={`${styles.arrowButton} ${styles.arrowRight}`}
+            type="button"
+            className={`${kmStyles.scrollButton} ${kmStyles.scrollButtonRight}`}
             onClick={scrollRight}
+            disabled={!canScrollRight}
             aria-label="Siguiente"
           >
-            <ChevronIcon direction="right" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
           </button>
-        )}
-      </div>
+        </div>
+      </section>
 
       {/* Indicador de páginas del carrusel */}
       <div className={styles.carouselDots}>
         <CarouselDots
           count={itemCount}
           activeIndex={activeItem}
-          variant="autocity"
+          variant="planes"
           onDotClick={handleDotClick}
         />
       </div>

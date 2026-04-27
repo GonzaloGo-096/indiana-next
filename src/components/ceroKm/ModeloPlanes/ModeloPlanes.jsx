@@ -6,9 +6,10 @@ import { getPlanesPorModelo } from "../../../data/planes";
 import { getModelo } from "../../../data/modelos";
 import { PlanCard } from "../../planes/PlanCard";
 import { CarouselDots } from "../../ui/CarouselDots/CarouselDots";
-import { ChevronIcon } from "../../ui/icons/ChevronIcon";
 import { PeugeotIcon } from "../../ui/icons/PeugeotIcon";
 import { getClosestChildIndex, scrollToChildIndex } from "../../../utils/carouselActiveIndex";
+import cta from "../../home/HomeSectionCtas.module.css";
+import kmStyles from "../../../app/(site)/0km/0km.module.css";
 import styles from "./ModeloPlanes.module.css";
 
 /**
@@ -44,10 +45,8 @@ const ModeloPlanes = ({ modeloSlug }) => {
     setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 10); // 10px de tolerancia
   }, []);
 
-  // Indicador por ÍTEM (no por página)
+  // Indicador por ítem (cada plan es un slide)
   const itemCount = planes.length;
-  // Flechas solo en desktop cuando hay 4 o más cards
-  const showArrows = itemCount >= 4;
   const [activeItem, setActiveItem] = useState(0);
   const checkActiveItem = useCallback(() => {
     if (!scrollContainerRef.current) return;
@@ -91,29 +90,27 @@ const ModeloPlanes = ({ modeloSlug }) => {
     }
   }, [planes, checkScrollability, checkActiveItem]);
 
-  const scrollLeft = useCallback(() => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: -400,
-        behavior: "smooth",
-      });
-    }
+  const scrollByPage = useCallback((direction) => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const step = Math.max(280, Math.round(el.clientWidth * 0.52));
+    el.scrollBy({
+      left: direction * step,
+      behavior: "smooth",
+    });
   }, []);
 
-  const scrollRight = useCallback(() => {
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({
-        left: 400,
-        behavior: "smooth",
-      });
-    }
-  }, []);
+  const scrollLeft = useCallback(() => scrollByPage(-1), [scrollByPage]);
+
+  const scrollRight = useCallback(() => scrollByPage(1), [scrollByPage]);
 
   // Memoizar la lista de planes para evitar re-renders innecesarios
   const planesCards = useMemo(
     () =>
       planes.map((plan) => (
-        <PlanCard key={plan.id} plan={plan} modelo={modeloSlug} />
+        <div key={plan.id} className={styles.carouselSlide}>
+          <PlanCard plan={plan} modelo={modeloSlug} />
+        </div>
       )),
     [planes, modeloSlug]
   );
@@ -146,48 +143,59 @@ const ModeloPlanes = ({ modeloSlug }) => {
           <PeugeotIcon className={styles.modeloTitleIcon} size={48} color="#000000" />
           Planes {modeloDisplay}
         </h2>
-        <Link href="/planes" className={styles.verTodosButton}>
+        <Link
+          href="/planes"
+          className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline} ${styles.verTodosButton}`}
+        >
           Ver todos
         </Link>
       </div>
 
-      {/* Carrusel de cards */}
-      <div className={styles.carouselContainer}>
-        {/* Flecha izquierda - solo desktop, 4+ cards */}
-        {showArrows && canScrollLeft && (
+      {/* Carrusel: mismo patrón que 0 km (scrollButton + disabled) */}
+      <section
+        className={`${kmStyles.carouselSection} ${styles.planesCarouselSection}`}
+        aria-label={`Planes de financiación ${modeloDisplay}`}
+      >
+        <div className={`${kmStyles.carouselWrapper} ${styles.carouselWrapperInPlanes}`}>
           <button
-            className={styles.arrowButton}
+            type="button"
+            className={`${kmStyles.scrollButton} ${kmStyles.scrollButtonLeft}`}
             onClick={scrollLeft}
-            aria-label="Anterior"
+            disabled={!canScrollLeft}
+            aria-label="Planes anteriores"
           >
-            <ChevronIcon direction="left" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              <polyline points="15 18 9 12 15 6" />
+            </svg>
           </button>
-        )}
 
-        {/* Contenedor de cards con scroll */}
-        <div ref={scrollContainerRef} className={styles.carouselTrack}>
-          {/* Cards de planes - Memoizado para mejor performance */}
-          {planesCards}
-        </div>
+          <div
+            ref={scrollContainerRef}
+            className={`${kmStyles.carousel} ${styles.carouselTrack}`}
+          >
+            {planesCards}
+          </div>
 
-        {/* Flecha derecha - solo desktop, 4+ cards */}
-        {showArrows && canScrollRight && (
           <button
-            className={`${styles.arrowButton} ${styles.arrowRight}`}
+            type="button"
+            className={`${kmStyles.scrollButton} ${kmStyles.scrollButtonRight}`}
             onClick={scrollRight}
-            aria-label="Siguiente"
+            disabled={!canScrollRight}
+            aria-label="Planes siguientes"
           >
-            <ChevronIcon direction="right" />
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
           </button>
-        )}
-      </div>
+        </div>
+      </section>
 
       {/* Indicador de páginas del carrusel */}
       <div className={styles.carouselDots}>
         <CarouselDots
           count={itemCount}
           activeIndex={activeItem}
-          variant="autocity"
+          variant="planes"
           onDotClick={handleDotClick}
         />
       </div>

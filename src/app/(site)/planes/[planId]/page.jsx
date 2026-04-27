@@ -5,6 +5,8 @@ import { getModelo, COLORES } from "../../../../data/modelos";
 import { absoluteUrl } from "../../../../lib/site-url";
 import { formatPrice } from "../../../../utils/formatters";
 import { PlanImageDesktop } from "./PlanImageDesktop";
+import cta from "@/components/home/HomeSectionCtas.module.css";
+import contact from "@/components/ui/ContactButtons.module.css";
 import styles from "./plan-detalle.module.css";
 
 /**
@@ -90,6 +92,14 @@ function formatearRangoCuotas(rango, useCts = false) {
     return useCts ? `Cts. ${match[1]} a ${match[2]}` : `cuotas ${match[1]} a ${match[2]}`;
   }
   return conEspacios;
+}
+
+/** Recupero diferimiento: en datos puede venir "5% de la alícuota" — en pantalla solo el % */
+function soloPorcentajeRecupero(valor) {
+  if (valor == null || valor === "") return "";
+  const s = String(valor).trim();
+  const m = s.match(/^[\d]+(?:[.,]\d+)?%/);
+  return m ? m[0].replace(",", ".") : s;
 }
 
 /**
@@ -294,11 +304,12 @@ export default async function PlanDetallePage({ params }) {
       className={`${styles.container} w-full min-w-0 antialiased`}
     >
       <div className={`${styles.backRow} w-full`}>
-        <Link href="/planes" className={styles.backLink}>
-          <span className={styles.backChevron} aria-hidden>
-            ←
-          </span>
-          <span>Todos los planes</span>
+        <Link
+          href="/planes"
+          className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline}`}
+          aria-label="Volver al listado de planes"
+        >
+          Atrás
         </Link>
       </div>
 
@@ -360,7 +371,7 @@ export default async function PlanDetallePage({ params }) {
               </div>
             </div>
 
-            {/* Prioridad 2: 4 datos en grid 2x2 */}
+            {/* Prioridad 2: 4 datos en grid 2×2 */}
             <div className={styles.planSecondaryMetrics}>
               <div className={styles.infoBottomRow}>
             {/* Fila 1: Valor móvil y Valor móvil + imp. */}
@@ -417,7 +428,7 @@ export default async function PlanDetallePage({ params }) {
           >
               {/* Licitación mínima */}
               {caracteristicas.licitacion_minima && (
-                <div className={`${styles.detailCubicle} ${styles.detailCubicleWide}`}>
+                <div className={styles.detailCubicle}>
                   <div className={styles.additionalSectionHeader}>
                     <span className={styles.additionalSectionLabel}>
                       Licitación mínima
@@ -519,7 +530,7 @@ export default async function PlanDetallePage({ params }) {
                           </span>
                           <span className={styles.additionalItemSeparator}>|</span>
                           <span className={styles.additionalItemValue}>
-                            {porcentaje}
+                            {soloPorcentajeRecupero(porcentaje)}
                           </span>
                         </div>
                       )
@@ -531,20 +542,18 @@ export default async function PlanDetallePage({ params }) {
         )}
       </section>
 
-      <section
-        className={`${styles.contactSection} border-t border-neutral-200/90 bg-neutral-50/90 rounded-b-lg`}
-      >
+      <section className={styles.contactSection}>
         <a
           href={`https://wa.me/543816295959?text=${encodeURIComponent(
             `Hola! Quiero consultar sobre el Plan ${plan.plan} - financiación Peugeot`
           )}`}
-          className={`${styles.contactButton} shadow-sm transition-shadow hover:shadow-md`}
+          className={`${cta.button} ${cta.buttonInline} ${styles.planContactWhatsapp} inline-flex items-center`}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Consultar por WhatsApp"
         >
           <svg
-            className={styles.whatsappIcon}
+            className={contact.whatsappIcon}
             width="20"
             height="20"
             viewBox="0 0 24 24"

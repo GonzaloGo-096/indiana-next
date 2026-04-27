@@ -285,58 +285,8 @@
   padding-top: var(--actions-padding-top);
 }
 
+/* Estilo visual: HomeSectionCtas (.button + .buttonInCard) */
 .planActions .actionButton {
   flex: 1;
   max-width: 100%;
-}
-
-.actionButton {
-  --button-padding-y: var(--spacing-2);
-  --button-padding-x: var(--spacing-3);
-  --button-font-size: clamp(0.8125rem, 1.8vw, 0.9375rem);
-  --button-letter-spacing: 0.5px;
-  --button-hover-lift: -1px;
-  --button-violet: #3F45C6;
-  --button-violet-border: rgba(63, 69, 198, 0.4);
-  
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--button-padding-y) var(--button-padding-x);
-  background: var(--color-white);
-  color: var(--button-violet);
-  border: 1px solid var(--button-violet-border);
-  text-decoration: none;
-  font-size: var(--button-font-size);
-  font-weight: var(--font-weight-semibold);
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  letter-spacing: var(--button-letter-spacing);
-  border-radius: var(--border-radius-md);
-  
-  /* Transiciones más suaves */
-  transition: 
-    background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-
-.actionButton:hover {
-  background: rgba(63, 69, 198, 0.06);
-  color: #353bc4;
-  border-color: var(--button-violet);
-  transform: translateY(var(--button-hover-lift));
-  box-shadow: 0 2px 8px rgba(6, 27, 156, 0.15);
-}
-
-.actionButton:active {
-  background: rgba(63, 69, 198, 0.1);
-  transform: translateY(0);
-  box-shadow: 0 1px 4px rgba(6, 27, 156, 0.1);
-}
-
-.actionButton:focus-visible {
-  outline: 2px solid var(--button-violet);
-  outline-offset: 2px;
 }

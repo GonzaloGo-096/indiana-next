@@ -16,15 +16,56 @@
 
 /* ===== PAGE CONTAINER ===== */
 .page {
+  --okm-bg-base: #f3f6fb;
+  --okm-bg-soft: #ffffff;
+  --okm-ink-strong: #0f172a;
+  --okm-ink: #334155;
+  --okm-accent: #0b1f7a;
+  --okm-accent-soft: #2f4da8;
   min-height: 100vh;
-  background: linear-gradient(
-    to bottom,
-    var(--color-neutral-50) 0%,
-    var(--color-white) 20%,
-    var(--color-white) 100%
-  );
+  background-color: #f7f9fd;
+  background-image:
+    radial-gradient(
+      92% 58% at 18% 8%,
+      rgba(193, 212, 240, 0.24) 0%,
+      rgba(227, 237, 250, 0.16) 42%,
+      rgba(255, 255, 255, 0) 84%
+    ),
+    radial-gradient(
+      88% 54% at 82% 12%,
+      rgba(206, 220, 244, 0.2) 0%,
+      rgba(235, 243, 253, 0.13) 44%,
+      rgba(255, 255, 255, 0) 84%
+    ),
+    radial-gradient(
+      120% 76% at 50% 100%,
+      rgba(246, 250, 255, 0.78) 0%,
+      rgba(255, 255, 255, 0) 72%
+    ),
+    linear-gradient(
+      180deg,
+      #f2f6fc 0%,
+      #f6f9fd 36%,
+      #fbfdff 68%,
+      #ffffff 100%
+    );
   padding: 0 0 80px 0;
 }
+
+.page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(
+      72% 30% at 50% 34%,
+      rgba(222, 233, 248, 0.18) 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+}
+
 
 /* ===== HEADER - Contextual Editorial (Altura Media) ===== */
 .header {
@@ -177,14 +218,14 @@
   margin: 0 auto clamp(8px, 1.5vw, 12px);
   padding: clamp(20px, 3vw, 32px) clamp(16px, 4vw, 32px) 0;
   display: flex;
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
 }
 
 .sectionContent {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: clamp(16px, 2.5vw, 24px);
   width: 100%;
 }
@@ -243,11 +284,119 @@
   font-family: var(--font-condensed);
   font-size: clamp(1.65rem, 5vw, 2.5rem);
   font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
+  color: color-mix(in srgb, var(--okm-accent) 70%, var(--okm-ink-strong));
   text-transform: uppercase;
   letter-spacing: 2px;
   line-height: 1.1;
-  text-align: left;
+  text-align: center;
+}
+
+.sectionHeaderTextOnly {
+  position: relative;
+  max-width: var(--container-max-width);
+  margin: clamp(18px, 2.8vw, 28px) auto clamp(8px, 1.5vw, 14px);
+  padding: 0 clamp(16px, 4vw, 32px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(0.35rem, 1vw, 0.55rem);
+}
+
+.sectionCarouselHint {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.34rem;
+  opacity: 0.9;
+}
+
+.sectionCarouselDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-brand-700, #040a5c) 24%, #cbd5e1);
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+.sectionCarouselDotActive {
+  width: 7px;
+  height: 7px;
+  background: color-mix(in srgb, var(--color-brand-700, #040a5c) 42%, #94a3b8);
+}
+
+.sectionCarouselArrow {
+  margin-left: 0.18rem;
+  font-size: 0.72rem;
+  line-height: 1;
+  color: color-mix(in srgb, var(--color-brand-700, #040a5c) 40%, #94a3b8);
+  letter-spacing: 0.04em;
+}
+
+/* Encabezado editorial moderno (reemplaza línea-logo-línea) */
+.pageIntro {
+  position: relative;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: clamp(20px, 4vw, 36px) clamp(16px, 4vw, 32px) clamp(12px, 2.4vw, 20px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(0.5rem, 1.5vw, 0.9rem);
+}
+
+.pageIntro::after {
+  content: "";
+  width: min(420px, 68%);
+  height: 1px;
+  margin-top: clamp(0.3rem, 1vw, 0.55rem);
+  background: linear-gradient(
+    90deg,
+    rgba(148, 163, 184, 0.68) 0%,
+    rgba(148, 163, 184, 0.28) 68%,
+    rgba(148, 163, 184, 0) 100%
+  );
+}
+
+.pageIntroKicker {
+  margin: 0;
+  font-family: var(--font-poppins, system-ui, sans-serif);
+  font-size: clamp(0.68rem, 1vw, 0.78rem);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-brand-600, #050f7a);
+}
+
+.pageIntroTitle {
+  margin: 0;
+  font-family: var(--font-condensed, system-ui, sans-serif);
+  font-size: clamp(1.9rem, 5vw, 2.85rem);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: 0.03em;
+  color: var(--color-neutral-900, #111827);
+  max-width: 18ch;
+}
+
+.pageIntroTitleAccent {
+  color: var(--color-brand-700, #040a5c);
+}
+
+.pageIntroText {
+  margin: 0;
+  font-family: var(--font-poppins, system-ui, sans-serif);
+  font-size: clamp(1rem, 2.2vw, 1.1rem);
+  line-height: 1.68;
+  letter-spacing: 0.01em;
+  color: var(--color-neutral-600, #475569);
+  max-width: 64ch;
+}
+
+.pageIntroLead {
+  font-weight: 600;
+  color: var(--color-brand-700, #040a5c);
 }
 
 /* ===== CARRUSEL SECTION - Diseño Moderno ===== */
@@ -255,6 +404,19 @@
   position: relative;
   padding: 0 0 clamp(32px, 5vw, 48px);
   margin: 0 auto;
+}
+
+/* Carruseles 0km a ancho completo del viewport */
+.carouselSectionFullViewport {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: 0;
+}
+
+.carouselSectionFullViewport .carouselWrapper {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .carouselWrapper {
@@ -268,6 +430,89 @@
   box-sizing: content-box;
 }
 
+/* Sugerencia visual sutil de "contenido deslizable" */
+.carouselWrapper::before,
+.carouselWrapper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: clamp(18px, 3vw, 34px);
+  pointer-events: none;
+  z-index: 3;
+}
+
+.carouselWrapper::before {
+  left: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--okm-bg-soft) 92%, transparent) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.carouselWrapper::after {
+  right: 0;
+  background: linear-gradient(
+    270deg,
+    color-mix(in srgb, var(--okm-bg-soft) 92%, transparent) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+@media (max-width: 768px) {
+  .carouselWrapper::before,
+  .carouselWrapper::after {
+    display: none;
+  }
+}
+
+.carouselProgressDots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0;
+  margin-bottom: clamp(0.55rem, 1.2vw, 0.9rem);
+}
+
+.carouselProgressDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--okm-accent-soft) 14%, #dbe4f1);
+  transition:
+    transform 0.24s ease,
+    transform 0.24s ease,
+    background-color 0.24s ease,
+    opacity 0.24s ease,
+    box-shadow 0.24s ease;
+  opacity: 0.58;
+  box-shadow: 0 0 0 1px rgba(148, 163, 184, 0.14) inset;
+}
+
+.carouselProgressDotActive {
+  width: 12px;
+  height: 12px;
+  background: color-mix(in srgb, var(--okm-accent) 34%, #c7d5ea);
+  opacity: 0.9;
+  box-shadow:
+    0 0 0 1px rgba(148, 163, 184, 0.22) inset,
+    0 0 14px rgba(47, 77, 168, 0.24);
+}
+
+.carouselProgressDot:hover {
+  transform: scale(1.07);
+}
+
+.carouselProgressDot:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-brand-500, #061b9c) 62%, transparent);
+  outline-offset: 2px;
+}
+
 /* Home (inicio): el track usa todo el ancho del bloque de sección (4+ cards en desktop) */
 .carouselWrapperHome {
   max-width: 100%;
@@ -278,17 +523,55 @@
   position: relative;
 }
 
+/* Home inicio: carrusel al ancho del viewport (208 primero; cards “salen” por los costados) */
+.carouselSectionBleed .carouselWrapper {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.carouselSectionBleed .carousel {
+  padding-left: max(0px, env(safe-area-inset-left, 0px));
+  padding-right: max(0px, env(safe-area-inset-right, 0px));
+}
+
 @media (max-width: 991px) {
   .carouselSectionHomeSpacious .carousel {
     gap: clamp(22px, 5vw, 32px);
     padding: 28px clamp(10px, 3vw, 18px);
   }
+
+  .carouselSectionBleed.carouselSectionHomeSpacious .carousel {
+    padding-top: 24px;
+    padding-bottom: 28px;
+    padding-left: max(0px, env(safe-area-inset-left, 0px));
+    padding-right: max(0px, env(safe-area-inset-right, 0px));
+  }
+}
+
+@media (min-width: 769px) {
+  .carouselSectionBleed.carouselSection:not(.utilitariosSection) .carouselWrapper {
+    padding-left: max(40px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(40px, env(safe-area-inset-right, 0px)) !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .carouselSectionBleed.carouselSection:not(.utilitariosSection) .carouselWrapper {
+    padding-left: max(44px, env(safe-area-inset-left, 0px)) !important;
+    padding-right: max(44px, env(safe-area-inset-right, 0px)) !important;
+  }
+
+  .carouselSectionBleed.carouselSectionHomeSpacious .carousel {
+    padding-left: max(0px, env(safe-area-inset-left, 0px));
+    padding-right: max(0px, env(safe-area-inset-right, 0px));
+  }
 }
 
 .carousel {
   display: flex;
-  gap: clamp(20px, 3vw, 32px);
-  padding: 24px clamp(12px, 2vw, 20px);
+  gap: clamp(28px, 4vw, 42px);
+  padding: 30px clamp(14px, 2.4vw, 26px);
   overflow-x: auto;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
@@ -296,6 +579,7 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
 
 .carousel::-webkit-scrollbar {
   display: none;
@@ -371,24 +655,19 @@
     pointer-events: none;
   }
 
-  /* Flechas fuera del contenedor del carrusel (en el padding) */
-  .carouselSection:not(.utilitariosSection) .carouselWrapper {
-    padding-left: 48px;
-    padding-right: 48px;
+  /* Flechas superpuestas: no reservan espacio en layout */
+  .carouselSection .carouselWrapper {
+    padding-left: 0;
+    padding-right: 0;
   }
 
-  .carouselSection:not(.utilitariosSection) .scrollButtonLeft {
+  .carouselSection .scrollButtonLeft {
     left: 0;
   }
 
-  .carouselSection:not(.utilitariosSection) .scrollButtonRight {
+  .carouselSection .scrollButtonRight {
     right: 0 !important;
     left: auto !important;
-  }
-
-  .utilitariosSection .carouselWrapper {
-    padding-left: 0;
-    padding-right: 0;
   }
 
   /* Variante dark (home): flechas claras sutiles sobre fondo oscuro */
@@ -401,24 +680,6 @@
   .carouselSectionDark .scrollButton:hover:not(:disabled) {
     background: rgba(255, 255, 255, 0.22);
     border-color: rgba(255, 255, 255, 0.35);
-  }
-}
-
-/* ===== UTILITARIOS: en desktop fila estática (3 entran), en mobile carrusel ===== */
-@media (min-width: 769px) {
-  .utilitariosSection .carouselWrapper {
-    justify-content: center;
-  }
-
-  .utilitariosSection .carousel {
-    overflow: visible;
-    scroll-snap-type: none;
-    justify-content: center;
-    flex-wrap: nowrap;
-  }
-
-  .utilitariosSection .scrollButton {
-    display: none;
   }
 }
 
@@ -557,106 +818,122 @@
   }
 }
 
-/* Título arriba; contenido dentro del bloque con relieve (bordes arriba/abajo, puntas semirredondeadas) */
+/* Bloque de financiación alineado al patrón visual del inicio actual */
 .financingBridge {
   position: relative;
   max-width: var(--container-max-width);
-  margin: clamp(64px, 10vw, 96px) auto 0;
+  margin: clamp(60px, 9vw, 94px) auto 0;
   padding: 0 clamp(24px, 4vw, 48px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: clamp(0.75rem, 1.8vw, 1.1rem);
 }
 
 .financingTitle {
-  margin: 0 auto 10px;
-  font-family: var(--font-condensed);
-  font-size: clamp(1.65rem, 5vw, 2.5rem);
-  font-weight: var(--font-weight-bold);
-  color: var(--color-text-primary);
-  text-transform: uppercase;
-  letter-spacing: 2px;
+  margin: 0;
+  font-family: var(--font-condensed, system-ui, sans-serif);
+  font-size: clamp(1.6rem, 4.4vw, 2.25rem);
+  font-weight: 700;
+  color: color-mix(in srgb, var(--color-brand-700, #040a5c) 78%, #111827);
+  text-transform: none;
+  letter-spacing: 0.03em;
   line-height: 1.1;
-  text-align: center;
-  max-width: 600px;
+  text-align: left;
+  max-width: 760px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
 }
 
 .financingContent {
-  text-align: center;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 0 clamp(24px, 4vw, 40px) clamp(40px, 6vw, 56px);
+  position: relative;
+  text-align: left;
+  max-width: 760px;
+  margin: 0;
+  padding: 0;
 }
 
-/* Mobile: bloque a todo el ancho del viewport, no cuadrado */
+.financingContent::before {
+  content: "";
+  position: absolute;
+  left: calc(-1 * clamp(0.8rem, 2.2vw, 1.1rem));
+  top: 0.22rem;
+  bottom: 0.22rem;
+  width: 2px;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    rgba(209, 213, 219, 0) 0%,
+    #c4cedd 20%,
+    #aebccf 50%,
+    #c4cedd 80%,
+    rgba(209, 213, 219, 0) 100%
+  );
+}
+
+/* Mobile: mantener patrón del inicio, sin cajas adicionales */
 @media (max-width: 767px) {
   .financingBridge {
     max-width: none;
-    padding-left: 0;
-    padding-right: 0;
+    margin-top: clamp(48px, 9vw, 66px);
+    padding-left: var(--container-padding-mobile);
+    padding-right: var(--container-padding-mobile);
+    gap: 0.78rem;
   }
 
   .financingTitle {
-    padding-left: var(--container-padding-mobile);
-    padding-right: var(--container-padding-mobile);
+    font-size: clamp(1.46rem, 7.1vw, 1.92rem);
+    letter-spacing: 0.022em;
   }
 
   .financingContent {
     max-width: none;
     width: 100%;
-    box-sizing: border-box;
-    padding: 0 var(--container-padding-mobile) clamp(32px, 8vw, 48px);
-    border-radius: 0;
-    border-left: none;
-    border-right: none;
+    padding-left: 0.35rem;
+  }
+
+  .financingContent::before {
+    left: -0.32rem;
+    width: 1.5px;
+    opacity: 0.86;
+  }
+
+  .financingText {
+    font-size: clamp(1rem, 4.05vw, 1.1rem);
+    line-height: 1.66;
+    max-width: 38ch;
+  }
+
+  .financingLink {
+    margin-top: 14px;
+    min-height: 3.2rem;
+    padding: 0.94rem 1.72rem;
+    font-size: clamp(0.76rem, 3.2vw, 0.84rem);
+    letter-spacing: 0.105em;
   }
 }
 
 .financingText {
   margin: 0;
-  font-family: var(--font-poppins);
-  font-size: clamp(1rem, 2.5vw, 1.125rem);
-  color: var(--color-text-secondary);
-  font-weight: var(--font-weight-normal);
-  line-height: 1.7;
+  font-family: var(--font-poppins, system-ui, sans-serif);
+  font-size: clamp(1.03rem, 2.45vw, 1.16rem);
+  color: color-mix(in srgb, var(--color-brand-700, #040a5c) 40%, #334155);
+  font-weight: 500;
+  line-height: 1.72;
+  letter-spacing: 0.008em;
+  max-width: 66ch;
 }
 
+/* Espaciado; estilo del botón en HomeSectionCtas (.button + .buttonInline) */
 .financingLink {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: clamp(20px, 3vw, 28px);
-  padding: clamp(0.5rem, 1.2vw, 0.625rem) clamp(1.25rem, 2.5vw, 1.5rem);
-  background: transparent;
-  color: var(--color-brand-500);
-  border: 1.5px solid var(--color-brand-500);
-  border-radius: var(--border-radius-md);
-  text-decoration: none;
-  font-family: var(--font-display);
-  font-weight: var(--font-weight-semibold);
-  font-size: clamp(0.875rem, 1.6vw, 0.9375rem);
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  transition: 
-    background-color var(--transition-fast),
-    color var(--transition-fast),
-    border-color var(--transition-fast),
-    transform var(--transition-fast);
-  cursor: pointer;
-}
-
-.financingLink:hover {
-  background: var(--color-brand-500-rgba-10);
-  color: var(--color-brand-600);
-  border-color: var(--color-brand-600);
-  transform: translateY(-1px);
-}
-
-.financingLink:active {
-  transform: translateY(0);
-}
-
-.financingLink:focus-visible {
-  outline: 2px solid var(--color-brand-500);
-  outline-offset: 2px;
+  margin-top: clamp(18px, 2.8vw, 24px);
+  align-self: flex-start;
+  min-height: 3.05rem;
+  padding: 0.9rem 1.9rem;
+  font-size: clamp(0.74rem, 1.3vw, 0.84rem);
+  letter-spacing: 0.11em;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 8px 20px -14px rgba(4, 10, 92, 0.26);
 }
 
 .editorialClose {
@@ -737,8 +1014,8 @@
   }
   
   .carousel {
-    gap: clamp(24px, 3vw, 36px);
-    padding: 32px clamp(16px, 2vw, 24px);
+    gap: clamp(34px, 4vw, 52px);
+    padding: 38px clamp(18px, 2.4vw, 30px);
     scroll-snap-type: none;
   }
   
@@ -797,8 +1074,8 @@
   }
   
   .carousel {
-    gap: clamp(32px, 4vw, 40px);
-    padding: 40px clamp(20px, 3vw, 32px);
+    gap: clamp(44px, 5vw, 64px);
+    padding: 46px clamp(24px, 3.4vw, 40px);
   }
   
   .scrollButton {
@@ -819,17 +1096,17 @@
     right: clamp(16px, 2vw, 24px);
   }
 
-  /* Vehículos: mantener flechas más abiertas, afuera del área de cartas */
-  .carouselSection:not(.utilitariosSection) .carouselWrapper {
-    padding-left: 68px;
-    padding-right: 68px;
+  /* Flechas superpuestas también en desktop grande */
+  .carouselSection .carouselWrapper {
+    padding-left: 0;
+    padding-right: 0;
   }
 
-  .carouselSection:not(.utilitariosSection) .scrollButtonLeft {
+  .carouselSection .scrollButtonLeft {
     left: 8px;
   }
 
-  .carouselSection:not(.utilitariosSection) .scrollButtonRight {
+  .carouselSection .scrollButtonRight {
     right: 8px !important;
     left: auto !important;
   }

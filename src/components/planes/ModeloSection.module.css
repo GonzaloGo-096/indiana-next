@@ -25,30 +25,24 @@
   display: block;
 }
 
-/* ===== CARRUSEL DE CARDS ===== */
-.carouselContainer {
-  width: 100%;
-  position: relative;
+/* ===== CARRUSEL: controles vía 0km.module.css ===== */
+.planesCarouselSection {
+  padding: 0;
+  margin: 0;
   margin-top: var(--spacing-5);
-  overflow: visible;
+}
+
+.carouselWrapperInPlanes {
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .carouselTrack {
-  display: flex;
   align-items: flex-start;
-  gap: var(--spacing-5);
-  overflow-x: auto;
-  scroll-behavior: smooth;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-  padding: var(--spacing-2) 0;
-  scroll-padding: var(--spacing-2);
-  /* Espacio extra al final para que el último ítem llegue al centro y no quede cortado */
+  min-width: 0;
+  scroll-padding-inline: var(--spacing-2);
   padding-inline-end: max(var(--spacing-6), calc(50vw - 150px));
-}
-
-.carouselTrack::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
 }
 
 /* ===== CARD DE IMAGEN DEL MODELO ===== */
@@ -92,36 +86,9 @@
   padding-top: var(--spacing-3);
 }
 
+/* Ajuste sobre HomeSectionCtas (.button + .buttonWhite + .buttonInline) */
 .modeloImageButton {
-  --btn-violet: #3F45C6;
-  --btn-violet-border: rgba(63, 69, 198, 0.4);
-  
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-2) var(--spacing-4);
-  background: var(--color-white);
-  color: var(--btn-violet);
-  text-decoration: none;
-  font-size: clamp(0.8125rem, 1.8vw, 0.9375rem);
-  font-weight: var(--font-weight-medium);
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-radius: 4px;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-  border: 1px solid var(--btn-violet-border);
-  cursor: pointer;
-}
-
-.modeloImageButton:hover {
-  background: rgba(63, 69, 198, 0.06);
-  color: #353bc4;
-  border-color: var(--btn-violet);
-}
-
-.modeloImageButton:active {
-  background: rgba(63, 69, 198, 0.1);
+  margin-top: 0;
 }
 
 @media (max-width: 768px) {
@@ -147,49 +114,5 @@
   justify-content: center;
   margin-top: var(--spacing-4); /* aire sutil */
   padding-top: var(--spacing-2);
-}
-
-/* ===== FLECHAS - Siempre absolute, no quitan espacio al carrusel ===== */
-.arrowButton {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  z-index: 20;
-  background: var(--color-neutral-900);
-  color: var(--color-white);
-}
-
-.arrowButton:hover {
-  background: var(--color-neutral-800);
-  transform: translateY(-50%) scale(1.1);
-}
-
-.arrowButton:active {
-  transform: translateY(-50%) scale(0.95);
-}
-
-.arrowButton:first-of-type {
-  left: 4px;
-}
-
-.arrowButton.arrowRight {
-  right: 4px;
-  left: auto;
-}
-
-/* Ocultar flechas en mobile */
-@media (max-width: 768px) {
-  .arrowButton {
-    display: none;
-  }
 }
 
