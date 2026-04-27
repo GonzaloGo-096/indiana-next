@@ -56,6 +56,11 @@
 /* Flechas: solo ≥992px; mismo criterio que marcas (sutil, sin disco) */
 .carouselArrowPrev,
 .carouselArrowNext {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0;
+  z-index: 4;
   display: none;
 }
 
@@ -63,10 +68,6 @@
   .carouselArrowPrev,
   .carouselArrowNext {
     display: flex;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 4;
     width: 1.75rem;
     min-width: 1.75rem;
     height: auto;
@@ -87,11 +88,11 @@
   }
 
   .carouselArrowPrev {
-    left: 0.1rem;
+    left: 0;
   }
 
   .carouselArrowNext {
-    right: 0.1rem;
+    right: 0;
   }
 
   .carouselArrowPrev:hover:not(:disabled),
@@ -105,11 +106,17 @@
     outline: 1px solid color-mix(in srgb, var(--color-neutral-500, #64748b) 45%, transparent);
     outline-offset: 2px;
   }
+
+  .carouselArrowPrev:disabled,
+  .carouselArrowNext:disabled {
+    visibility: hidden;
+    pointer-events: none;
+  }
 }
 
 .carouselArrowDisabled {
-  opacity: 0.22;
-  cursor: not-allowed;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .carouselArrowNext.carouselArrowDisabled:hover {

@@ -469,7 +469,7 @@
         --body-padding-x: var(--card-padding-compact);
         --body-gap: var(--card-gap-compact);
     }
-    
+
     .container1_row3 {
         --data-margin-top: var(--spacing-1);
     }

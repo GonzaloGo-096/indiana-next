@@ -101,6 +101,67 @@
   border-radius: 0;
 }
 
+/* Home 0km frameless: "piso" gris muy sutil debajo del auto */
+.compact.softSurface.frameless .imageContainer {
+  position: relative;
+  isolation: isolate;
+}
+
+.compact.softSurface.frameless .imageContainer::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: clamp(20px, 3vw, 34px);
+  transform: translateX(-50%) scaleY(0.62);
+  transform-origin: center center;
+  width: clamp(68%, 76%, 84%);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(71, 85, 105, 0.26) 0%,
+      rgba(100, 116, 139, 0.16) 30%,
+      rgba(148, 163, 184, 0.075) 54%,
+      rgba(148, 163, 184, 0.018) 70%,
+      rgba(148, 163, 184, 0) 84%
+    ),
+    radial-gradient(
+      circle at center,
+      rgba(71, 85, 105, 0.15) 0%,
+      rgba(100, 116, 139, 0) 76%
+    );
+  filter: blur(14px);
+  opacity: 1;
+  pointer-events: none;
+  z-index: 0;
+  transition:
+    opacity 0.28s ease,
+    filter 0.28s ease,
+    transform 0.28s ease;
+}
+
+/* Hover: resaltar bastante el "piso" */
+.compact.softSurface.frameless:hover .imageContainer::after {
+  transform: translateX(-50%) scale(1.08, 0.72);
+  filter: blur(16px);
+  opacity: 1;
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(71, 85, 105, 0.38) 0%,
+      rgba(100, 116, 139, 0.24) 30%,
+      rgba(148, 163, 184, 0.11) 54%,
+      rgba(148, 163, 184, 0.028) 70%,
+      rgba(148, 163, 184, 0) 84%
+    ),
+    radial-gradient(
+      circle at center,
+      rgba(71, 85, 105, 0.22) 0%,
+      rgba(100, 116, 139, 0) 76%
+    );
+}
+
 .okmShowcase.frameless .content {
   order: 0;
   position: absolute;
@@ -206,6 +267,8 @@
 .compact.softSurface.frameless .image {
   padding: clamp(0px, 0.25vw, 4px);
   object-position: center 44%;
+  position: relative;
+  z-index: 1;
 }
 
 /* 3008 / 5008: sutilmente menos zoom */
@@ -311,6 +374,11 @@
   border-radius: 0 0 var(--border-radius-xl) var(--border-radius-xl);
 }
 
+.contentTop {
+  padding: clamp(10px, 1.6vw, 16px) clamp(16px, 2vw, 24px) clamp(4px, 0.8vw, 8px);
+  border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
+}
+
 .titleRow {
   display: flex;
   align-items: center;
@@ -370,6 +438,10 @@
   .content {
     padding: 8px 16px 10px;
   }
+
+  .contentTop {
+    padding: 10px 16px 6px;
+  }
   
   .title {
     font-size: 2.3rem;
@@ -399,6 +471,10 @@
   
   .content {
     padding: 8px 20px 10px;
+  }
+
+  .contentTop {
+    padding: 10px 20px 6px;
   }
   
   .title {

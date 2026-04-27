@@ -110,12 +110,12 @@ export const CardSimilar = memo(({ auto, isPriority = false, usadosCarousel = fa
     return formattedData.caja === "Automática";
   }, [formattedData.caja]);
 
-  // ✅ DATOS PRINCIPALES CON ICONOS (Caja, Km, Año)
+  // ✅ DATOS PRINCIPALES CON ICONOS (Año, Km, Caja)
   const mainData = useMemo(
     () => [
-      { label: "Caja", value: formattedData.caja, icon: CajaIconDetalle },
-      { label: "Km", value: formattedData.kilometers, icon: KmIcon },
       { label: "Año", value: formattedData.year, icon: AnioIcon },
+      { label: "Km", value: formattedData.kilometers, icon: KmIcon },
+      { label: "Caja", value: formattedData.caja, icon: CajaIconDetalle },
     ],
     [formattedData.year, formattedData.kilometers, formattedData.caja]
   );
@@ -194,7 +194,7 @@ export const CardSimilar = memo(({ auto, isPriority = false, usadosCarousel = fa
             </div>
           )}
 
-          {/* Fila 3: Caja, Km, Año */}
+          {/* Fila 3: Año, Km, Caja */}
           <div
             className={`${styles.container1_row3} ${
               isAutomatica ? styles.container1_row3_automatica : ""

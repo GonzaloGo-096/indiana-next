@@ -89,6 +89,7 @@ export function CeroKmSection() {
             softSurface
             frameless
             bleedEdges
+            titleAboveImage
           />
         </div>
       )}

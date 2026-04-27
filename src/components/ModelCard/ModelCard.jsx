@@ -29,6 +29,7 @@ import styles from "./ModelCard.module.css";
  * @param {boolean} props.compact - Versión más pequeña (para home)
  * @param {boolean} props.softSurface - Sobre fondo oscuro: menos contraste (off-white, sombra suave)
  * @param {boolean} props.frameless - Sin caja de card (solo imagen + título; pensado para home sobre degradé oscuro)
+ * @param {boolean} props.titleAboveImage - Mostrar logo + modelo arriba de la imagen
  */
 function ModelCard({
   src,
@@ -42,6 +43,7 @@ function ModelCard({
   compact = false,
   softSurface = false,
   frameless = false,
+  titleAboveImage = false,
 }) {
   const classNames = [
     styles.card,
@@ -53,9 +55,27 @@ function ModelCard({
     .filter(Boolean)
     .join(" ");
   const isUtilitario = ["partner", "expert", "boxer"].includes(String(slug).toLowerCase());
+  const titleBlock = (
+    <div className={styles.titleRow}>
+      <Image
+        src="/assets/logos/logos-peugeot/Peugeot_logo_PNG8.webp"
+        alt="Logo Peugeot"
+        width={44}
+        height={44}
+        className={styles.peugeotLogo}
+      />
+      <h3 className={styles.title}>{titulo}</h3>
+    </div>
+  );
 
   const cardInner = (
     <>
+      {titleAboveImage && (
+        <div className={`${styles.content} ${styles.contentTop}`}>
+          {titleBlock}
+        </div>
+      )}
+
       <div className={styles.imageContainer}>
         {versionLabels.length > 0 && (
           <div
@@ -90,18 +110,7 @@ function ModelCard({
         />
       </div>
 
-      <div className={styles.content}>
-        <div className={styles.titleRow}>
-          <Image
-            src="/assets/logos/logos-peugeot/Peugeot_logo_PNG8.webp"
-            alt="Logo Peugeot"
-            width={44}
-            height={44}
-            className={styles.peugeotLogo}
-          />
-          <h3 className={styles.title}>{titulo}</h3>
-        </div>
-      </div>
+      {!titleAboveImage && <div className={styles.content}>{titleBlock}</div>}
       {showActionButtons && (
         <div className={styles.actionsRow}>
           <Link href={`/0km/${slug}`} className={styles.actionButton}>

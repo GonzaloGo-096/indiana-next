@@ -5,48 +5,19 @@
 .section {
   scroll-margin-top: 5rem;
   padding: clamp(3.25rem, 7.5vw, 5.25rem) 0 clamp(3.5rem, 8vw, 5rem);
-  background-color: #ffffff;
+  background-color: #f2f5fa;
   background-image:
-    /*
-     * Misma capa vertical que UsadosSection (mismos stops).
-     * El velo se diluye antes del 100% para que en el pie se vea el suelo horizontal
-     * igual que en la primera fila de píxeles de Usados → sin “costura”.
-     */
     linear-gradient(
       180deg,
-      transparent 0%,
-      transparent 38%,
-      rgba(255, 255, 255, 0.45) 48%,
-      rgba(255, 255, 255, 0.82) 56%,
-      #ffffff 64%,
-      rgba(255, 255, 255, 0.55) 72%,
-      rgba(255, 255, 255, 0) 80%,
-      transparent 100%
+      #f8fafc 0%,
+      #f4f7fb 44%,
+      #edf2f8 100%
     ),
-    /* Refuerzo suave del carril central (carrusel) */
     radial-gradient(
-      ellipse 115% 50% at 50% 74%,
-      rgba(255, 255, 255, 0.5) 0%,
-      rgba(252, 253, 255, 0.22) 42%,
-      transparent 70%
-    ),
-    /* Cabecera: luz superior continua con el hero */
-    radial-gradient(
-      ellipse 88% 95% at 50% 8%,
-      rgba(255, 255, 255, 0.38) 0%,
-      rgba(250, 251, 253, 0.14) 46%,
-      transparent 76%
-    ),
-    /* Suelo horizontal = UsadosSection.section (costados gris muy leve, centro blanco) */
-    linear-gradient(
-      90deg,
-      #e9ecf2 0%,
-      #f0f2f7 8%,
-      #f7f8fb 22%,
-      #ffffff 50%,
-      #f7f8fb 78%,
-      #f0f2f7 92%,
-      #e9ecf2 100%
+      ellipse 90% 58% at 50% 16%,
+      rgba(255, 255, 255, 0.65) 0%,
+      rgba(255, 255, 255, 0.2) 48%,
+      rgba(255, 255, 255, 0) 78%
     );
   color: var(--color-neutral-900);
   position: relative;
@@ -55,61 +26,33 @@
   overflow-y: hidden;
 }
 
-/* Refuerzo de luz en el centro superior */
 .section::before {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  height: 48%;
+  inset: 0;
   pointer-events: none;
   z-index: 0;
   background: radial-gradient(
-    ellipse 78% 95% at 50% 0%,
-    rgba(255, 255, 255, 0.5) 0%,
-    rgba(248, 252, 255, 0.22) 52%,
-    rgba(255, 255, 255, 0) 86%
+    ellipse 80% 46% at 50% 4%,
+    rgba(255, 255, 255, 0.34) 0%,
+    rgba(255, 255, 255, 0) 72%
   );
 }
 
-/*
- * Leve énfasis en costados solo en la franja del carrusel (no oscurece hero ni pie).
- * Misma familia cromática que el suelo (#e9ecf2), un poco más presente a los lados.
- */
 .section::after {
   content: "";
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  inset: 0;
   pointer-events: none;
   z-index: 0;
   background: linear-gradient(
     90deg,
-    rgba(200, 210, 224, 0.45) 0%,
-    rgba(218, 224, 234, 0.2) 10%,
-    transparent 20%,
-    transparent 80%,
-    rgba(218, 224, 234, 0.2) 90%,
-    rgba(200, 210, 224, 0.45) 100%
-  );
-  mask-image: linear-gradient(
-    180deg,
-    transparent 0%,
-    transparent 42%,
-    #000 50%,
-    #000 78%,
-    transparent 86%
-  );
-  -webkit-mask-image: linear-gradient(
-    180deg,
-    transparent 0%,
-    transparent 42%,
-    #000 50%,
-    #000 78%,
-    transparent 86%
+    rgba(203, 213, 225, 0.28) 0%,
+    rgba(203, 213, 225, 0.08) 13%,
+    transparent 26%,
+    transparent 74%,
+    rgba(203, 213, 225, 0.08) 87%,
+    rgba(203, 213, 225, 0.28) 100%
   );
 }
 
@@ -374,12 +317,25 @@
   width: 100%;
   position: relative;
   z-index: 1;
-  margin: var(--spacing-2) 0;
+  margin: 0;
+}
+
+/* Home 0km: compactar espacio bajo el carrusel para acercar CTAs */
+.carouselFullBleed :global(.carouselSection) {
+  padding-bottom: clamp(8px, 1.6vw, 16px);
+}
+
+.carouselFullBleed :global(.carousel) {
+  padding-bottom: clamp(10px, 1.8vw, 16px);
+}
+
+.carouselFullBleed :global(.carouselSectionBleed.carouselSectionHomeSpacious .carousel) {
+  padding-bottom: clamp(10px, 1.8vw, 16px);
 }
 
 /* Acerca CTAs al carrusel (estilos de botón en HomeSectionCtas.module.css) */
 .ceroCtaPull {
-  margin-top: clamp(-1.5rem, -3.5vw, -0.5rem);
+  margin-top: clamp(-2.35rem, -5vw, -1.1rem);
 }
 
 @media (max-width: 767px) {

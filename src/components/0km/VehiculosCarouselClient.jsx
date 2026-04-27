@@ -21,6 +21,7 @@ import styles from "../../app/(site)/0km/0km.module.css";
  * @param {boolean} props.showActionButtons - Mostrar CTAs debajo de cada auto
  * @param {boolean} props.fullViewport - Sección a ancho completo del viewport
  * @param {boolean} props.okmShowcase - Estilos exclusivos para /0km
+ * @param {boolean} props.titleAboveImage - Muestra logo + modelo arriba de la imagen
  */
 export function VehiculosCarouselClient({
   cards,
@@ -33,6 +34,7 @@ export function VehiculosCarouselClient({
   showActionButtons = false,
   fullViewport = false,
   okmShowcase = false,
+  titleAboveImage = false,
 }) {
   const carouselRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -192,6 +194,7 @@ export function VehiculosCarouselClient({
                 compact={compact}
                 softSurface={softSurface}
                 frameless={frameless}
+                titleAboveImage={titleAboveImage}
               />
             </div>
           ))}

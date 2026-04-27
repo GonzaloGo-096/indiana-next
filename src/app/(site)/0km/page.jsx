@@ -176,13 +176,13 @@ export default function CeroKilometrosPage() {
       <header className={styles.pageIntro} aria-label="Presentación catálogo 0km">
         <p className={styles.pageIntroKicker}>Catálogo Peugeot 0km</p>
         <h1 className={styles.pageIntroTitle}>
-          Elegí tu <span className={styles.pageIntroTitleAccent}>Peugeot 0km</span>
+          Elegí tu <span className={styles.pageIntroTitleAccent}>Peugeot&nbsp;0km</span>
         </h1>
         <p className={styles.pageIntroText}>
           <strong className={styles.pageIntroLead}>
-            Compare modelos y versiones en una única presentación clara y ordenada
+            Queremos mostrarte nuestros modelos de forma clara, cercana y ordenada
           </strong>
-          . Seleccione la alternativa que mejor se adapte a su necesidad.
+          , para que puedas elegir con tranquilidad el Peugeot 0km que mejor se adapte a vos.
         </p>
       </header>
 

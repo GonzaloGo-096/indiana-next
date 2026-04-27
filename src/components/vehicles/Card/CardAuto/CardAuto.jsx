@@ -152,12 +152,12 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
     };
   }, [brandLogo.scale, brandLogo.offsetY, brandLogo.offsetX]);
 
-  // ✅ DATOS PRINCIPALES (Caja, Km, Año)
+  // ✅ DATOS PRINCIPALES (Año, Km, Caja)
   const mainData = useMemo(
     () => [
-      { label: "Caja", value: formattedData.caja },
-      { label: "Km", value: formattedData.kilometers },
       { label: "Año", value: formattedData.year },
+      { label: "Km", value: formattedData.kilometers },
+      { label: "Caja", value: formattedData.caja },
     ],
     [formattedData.year, formattedData.kilometers, formattedData.caja]
   );
@@ -236,7 +236,7 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
               </div>
             )}
 
-            {/* Fila 3: Caja, Km, Año (sin separadores) */}
+            {/* Fila 3: Año, Km, Caja (sin separadores) */}
             <div
               className={`${styles.container1_row3} ${
                 isAutomatica ? styles.container1_row3_automatica : ""
