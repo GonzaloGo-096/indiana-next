@@ -1,0 +1,481 @@
+﻿
+> indiana-next@0.1.0 dev
+> next dev
+
+▲ Next.js 16.1.2 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.31.208.1:3000
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 1425ms
+○ Compiling / ...
+ GET / 200 in 2.5s (compile: 1154ms, proxy.ts: 21ms, render: 1360ms)
+[Filters] Construyendo searchParams: {
+  'año': [ 2012, 2026 ],
+  precio: [ 12000000, 75000000 ],
+  kilometraje: [ 0, 150000 ]
+} { includeDefaultRanges: true }
+[Filters] SearchParams generados: anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000
+[API Server] Intentando con fallback: http://127.0.0.1:3001/photos/getallphotos?anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000&limit=8&cursor=1
+node.exe : [API Server] ❌ Error en fetch: TypeError: fetch failed
+En línea: 1 Carácter: 1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([API Server] ❌ ...r: fetch failed:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+    at async fetchWithTimeout (src\lib\http\server.js:27:22)
+    at async Object.getVehicles (src\lib\services\vehiclesApi.server.js:79:20)
+    at async UsadosPage (src\app\(site)\usados\page.jsx:91:25)
+  25 |
+  26 |   try {
+> 27 |     const response = await fetch(url, {
+     |                      ^
+  28 |       ...options,
+  29 |       signal: controller.signal,
+  30 |       cache: {
+  [cause]: AggregateError: 
+      at ignore-listed frames {
+    code: 'ECONNREFUSED'
+  }
+}
+[API Server] Error name: TypeError
+[API Server] Error message: fetch failed
+[API Server] Error code: undefined
+[API Server] Error cause: AggregateError: 
+    at ignore-listed frames {
+  code: 'ECONNREFUSED'
+}
+[API Server] Error fetching vehicles: {
+  message: 'fetch failed',
+  baseURL: 'http://localhost:3001',
+  filters: {},
+  limit: 8,
+  cursor: 1
+}
+[API Server] Error completo: TypeError: fetch failed
+    at async fetchWithTimeout (src\lib\http\server.js:27:22)
+    at async Object.getVehicles (src\lib\services\vehiclesApi.server.js:79:20)
+    at async UsadosPage (src\app\(site)\usados\page.jsx:91:25)
+  25 |
+  26 |   try {
+> 27 |     const response = await fetch(url, {
+     |                      ^
+  28 |       ...options,
+  29 |       signal: controller.signal,
+  30 |       cache: {
+  [cause]: AggregateError: 
+      at ignore-listed frames {
+    code: 'ECONNREFUSED'
+  }
+}
+[API Server] ⚠️  Backend no disponible en http://localhost:3001. Asegúrate de que el backend esté corriendo y que 
+NEXT_PUBLIC_API_URL esté configurado correctamente.
+[API Server] 💡 Verifica: 1) Backend corriendo en puerto 3001, 2) Variable NEXT_PUBLIC_API_URL=http://localhost:3001, 
+3) Backend acepta conexiones desde localhost
+[UsadosPage] Error fetching vehicles: No se pudo conectar con el backend en http://localhost:3001. Verifica que: 1) El 
+backend esté corriendo, 2) NEXT_PUBLIC_API_URL esté configurado correctamente, 3) El backend acepte conexiones desde 
+localhost.
+ GET /usados 200 in 1762ms (compile: 1103ms, proxy.ts: 12ms, render: 648ms)
+ GET /postventa 200 in 1121ms (compile: 1055ms, proxy.ts: 8ms, render: 58ms)
+ GET / 200 in 89ms (compile: 5ms, proxy.ts: 5ms, render: 78ms)
+[Filters] Construyendo searchParams: {
+  'año': [ 2012, 2026 ],
+  precio: [ 12000000, 75000000 ],
+  kilometraje: [ 0, 150000 ]
+} { includeDefaultRanges: true }
+[Filters] SearchParams generados: anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000
+[API Server] Intentando con fallback: http://127.0.0.1:3001/photos/getallphotos?anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000&limit=8&cursor=1
+[API Server] ❌ Error en fetch: TypeError: fetch failed
+    at async fetchWithTimeout (src\lib\http\server.js:27:22)
+    at async Object.getVehicles (src\lib\services\vehiclesApi.server.js:79:20)
+    at async UsadosPage (src\app\(site)\usados\page.jsx:91:25)
+  25 |
+  26 |   try {
+> 27 |     const response = await fetch(url, {
+     |                      ^
+  28 |       ...options,
+  29 |       signal: controller.signal,
+  30 |       cache: {
+  [cause]: AggregateError: 
+      at ignore-listed frames {
+    code: 'ECONNREFUSED'
+  }
+}
+[API Server] Error name: TypeError
+[API Server] Error message: fetch failed
+[API Server] Error code: undefined
+[API Server] Error cause: AggregateError: 
+    at ignore-listed frames {
+  code: 'ECONNREFUSED'
+}
+[API Server] Error fetching vehicles: {
+  message: 'fetch failed',
+  baseURL: 'http://localhost:3001',
+  filters: {},
+  limit: 8,
+  cursor: 1
+}
+[API Server] Error completo: TypeError: fetch failed
+    at async fetchWithTimeout (src\lib\http\server.js:27:22)
+    at async Object.getVehicles (src\lib\services\vehiclesApi.server.js:79:20)
+    at async UsadosPage (src\app\(site)\usados\page.jsx:91:25)
+  25 |
+  26 |   try {
+> 27 |     const response = await fetch(url, {
+     |                      ^
+  28 |       ...options,
+  29 |       signal: controller.signal,
+  30 |       cache: {
+  [cause]: AggregateError: 
+      at ignore-listed frames {
+    code: 'ECONNREFUSED'
+  }
+}
+[API Server] ⚠️  Backend no disponible en http://localhost:3001. Asegúrate de que el backend esté corriendo y que 
+NEXT_PUBLIC_API_URL esté configurado correctamente.
+[API Server] 💡 Verifica: 1) Backend corriendo en puerto 3001, 2) Variable NEXT_PUBLIC_API_URL=http://localhost:3001, 
+3) Backend acepta conexiones desde localhost
+[UsadosPage] Error fetching vehicles: No se pudo conectar con el backend en http://localhost:3001. Verifica que: 1) El 
+backend esté corriendo, 2) NEXT_PUBLIC_API_URL esté configurado correctamente, 3) El backend acepte conexiones desde 
+localhost.
+ GET /usados 200 in 370ms (compile: 9ms, proxy.ts: 9ms, render: 352ms)
+ GET / 200 in 190ms (compile: 4ms, proxy.ts: 17ms, render: 169ms)
+ GET / 200 in 78ms (compile: 4ms, proxy.ts: 4ms, render: 70ms)
+ GET / 200 in 174ms (compile: 6ms, proxy.ts: 8ms, render: 161ms)
+[Filters] Construyendo searchParams: {
+  'año': [ 2012, 2026 ],
+  precio: [ 12000000, 75000000 ],
+  kilometraje: [ 0, 150000 ]
+} { includeDefaultRanges: true }
+[Filters] SearchParams generados: anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000
+[API Server] Intentando con fallback: http://127.0.0.1:3001/photos/getallphotos?anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000&limit=8&cursor=1
+[API Server] ❌ Error en fetch: TypeError: fetch failed
+    at async fetchWithTimeout (src\lib\http\server.js:27:22)
+    at async Object.getVehicles (src\lib\services\vehiclesApi.server.js:79:20)
+    at async UsadosPage (src\app\(site)\usados\page.jsx:91:25)
+  25 |
+  26 |   try {
+> 27 |     const response = await fetch(url, {
+     |                      ^
+  28 |       ...options,
+  29 |       signal: controller.signal,
+  30 |       cache: {
+  [cause]: AggregateError: 
+      at ignore-listed frames {
+    code: 'ECONNREFUSED'
+  }
+}
+[API Server] Error name: TypeError
+[API Server] Error message: fetch failed
+[API Server] Error code: undefined
+[API Server] Error cause: AggregateError: 
+    at ignore-listed frames {
+  code: 'ECONNREFUSED'
+}
+[API Server] Error fetching vehicles: {
+  message: 'fetch failed',
+  baseURL: 'http://localhost:3001',
+  filters: {},
+  limit: 8,
+  cursor: 1
+}
+[API Server] Error completo: TypeError: fetch failed
+    at async fetchWithTimeout (src\lib\http\server.js:27:22)
+    at async Object.getVehicles (src\lib\services\vehiclesApi.server.js:79:20)
+    at async UsadosPage (src\app\(site)\usados\page.jsx:91:25)
+  25 |
+  26 |   try {
+> 27 |     const response = await fetch(url, {
+     |                      ^
+  28 |       ...options,
+  29 |       signal: controller.signal,
+  30 |       cache: {
+  [cause]: AggregateError: 
+      at ignore-listed frames {
+    code: 'ECONNREFUSED'
+  }
+}
+[API Server] ⚠️  Backend no disponible en http://localhost:3001. Asegúrate de que el backend esté corriendo y que 
+NEXT_PUBLIC_API_URL esté configurado correctamente.
+[API Server] 💡 Verifica: 1) Backend corriendo en puerto 3001, 2) Variable NEXT_PUBLIC_API_URL=http://localhost:3001, 
+3) Backend acepta conexiones desde localhost
+[UsadosPage] Error fetching vehicles: No se pudo conectar con el backend en http://localhost:3001. Verifica que: 1) El 
+backend esté corriendo, 2) NEXT_PUBLIC_API_URL esté configurado correctamente, 3) El backend acepte conexiones desde 
+localhost.
+ GET /usados 200 in 105ms (compile: 6ms, proxy.ts: 7ms, render: 92ms)
+ GET / 200 in 58ms (compile: 8ms, proxy.ts: 8ms, render: 42ms)
+ GET / 200 in 158ms (compile: 6ms, proxy.ts: 7ms, render: 145ms)
+ GET /0km/208 200 in 1196ms (compile: 1111ms, proxy.ts: 9ms, generate-params: 421ms, render: 77ms)
+ GET / 200 in 54ms (compile: 7ms, proxy.ts: 8ms, render: 39ms)
+[Filters] Construyendo searchParams: {
+  'año': [ 2012, 2026 ],
+  precio: [ 12000000, 75000000 ],
+  kilometraje: [ 0, 150000 ]
+} { includeDefaultRanges: true }
+[Filters] SearchParams generados: anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000
+[Filters] Construyendo searchParams: {
+  'año': [ 2012, 2026 ],
+  precio: [ 12000000, 75000000 ],
+  kilometraje: [ 0, 150000 ]
+} { includeDefaultRanges: true }
+[Filters] SearchParams generados: anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000
+ GET /usados/vehiculos 200 in 1380ms (compile: 1209ms, proxy.ts: 8ms, render: 163ms)
+ │ GET http://localhost:3001/photos/getallphotos?anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000&limit=8&cursor=1
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+ GET /usados/vehiculos 200 in 494ms (compile: 11ms, proxy.ts: 8ms, render: 475ms)
+ │ GET http://localhost:3001/photos/getallphotos?anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000&limit=8&cursor=1
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+[Filters] Construyendo searchParams: {
+  'año': [ 2012, 2026 ],
+  precio: [ 12000000, 75000000 ],
+  kilometraje: [ 0, 150000 ]
+} { includeDefaultRanges: true }
+[Filters] SearchParams generados: anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000
+ GET /usados 200 in 172ms (compile: 6ms, proxy.ts: 10ms, render: 155ms)
+ │ GET http://localhost:3001/photos/getallphotos?anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000&limit=8&cursor=1
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+[Filters] Construyendo searchParams: {
+  'año': [ 2012, 2026 ],
+  precio: [ 12000000, 75000000 ],
+  kilometraje: [ 0, 150000 ]
+} { includeDefaultRanges: true }
+[Filters] SearchParams generados: anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000
+ GET /usados/vehiculos 200 in 149ms (compile: 37ms, proxy.ts: 11ms, render: 101ms)
+ │ GET http://localhost:3001/photos/getallphotos?anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000&limit=8&cursor=1
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+[Filters] Construyendo searchParams: {
+  'año': [ 2012, 2026 ],
+  precio: [ 12000000, 75000000 ],
+  kilometraje: [ 0, 150000 ]
+} { includeDefaultRanges: true }
+[Filters] SearchParams generados: anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000
+ GET /usados 200 in 122ms (compile: 5ms, proxy.ts: 7ms, render: 110ms)
+ │ GET http://localhost:3001/photos/getallphotos?anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000&limit=8&cursor=1
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+ GET / 200 in 63ms (compile: 9ms, proxy.ts: 8ms, render: 46ms)
+ GET / 200 in 219ms (compile: 6ms, proxy.ts: 9ms, render: 205ms)
+ GET /?gtm_debug=1777923568521 200 in 225ms (compile: 5ms, proxy.ts: 12ms, render: 208ms)
+[Filters] Construyendo searchParams: {
+  'año': [ 2012, 2026 ],
+  precio: [ 12000000, 75000000 ],
+  kilometraje: [ 0, 150000 ]
+} { includeDefaultRanges: true }
+[Filters] SearchParams generados: anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000
+ GET /usados 200 in 144ms (compile: 7ms, proxy.ts: 7ms, render: 130ms)
+ │ GET http://localhost:3001/photos/getallphotos?anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000&limit=8&cursor=1
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+[Filters] Construyendo searchParams: {
+  'año': [ 2012, 2026 ],
+  precio: [ 12000000, 75000000 ],
+  kilometraje: [ 0, 150000 ]
+} { includeDefaultRanges: true }
+[Filters] SearchParams generados: anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000
+ GET /usados/vehiculos 200 in 158ms (compile: 8ms, proxy.ts: 8ms, render: 143ms)
+ │ GET http://localhost:3001/photos/getallphotos?anio=2012%2C2026&precio=12000000%2C75000000&km=0%2C150000&limit=8&cursor=1
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[slug] REDIRECT DIAGNOSTIC: {
+  param: 'citroen-jumper-2019-69f1f78962706e397b45cf1e',
+  expectedSegment: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  canonicalPath: '/usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  needsRedirect: false,
+  willRedirect: true,
+  slugMatch: false,
+  vehicle: {
+    id: '69f1f78962706e397b45cf1e',
+    marca: 'Citroën',
+    modelo: 'Jumper',
+    version: 'L2 H1 Furgón HDI',
+    anio: 2019
+  }
+}
+ GET /usados/citroen-jumper-2019-69f1f78962706e397b45cf1e 200 in 1122ms (compile: 968ms, proxy.ts: 8ms, render: 146ms)
+ │ GET http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+ │ GET http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[slug] REDIRECT DIAGNOSTIC: {
+  param: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  expectedSegment: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  canonicalPath: '/usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  needsRedirect: false,
+  willRedirect: false,
+  slugMatch: true,
+  vehicle: {
+    id: '69f1f78962706e397b45cf1e',
+    marca: 'Citroën',
+    modelo: 'Jumper',
+    version: 'L2 H1 Furgón HDI',
+    anio: 2019
+  }
+}
+[slug] REDIRECT DIAGNOSTIC: {
+  param: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  expectedSegment: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  canonicalPath: '/usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  needsRedirect: false,
+  willRedirect: false,
+  slugMatch: true,
+  vehicle: {
+    id: '69f1f78962706e397b45cf1e',
+    marca: 'Citroën',
+    modelo: 'Jumper',
+    version: 'L2 H1 Furgón HDI',
+    anio: 2019
+  }
+}
+ GET /usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e 200 in 240ms (compile: 22ms, proxy.ts: 6ms, render: 212ms)
+ │ GET http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+ │ GET http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+ GET /usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e 200 in 248ms (compile: 6ms, proxy.ts: 4ms, render: 239ms)
+ │ GET http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+ │ GET http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+ GET /?gtm_debug=1777923696162 200 in 157ms (compile: 5ms, proxy.ts: 54ms, render: 97ms)
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[slug] REDIRECT DIAGNOSTIC: {
+  param: 'citroen-jumper-2019-69f1f78962706e397b45cf1e',
+  expectedSegment: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  canonicalPath: '/usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  needsRedirect: false,
+  willRedirect: true,
+  slugMatch: false,
+  vehicle: {
+    id: '69f1f78962706e397b45cf1e',
+    marca: 'Citroën',
+    modelo: 'Jumper',
+    version: 'L2 H1 Furgón HDI',
+    anio: 2019
+  }
+}
+ GET /usados/citroen-jumper-2019-69f1f78962706e397b45cf1e 200 in 145ms (compile: 20ms, proxy.ts: 9ms, render: 115ms)
+ │ GET http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+ │ GET http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[slug] REDIRECT DIAGNOSTIC: {
+  param: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  expectedSegment: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  canonicalPath: '/usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  needsRedirect: false,
+  willRedirect: false,
+  slugMatch: true,
+  vehicle: {
+    id: '69f1f78962706e397b45cf1e',
+    marca: 'Citroën',
+    modelo: 'Jumper',
+    version: 'L2 H1 Furgón HDI',
+    anio: 2019
+  }
+}
+[slug] REDIRECT DIAGNOSTIC: {
+  param: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  expectedSegment: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  canonicalPath: '/usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  needsRedirect: false,
+  willRedirect: false,
+  slugMatch: true,
+  vehicle: {
+    id: '69f1f78962706e397b45cf1e',
+    marca: 'Citroën',
+    modelo: 'Jumper',
+    version: 'L2 H1 Furgón HDI',
+    anio: 2019
+  }
+}
+ GET /usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e 200 in 169ms (compile: 6ms, proxy.ts: 5ms, render: 157ms)
+ │ GET http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+ │ GET http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+ GET /usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e 200 in 134ms (compile: 13ms, proxy.ts: 4ms, render: 116ms)
+ │ GET http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+ │ GET http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+  Reload env: .env.local
+⚠ Fast Refresh had to perform a full reload when ./node_modules/next/dist/client/image-component.js changed. Read 
+more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./node_modules/next/dist/client/image-component.js changed. Read 
+more: https://nextjs.org/docs/messages/fast-refresh-reload
+✓ Compiled in 353ms
+⚠ Fast Refresh had to perform a full reload when ./node_modules/next/dist/client/image-component.js changed. Read 
+more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./node_modules/next/dist/client/image-component.js changed. Read 
+more: https://nextjs.org/docs/messages/fast-refresh-reload
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[slug] REDIRECT DIAGNOSTIC: {
+  param: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  expectedSegment: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  canonicalPath: '/usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  needsRedirect: false,
+  willRedirect: false,
+  slugMatch: true,
+  vehicle: {
+    id: '69f1f78962706e397b45cf1e',
+    marca: 'Citroën',
+    modelo: 'Jumper',
+    version: 'L2 H1 Furgón HDI',
+    anio: 2019
+  }
+}
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ GET / 200 in 452ms (compile: 78ms, proxy.ts: 37ms, render: 336ms)
+ GET / 200 in 288ms (compile: 111ms, proxy.ts: 144ms, render: 33ms)
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+[slug] REDIRECT DIAGNOSTIC: {
+  param: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  expectedSegment: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  canonicalPath: '/usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  needsRedirect: false,
+  willRedirect: false,
+  slugMatch: true,
+  vehicle: {
+    id: '69f1f78962706e397b45cf1e',
+    marca: 'Citroën',
+    modelo: 'Jumper',
+    version: 'L2 H1 Furgón HDI',
+    anio: 2019
+  }
+}
+[API Server] Fetching vehicle: http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ GET /usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e 200 in 588ms (compile: 321ms, proxy.ts: 45ms, render: 221ms)
+ GET /usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e 200 in 182ms (compile: 108ms, proxy.ts: 41ms, render: 33ms)
+[slug] REDIRECT DIAGNOSTIC: {
+  param: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  expectedSegment: 'citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  canonicalPath: '/usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e',
+  needsRedirect: false,
+  willRedirect: false,
+  slugMatch: true,
+  vehicle: {
+    id: '69f1f78962706e397b45cf1e',
+    marca: 'Citroën',
+    modelo: 'Jumper',
+    version: 'L2 H1 Furgón HDI',
+    anio: 2019
+  }
+}
+ GET / 200 in 737ms (compile: 11ms, proxy.ts: 109ms, render: 617ms)
+ GET /usados/citroen-jumper-l2-h1-furgon-hdi-2019-69f1f78962706e397b45cf1e 200 in 649ms (compile: 159ms, proxy.ts: 143ms, render: 346ms)
+ │ GET http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.
+ │ GET http://localhost:3001/photos/getonephoto/69f1f78962706e397b45cf1e
+ │ │ ⚠ Specified "cache: no-store" and "revalidate: 21600", only one should be specified.

@@ -12,18 +12,32 @@
  */
 export const FILTER_BOUNDS = {
   AÑO: { min: 1990, max: 2026 },
-  PRECIO: { min: 5000000, max: 100000000 },
-  KILOMETRAJE: { min: 0, max: 200000 },
+  PRECIO: { min: 5000000, max: 150000000 },
+  KILOMETRAJE: { min: 0, max: 250000 },
 };
 
 /**
- * Rango por defecto: sin parámetro en URL / sin chip; la lista arranca con estos límites
- * (distintos entre sí para que los sliders no queden todos “abiertos del todo”).
+ * Rango por defecto: posición inicial de los sliders cuando no hay filtro en URL.
+ *
+ * **Convención actual**: FILTER_DEFAULTS == FILTER_BOUNDS.
+ * Es decir, los sliders arrancan en los extremos (rango completo) y "no filtrar"
+ * equivale a "estar en el rango completo". Cuando los valores coinciden con los
+ * BOUNDS:
+ *   - No se agrega el filtro a la URL (URL limpia).
+ *   - No aparece chip de filtro activo.
+ *   - hasAnyFilter() devuelve false.
+ *   - getActiveFilterChips() no genera chip para ese rango.
+ *
+ * Si en el futuro se quisiera reintroducir un rango "comercial" sugerido como
+ * posición inicial sin que oculte autos, conviene separar dos conceptos:
+ *   - "starting position" del slider (UX)
+ *   - "rango sin filtro" (no se manda al backend)
+ * y trabajarlos por separado. Hoy no hace falta.
  */
 export const FILTER_DEFAULTS = {
-  AÑO: { min: 2012, max: 2026 },
-  PRECIO: { min: 12000000, max: 75000000 },
-  KILOMETRAJE: { min: 0, max: 150000 },
+  AÑO: { ...FILTER_BOUNDS.AÑO },
+  PRECIO: { ...FILTER_BOUNDS.PRECIO },
+  KILOMETRAJE: { ...FILTER_BOUNDS.KILOMETRAJE },
 };
 
 // Marcas de vehículos (sin duplicados)

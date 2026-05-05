@@ -7,6 +7,9 @@ import styles from "./Nav.module.css";
 import { NavMenuContent } from "./NavMenuContent";
 import { navStrings } from "./navStrings";
 import { useMobileNavA11y } from "./useMobileNavA11y";
+import { pushDataLayer } from "@/lib/analytics/dataLayer";
+import { EVENTS } from "@/lib/analytics/events";
+import { locationFromPathname } from "@/lib/analytics/locationFromPath";
 
 function useScrollLock(menuOpen) {
   useEffect(() => {
@@ -65,13 +68,32 @@ export default function Nav() {
   }, []);
 
   const toggleMenu = useCallback(() => {
-    setMenuOpen((v) => !v);
-  }, []);
+    setMenuOpen((v) => {
+      const next = !v;
+      pushDataLayer(EVENTS.NAV_TOGGLE, {
+        component_id: "nav-mobile-toggle",
+        location: locationFromPathname(pathname),
+        open: next,
+      });
+      return next;
+    });
+  }, [pathname]);
 
-  const toggleDropdown = useCallback((e) => {
-    e.preventDefault();
-    setDropdownOpen((v) => !v);
-  }, []);
+  const toggleDropdown = useCallback(
+    (e) => {
+      e.preventDefault();
+      setDropdownOpen((v) => {
+        const next = !v;
+        pushDataLayer(EVENTS.NAV_TOGGLE, {
+          component_id: "nav-dropdown",
+          location: locationFromPathname(pathname),
+          open: next,
+        });
+        return next;
+      });
+    },
+    [pathname],
+  );
 
   const openDropdownHover = useCallback(() => {
     setDropdownOpen(true);

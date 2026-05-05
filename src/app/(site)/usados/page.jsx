@@ -143,10 +143,11 @@ export default async function UsadosPage() {
               >
                 Vehículos Usados
               </h1>
+              <span className={styles.titleSep} aria-hidden="true" />
               <div className={styles.vehiclesHeaderRest}>
                 <Link
                   href="/usados/vehiculos"
-                  className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline} ${cta.buttonCompact}`}
+                  className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline}`}
                 >
                   Ver todos
                 </Link>

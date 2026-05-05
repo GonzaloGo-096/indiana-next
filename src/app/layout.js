@@ -1,6 +1,7 @@
 import { Poppins, Barlow_Condensed } from "next/font/google";
 import "./globals.css";
 import { getSiteUrl } from "../lib/site-url";
+import ConsentBootstrap from "../components/analytics/ConsentBootstrap";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -58,6 +59,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="es" data-scroll-behavior="smooth">
+      <head>
+        {/* Consent Mode v2 default — inyectado ANTES de cualquier loader (GTM, Meta).
+            Lee localStorage para reaplicar la decisión persistida. */}
+        <ConsentBootstrap />
+      </head>
       <body
         className={`${poppins.variable} ${barlowCondensed.variable} antialiased`}
       >

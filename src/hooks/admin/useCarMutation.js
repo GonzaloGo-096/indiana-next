@@ -120,6 +120,18 @@ export const useCarMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['vehicles'] })
 
       const vehicleId = data?._id || data?.id || data?.vehicle?._id || data?.vehicle?.id
+
+      // ✅ DEFENSIVO: el backend puede responder 200 con un shape inesperado
+      // (p. ej. la string "true"). El alta funciona, pero perdemos la
+      // capacidad de invalidar el detalle por ID. Avisamos sólo en dev.
+      if (!vehicleId && process.env.NODE_ENV === 'development') {
+        console.warn(
+          '[cars:mutation] Backend respondió 200 OK pero la respuesta no incluye _id/id del vehículo. ' +
+            'La revalidación de detalle no podrá targetear el nuevo vehículo (la lista sí se invalida).',
+          { responseShape: data }
+        )
+      }
+
       void afterVehicleWrite(vehicleId).then(() => {
         if (process.env.NODE_ENV === 'development' && vehicleId) {
           console.debug('[cars:mutation] revalidación pública tras alta:', vehicleId)

@@ -82,12 +82,13 @@ function normalizeCajaTokensFromUrl(tokens) {
  * @param {number} filters.page - Página actual (opcional, para paginación)
  * @param {Object} [options]
  * @param {boolean} [options.includeDefaultRanges=false] - Si true (p. ej. llamada a la API), incluye anio/precio/km aunque coincidan con FILTER_DEFAULTS.
+ * @param {boolean} [options.mergeDefaults=true] - Si false, NO rellena rangos faltantes con FILTER_DEFAULTS. Útil para el admin, que debe ver TODO el inventario sin filtros invisibles.
  * @returns {URLSearchParams} Parámetros listos para URL o backend
  */
 export const buildSearchParams = (filters = {}, options = {}) => {
-  const { includeDefaultRanges = false } = options;
+  const { includeDefaultRanges = false, mergeDefaults = true } = options;
   const params = new URLSearchParams();
-  const f = mergeDefaultRanges({ ...filters });
+  const f = mergeDefaults ? mergeDefaultRanges({ ...filters }) : { ...filters };
 
   // Logging solo en desarrollo
   if (process.env.NODE_ENV === "development") {

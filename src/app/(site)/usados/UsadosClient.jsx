@@ -24,6 +24,13 @@ import { vehiclesService } from "../../../lib/services/vehiclesApi";
 import { mapVehiclesPage } from "../../../lib/mappers/vehicleMapper";
 import UsadosGrid from "./UsadosGrid";
 import UsadosFilters from "./UsadosFilters";
+import ItemListViewTracker from "@/components/analytics/ItemListViewTracker";
+import { useAnalytics } from "@/hooks/useAnalytics";
+import { EVENTS, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
+import {
+  buildItemParamsFromUsado,
+  buildSearchFiltersParams,
+} from "@/lib/analytics/params";
 import styles from "./usados.module.css";
 
 /**
@@ -41,6 +48,7 @@ export default function UsadosClient({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { trackSearch, track } = useAnalytics();
 
   // Estado local para datos actuales
   const [data, setData] = useState(initialData);
@@ -121,6 +129,13 @@ export default function UsadosClient({
         });
         const mappedData = mapVehiclesPage(backendData, 1);
         setData(mappedData);
+        // Tracking: filter_applied + view_search_results con resultados ya conocidos
+        trackSearch({
+          filters: buildSearchFiltersParams(newFilters),
+          resultsCount: mappedData?.totalDocs ?? null,
+          location: LOCATIONS.USADOS_LIST,
+          componentId: "filter-form-usados",
+        });
       } catch (err) {
         if (process.env.NODE_ENV === 'development') {
           console.error("[UsadosClient] Error fetching vehicles:", err);
@@ -130,7 +145,7 @@ export default function UsadosClient({
         setIsLoading(false);
       }
     },
-    [updateURL, currentSort]
+    [updateURL, currentSort, trackSearch]
   );
 
   /**
@@ -172,8 +187,13 @@ export default function UsadosClient({
     (newSort) => {
       // Solo actualizar URL (sorting es local, no requiere fetch)
       updateURL(currentFilters, currentPage, newSort);
+      track(EVENTS.SORT_APPLIED, {
+        sort_by: newSort || "none",
+        location: LOCATIONS.USADOS_LIST,
+        component_id: "sort-action-usados",
+      });
     },
-    [currentFilters, currentPage, updateURL]
+    [currentFilters, currentPage, updateURL, track]
   );
 
   /**
@@ -183,8 +203,23 @@ export default function UsadosClient({
     updateURL({}, 1, null);
   }, [updateURL]);
 
+  // Items GA4: solo del page actual visible. Allowlist en el builder.
+  const trackingItems = sortedVehicles
+    ? sortedVehicles
+        .map((v) => buildItemParamsFromUsado(v, ITEM_LIST.USADOS_GRID))
+        .filter(Boolean)
+    : [];
+  // Signature incluye filtros + página + sort para disparar 1 evento por cambio.
+  const listSignature = `${currentPage}|${currentSort || ""}|${searchParams?.toString?.() || ""}`;
+
   return (
     <div className={styles.page}>
+      <ItemListViewTracker
+        items={trackingItems}
+        itemListName={ITEM_LIST.USADOS_GRID}
+        location={LOCATIONS.USADOS_LIST}
+        signature={listSignature}
+      />
       {/* Header */}
       <header className={styles.header}>
         <div className={styles.headerContent}>

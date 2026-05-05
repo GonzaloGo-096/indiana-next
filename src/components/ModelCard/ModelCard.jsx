@@ -8,9 +8,16 @@
  * @version 2.1.0 - Optimizado con React.memo para mejor performance
  */
 
-import { memo } from "react";
-import Link from "next/link";
+import { memo, useCallback } from "react";
 import Image from "next/image";
+import TrackedLink from "@/components/analytics/TrackedLink";
+import {
+  EVENTS,
+  SOURCES,
+  LOCATIONS,
+  ITEM_LIST,
+} from "@/lib/analytics/events";
+import { buildItemParamsFromAuto } from "@/lib/analytics/params";
 import styles from "./ModelCard.module.css";
 
 /**
@@ -30,6 +37,10 @@ import styles from "./ModelCard.module.css";
  * @param {boolean} props.softSurface - Sobre fondo oscuro: menos contraste (off-white, sombra suave)
  * @param {boolean} props.frameless - Sin caja de card (solo imagen + título; pensado para home sobre degradé oscuro)
  * @param {boolean} props.titleAboveImage - Mostrar logo + modelo arriba de la imagen
+ * @param {string} [props.trackingLocation] - LOCATIONS.* del contexto donde se renderiza la card
+ *   (ej: LOCATIONS.HOME para sección home, LOCATIONS.OKM_LIST para grilla de /0km).
+ *   Si no se pasa, default a OKM_LIST.
+ * @param {string} [props.trackingListName] - ITEM_LIST.* — default según trackingLocation.
  */
 function ModelCard({
   src,
@@ -44,7 +55,25 @@ function ModelCard({
   softSurface = false,
   frameless = false,
   titleAboveImage = false,
+  trackingLocation,
+  trackingListName,
 }) {
+  const location = trackingLocation || LOCATIONS.OKM_LIST;
+  const listName =
+    trackingListName ||
+    (location === LOCATIONS.HOME ? ITEM_LIST.HOME_FEATURED : ITEM_LIST.OKM_GRID);
+
+  // Callback (no objeto) para no invalidar memo en re-renders del padre.
+  const getTrackParams = useCallback(
+    () => ({
+      ...buildItemParamsFromAuto({ slug, titulo }, listName),
+    }),
+    [slug, titulo, listName],
+  );
+  const getPlanesParams = useCallback(
+    () => ({ label: "Ver planes", target_path: "/planes" }),
+    [],
+  );
   const classNames = [
     styles.card,
     okmShowcase && styles.okmShowcase,
@@ -113,13 +142,29 @@ function ModelCard({
       {!titleAboveImage && <div className={styles.content}>{titleBlock}</div>}
       {showActionButtons && (
         <div className={styles.actionsRow}>
-          <Link href={`/0km/${slug}`} className={styles.actionButton}>
+          <TrackedLink
+            href={`/0km/${slug}`}
+            event={EVENTS.SELECT_ITEM}
+            getParams={getTrackParams}
+            source={SOURCES.CARD}
+            location={location}
+            componentId="model-card-cta-ver"
+            className={styles.actionButton}
+          >
             Ver modelo
-          </Link>
+          </TrackedLink>
           {hasPlanes && (
-            <Link href="/planes" className={`${styles.actionButton} ${styles.actionButtonLight}`}>
+            <TrackedLink
+              href="/planes"
+              event={EVENTS.CTA_CLICK}
+              getParams={getPlanesParams}
+              source={SOURCES.CARD}
+              location={location}
+              componentId="model-card-cta-planes"
+              className={`${styles.actionButton} ${styles.actionButtonLight}`}
+            >
               Ver planes
-            </Link>
+            </TrackedLink>
           )}
         </div>
       )}
@@ -135,9 +180,18 @@ function ModelCard({
   }
 
   return (
-    <Link href={`/0km/${slug}`} className={classNames} data-slug={slug}>
+    <TrackedLink
+      href={`/0km/${slug}`}
+      event={EVENTS.SELECT_ITEM}
+      getParams={getTrackParams}
+      source={SOURCES.CARD}
+      location={location}
+      componentId="model-card-wrapper"
+      className={classNames}
+      data-slug={slug}
+    >
       {cardInner}
-    </Link>
+    </TrackedLink>
   );
 }
 

@@ -23,16 +23,17 @@ import { buildSearchParams } from "@/utils/filters";
 export const vehiclesService = {
   /**
    * Obtener lista de vehículos (Server Component)
-   * 
+   *
    * Usa fetch nativo para aprovechar deduplicación y caching de Next.js
-   * 
+   *
    * @param {Object} options - Opciones de búsqueda
    * @param {Object} options.filters - Filtros del frontend
    * @param {number} options.limit - Cantidad de resultados (default: 12)
    * @param {number} options.cursor - Cursor de paginación (default: 1)
+   * @param {boolean} [options.mergeDefaults=false] - Si true, rellena rangos faltantes (precio/km) con FILTER_DEFAULTS. **Por defecto false**: el listado público muestra todo el inventario y deja que el usuario filtre explícitamente.
    * @returns {Promise<Object>} Respuesta del backend
    */
-  async getVehicles({ filters = {}, limit = 12, cursor = null } = {}) {
+  async getVehicles({ filters = {}, limit = 12, cursor = null, mergeDefaults = false } = {}) {
     try {
       // Validaciones y normalizaciones
       const safeLimit =
@@ -42,7 +43,10 @@ export const vehiclesService = {
 
       // Construir URL: buildSearchParams (filtros) + limit/cursor (paginación backend)
       const baseURL = getApiBaseUrl();
-      const searchParams = buildSearchParams(filters, { includeDefaultRanges: true });
+      const searchParams = buildSearchParams(filters, {
+        includeDefaultRanges: true,
+        mergeDefaults,
+      });
       searchParams.set("limit", String(safeLimit));
       searchParams.set("cursor", String(safeCursor));
 

@@ -23,7 +23,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   buildSearchParams,
   parseFilters,
-  mergeDefaultRanges,
   sortVehicles,
   hasAnyFilter,
   getActiveFilterChips,
@@ -123,10 +122,14 @@ export default function VehiculosClient({
 
   // ✅ OPTIMIZADO: Extraer todos los valores de searchParams en un solo useMemo
   // Esto reduce múltiples re-renders y puede ayudar con el error de Suspense
+  // ⚠️ NO mergear con FILTER_DEFAULTS: si el usuario no filtró, dejamos los
+  // filtros "ralos". Eso evita que vehiclesService.getVehicles mande precio/km
+  // al backend y filtre autos que tendrían que aparecer. FilterFormSimple ya
+  // se encarga de mostrar los sliders en sus extremos cuando no hay valor.
   const searchParamsData = useMemo(() => {
     const sparse = parseFilters(searchParams);
     return {
-      filters: mergeDefaultRanges(sparse),
+      filters: sparse,
       page: Number(searchParams.get("page")) || 1,
       sort: searchParams.get("sort") || null,
     };

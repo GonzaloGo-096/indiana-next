@@ -1,9 +1,16 @@
 "use client";
 
-import { memo } from "react";
-import Link from "next/link";
+import { memo, useCallback } from "react";
 import { formatPrice } from "../../utils/formatters";
 import { getModelo } from "../../data/modelos";
+import TrackedLink from "@/components/analytics/TrackedLink";
+import {
+  EVENTS,
+  SOURCES,
+  LOCATIONS,
+  ITEM_LIST,
+} from "@/lib/analytics/events";
+import { buildItemParamsFromPlan } from "@/lib/analytics/params";
 import cta from "../home/HomeSectionCtas.module.css";
 import styles from "./PlanCard.module.css";
 
@@ -66,6 +73,16 @@ const PlanCardComponent = ({ plan, modelo }) => {
     valor_movil_sin_imp,
     caracteristicas,
   } = plan;
+
+  // Callback (no objeto) para no invalidar React.memo en re-renders del padre.
+  const getTrackParams = useCallback(
+    () =>
+      buildItemParamsFromPlan(
+        { id: plan.id, nombre: nombrePlan, modelo, cuota: cuotas_desde },
+        ITEM_LIST.PLANES_GRID,
+      ) || {},
+    [plan.id, nombrePlan, modelo, cuotas_desde],
+  );
 
   const modeloDisplay = modelo.charAt(0).toUpperCase() + modelo.slice(1);
   const modeloLower = modelo.toLowerCase();
@@ -139,12 +156,17 @@ const PlanCardComponent = ({ plan, modelo }) => {
 
         {/* Botones de acción - siempre abajo con margin-top: auto */}
         <div className={styles.planActions}>
-          <Link
+          <TrackedLink
             href={`/planes/${plan.id}`}
+            event={EVENTS.SELECT_ITEM}
+            getParams={getTrackParams}
+            source={SOURCES.CARD}
+            location={LOCATIONS.PLANES_LIST}
+            componentId="plan-card-cta-ver"
             className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInCard} ${styles.actionButton}`}
           >
             Ver plan
-          </Link>
+          </TrackedLink>
         </div>
       </div>
     </div>

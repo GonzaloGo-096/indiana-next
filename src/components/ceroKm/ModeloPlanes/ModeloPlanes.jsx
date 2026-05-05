@@ -143,6 +143,7 @@ const ModeloPlanes = ({ modeloSlug }) => {
           <PeugeotIcon className={styles.modeloTitleIcon} size={48} color="#000000" />
           Planes {modeloDisplay}
         </h2>
+        <span className={styles.titleSep} aria-hidden="true" />
         <Link
           href="/planes"
           className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline} ${styles.verTodosButton}`}

@@ -171,6 +171,27 @@
     height: auto;
     margin-inline: auto;
   }
+
+}
+
+/* Ajustes de imagen del auto: solo en mobile estricto (teléfonos) */
+@media (max-width: 767px) {
+  /* 208: desplazar levemente a la izquierda sin cambiar escala */
+  .planImageColumn[data-modelo="208"] .planImage {
+    transform: translateX(-8%);
+    transform-origin: center center;
+  }
+
+  /* 2008, partner, expert: reducir zoom visual del auto (contenedor sin cambios) */
+  .planImageColumn:not([data-modelo="208"]) .planImage {
+    transform: scale(0.91);
+    transform-origin: center center;
+  }
+
+  /* overflow hidden para que el translateX del 208 no genere scroll horizontal */
+  .planImageColumn {
+    overflow: hidden;
+  }
 }
 
 @media (min-width: 1024px) {
@@ -236,16 +257,24 @@
   }
 }
 
-/* Mobile: siempre 2 columnas; Licitación mínima ancho completo, el resto en 2 columnas (nunca una sola) */
+/* Mobile: columna simple, un cubículo por fila, separadores sutiles */
 @media (max-width: 767px) {
   .planDetailsSection {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    padding-top: var(--spacing-10);
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding-top: var(--spacing-6);
+    border-top: 1px solid var(--color-neutral-100, #f1f5f9);
+    margin-top: var(--spacing-4);
   }
 
-  .planDetailsSection .detailCubicle:first-child {
-    grid-column: 1 / -1;
+  .planDetailsSection .detailCubicle {
+    padding: var(--spacing-3) 0;
+    border-bottom: 1px solid var(--color-neutral-100, #f1f5f9);
+  }
+
+  .planDetailsSection .detailCubicle:last-child {
+    border-bottom: none;
   }
 }
 
@@ -630,30 +659,96 @@
     font-size: 1.0625rem;
   }
 
+  /* ===== MOBILE: secondary metrics → lista vertical label|valor ===== */
+  .planSecondaryMetrics {
+    background: var(--color-neutral-50, #f8fafc);
+    border: 1px solid var(--color-neutral-100, #f1f5f9);
+    border-radius: var(--border-radius-md);
+    padding: 0 var(--spacing-4);
+    overflow: hidden;
+    margin-bottom: var(--spacing-2);
+  }
+
+  /* Colapsar el grid a columna simple; los items se apilan */
+  .planSecondaryMetrics .infoBottomRow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 0;
+    justify-items: unset;
+  }
+
+  /* Cada ítem: label izquierda — valor derecha */
+  .planSecondaryMetrics .infoBottomItem {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    padding: var(--spacing-3) 0;
+    border-bottom: 1px solid var(--color-neutral-100, #f1f5f9);
+    gap: var(--spacing-3);
+  }
+
+  .planSecondaryMetrics .infoBottomItem:last-child {
+    border-bottom: none;
+  }
+
   .planSecondaryMetrics .infoBottomLabel {
-    font-size: 1rem;
+    font-size: 0.8125rem;
+    text-align: left;
+    flex: 1;
+    min-width: 0;
+    text-transform: none;
+    line-height: 1.35;
+    color: var(--color-neutral-500, #64748b);
   }
 
   .planSecondaryMetrics .infoBottomValue {
-    font-size: 1.5rem;
+    font-size: 1.125rem;
+    text-align: right;
+    flex-shrink: 0;
+    color: var(--color-neutral-700, #334155);
+    line-height: 1.3;
   }
 
+  /* Título del cubículo: pequeño y muted */
   .detailCubicle .additionalSectionLabel {
-    font-size: 1.125rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-neutral-400, #94a3b8);
+    font-weight: var(--font-weight-medium);
   }
 
   .detailCubicle:not(:first-child) .additionalSectionLabel {
-    font-size: 0.9375rem;
+    font-size: 0.75rem;
   }
 
+  /* Valores del cubículo: más grandes y prominentes */
   .detailCubicle .additionalItemLabel,
   .detailCubicle .additionalItemValue {
-    font-size: 1.125rem;
+    font-size: 1rem;
+    line-height: 1.4;
   }
 
   .detailCubicle .additionalSectionContent.hasMultipleItems .additionalItemLabel,
   .detailCubicle .additionalSectionContent.hasMultipleItems .additionalItemValue {
-    font-size: 1.125rem;
+    font-size: 1rem;
+  }
+
+  /* Reducir padding interior de cada ítem en mobile */
+  .detailCubicle .additionalItem {
+    padding: var(--spacing-1) 0;
+  }
+
+  .detailCubicle .additionalItemRow {
+    padding: var(--spacing-1) 0;
+    gap: 6px;
+  }
+
+  /* Header del cubículo: menos margen en mobile */
+  .detailCubicle .additionalSectionHeader {
+    margin-bottom: var(--spacing-2);
   }
 
   .modelosSectionLabel {
@@ -665,10 +760,70 @@
   }
 }
 
+/* ===== "desde" — prefijo dentro del valor de cuota estimada ===== */
+.cuotaDesdePrefix {
+  font-size: 0.42em;
+  font-weight: var(--font-weight-medium);
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  opacity: 0.82;
+  align-self: center;
+  padding-top: 0.18em;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* ===== WRAPPER DISCLAIMER + CONTACTO — flex-column para controlar orden por breakpoint ===== */
+.disclaimerContactWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-5);
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  /* Desktop: disclaimer antes del botón */
+  .disclaimerContactWrapper .legalDisclaimer {
+    order: -1;
+  }
+}
+
+/* ===== DISCLAIMER LEGAL ===== */
+.legalDisclaimer {
+  width: 100%;
+  margin-top: 0;
+  padding: var(--spacing-3) var(--spacing-4);
+  background: var(--color-neutral-50, #f8fafc);
+  border: 1px solid var(--color-neutral-200, #e2e8f0);
+  border-radius: var(--border-radius-md);
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .legalDisclaimer {
+    padding: var(--spacing-4) var(--spacing-5);
+  }
+}
+
+.legalDisclaimerText {
+  margin: 0;
+  font-family: var(--font-poppins, system-ui, sans-serif);
+  font-size: clamp(0.6875rem, 1.2vw, 0.75rem);
+  line-height: 1.65;
+  color: var(--color-neutral-500, #64748b);
+  letter-spacing: 0.01em;
+}
+
+.legalDisclaimerAsterisk {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-neutral-600, #475569);
+  margin-right: 0.15em;
+}
+
 /* ===== BOTÓN DE CONTACTO WHATSAPP ===== */
 .contactSection {
   width: 100%;
-  margin-top: var(--spacing-8);
+  margin-top: 0;
   margin-bottom: var(--spacing-8);
   padding-top: var(--spacing-4);
   padding-bottom: var(--spacing-6);
@@ -678,6 +833,26 @@
   justify-content: center;
   align-items: center;
   box-sizing: border-box;
+}
+
+/* Envuelve el botón + microcopy en columna centrada */
+.contactInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-3);
+}
+
+/* Microcopy bajo el CTA */
+.contactMicrocopy {
+  margin: 0;
+  font-family: var(--font-poppins, system-ui, sans-serif);
+  font-size: clamp(0.75rem, 1.3vw, 0.8125rem);
+  color: var(--color-neutral-500, #64748b);
+  text-align: center;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  max-width: 38ch;
 }
 
 /* WhatsApp: ContactButtons.module.css */
@@ -699,9 +874,41 @@
 
 @media (max-width: 767px) {
   .contactSection {
-    margin-top: var(--spacing-6);
-    margin-bottom: var(--spacing-6);
+    margin-top: 0;
+    margin-bottom: var(--spacing-4);
     padding-top: var(--spacing-3);
-    padding-bottom: var(--spacing-5);
+    padding-bottom: var(--spacing-4);
+  }
+
+  .planContactWhatsapp {
+    width: 100%;
+    max-width: 100%;
+    padding: 1.875rem 3rem;
+    min-height: 5rem;
+    font-size: 1.125rem;
+    letter-spacing: 0.06em;
+    justify-content: center;
+    gap: 0.875rem;
+  }
+
+  .planContactWhatsapp svg {
+    width: 1.625rem;
+    height: 1.625rem;
+  }
+
+  .contactSection {
+    margin-top: var(--spacing-8);
+    margin-bottom: var(--spacing-8);
+    padding-top: var(--spacing-6);
+    padding-bottom: var(--spacing-6);
+  }
+
+  .legalDisclaimer {
+    margin-top: var(--spacing-8);
+  }
+
+  .contactMicrocopy {
+    font-size: 0.75rem;
+    max-width: 32ch;
   }
 }

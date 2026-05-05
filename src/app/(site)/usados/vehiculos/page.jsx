@@ -15,7 +15,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { vehiclesService } from "../../../../lib/services/vehiclesApi.server";
 import { mapVehiclesPage } from "../../../../lib/mappers/vehicleMapper";
-import { mergeDefaultRanges, parseFilters } from "../../../../utils/filters";
+import { parseFilters } from "../../../../utils/filters";
 import { getSiteUrl, tryAbsoluteUrl } from "../../../../lib/site-url";
 import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
 import VehiculosClient from "./VehiculosClient";
@@ -290,8 +290,13 @@ export default async function VehiculosPage({ searchParams }) {
   const resolvedSearchParams = await searchParams;
 
   try {
-    // Parsear filtros desde URL (única fuente de verdad)
-    const filters = mergeDefaultRanges(parseFilters(resolvedSearchParams || {}));
+    // Parsear filtros desde URL (única fuente de verdad).
+    // ⚠️ NO mergear con FILTER_DEFAULTS acá: agregar precio/km al filtro hace
+    // que `buildSearchParams` los mande al backend (con includeDefaultRanges:true)
+    // y el backend filtra autos que no tengan esos campos o estén fuera del rango.
+    // Si el usuario no filtró explícitamente, dejamos los filtros "ralos" para
+    // que el servicio (mergeDefaults:false por default) no los inyecte.
+    const filters = parseFilters(resolvedSearchParams || {});
 
     // Extraer página desde searchParams (default: 1)
     const page = Number(resolvedSearchParams?.page) || 1;
@@ -374,7 +379,7 @@ export default async function VehiculosPage({ searchParams }) {
             hasNextPage: false,
             nextPage: null,
           }}
-          initialFilters={mergeDefaultRanges(parseFilters(resolvedSearchParams || {}))}
+          initialFilters={parseFilters(resolvedSearchParams || {})}
           initialPage={Number(resolvedSearchParams?.page) || 1}
           error={errorMessage}
         />

@@ -13,10 +13,20 @@ import { buildSearchParams } from '@/utils/filters'
 const vehiclesService = {
   /**
    * Obtener lista de vehículos con filtros y paginación
+   *
+   * @param {Object} params
+   * @param {Object} [params.filters={}] - Filtros del frontend
+   * @param {number} [params.limit=8] - Tamaño de página
+   * @param {number} [params.cursor=1] - Cursor de paginación
+   * @param {AbortSignal} [params.signal] - Para cancelar la request
+   * @param {boolean} [params.mergeDefaults=false] - Si true, rellena rangos faltantes (precio/km) con FILTER_DEFAULTS antes de enviarlos al backend. **Por defecto false**: no se aplican filtros invisibles, el cliente ve todo el inventario salvo lo que filtre explícitamente. Sólo activar si se quiere acotar el listado a un rango "comercial" sin que el usuario lo pida.
    */
-  async getVehicles({ filters = {}, limit = 8, cursor = 1, signal }) {
+  async getVehicles({ filters = {}, limit = 8, cursor = 1, signal, mergeDefaults = false }) {
     // ✅ Construir parámetros usando la misma función que en producción
-    const urlParams = buildSearchParams(filters, { includeDefaultRanges: true })
+    const urlParams = buildSearchParams(filters, {
+      includeDefaultRanges: true,
+      mergeDefaults,
+    })
     
     // ✅ CRÍTICO: El backend espera 'cursor', no 'page'
     urlParams.set('limit', String(limit))

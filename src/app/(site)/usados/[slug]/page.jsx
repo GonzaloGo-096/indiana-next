@@ -20,6 +20,9 @@ import {
 } from "@/utils/vehicleSlug";
 import { serializeVehicleForClient } from "@/utils/serializeVehicleForClient";
 import VehicleDetailClient from "./VehicleDetailClient";
+import ItemViewTracker from "@/components/analytics/ItemViewTracker";
+import { LOCATIONS } from "@/lib/analytics/events";
+import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 
 function formatPrecioForMeta(precio) {
   if (precio == null || precio === "") return "";
@@ -309,6 +312,10 @@ export default async function VehicleDetailPage({ params }) {
           dangerouslySetInnerHTML={{ __html: payload.jsonLdHtml }}
         />
       ) : null}
+      <ItemViewTracker
+        item={buildItemParamsFromUsado(payload.clientVehicle)}
+        location={LOCATIONS.USADOS_DETAIL}
+      />
       <VehicleDetailClient vehicle={payload.clientVehicle} />
     </>
   );

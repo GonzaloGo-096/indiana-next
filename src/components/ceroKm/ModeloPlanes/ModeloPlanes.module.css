@@ -31,12 +31,22 @@
 .modeloTitleContainer {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-4);
+  justify-content: flex-start;
+  gap: clamp(0.5rem, 1.2vw, 0.75rem);
   margin-bottom: var(--spacing-5);
   padding-bottom: var(--spacing-3);
   border-bottom: 2px solid rgba(0, 0, 0, 0.1);
   flex-wrap: wrap;
+}
+
+.titleSep {
+  display: block;
+  flex-shrink: 0;
+  width: 1.5px;
+  height: 1.4rem;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.14);
+  align-self: center;
 }
 
 .modeloTitle {
@@ -50,7 +60,7 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-3);
-  flex: 1;
+  flex: 0 0 auto;
   min-width: 0;
 }
 
@@ -88,7 +98,7 @@
   padding-inline-end: max(var(--spacing-6), calc(50vw - 150px));
 }
 
-/* Cada plan: en mobile el ancho lo define la PlanCard; en desktop ~52% del track */
+/* Mobile: cada slide ocupa el ancho natural de la PlanCard (carrusel scroll) */
 .carouselSlide {
   flex: 0 0 auto;
   display: flex;
@@ -96,20 +106,45 @@
   min-width: 0;
 }
 
+/* ===== DESKTOP (≥769px): grid estático — cards una al lado de la otra ===== */
 @media (min-width: 769px) {
+  /* Override la base flex+overflow-scroll del .carousel de 0km.module.css */
+  .carouselTrack {
+    display: grid !important;
+    width: 100% !important;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+    overflow: visible !important;
+    scroll-snap-type: none !important;
+    padding: 0 !important;
+    gap: clamp(1rem, 2.5vw, 1.5rem) !important;
+  }
+
+  /* Slide → celda del grid: columna flex para estirar la card verticalmente */
   .carouselSlide {
-    flex: 0 0 calc((100% - var(--spacing-5)) * 0.52);
-    scroll-snap-align: start;
-    box-sizing: border-box;
-  }
-
-  .carouselSlide:only-child {
-    flex: 0 0 auto;
+    flex: none;
+    width: 100%;
     scroll-snap-align: none;
+    display: flex;
+    flex-direction: column;
   }
 
-  .carouselTrack:has(> :only-child) {
-    scroll-snap-type: none;
+  /* PlanCard → rellena la celda (override min/max-width y align-self de PlanCard.module.css) */
+  .carouselSlide > * {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    flex: 1;
+    align-self: stretch !important;
+  }
+
+  /* Ocultar flechas de navegación (no aplican en grid) */
+  .carouselWrapperInPlanes > button {
+    display: none !important;
+  }
+
+  /* Ocultar indicador de puntos en desktop */
+  .carouselDots {
+    display: none;
   }
 }
 

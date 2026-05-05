@@ -14,16 +14,24 @@ import { mapVehiclesPage } from '@/lib/mappers/vehicleMapper'
 export const useVehiclesList = (filters = {}, options = {}) => {
   // PAGE SIZE CONFIGURABLE (default: 8 para página pública)
   const PAGE_SIZE = options.pageSize ?? 8
-  
+  // MERGE DEFAULTS: false por defecto. Nadie aplica filtros invisibles a menos
+  // que lo pida explícito. Si en el futuro algún consumidor quiere acotar el
+  // listado al rango "comercial" de FILTER_DEFAULTS, debe pasar mergeDefaults: true.
+  const mergeDefaults = options.mergeDefaults ?? false
+
   // QUERY INFINITA - con paginación
+  // Nota: incluimos mergeDefaults en la queryKey para que admin (false) y
+  // sitio público (true) tengan caches independientes aunque compartan filtros.
+  // El prefix ['vehicles', ...] sigue invalidándose junto desde useCarMutation.
   const query = useInfiniteQuery({
-    queryKey: ['vehicles', JSON.stringify({ filters, limit: PAGE_SIZE })],
+    queryKey: ['vehicles', JSON.stringify({ filters, limit: PAGE_SIZE, mergeDefaults })],
     queryFn: async ({ pageParam, signal }) => {
       const result = await vehiclesService.getVehicles({
-        filters, 
+        filters,
         limit: PAGE_SIZE,
         cursor: pageParam,
-        signal 
+        signal,
+        mergeDefaults,
       })
       return result
     },

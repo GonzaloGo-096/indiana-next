@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useId, useState } from 'react'
+import { useCallback, useId, useMemo, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { useVehiclesList } from '@/hooks/useVehiclesList'
 import { useCarMutation } from '@/hooks/admin/useCarMutation'
@@ -48,11 +48,35 @@ export default function AdminUsadosPage() {
     año: [FILTER_BOUNDS.AÑO.min, FILTER_BOUNDS.AÑO.max],
   })
 
+  // Key para forzar remount de AdminFilters (que mantiene su propio estado interno)
+  // cuando reseteamos desde el empty state.
+  const [filtersResetKey, setFiltersResetKey] = useState(0)
+
   const backendFilters = useCallback(() => filters, [filters])
 
+  // ✅ Admin ve TODO el inventario: sin defaults invisibles de precio/km.
+  // (mergeDefaults: false ya es el default global; lo dejamos explícito por claridad).
   const { vehicles, isLoading, error, refetch } = useVehiclesList(backendFilters(), {
     pageSize: 1000,
+    mergeDefaults: false,
   })
+
+  const hasActiveFilters = useMemo(() => {
+    const [a, b] = filters.año
+    return (
+      filters.marca.length > 0 ||
+      a !== FILTER_BOUNDS.AÑO.min ||
+      b !== FILTER_BOUNDS.AÑO.max
+    )
+  }, [filters])
+
+  const handleResetFilters = useCallback(() => {
+    setFilters({
+      marca: [],
+      año: [FILTER_BOUNDS.AÑO.min, FILTER_BOUNDS.AÑO.max],
+    })
+    setFiltersResetKey((k) => k + 1)
+  }, [])
 
   const { createMutation, updateMutation, deleteMutation } = useCarMutation()
 
@@ -195,7 +219,11 @@ export default function AdminUsadosPage() {
             className={styles.usadosTabPanel}
           >
             <div className={styles.usadosPageIntro}>
-              <AdminFilters onFiltersChange={handleFiltersChange} initialFilters={filters} />
+              <AdminFilters
+                key={filtersResetKey}
+                onFiltersChange={handleFiltersChange}
+                initialFilters={filters}
+              />
 
               {deleteError && (
                 <div className={styles.alertWrap}>
@@ -212,6 +240,8 @@ export default function AdminUsadosPage() {
               onDelete={handleDeleteVehicle}
               onOpenCreate={modal.openCreate}
               addDisabled={createMutation.isPending}
+              hasActiveFilters={hasActiveFilters}
+              onResetFilters={handleResetFilters}
             />
 
             <RevalidateSection />

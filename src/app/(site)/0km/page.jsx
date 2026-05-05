@@ -5,6 +5,9 @@ import { UtilitariosCarouselClient } from "../../../components/0km/UtilitariosCa
 import { getSiteUrl, absoluteUrl } from "../../../lib/site-url";
 import Link from "next/link";
 import cta from "../../../components/home/HomeSectionCtas.module.css";
+import ItemListViewTracker from "@/components/analytics/ItemListViewTracker";
+import { LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
+import { buildItemParamsFromAuto } from "@/lib/analytics/params";
 import styles from "./0km.module.css";
 
 /**
@@ -163,8 +166,23 @@ export default function CeroKilometrosPage() {
   // Incluir todos los modelos (vehículos + utilitarios) en el JSON-LD
   const jsonLd = getOkmListJsonLd(allModelos);
 
+  // Items GA4 (allowlist: solo slug + nombre, evita PII)
+  const trackingItems = allModelos
+    .map((m) =>
+      buildItemParamsFromAuto(
+        { slug: m.slug, titulo: m.nombre },
+        ITEM_LIST.OKM_GRID,
+      ),
+    )
+    .filter(Boolean);
+
   return (
     <div className={styles.page}>
+      <ItemListViewTracker
+        items={trackingItems}
+        itemListName={ITEM_LIST.OKM_GRID}
+        location={LOCATIONS.OKM_LIST}
+      />
       {/* Structured Data (JSON-LD) para SEO */}
       {jsonLd && (
         <script

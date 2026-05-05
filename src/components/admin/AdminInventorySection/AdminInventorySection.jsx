@@ -10,8 +10,11 @@ export default function AdminInventorySection({
   onDelete,
   onOpenCreate,
   addDisabled = false,
+  hasActiveFilters = false,
+  onResetFilters,
 }) {
   const count = items.length
+  const canResetFilters = hasActiveFilters && typeof onResetFilters === 'function'
 
   return (
     <section className={styles.vehiclesList} aria-labelledby="admin-inventory-heading">
@@ -39,7 +42,20 @@ export default function AdminInventorySection({
 
       {count === 0 ? (
         <div className={styles.emptyState}>
-          <p className={styles.emptyTitle}>Sin vehículos para mostrar</p>
+          <p className={styles.emptyTitle}>
+            {hasActiveFilters
+              ? 'No hay vehículos que coincidan con los filtros activos'
+              : 'Sin vehículos para mostrar'}
+          </p>
+          {canResetFilters ? (
+            <button
+              type="button"
+              onClick={onResetFilters}
+              className={styles.inventoryAddButton}
+            >
+              Limpiar filtros
+            </button>
+          ) : null}
         </div>
       ) : (
         <ul className={styles.vehicleCardList}>

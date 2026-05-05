@@ -34,7 +34,7 @@ export function PlanImageDesktop({ imagenModelo, modeloSlug }) {
   const modeloHref = modeloSlug ? `/0km/${encodeURIComponent(modeloSlug)}` : null;
 
   return (
-    <div className={styles.planImageColumn}>
+    <div className={styles.planImageColumn} data-modelo={modeloSlug || ""}>
       <div className={styles.planImageInner}>
         <Image
           src={imagenModelo.url}

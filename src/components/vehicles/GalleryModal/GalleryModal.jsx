@@ -14,10 +14,12 @@
  * @version 1.0.0 - Next.js
  */
 
-import { memo, useEffect, useCallback, useState } from "react";
+import { memo, useEffect, useCallback, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import { ChevronIcon } from "../../ui/icons/ChevronIcon";
+import { pushDataLayer } from "@/lib/analytics/dataLayer";
+import { EVENTS, SOURCES, LOCATIONS } from "@/lib/analytics/events";
 import styles from "./GalleryModal.module.css";
 
 /**
@@ -31,8 +33,11 @@ export const GalleryModal = memo(
     activeIndex = 0,
     onIndexChange,
     modelName = "Vehículo",
+    trackingLocation = LOCATIONS.USADOS_DETAIL,
+    trackingComponentId = "gallery-modal",
   }) => {
     const [mounted, setMounted] = useState(false);
+    const prevIndexRef = useRef(activeIndex);
 
     // Solo renderizar en cliente
     useEffect(() => {
@@ -40,6 +45,42 @@ export const GalleryModal = memo(
         setMounted(true);
       });
     }, []);
+
+    // Tracking: gallery_open en cada apertura.
+    useEffect(() => {
+      if (!isOpen) return;
+      pushDataLayer(EVENTS.GALLERY_OPEN, {
+        source: SOURCES.GALLERY,
+        location: trackingLocation,
+        component_id: trackingComponentId,
+        total_images: images.length,
+      });
+      prevIndexRef.current = activeIndex;
+      // intencionalmente solo `isOpen` como dep para 1 push por apertura
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOpen]);
+
+    // Tracking: gallery_navigate cada vez que cambia el índice.
+    useEffect(() => {
+      if (!isOpen) return;
+      const from = prevIndexRef.current;
+      if (from === activeIndex) return;
+      const direction =
+        activeIndex === (from + 1) % Math.max(images.length, 1)
+          ? "next"
+          : activeIndex === (from - 1 + images.length) % Math.max(images.length, 1)
+            ? "prev"
+            : "dot";
+      pushDataLayer(EVENTS.GALLERY_NAVIGATE, {
+        component_id: trackingComponentId,
+        location: trackingLocation,
+        direction,
+        from_index: from,
+        to_index: activeIndex,
+        total_images: images.length,
+      });
+      prevIndexRef.current = activeIndex;
+    }, [activeIndex, images.length, isOpen, trackingComponentId, trackingLocation]);
 
     // Navegación
     const goToPrev = useCallback(() => {

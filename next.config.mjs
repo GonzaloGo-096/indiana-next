@@ -10,6 +10,28 @@ const nextConfig = {
       },
     ];
   },
+  // ============================================================
+  // CSP (Content Security Policy) — TODO opcional, fase 2
+  // ============================================================
+  // Activar headers() con CSP cuando se quiera endurecer la seguridad.
+  // Importante: testear en Vercel Preview antes de prod, CSP estricta puede
+  // romper scripts inline o estilos. Las directivas mínimas para GTM+GA4+Meta:
+  //
+  // async headers() {
+  //   const csp = [
+  //     "default-src 'self'",
+  //     // GTM/GA4 requieren 'unsafe-inline' (snippets inline) y 'unsafe-eval' (custom HTML tags).
+  //     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net",
+  //     "connect-src 'self' https://www.google-analytics.com https://*.analytics.google.com https://stats.g.doubleclick.net https://www.facebook.com",
+  //     "img-src 'self' data: https: https://www.google-analytics.com https://www.googletagmanager.com https://www.facebook.com https://res.cloudinary.com",
+  //     "frame-src https://www.googletagmanager.com",
+  //     "style-src 'self' 'unsafe-inline'",
+  //     "font-src 'self' data:",
+  //   ].join("; ");
+  //   return [
+  //     { source: "/(.*)", headers: [{ key: "Content-Security-Policy", value: csp }] },
+  //   ];
+  // },
   // Desactivar reactCompiler para acelerar build (puede reactivarse si es necesario)
   reactCompiler: false,
   images: {
