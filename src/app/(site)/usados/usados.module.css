@@ -3,15 +3,22 @@
  */
 
 .page {
-  min-height: 100vh;
   background: var(--color-white);
 }
 
-/* ===== SECCIÓN 1: VEHÍCULOS (padding vertical vía Tailwind en page.jsx) ===== */
+/* ===== SECCIÓN 1: VEHÍCULOS — sección protagonista ===== */
 .vehiclesSection {
   padding-left: 0;
   padding-right: 0;
-  background: var(--color-white);
+  background-color: #f2f5fa;
+  background-image:
+    linear-gradient(
+      180deg,
+      #f8fafc 0%,
+      #f4f7fb 44%,
+      #edf2f8 100%
+    );
+  position: relative;
 }
 
 .vehiclesContainer {
@@ -45,9 +52,9 @@
   display: block;
   flex-shrink: 0;
   width: 1.5px;
-  height: 1.1rem;
+  height: 2rem;
   border-radius: 999px;
-  background: rgba(0, 0, 0, 0.16);
+  background: rgba(0, 0, 0, 0.28);
   align-self: center;
 }
 
@@ -83,6 +90,14 @@
 .vehiclesCarouselSlot {
   width: 100%;
   min-width: 0;
+}
+
+/* Desktop: el carrusel "sangra" fuera del padding del container para usar más ancho */
+@media (min-width: 768px) {
+  .vehiclesCarouselSlot {
+    width: calc(100% + 2 * var(--container-padding-desktop));
+    margin-left: calc(-1 * var(--container-padding-desktop));
+  }
 }
 
 /* ===== HEADER USADOS — carrusel de promociones full-bleed ===== */
@@ -318,8 +333,6 @@
   width: 100%;
   height: auto;
   display: block;
-  transform-origin: 50% 40%;
-  will-change: transform;
   user-select: none;
   -webkit-user-drag: none;
 }
@@ -329,36 +342,17 @@
   border-radius: 0;
 }
 
-/* Zoom lento solo en el slide visible (Ken Burns discreto) */
-.promosCarouselSlideActive .promocionesImage {
-  animation: promosKenBurns 18s ease-out forwards;
-}
-
-@keyframes promosKenBurns {
-  0% {
-    transform: scale(1) translate3d(0, 0, 0);
-  }
-  100% {
-    transform: scale(1.055) translate3d(-0.4%, -0.25%, 0);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .promosCarouselSlideActive .promocionesImage {
-    animation: none;
-  }
-
   .promosCarouselScroller {
     scroll-behavior: auto;
   }
 }
 
-/* Header: mantener proporción natural de la imagen, sin deformar */
+/* Header: imagen a proporción natural completa, sin recorte */
 .usadosHeader .promocionesImage {
   width: 100%;
   height: auto;
-  object-fit: contain;
-  object-position: center;
+  display: block;
 }
 
 .promosCarouselArrow {

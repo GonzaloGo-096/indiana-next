@@ -492,21 +492,20 @@
 /* Desktop: Espaciado generoso */
 @media (min-width: 768px) {
     .card {
-        max-width: 320px; /* ✅ Ancho fijo en desktop */
-        min-width: 320px; /* ✅ Ancho mínimo igual al máximo para uniformidad */
-        width: 320px; /* ✅ Ancho fijo absoluto */
-        flex: 0 0 320px; /* ✅ Ancho fijo en flexbox */
+        max-width: 360px;
+        min-width: 360px;
+        width: 360px;
+        flex: 0 0 360px;
     }
     
     .card__body {
         --body-gap: var(--spacing-2);
     }
     
-    /* ✅ Tamaño fijo de imagen en desktop */
     .card__image-container {
-        height: 180px;
-        min-height: 180px;
-        max-height: 180px;
+        height: 220px;
+        min-height: 220px;
+        max-height: 220px;
     }
 }
 

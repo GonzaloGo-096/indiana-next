@@ -127,7 +127,7 @@ export default async function UsadosPage() {
       </header>
 
       <section
-        className={`${styles.vehiclesSection} w-full min-w-0 pt-10 pb-8 md:pt-14 md:pb-10 lg:pt-16 lg:pb-12`}
+        className={`${styles.vehiclesSection} w-full min-w-0 pt-12 pb-10 md:pt-16 md:pb-14 lg:pt-20 lg:pb-16`}
         aria-labelledby="usados-vehiculos-titulo"
       >
         <div className={`${styles.vehiclesContainer} w-full min-w-0`}>
@@ -139,7 +139,7 @@ export default async function UsadosPage() {
             >
               <h1
                 id="usados-vehiculos-titulo"
-                className={`${styles.vehiclesTitle} text-balance text-2xl sm:text-3xl md:text-4xl`}
+                className={`${styles.vehiclesTitle} text-balance text-3xl sm:text-4xl md:text-5xl`}
               >
                 Vehículos Usados
               </h1>
@@ -147,7 +147,7 @@ export default async function UsadosPage() {
               <div className={styles.vehiclesHeaderRest}>
                 <Link
                   href="/usados/vehiculos"
-                  className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline}`}
+                  className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline} ${cta.buttonCompact}`}
                 >
                   Ver todos
                 </Link>

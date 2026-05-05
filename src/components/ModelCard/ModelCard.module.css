@@ -120,15 +120,15 @@
   background:
     radial-gradient(
       circle at center,
-      rgba(71, 85, 105, 0.26) 0%,
-      rgba(100, 116, 139, 0.16) 30%,
-      rgba(148, 163, 184, 0.075) 54%,
-      rgba(148, 163, 184, 0.018) 70%,
+      rgba(71, 85, 105, 0.12) 0%,
+      rgba(100, 116, 139, 0.07) 30%,
+      rgba(148, 163, 184, 0.032) 54%,
+      rgba(148, 163, 184, 0.008) 70%,
       rgba(148, 163, 184, 0) 84%
     ),
     radial-gradient(
       circle at center,
-      rgba(71, 85, 105, 0.15) 0%,
+      rgba(71, 85, 105, 0.07) 0%,
       rgba(100, 116, 139, 0) 76%
     );
   filter: blur(14px);
@@ -141,7 +141,7 @@
     transform 0.28s ease;
 }
 
-/* Hover: resaltar bastante el "piso" */
+/* Hover: resaltar sutilmente el "piso" */
 .compact.softSurface.frameless:hover .imageContainer::after {
   transform: translateX(-50%) scale(1.08, 0.72);
   filter: blur(16px);
@@ -149,15 +149,15 @@
   background:
     radial-gradient(
       circle at center,
-      rgba(71, 85, 105, 0.38) 0%,
-      rgba(100, 116, 139, 0.24) 30%,
-      rgba(148, 163, 184, 0.11) 54%,
-      rgba(148, 163, 184, 0.028) 70%,
+      rgba(71, 85, 105, 0.19) 0%,
+      rgba(100, 116, 139, 0.11) 30%,
+      rgba(148, 163, 184, 0.05) 54%,
+      rgba(148, 163, 184, 0.012) 70%,
       rgba(148, 163, 184, 0) 84%
     ),
     radial-gradient(
       circle at center,
-      rgba(71, 85, 105, 0.22) 0%,
+      rgba(71, 85, 105, 0.10) 0%,
       rgba(100, 116, 139, 0) 76%
     );
 }
