@@ -11,6 +11,7 @@ import { EVENTS } from "@/lib/analytics/events";
  * @param {object[]} props.items - array de items ya construidos con buildItemParamsFrom*
  * @param {string} props.itemListName - ITEM_LIST.*
  * @param {string} props.location - LOCATIONS.*
+ * @param {string} [props.source] - SOURCES.* (ej: SOURCES.LISTING_PAGE)
  * @param {string} [props.signature] - clave para detectar cambios (filtros aplicados, etc.).
  *   Si no se pasa, se usan los IDs concatenados.
  */
@@ -18,6 +19,7 @@ export default function ItemListViewTracker({
   items,
   itemListName,
   location,
+  source,
   signature,
 }) {
   const lastSigRef = useRef("");
@@ -33,13 +35,14 @@ export default function ItemListViewTracker({
     if (lastSigRef.current === sig) return;
     lastSigRef.current = sig;
     pushDataLayer(EVENTS.VIEW_ITEM_LIST, {
-      item_list_name: itemListName,
+      item_list_name: itemListName || "",
+      location: location || "",
+      ...(source ? { source } : {}),
       items: items
         .filter(Boolean)
         .slice(0, 10)
         .map((it) => ({ ...it, item_list_name: it.item_list_name || itemListName })),
-      location,
     });
-  }, [items, itemListName, location, signature]);
+  }, [items, itemListName, location, source, signature]);
   return null;
 }

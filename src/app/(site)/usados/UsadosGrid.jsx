@@ -13,6 +13,9 @@ import Image from "next/image";
 import { formatPrice } from "../../../utils/formatters";
 import { getVehicleOfferDisplay } from "@/utils/vehicleOffer";
 import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
+import { pushDataLayer } from "@/lib/analytics/dataLayer";
+import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
+import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import styles from "./usados.module.css";
 
 /**
@@ -35,11 +38,24 @@ function VehicleCard({ vehicle, isPriority = false, index = 0 }) {
 
   const delay = `${Math.min(index * 0.06, 0.42)}s`;
 
+  const handleCardClick = useCallback(() => {
+    const itemParams = buildItemParamsFromUsado(vehicle, ITEM_LIST.USADOS_GRID);
+    if (itemParams) {
+      pushDataLayer(EVENTS.SELECT_ITEM, {
+        ...itemParams,
+        source: SOURCES.CARD,
+        location: LOCATIONS.USADOS_LIST,
+        component_id: "vehicle-card-usados",
+      });
+    }
+  }, [vehicle]);
+
   return (
     <Link
       href={buildVehicleDetailUrl(vehicle)}
       className={styles.vehicleCard}
       style={{ animationDelay: delay }}
+      onClick={handleCardClick}
     >
       <div className={`${styles.vehicleCardImage} ${imageUrl && !isImageLoaded ? styles.vehicleCardImageLoading : ""}`}>
         {offer.hasOffer && (

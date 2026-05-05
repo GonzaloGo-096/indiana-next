@@ -14,7 +14,7 @@
  */
 
 import { memo, useMemo, useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 import {
   formatPrice,
@@ -30,6 +30,9 @@ import { CajaIconDetalle } from "../../../ui/icons/CajaIconDetalle";
 import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import { buildVehicleDetailUrl } from "../../../../utils/vehicleSlug";
 import { getVehicleOfferDisplay } from "../../../../utils/vehicleOffer";
+import { pushDataLayer } from "@/lib/analytics/dataLayer";
+import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
+import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import styles from "./CardSimilar.module.css";
 
 /**
@@ -41,8 +44,6 @@ import styles from "./CardSimilar.module.css";
  * @param {boolean} props.usadosCarousel - Más padding/gap en cuerpo (solo carrusel Usados)
  */
 export const CardSimilar = memo(({ auto, isPriority = false, usadosCarousel = false }) => {
-  const router = useRouter();
-
   const vehicleId = auto?.id || auto?._id;
 
   // ✅ URL de imagen principal optimizada
@@ -51,23 +52,31 @@ export const CardSimilar = memo(({ auto, isPriority = false, usadosCarousel = fa
     return auto.fotoPrincipal || auto.imagen || "/auto1.jpg";
   }, [auto]);
 
+  // URL del detalle — usada como href del <Link>
   const detailUrl = useMemo(() => {
     if (!auto || !vehicleId) return "";
     return buildVehicleDetailUrl(auto);
   }, [auto, vehicleId]);
 
-  // ✅ HANDLER: Click en toda la tarjeta para abrir detalle
+  // ✅ HANDLER: Analytics + scroll save.
+  // La navegación la delega al <Link> para evitar doble-fire por router.push()
+  // asíncrono en clics rápidos y para aprovechar prefetching de Next.js.
   const handleCardClick = useCallback(() => {
-    if (!vehicleId) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error("[CardSimilar] ID del vehículo no válido");
-      }
-      return;
+    if (!vehicleId) return;
+
+    // Analytics: select_item desde carrusel de similares
+    const itemParams = buildItemParamsFromUsado(auto, ITEM_LIST.SIMILAR);
+    if (itemParams) {
+      pushDataLayer(EVENTS.SELECT_ITEM, {
+        ...itemParams,
+        item_category: "usado",
+        source: SOURCES.CAROUSEL,
+        location: LOCATIONS.USADOS_DETAIL,
+        component_id: "vehicle-card-similar",
+      });
     }
 
-    if (!detailUrl) return;
-
-    // ✅ Guardar posición de scroll antes de navegar
+    // Guardar posición de scroll antes de navegar
     if (typeof window !== "undefined") {
       const scrollData = {
         position: window.scrollY,
@@ -76,9 +85,7 @@ export const CardSimilar = memo(({ auto, isPriority = false, usadosCarousel = fa
       };
       sessionStorage.setItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL, JSON.stringify(scrollData));
     }
-
-    router.push(detailUrl);
-  }, [vehicleId, detailUrl, router]);
+  }, [auto, vehicleId]);
 
   // ✅ MEMOIZAR DATOS FORMATEADOS
   const formattedData = useMemo(() => {
@@ -136,19 +143,12 @@ export const CardSimilar = memo(({ auto, isPriority = false, usadosCarousel = fa
   }
 
   return (
-    <div
+    <Link
+      href={detailUrl}
       className={`${styles.card}${usadosCarousel ? ` ${styles.cardUsadosCarousel}` : ""}`}
       data-testid="vehicle-card-similar"
       data-vehicle-id={vehicleId}
       onClick={handleCardClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          handleCardClick();
-        }
-      }}
       aria-label={`Ver detalles de ${formattedData.brandModel}`}
     >
       {/* ===== IMAGEN PRINCIPAL ===== */}
@@ -239,7 +239,7 @@ export const CardSimilar = memo(({ auto, isPriority = false, usadosCarousel = fa
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 });
 

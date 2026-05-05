@@ -6,7 +6,7 @@ import { getSiteUrl, absoluteUrl } from "../../../lib/site-url";
 import Link from "next/link";
 import cta from "../../../components/home/HomeSectionCtas.module.css";
 import ItemListViewTracker from "@/components/analytics/ItemListViewTracker";
-import { LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
+import { SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import { buildItemParamsFromAuto } from "@/lib/analytics/params";
 import styles from "./0km.module.css";
 
@@ -182,6 +182,7 @@ export default function CeroKilometrosPage() {
         items={trackingItems}
         itemListName={ITEM_LIST.OKM_GRID}
         location={LOCATIONS.OKM_LIST}
+        source={SOURCES.LISTING_PAGE}
       />
       {/* Structured Data (JSON-LD) para SEO */}
       {jsonLd && (

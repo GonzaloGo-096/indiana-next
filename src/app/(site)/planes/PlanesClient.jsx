@@ -63,6 +63,7 @@ export function PlanesClient({ planesPorModelo }) {
         items={trackingItems}
         itemListName={ITEM_LIST.PLANES_GRID}
         location={LOCATIONS.PLANES_LIST}
+        source={SOURCES.LISTING_PAGE}
       />
       <header
         className={`${styles.planesHero} w-full min-w-0`}

@@ -37,6 +37,9 @@ import AutosGrid from "../../../../components/vehicles/List/ListAutos";
 import FilterFormSimple from "../../../../components/vehicles/Filters/FilterFormSimple";
 import ActiveFilterChips from "../../../../components/vehicles/Filters/ActiveFilterChips";
 import ActionButtons from "../../../../components/vehicles/ActionButtons/ActionButtons";
+import ItemListViewTracker from "@/components/analytics/ItemListViewTracker";
+import { SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
+import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import { VEHICLE_CONSTANTS } from "../../../../constants/vehicles";
 import { debugIngest } from "../../../../lib/debugIngestClient";
@@ -543,8 +546,21 @@ export default function VehiculosClient({
     return brandsScroll.canScrollLeft || brandsScroll.canScrollRight;
   }, [brandsScroll.canScrollLeft, brandsScroll.canScrollRight]);
 
+  // Items GA4 para view_item_list — construidos desde los vehículos visibles.
+  const trackingItems = sortedVehicles
+    .map((v) => buildItemParamsFromUsado(v, ITEM_LIST.USADOS_GRID))
+    .filter(Boolean);
+  const listSignature = `${currentSort || ""}|${searchParams?.toString?.() || ""}`;
+
   return (
     <div className={`${styles.page} w-full min-w-0 antialiased`}>
+      <ItemListViewTracker
+        items={trackingItems}
+        itemListName={ITEM_LIST.USADOS_GRID}
+        location={LOCATIONS.USADOS_LIST}
+        source={SOURCES.LISTING_PAGE}
+        signature={listSignature}
+      />
       <div className={`${styles.backRow} w-full min-w-0`}>
         <Link
           href="/usados"

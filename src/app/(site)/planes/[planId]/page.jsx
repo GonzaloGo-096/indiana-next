@@ -324,6 +324,8 @@ export default async function PlanDetallePage({ params }) {
           cuota: plan.cuotas_desde,
         })}
         location={LOCATIONS.PLAN_DETAIL}
+        source="plan_detail"
+        componentId="detail_page"
       />
       <div className={`${styles.backRow} w-full`}>
         <Link

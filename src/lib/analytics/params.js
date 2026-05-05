@@ -50,18 +50,22 @@ export function buildItemParamsFromAuto(auto, listName) {
   const id = toCleanString(auto.slug || auto.id);
   const name = toCleanString(auto.titulo || auto.nombre || auto.modelo || id);
   if (!id) return null;
-  return pruneNulls({
-    item_id: id,
-    item_name: name,
-    item_category: ITEM_CATEGORY.ZERO_KM,
-    item_brand: "Peugeot",
-    item_variant: toCleanString(
-      Array.isArray(auto.versiones) ? auto.versiones.join("/") : auto.version,
-    ),
-    price: toNumberOrNull(auto.precio || auto.price),
-    currency: CURRENCY_ARS,
-    item_list_name: toCleanString(listName),
-  });
+  // item_category se asigna FUERA de pruneNulls para garantizar que nunca sea
+  // eliminada (pruneNulls descarta null/undefined/"") ni llegue como null al dataLayer.
+  return {
+    ...pruneNulls({
+      item_id: id,
+      item_name: name,
+      item_brand: "Peugeot",
+      item_variant: toCleanString(
+        Array.isArray(auto.versiones) ? auto.versiones.join("/") : auto.version,
+      ),
+      price: toNumberOrNull(auto.precio || auto.price),
+      currency: CURRENCY_ARS,
+      item_list_name: toCleanString(listName),
+    }),
+    item_category: ITEM_CATEGORY.ZERO_KM || "0km",
+  };
 }
 
 /**
@@ -74,16 +78,18 @@ export function buildItemParamsFromPlan(plan, listName) {
   const id = toCleanString(plan.id || plan.slug);
   const name = toCleanString(plan.nombre || plan.titulo || id);
   if (!id) return null;
-  return pruneNulls({
-    item_id: id,
-    item_name: name,
-    item_category: ITEM_CATEGORY.PLAN,
-    item_brand: "Peugeot",
-    item_variant: toCleanString(plan.modelo || plan.variant),
-    price: toNumberOrNull(plan.cuota || plan.precio || plan.price),
-    currency: CURRENCY_ARS,
-    item_list_name: toCleanString(listName),
-  });
+  return {
+    ...pruneNulls({
+      item_id: id,
+      item_name: name,
+      item_brand: "Peugeot",
+      item_variant: toCleanString(plan.modelo || plan.variant),
+      price: toNumberOrNull(plan.cuota || plan.precio || plan.price),
+      currency: CURRENCY_ARS,
+      item_list_name: toCleanString(listName),
+    }),
+    item_category: ITEM_CATEGORY.PLAN || "plan",
+  };
 }
 
 /**
@@ -98,16 +104,18 @@ export function buildItemParamsFromUsado(usado, listName) {
   const marca = toCleanString(usado.marca);
   const modelo = toCleanString(usado.modelo);
   const name = [marca, modelo].filter(Boolean).join(" ") || id;
-  return pruneNulls({
-    item_id: id,
-    item_name: name,
-    item_category: ITEM_CATEGORY.USADO,
-    item_brand: marca || "multimarca",
-    item_variant: toCleanString(usado.version),
-    price: toNumberOrNull(usado.precio || usado.price),
-    currency: CURRENCY_ARS,
-    item_list_name: toCleanString(listName),
-  });
+  return {
+    ...pruneNulls({
+      item_id: id,
+      item_name: name,
+      item_brand: marca || "multimarca",
+      item_variant: toCleanString(usado.version),
+      price: toNumberOrNull(usado.precio || usado.price),
+      currency: CURRENCY_ARS,
+      item_list_name: toCleanString(listName),
+    }),
+    item_category: ITEM_CATEGORY.USADO || "usado",
+  };
 }
 
 /**

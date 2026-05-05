@@ -315,6 +315,8 @@ export default async function VehicleDetailPage({ params }) {
       <ItemViewTracker
         item={buildItemParamsFromUsado(payload.clientVehicle)}
         location={LOCATIONS.USADOS_DETAIL}
+        source="used_detail"
+        componentId="detail_page"
       />
       <VehicleDetailClient vehicle={payload.clientVehicle} />
     </>

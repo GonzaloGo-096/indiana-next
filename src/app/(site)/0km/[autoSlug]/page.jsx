@@ -366,6 +366,8 @@ export default async function CeroKilometroDetallePage({ params }) {
           titulo: `${modelo.marca || "Peugeot"} ${modelo.nombre}`,
         })}
         location={LOCATIONS.OKM_DETAIL}
+        source="okm_detail"
+        componentId="detail_page"
       />
       {/* Hero Image (solo desktop) - Client Component para evitar carga en mobile */}
       {modelo.heroImage && (

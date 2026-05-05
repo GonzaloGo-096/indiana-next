@@ -34,6 +34,9 @@ import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import { buildVehicleDetailUrl } from "../../../../utils/vehicleSlug";
 import { getVehicleOfferDisplay } from "../../../../utils/vehicleOffer";
 import { debugIngest } from "../../../../lib/debugIngestClient";
+import { pushDataLayer } from "@/lib/analytics/dataLayer";
+import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
+import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import styles from "./CardAuto.module.css";
 
 /**
@@ -67,6 +70,17 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
         console.error("[CardAuto] ID del vehículo no válido");
       }
       return;
+    }
+
+    // Analytics: select_item
+    const itemParams = buildItemParamsFromUsado(auto, ITEM_LIST.USADOS_GRID);
+    if (itemParams) {
+      pushDataLayer(EVENTS.SELECT_ITEM, {
+        ...itemParams,
+        source: SOURCES.CARD,
+        location: LOCATIONS.USADOS_LIST,
+        component_id: "vehicle-card-usados",
+      });
     }
     
     // ✅ Guardar posición de scroll antes de navegar

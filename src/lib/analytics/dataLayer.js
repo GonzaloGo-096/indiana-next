@@ -110,7 +110,10 @@ export function pushDataLayer(event, params = {}) {
     const payload = { event, ...safe };
     window.dataLayer.push(payload);
     if (isDev || debugInProd) {
-      console.debug("[analytics]", payload);
+      console.debug(
+        `[analytics] ${new Date().toISOString()} ${payload.event}`,
+        payload,
+      );
     }
   } catch {
     // Tracking nunca rompe la UI.

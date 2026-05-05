@@ -49,6 +49,7 @@ export const SOURCES = Object.freeze({
   CAROUSEL: "carousel",
   BREADCRUMB: "breadcrumb",
   MODAL: "modal",
+  LISTING_PAGE: "listing_page",
 });
 
 export const LOCATIONS = Object.freeze({
@@ -67,9 +68,9 @@ export const LOCATIONS = Object.freeze({
 
 export const ITEM_LIST = Object.freeze({
   HOME_FEATURED: "home_featured",
-  OKM_GRID: "okm_grid",
-  USADOS_GRID: "usados_grid",
-  PLANES_GRID: "planes_grid",
+  OKM_GRID: "0km",
+  USADOS_GRID: "usados",
+  PLANES_GRID: "planes",
   SIMILAR: "similar",
 });
 

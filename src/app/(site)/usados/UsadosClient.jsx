@@ -26,7 +26,7 @@ import UsadosGrid from "./UsadosGrid";
 import UsadosFilters from "./UsadosFilters";
 import ItemListViewTracker from "@/components/analytics/ItemListViewTracker";
 import { useAnalytics } from "@/hooks/useAnalytics";
-import { EVENTS, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
+import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import {
   buildItemParamsFromUsado,
   buildSearchFiltersParams,
@@ -218,6 +218,7 @@ export default function UsadosClient({
         items={trackingItems}
         itemListName={ITEM_LIST.USADOS_GRID}
         location={LOCATIONS.USADOS_LIST}
+        source={SOURCES.LISTING_PAGE}
         signature={listSignature}
       />
       {/* Header */}
