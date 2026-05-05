@@ -492,10 +492,10 @@
 /* Desktop: Espaciado generoso */
 @media (min-width: 768px) {
     .card {
-        max-width: 360px;
-        min-width: 360px;
-        width: 360px;
-        flex: 0 0 360px;
+        max-width: 320px;
+        min-width: 320px;
+        width: 320px;
+        flex: 0 0 320px;
     }
     
     .card__body {
@@ -503,9 +503,9 @@
     }
     
     .card__image-container {
-        height: 220px;
-        min-height: 220px;
-        max-height: 220px;
+        height: 180px;
+        min-height: 180px;
+        max-height: 180px;
     }
 }
 
