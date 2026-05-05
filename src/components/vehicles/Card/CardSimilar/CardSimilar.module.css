@@ -51,6 +51,8 @@
     margin: 0 10px; /* 10px left y right en todas las cards simplificadas */
     cursor: pointer;
     z-index: 10;
+    text-decoration: none;
+    color: inherit;
     
     /* Transiciones consolidadas y refinadas */
     transition: 
