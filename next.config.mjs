@@ -8,6 +8,19 @@ const nextConfig = {
           "/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp",
         permanent: false,
       },
+      // Rutas heredadas del sitio WordPress anterior (siguen apareciendo en GA4)
+      { source: "/archivos", destination: "/", permanent: true },
+      { source: "/archivos/:path*", destination: "/", permanent: true },
+      { source: "/venta-directa", destination: "/usados", permanent: true },
+      { source: "/venta-directa/:path*", destination: "/usados", permanent: true },
+      { source: "/category/:path*", destination: "/", permanent: true },
+      { source: "/tag/:path*", destination: "/", permanent: true },
+      { source: "/feed", destination: "/", permanent: true },
+      { source: "/feed/:path*", destination: "/", permanent: true },
+      { source: "/wp-admin", destination: "/", permanent: true },
+      { source: "/wp-admin/:path*", destination: "/", permanent: true },
+      { source: "/wp-content/:path*", destination: "/", permanent: true },
+      { source: "/wp-login.php", destination: "/", permanent: true },
     ];
   },
   // ============================================================

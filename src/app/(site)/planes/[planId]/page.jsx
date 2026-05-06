@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getAllPlanes, getPlanPorId } from "../../../../data/planes";
+import { getAllPlanes, getPlanPorId, extraerModeloBase } from "../../../../data/planes";
 import { getModelo, COLORES } from "../../../../data/modelos";
 import { absoluteUrl } from "../../../../lib/site-url";
 import { formatPrice } from "../../../../utils/formatters";
@@ -228,22 +228,29 @@ export async function generateMetadata({ params }) {
 
     if (!plan) {
       return {
-        title: "Plan no encontrado | Indiana Peugeot",
+        title: "Plan no disponible",
         description: "El plan solicitado no está disponible.",
       };
     }
 
     const canonicalUrl = absoluteUrl(`/planes/${planId}`);
-    const title = `Plan ${plan.plan} - Peugeot 0km | Indiana Peugeot`;
-    const description = `Detalles del plan de financiación ${plan.plan} para Peugeot 0km. Cuota desde ${formatPrice(plan.cuotas_desde)}.`;
-    const keywords = `plan ${plan.plan}, financiación Peugeot, cuotas Peugeot, ${plan.plan} 0km, planes de ahorro Peugeot Tucumán`;
+    const rawModelo = extraerModeloBase(plan.modelos?.[0] || "");
+    const modeloDisplay =
+      rawModelo && rawModelo !== "otros"
+        ? rawModelo.charAt(0).toUpperCase() + rawModelo.slice(1)
+        : "";
+    const title = modeloDisplay
+      ? `Plan Peugeot ${modeloDisplay} – ${plan.plan}`
+      : `Plan ${plan.plan} – Peugeot 0km`;
+    const description = `Consultá el plan de ahorro Peugeot ${modeloDisplay || plan.plan} disponible en Indiana Tucumán. Cuota desde ${formatPrice(plan.cuotas_desde)}.`;
+    const keywords = `plan ${plan.plan}, planes de ahorro Peugeot, financiación Peugeot${modeloDisplay ? `, Peugeot ${modeloDisplay}` : ""}, cuotas Peugeot, planes Peugeot Tucumán`;
 
     return {
       title,
       description,
       keywords: keywords,
       openGraph: {
-        title,
+        title: `${title} | Peugeot Indiana`,
         description,
         url: canonicalUrl,
         siteName: "Indiana Peugeot",
@@ -252,7 +259,7 @@ export async function generateMetadata({ params }) {
         images: [
           {
             url: absoluteUrl("/assets/logos/logos-indiana/desktop/azul-chico-desktop.webp"),
-            alt: `Plan ${plan.plan} - Indiana Peugeot`,
+            alt: `${title} | Peugeot Indiana`,
             width: 1200,
             height: 630,
           },
@@ -260,7 +267,7 @@ export async function generateMetadata({ params }) {
       },
       twitter: {
         card: "summary_large_image",
-        title,
+        title: `${title} | Peugeot Indiana`,
         description,
         images: [absoluteUrl("/assets/logos/logos-indiana/desktop/azul-chico-desktop.webp")],
       },
@@ -271,7 +278,7 @@ export async function generateMetadata({ params }) {
   } catch (error) {
     console.error("Error generating metadata for plan:", error);
     return {
-      title: "Error | Indiana Peugeot",
+      title: "Plan no disponible",
       description: "Error al cargar la información del plan.",
     };
   }

@@ -13,13 +13,13 @@ import CareersForm from "@/components/careers/CareersForm";
 import styles from "./trabaja-con-nosotros.module.css";
 
 export const metadata = {
-  title: "Trabajá con nosotros | Indiana Peugeot",
+  title: "Trabajá con nosotros",
   description:
-    "Sumate a Indiana Peugeot. Buscamos personas comprometidas con orientación comercial o atención al cliente. Postulate y conocé nuestras búsquedas activas.",
+    "Sumate a Peugeot Indiana en Tucumán. Buscamos personas comprometidas con orientación comercial o atención al cliente. Postulate y conocé nuestras búsquedas activas.",
   openGraph: {
-    title: "Trabajá con nosotros | Indiana Peugeot",
+    title: "Trabajá con nosotros | Peugeot Indiana",
     description:
-      "Sumate a Indiana Peugeot. Buscamos personas comprometidas. Postulate y conocé nuestras búsquedas activas.",
+      "Sumate a Peugeot Indiana. Buscamos personas comprometidas. Postulate y conocé nuestras búsquedas activas.",
     url: absoluteUrl("/trabaja-con-nosotros"),
     siteName: "Indiana Peugeot",
     locale: "es_AR",
@@ -27,8 +27,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Trabajá con nosotros | Indiana Peugeot",
-    description: "Sumate a Indiana Peugeot. Postulate y conocé nuestras búsquedas activas.",
+    title: "Trabajá con nosotros | Peugeot Indiana",
+    description: "Sumate a Peugeot Indiana. Postulate y conocé nuestras búsquedas activas.",
   },
   alternates: {
     canonical: absoluteUrl("/trabaja-con-nosotros"),

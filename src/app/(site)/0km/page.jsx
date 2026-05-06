@@ -20,22 +20,22 @@ import styles from "./0km.module.css";
 
 // Metadata SEO para la página de listado 0km
 export const metadata = {
-  title: "Catálogo Peugeot 0km en Tucumán | Concesionaria Oficial | Indiana Peugeot",
+  title: "Autos 0km Peugeot",
   description:
-    "Gama completa de modelos Peugeot 0km en Indiana Peugeot, concesionaria oficial en Tucumán. Autos y utilitarios nuevos con garantía oficial y opciones de financiación.",
+    "Conocé los modelos Peugeot 0km disponibles en Indiana Tucumán y consultá por versiones, financiación y disponibilidad.",
   openGraph: {
-    title: "Catálogo Peugeot 0km en Tucumán | Concesionaria Oficial | Indiana Peugeot",
+    title: "Autos 0km Peugeot | Peugeot Indiana",
     description:
-      "Gama completa de modelos Peugeot 0km en Indiana Peugeot, concesionaria oficial en Tucumán. Autos y utilitarios nuevos con garantía oficial y opciones de financiación.",
+      "Conocé los modelos Peugeot 0km disponibles en Indiana Tucumán y consultá por versiones, financiación y disponibilidad.",
     type: "website",
     siteName: "Indiana Peugeot",
     locale: "es_AR",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Catálogo Peugeot 0km en Tucumán | Concesionaria Oficial | Indiana Peugeot",
+    title: "Autos 0km Peugeot | Peugeot Indiana",
     description:
-      "Gama completa de modelos Peugeot 0km en Indiana Peugeot, concesionaria oficial en Tucumán. Autos y utilitarios nuevos con garantía oficial y opciones de financiación.",
+      "Conocé los modelos Peugeot 0km disponibles en Indiana Tucumán y consultá por versiones, financiación y disponibilidad.",
   },
   alternates: {
     canonical: `${getSiteUrl()}/0km`,

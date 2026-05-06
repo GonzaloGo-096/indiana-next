@@ -42,10 +42,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             priority: 0.9,
           },
           {
+            url: `${baseUrl}/usados/vehiculos`,
+            lastModified: now,
+            changeFrequency: "daily" as const,
+            priority: 0.8,
+          },
+          {
             url: `${baseUrl}/postventa`,
             lastModified: now,
             changeFrequency: "weekly" as const,
             priority: 0.8,
+          },
+          {
+            url: `${baseUrl}/trabaja-con-nosotros`,
+            lastModified: now,
+            changeFrequency: "monthly" as const,
+            priority: 0.5,
           },
     // Agregar URLs de cada plan
     ...planes.map((plan) => ({

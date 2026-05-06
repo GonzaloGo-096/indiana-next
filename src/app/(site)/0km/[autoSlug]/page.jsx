@@ -252,47 +252,43 @@ export async function generateMetadata({ params }) {
 
     if (!modelo) {
       return {
-        title: "Modelo no encontrado | Indiana Peugeot",
+        title: "Modelo no disponible",
         description: "El modelo solicitado no está disponible.",
       };
     }
 
-    // Usar absoluteUrl para canonical y og:url (URLs absolutas)
     const canonicalUrl = absoluteUrl(`/0km/${autoSlug}`);
-    
-    const seoTitle =
-      modelo.seo?.title ||
-      `${modelo.marca} ${modelo.nombre} 0km en Tucumán | Concesionaria Oficial | Indiana Peugeot`;
+
+    const seoTitle = `Peugeot ${modelo.nombre} 0km`;
     const seoDescription =
       modelo.seo?.description ||
-      `Peugeot ${modelo.nombre} 0km disponible en Indiana Peugeot, concesionaria oficial en Tucumán. Financiación disponible.`;
-    
-    // Imagen SEO: si es relativa, convertir a absoluta; si ya es absoluta (Cloudinary), mantenerla
+      `Conocé el Peugeot ${modelo.nombre} 0km disponible en Indiana Tucumán. Consultá versiones, financiación y disponibilidad.`;
+
     const seoImage = modelo.heroImage?.url || modelo.imagenPrincipal?.url;
     const seoImageAbsolute = seoImage
       ? seoImage.startsWith("http") || seoImage.startsWith("//")
         ? seoImage
         : absoluteUrl(seoImage)
       : null;
-    
+
     const keywords =
       modelo.seo?.keywords ||
-      `${modelo.marca} ${modelo.nombre} 0km Tucumán, concesionaria Peugeot Tucumán, autos 0km Peugeot, financiación Peugeot`;
+      `Peugeot ${modelo.nombre} 0km Tucumán, concesionaria Peugeot Tucumán, autos 0km Peugeot, financiación Peugeot`;
 
     return {
       title: seoTitle,
       description: seoDescription,
       keywords: keywords,
       openGraph: {
-        title: seoTitle,
+        title: `${seoTitle} | Peugeot Indiana`,
         description: seoDescription,
-        url: canonicalUrl, // ✅ URL absoluta consistente con canonical
+        url: canonicalUrl,
         siteName: "Indiana Peugeot",
         images: seoImageAbsolute
           ? [
               {
-                url: seoImageAbsolute, // ✅ URL absoluta
-                alt: modelo.heroImage?.alt || `${modelo.marca} ${modelo.nombre}`,
+                url: seoImageAbsolute,
+                alt: modelo.heroImage?.alt || `Peugeot ${modelo.nombre} 0km`,
                 width: 1200,
                 height: 630,
               },
@@ -303,19 +299,18 @@ export async function generateMetadata({ params }) {
       },
       twitter: {
         card: "summary_large_image",
-        title: seoTitle,
+        title: `${seoTitle} | Peugeot Indiana`,
         description: seoDescription,
-        images: seoImageAbsolute ? [seoImageAbsolute] : [], // ✅ URL absoluta
+        images: seoImageAbsolute ? [seoImageAbsolute] : [],
       },
       alternates: {
-        canonical: canonicalUrl, // ✅ URL absoluta
+        canonical: canonicalUrl,
       },
     };
   } catch (error) {
     console.error("Error generating metadata:", error);
-    // Retornar metadata por defecto en caso de error
     return {
-      title: "Error | Indiana Peugeot",
+      title: "Modelo no disponible",
       description: "Error al cargar la información del modelo.",
     };
   }

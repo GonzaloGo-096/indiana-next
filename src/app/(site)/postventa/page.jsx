@@ -81,15 +81,15 @@ function getPostventaServicesJsonLd(services) {
 export async function generateMetadata() {
   try {
     return {
-      title: "Servicios Postventa | Service, Chapa y Pintura, Repuestos | Indiana Peugeot",
+      title: "Servicios Postventa | Service, Chapa y Pintura y Repuestos",
       description:
-        "Servicios postventa profesionales: service, chapa y pintura, repuestos originales. Técnicos certificados y garantía en todos nuestros servicios.",
+        "Service, chapa y pintura, y repuestos originales en Tucumán. Técnicos certificados Peugeot con turno ágil y garantía en todos los trabajos.",
       keywords:
-        "service autos usados, mantenimiento vehículos, chapa y pintura autos, repuestos originales",
+        "service Peugeot Tucumán, chapa y pintura autos, repuestos originales Peugeot, mantenimiento vehículos",
       openGraph: {
-        title: "Servicios Postventa | Indiana Peugeot",
+        title: "Servicios Postventa | Peugeot Indiana",
         description:
-          "Servicios postventa profesionales: service, chapa y pintura, repuestos originales. Técnicos certificados y garantía en todos nuestros servicios.",
+          "Service, chapa y pintura, y repuestos originales en Tucumán. Técnicos certificados Peugeot con turno ágil y garantía.",
         url: absoluteUrl("/postventa"),
         siteName: "Indiana Peugeot",
         locale: "es_AR",
@@ -105,9 +105,9 @@ export async function generateMetadata() {
       },
       twitter: {
         card: "summary_large_image",
-        title: "Servicios Postventa | Indiana Peugeot",
+        title: "Servicios Postventa | Peugeot Indiana",
         description:
-          "Servicios postventa profesionales: service, chapa y pintura, repuestos originales. Técnicos certificados y garantía en todos nuestros servicios.",
+          "Service, chapa y pintura, y repuestos originales en Tucumán. Técnicos certificados Peugeot con turno ágil y garantía.",
         images: [staticImages.postventa.hero.src],
       },
       alternates: {
@@ -117,8 +117,8 @@ export async function generateMetadata() {
   } catch (error) {
     console.error("Error generating metadata for postventa page:", error);
     return {
-      title: "Servicios Postventa | Indiana Peugeot",
-      description: "Servicios postventa profesionales.",
+      title: "Servicios Postventa",
+      description: "Service, chapa y pintura y repuestos originales en Tucumán.",
     };
   }
 }

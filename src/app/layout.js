@@ -30,14 +30,13 @@ export const metadata = {
     apple: "/assets/logos/logos-indiana/desktop/azul-solo-desktop.webp",
   },
   title: {
-    template: "%s | Indiana Peugeot",
-    default:
-      "Indiana Peugeot – Concesionaria Oficial en Tucumán | 0km y Usados",
+    template: "%s | Peugeot Indiana",
+    default: "Peugeot Indiana – Concesionaria Oficial en Tucumán | 0km y Usados",
   },
   description:
-    "Indiana Peugeot es concesionaria oficial Peugeot en Tucumán. Autos 0km Peugeot y amplia selección de vehículos usados multimarca con garantía, financiamiento y servicio postventa.",
+    "Conocé la oferta de Peugeot Indiana en Tucumán: autos 0km, usados seleccionados, planes de ahorro y atención comercial.",
   openGraph: {
-    title: "Indiana Peugeot – Concesionaria Oficial en Tucumán",
+    title: "Peugeot Indiana – Concesionaria Oficial en Tucumán",
     description:
       "Concesionaria oficial Peugeot en Tucumán. Autos 0km Peugeot y vehículos usados multimarca.",
     url: "/",
@@ -47,7 +46,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Indiana Peugeot – Concesionaria Oficial en Tucumán",
+    title: "Peugeot Indiana – Concesionaria Oficial en Tucumán",
     description:
       "Concesionaria oficial Peugeot en Tucumán. Autos 0km Peugeot y vehículos usados multimarca.",
   },

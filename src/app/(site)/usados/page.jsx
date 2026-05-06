@@ -22,9 +22,9 @@ import styles from "./usados.module.css";
  * Metadata para SEO
  */
 export async function generateMetadata() {
-  const title = "Vehículos Usados Multimarca | Indiana Peugeot";
+  const title = "Autos Usados en Tucumán";
   const description =
-    "Amplia selección de vehículos usados multimarca en Indiana Peugeot. Garantía incluida, financiación disponible y servicio postventa profesional.";
+    "Explorá vehículos usados seleccionados en Tucumán. Consultá disponibilidad, características y contacto comercial con Peugeot Indiana.";
 
   try {
     const canonical = tryAbsoluteUrl("/usados") ?? "/usados";
@@ -37,7 +37,7 @@ export async function generateMetadata() {
       title,
       description,
       openGraph: {
-        title,
+        title: `${title} | Peugeot Indiana`,
         description,
         url: canonical,
         siteName: "Indiana Peugeot",
@@ -47,7 +47,7 @@ export async function generateMetadata() {
           ? [
               {
                 url: ogImage,
-                alt: "Vehículos Usados Multimarca - Indiana Peugeot",
+                alt: "Autos Usados en Tucumán - Peugeot Indiana",
                 width: 1200,
                 height: 630,
               },
@@ -56,7 +56,7 @@ export async function generateMetadata() {
       },
       twitter: {
         card: "summary_large_image",
-        title,
+        title: `${title} | Peugeot Indiana`,
         description,
         images: ogImage ? [ogImage] : [],
       },

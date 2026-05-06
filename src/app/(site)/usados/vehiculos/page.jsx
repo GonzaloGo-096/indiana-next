@@ -209,11 +209,11 @@ export async function generateMetadata({ searchParams }) {
     const hasNonIndexable = hasNonIndexableParams(resolvedSearchParams || {});
 
     const title = hasFilters
-      ? "Vehículos Usados Filtrados | Indiana Peugeot"
-      : "Vehículos Usados Multimarca | Indiana Peugeot";
+      ? "Vehículos Usados Filtrados"
+      : "Vehículos Usados Multimarca";
     const description = hasFilters
-      ? "Encontrá el vehículo usado que buscás con nuestros filtros avanzados. Amplia selección con garantía y financiación."
-      : "Amplia selección de vehículos usados multimarca en Indiana Peugeot. Garantía incluida, financiación disponible y servicio postventa profesional.";
+      ? "Encontrá el vehículo usado que buscás con nuestros filtros. Consultá disponibilidad y contacto comercial con Peugeot Indiana."
+      : "Explorá vehículos usados multimarca en Tucumán. Consultá disponibilidad, características y contacto comercial con Peugeot Indiana.";
 
     const robots = hasNonIndexable
       ? { index: false, follow: true }
@@ -229,7 +229,7 @@ export async function generateMetadata({ searchParams }) {
       description,
       robots,
       openGraph: {
-        title,
+        title: `${title} | Peugeot Indiana`,
         description,
         url: canonicalUrl,
         siteName: "Indiana Peugeot",
@@ -239,7 +239,7 @@ export async function generateMetadata({ searchParams }) {
           ? [
               {
                 url: ogImage,
-                alt: "Vehículos Usados Multimarca - Indiana Peugeot",
+                alt: `${title} - Peugeot Indiana`,
                 width: 1200,
                 height: 630,
               },
@@ -248,7 +248,7 @@ export async function generateMetadata({ searchParams }) {
       },
       twitter: {
         card: "summary_large_image",
-        title,
+        title: `${title} | Peugeot Indiana`,
         description,
         images: ogImage ? [ogImage] : [],
       },
@@ -266,9 +266,9 @@ export async function generateMetadata({ searchParams }) {
     }
     console.error("[usados/vehiculos] generateMetadata:", msg);
     return {
-      title: "Vehículos Usados | Indiana Peugeot",
+      title: "Vehículos Usados Multimarca",
       description:
-        "Vehículos usados multimarca en Indiana Peugeot, Tucumán.",
+        "Explorá vehículos usados multimarca en Tucumán. Peugeot Indiana.",
       alternates: { canonical: "/usados/vehiculos" },
     };
   }

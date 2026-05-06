@@ -34,15 +34,15 @@ function getPlanesListJsonLd(planes) {
 export async function generateMetadata() {
   try {
     return {
-      title: "Financiá tu Peugeot 0km | Planes en Tucumán | Indiana Peugeot",
+      title: "Planes de Ahorro Peugeot",
       description:
-        "Planes de financiación flexibles para modelos Peugeot 0km en Tucumán. Concesionaria oficial Peugeot con cuotas adaptadas a tu presupuesto y adjudicación pactada.",
+        "Consultá planes de ahorro Peugeot disponibles en Indiana Tucumán y recibí asesoramiento comercial.",
       keywords:
-        "planes Peugeot Tucumán, financiación Peugeot 0km, planes de ahorro Peugeot, cuotas Peugeot, concesionaria oficial Peugeot Tucumán, financiación automotriz",
+        "planes de ahorro Peugeot, planes Peugeot Tucumán, financiación Peugeot 0km, cuotas Peugeot, concesionaria oficial Peugeot Tucumán",
       openGraph: {
-        title: "Financiá tu Peugeot 0km | Planes en Tucumán | Indiana Peugeot",
+        title: "Planes de Ahorro Peugeot | Peugeot Indiana",
         description:
-          "Planes de financiación flexibles para modelos Peugeot 0km en Tucumán. Concesionaria oficial Peugeot con cuotas adaptadas a tu presupuesto y adjudicación pactada.",
+          "Consultá planes de ahorro Peugeot disponibles en Indiana Tucumán y recibí asesoramiento comercial.",
         url: absoluteUrl("/planes"),
         siteName: "Indiana Peugeot",
         locale: "es_AR",
@@ -50,7 +50,7 @@ export async function generateMetadata() {
         images: [
           {
             url: absoluteUrl("/assets/logos/logos-indiana/desktop/azul-chico-desktop.webp"),
-            alt: "Planes de Financiación - Indiana Peugeot",
+            alt: "Planes de Ahorro Peugeot - Peugeot Indiana",
             width: 1200,
             height: 630,
           },
@@ -58,9 +58,9 @@ export async function generateMetadata() {
       },
       twitter: {
         card: "summary_large_image",
-        title: "Financiá tu Peugeot 0km | Planes en Tucumán | Indiana Peugeot",
+        title: "Planes de Ahorro Peugeot | Peugeot Indiana",
         description:
-          "Planes de financiación flexibles para modelos Peugeot 0km en Tucumán. Concesionaria oficial Peugeot con cuotas adaptadas a tu presupuesto y adjudicación pactada.",
+          "Consultá planes de ahorro Peugeot disponibles en Indiana Tucumán y recibí asesoramiento comercial.",
         images: [absoluteUrl("/assets/logos/logos-indiana/desktop/azul-chico-desktop.webp")],
       },
       alternates: {
@@ -70,8 +70,8 @@ export async function generateMetadata() {
   } catch (error) {
     console.error("Error generating metadata for planes page:", error);
     return {
-      title: "Planes | Indiana Peugeot",
-      description: "Planes de financiación para Peugeot 0km.",
+      title: "Planes de Ahorro Peugeot",
+      description: "Planes de ahorro Peugeot en Tucumán.",
     };
   }
 }

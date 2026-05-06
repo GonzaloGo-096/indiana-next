@@ -107,7 +107,7 @@ export async function generateMetadata({ params }) {
 
     if (!id) {
       return {
-        title: "Vehículo no encontrado | Indiana Peugeot",
+        title: "Vehículo no disponible",
         description: "El vehículo solicitado no está disponible.",
       };
     }
@@ -117,18 +117,18 @@ export async function generateMetadata({ params }) {
 
     if (!vehicle) {
       return {
-        title: "Vehículo no encontrado | Indiana Peugeot",
+        title: "Vehículo no disponible",
         description: "El vehículo solicitado no está disponible.",
       };
     }
 
     const canonicalPath = buildVehicleDetailUrl(vehicle);
     const canonicalUrl = absoluteUrl(canonicalPath);
-    const title = `${vehicle.marca} ${vehicle.modelo} ${vehicle.anio || ""} | Indiana Peugeot`;
+    const title = vehicle.anio
+      ? `${vehicle.marca} ${vehicle.modelo} ${vehicle.anio} Usado`
+      : `${vehicle.marca} ${vehicle.modelo} Usado`;
     const precioMeta = formatPrecioForMeta(vehicle.precio);
-    const description = `Vehículo usado: ${vehicle.marca} ${vehicle.modelo} ${
-      vehicle.anio || ""
-    }.${precioMeta ? ` Precio: ${precioMeta}` : ""}`;
+    const description = `${vehicle.marca} ${vehicle.modelo}${vehicle.anio ? ` ${vehicle.anio}` : ""} usado en Tucumán. Consultá disponibilidad y precio con Peugeot Indiana.${precioMeta ? ` Precio: ${precioMeta}.` : ""}`;
 
     const fp = fotoPrincipalString(vehicle);
     const ogImageUrl = fp
@@ -143,7 +143,7 @@ export async function generateMetadata({ params }) {
       title,
       description,
       openGraph: {
-        title,
+        title: `${title} | Peugeot Indiana`,
         description,
         url: canonicalUrl,
         siteName: "Indiana Peugeot",
@@ -151,7 +151,7 @@ export async function generateMetadata({ params }) {
           ? [
               {
                 url: ogImageUrl,
-                alt: title,
+                alt: `${title} | Peugeot Indiana`,
                 width: 1200,
                 height: 630,
               },
@@ -162,7 +162,7 @@ export async function generateMetadata({ params }) {
       },
       twitter: {
         card: "summary_large_image",
-        title,
+        title: `${title} | Peugeot Indiana`,
         description,
         images: ogImageUrl ? [ogImageUrl] : [],
       },
@@ -172,7 +172,7 @@ export async function generateMetadata({ params }) {
     };
   } catch {
     return {
-      title: "Error | Indiana Peugeot",
+      title: "Vehículo no disponible",
       description: "Error al cargar la información del vehículo.",
     };
   }
