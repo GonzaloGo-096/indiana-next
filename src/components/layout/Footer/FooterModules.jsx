@@ -8,7 +8,7 @@ import { PhoneIcon } from "../../ui/icons/PhoneIcon";
 import { contactoModules, sitioModule, vehiculosModule, footerIcons } from "./footerConfig";
 import WhatsAppLink from "@/components/analytics/WhatsAppLink";
 import TelLink from "@/components/analytics/TelLink";
-import { SOURCES } from "@/lib/analytics/events";
+import { SOURCES, LEAD_TYPES } from "@/lib/analytics/events";
 import { locationFromPathname } from "@/lib/analytics/locationFromPath";
 import styles from "./FooterModules.module.css";
 
@@ -83,6 +83,7 @@ const FooterItem = ({ item, sedeId }) => {
             location={location}
             componentId={componentId}
             messageTemplateId={sedeId || "footer"}
+            leadType={LEAD_TYPES.GENERAL_INQUIRY}
             className={styles.iconLink}
             aria-label={ariaLabel}
           >

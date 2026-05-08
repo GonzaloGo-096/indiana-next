@@ -21,7 +21,7 @@ import {
 import { serializeVehicleForClient } from "@/utils/serializeVehicleForClient";
 import VehicleDetailClient from "./VehicleDetailClient";
 import ItemViewTracker from "@/components/analytics/ItemViewTracker";
-import { LOCATIONS } from "@/lib/analytics/events";
+import { LOCATIONS, SOURCES } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 
 function formatPrecioForMeta(precio) {
@@ -315,7 +315,7 @@ export default async function VehicleDetailPage({ params }) {
       <ItemViewTracker
         item={buildItemParamsFromUsado(payload.clientVehicle)}
         location={LOCATIONS.USADOS_DETAIL}
-        source="used_detail"
+        source={SOURCES.INLINE}
         componentId="detail_page"
       />
       <VehicleDetailClient vehicle={payload.clientVehicle} />

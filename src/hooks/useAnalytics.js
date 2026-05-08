@@ -17,13 +17,28 @@
  */
 
 import { useCallback, useRef } from "react";
-import { pushDataLayer } from "@/lib/analytics/dataLayer";
+import { pushDataLayer, pushEcommerceEvent } from "@/lib/analytics/dataLayer";
 import { EVENTS, LEAD_SOURCES } from "@/lib/analytics/events";
 
 /** componentId (camelCase) → component_id (snake_case), con fallback. */
 function pickComponentId(params) {
   if (!params) return undefined;
   return params.componentId ?? params.component_id;
+}
+
+/**
+ * Extrae los campos del item que se replican al root del evento como
+ * custom dimensions de GA4 (para reportes simples sin ecommerce configurado).
+ * Solo incluye campos con valor para no contaminar el payload.
+ */
+function toRootItemParams(itemParams) {
+  if (!itemParams) return {};
+  const out = {};
+  if (itemParams.item_id) out.item_id = itemParams.item_id;
+  if (itemParams.item_name) out.item_name = itemParams.item_name;
+  if (itemParams.item_category) out.item_category = itemParams.item_category;
+  if (itemParams.item_list_name) out.item_list_name = itemParams.item_list_name;
+  return out;
 }
 
 export function useAnalytics() {
@@ -35,34 +50,57 @@ export function useAnalytics() {
   }, []);
 
   const trackItemView = useCallback((itemParams, extra = {}) => {
-    if (!itemParams) return;
-    pushDataLayer(EVENTS.VIEW_ITEM, { ...itemParams, ...extra });
+    if (!itemParams?.item_id) return;
+    const itemListName = itemParams.item_list_name || extra.item_list_name;
+    pushEcommerceEvent(EVENTS.VIEW_ITEM, {
+      // contexto del caller (location, source, component_id, etc.)
+      ...extra,
+      // root params para custom dimensions GA4 — sobreescriben si extra tenía los mismos keys
+      ...toRootItemParams(itemParams),
+      // ecommerce wrapper
+      items: [itemParams],
+      ...(itemListName ? { itemListName } : {}),
+    });
   }, []);
 
   const trackItemSelect = useCallback((itemParams, opts = {}) => {
-    if (!itemParams) return;
+    if (!itemParams?.item_id) return;
     const { source, location, index } = opts;
-    pushDataLayer(EVENTS.SELECT_ITEM, {
-      ...itemParams,
+    const itemListName =
+      opts.itemListName ?? opts.item_list_name ?? itemParams.item_list_name;
+    pushEcommerceEvent(EVENTS.SELECT_ITEM, {
       source,
       location,
       component_id: pickComponentId(opts),
-      ...(typeof index === "number" ? { index } : {}),
+      // root params para custom dimensions GA4
+      ...toRootItemParams(itemParams),
+      ...(itemListName ? { item_list_name: itemListName } : {}),
+      // ecommerce wrapper
+      ...(itemListName ? { itemListName } : {}),
+      items: [{ ...itemParams, ...(typeof index === "number" ? { index } : {}) }],
     });
   }, []);
 
-  const trackItemList = useCallback((items, { itemListName, location } = {}) => {
-    if (!Array.isArray(items)) return;
-    const normalized = items
-      .filter(Boolean)
-      .slice(0, 10)
-      .map((it) => ({ ...it, item_list_name: it.item_list_name || itemListName }));
-    pushDataLayer(EVENTS.VIEW_ITEM_LIST, {
-      item_list_name: itemListName,
-      items: normalized,
-      location,
-    });
-  }, []);
+  const trackItemList = useCallback(
+    (items, { itemListName, location, source } = {}) => {
+      if (!Array.isArray(items)) return;
+      const normalized = items
+        .filter(Boolean)
+        .slice(0, 10)
+        .map((it, index) => ({
+          ...it,
+          item_list_name: it.item_list_name || itemListName,
+          index,
+        }));
+      pushEcommerceEvent(EVENTS.VIEW_ITEM_LIST, {
+        location,
+        ...(source ? { source } : {}),
+        itemListName: itemListName || "",
+        items: normalized,
+      });
+    },
+    [],
+  );
 
   const trackSearch = useCallback((opts = {}) => {
     const { filters, resultsCount, location } = opts;

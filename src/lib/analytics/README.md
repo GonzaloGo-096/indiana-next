@@ -4,7 +4,7 @@ Fuente única de verdad sobre cómo se mide el sitio Indiana Peugeot.
 
 ## Resumen
 
-- **Tag manager**: Google Tag Manager (`GTM-M2J2LBRD`).
+- **Tag manager**: Google Tag Manager (`GTM-TPJCFTBB`).
 - **Plataformas**: GA4 + Meta Pixel + (opcional) Google Ads, todas configuradas como tags **dentro** del contenedor de GTM.
 - **Filosofía**: un solo `window.dataLayer`. La app empuja eventos; GTM enruta.
 - **Consent Mode v2**: default `denied`, banner pide opt-in explícito. Persiste en `localStorage` (`indiana_consent_v1`).

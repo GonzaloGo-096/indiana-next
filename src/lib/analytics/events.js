@@ -70,6 +70,7 @@ export const ITEM_LIST = Object.freeze({
   HOME_FEATURED: "home_featured",
   OKM_GRID: "0km",
   USADOS_GRID: "usados",
+  USADOS_CAROUSEL: "usados_carousel",
   PLANES_GRID: "planes",
   SIMILAR: "similar",
 });
@@ -79,6 +80,22 @@ export const LEAD_SOURCES = Object.freeze({
   FORM: "form",
   PHONE: "phone",
   EMAIL: "email",
+});
+
+export const LEAD_TYPES = Object.freeze({
+  SERVICE_BOOKING: "service_booking",
+  BODYWORK_QUOTE: "bodywork_quote",
+  PARTS_INQUIRY: "parts_inquiry",
+  USED_VEHICLE_INQUIRY: "used_vehicle_inquiry",
+  ZERO_KM_INQUIRY: "zero_km_inquiry",
+  PLAN_INQUIRY: "plan_inquiry",
+  GENERAL_INQUIRY: "general_inquiry",
+});
+
+export const VERTICALS = Object.freeze({
+  POSTVENTA: "postventa",
+  USADOS: "usados",
+  ZERO_KM: "0km",
 });
 
 export const ITEM_CATEGORY = Object.freeze({

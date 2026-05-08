@@ -30,7 +30,9 @@ export default function FloatingWhatsAppButton() {
         source={SOURCES.FLOATING}
         location={locationFromPathname(pathname)}
         componentId="whatsapp-floating"
-        messageTemplateId={channel.label}
+        messageTemplateId={channel.messageTemplateId}
+        leadType={channel.leadType}
+        vertical={channel.vertical}
         className={styles.button}
         aria-label={ariaLabel}
         title={ariaLabel}

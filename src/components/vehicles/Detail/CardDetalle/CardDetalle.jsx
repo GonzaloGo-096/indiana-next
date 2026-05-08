@@ -33,7 +33,7 @@ import { ImageCarousel } from "../../ImageCarousel/ImageCarousel";
 import { GalleryModal } from "../../GalleryModal/GalleryModal";
 import contact from "../../../ui/ContactButtons.module.css";
 import WhatsAppLink from "@/components/analytics/WhatsAppLink";
-import { SOURCES, LOCATIONS } from "@/lib/analytics/events";
+import { SOURCES, LOCATIONS, LEAD_TYPES, VERTICALS } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import styles from "./CardDetalle.module.css";
 
@@ -297,6 +297,9 @@ export const CardDetalle = memo(({ auto, contactInfo }) => {
                 source={SOURCES.INLINE}
                 location={LOCATIONS.USADOS_DETAIL}
                 componentId="whatsapp-card-detalle-usado"
+                messageTemplateId="usado_detail"
+                leadType={LEAD_TYPES.USED_VEHICLE_INQUIRY}
+                vertical={VERTICALS.USADOS}
                 item={buildItemParamsFromUsado(auto)}
                 className={`${contact.buttonWhatsapp} ${contact.buttonWhatsappFull}`}
                 aria-label="Contactar por WhatsApp"

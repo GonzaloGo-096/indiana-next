@@ -121,6 +121,60 @@ export function pushDataLayer(event, params = {}) {
 }
 
 /**
+ * Empuja un evento de ecommerce al dataLayer siguiendo el estándar GA4 Enhanced Ecommerce.
+ *
+ * Flujo:
+ *   1. Push { ecommerce: null } — reset obligatorio para prevenir data bleeding entre eventos.
+ *   2. Push { event, ...contextParams, ecommerce: { item_list_name?, items } }.
+ *
+ * Los parámetros de contexto (source, location, component_id, item_id, etc.) van al root
+ * del evento para compatibilidad con reportes simples y custom dimensions de GA4.
+ * Los items van dentro de ecommerce.items[] para cumplir el estándar GTM/GA4.
+ *
+ * @param {string} event - nombre del evento (EVENTS.*)
+ * @param {object} opts
+ * @param {object[]} opts.items           - array de items GA4 (de buildItemParamsFrom*)
+ * @param {string}   [opts.itemListName]  - ITEM_LIST.* — aparece en ecommerce.item_list_name
+ * @param {Record<string, unknown>} opts  - resto son context params (source, location, component_id, item_id, etc.)
+ */
+export function pushEcommerceEvent(event, { items, itemListName, ...contextParams } = {}) {
+  if (typeof window === "undefined") return;
+  try {
+    if (typeof event !== "string" || event.length === 0) return;
+    if (!Array.isArray(items) || items.length === 0) {
+      if (isDev) {
+        console.warn(
+          `[analytics] pushEcommerceEvent("${event}") llamado sin items válidos. Verificá el builder.`,
+        );
+      }
+      return;
+    }
+    window.dataLayer = window.dataLayer || [];
+    // Reset obligatorio: previene que datos del evento anterior contaminen el siguiente.
+    window.dataLayer.push({ ecommerce: null });
+    const safeContext = sanitizeParams(contextParams);
+    warnMissingContext(event, safeContext);
+    const payload = {
+      event,
+      ...safeContext,
+      ecommerce: {
+        ...(itemListName ? { item_list_name: String(itemListName) } : {}),
+        items,
+      },
+    };
+    window.dataLayer.push(payload);
+    if (isDev || debugInProd) {
+      console.debug(
+        `[analytics] ${new Date().toISOString()} ${event} [ecommerce]`,
+        payload,
+      );
+    }
+  } catch {
+    // Tracking nunca rompe la UI.
+  }
+}
+
+/**
  * Para uso interno (consent.js): empuja un comando de gtag al dataLayer.
  * gtag('consent', 'default'|'update', {...}) → dataLayer.push(arguments)
  */

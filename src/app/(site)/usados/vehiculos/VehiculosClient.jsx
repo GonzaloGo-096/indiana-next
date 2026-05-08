@@ -380,11 +380,27 @@ export default function VehiculosClient({
     [handleApplyFilters]
   );
 
+  /**
+   * Cambiar sorting.
+   * - Cierra el dropdown de inmediato (feedback visual).
+   * - Actualiza la URL reseteando a página 1 (un cambio de orden es un
+   *   nuevo punto de partida; evita conservar cursores de páginas acumuladas).
+   * - El ordenamiento es client-side sobre los vehículos ya cargados;
+   *   sortedVehicles se recalcula automáticamente al actualizarse currentSort.
+   */
+  const handleSortChange = useCallback(
+    (newSort) => {
+      setIsSortDropdownOpen(false);
+      updateURL(currentFilters, 1, newSort);
+    },
+    [currentFilters, updateURL]
+  );
+
   const handleClearSortOnly = useCallback(() => {
-    updateURL(currentFilters, currentPage, null);
-    setSelectedSort(null);
-    setIsSortDropdownOpen(false);
-  }, [currentFilters, currentPage, updateURL]);
+    // Delega en handleSortChange para comportamiento consistente:
+    // cierra dropdown, resetea URL a page 1 y limpia el sort.
+    handleSortChange(null);
+  }, [handleSortChange]);
 
   const activeFilterChips = useMemo(
     () => getActiveFilterChips(currentFilters),
@@ -468,18 +484,6 @@ export default function VehiculosClient({
       }
     },
     [currentFilters, data, isLoadingMore] // ✅ Incluir data en dependencias para tener el valor actualizado
-  );
-
-  /**
-   * Cambiar sorting
-   */
-  const handleSortChange = useCallback(
-    (newSort) => {
-      // Solo actualizar URL (sorting es local, no requiere fetch)
-      updateURL(currentFilters, currentPage, newSort);
-      setIsSortDropdownOpen(false);
-    },
-    [currentFilters, currentPage, updateURL]
   );
 
   /**

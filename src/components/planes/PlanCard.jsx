@@ -74,15 +74,25 @@ const PlanCardComponent = ({ plan, modelo }) => {
     caracteristicas,
   } = plan;
 
-  // Callback (no objeto) para no invalidar React.memo en re-renders del padre.
-  const getTrackParams = useCallback(
-    () =>
+  // Callback ecommerce (no objeto) para no invalidar React.memo en re-renders del padre.
+  // Retorna { items, itemListName, ...rootParams } que TrackedLink pasa a pushEcommerceEvent.
+  const getEcommerceParams = useCallback(() => {
+    const itemParams =
       buildItemParamsFromPlan(
         { id: plan.id, nombre: nombrePlan, modelo, cuota: cuotas_desde },
         ITEM_LIST.PLANES_GRID,
-      ) || {},
-    [plan.id, nombrePlan, modelo, cuotas_desde],
-  );
+      ) || {};
+    if (!itemParams.item_id) return { items: [], itemListName: ITEM_LIST.PLANES_GRID };
+    return {
+      items: [{ ...itemParams, index: 0 }],
+      itemListName: ITEM_LIST.PLANES_GRID,
+      // root params para custom dimensions simples
+      item_id: itemParams.item_id,
+      item_name: itemParams.item_name,
+      item_category: itemParams.item_category,
+      item_list_name: ITEM_LIST.PLANES_GRID,
+    };
+  }, [plan.id, nombrePlan, modelo, cuotas_desde]);
 
   const modeloDisplay = modelo.charAt(0).toUpperCase() + modelo.slice(1);
   const modeloLower = modelo.toLowerCase();
@@ -159,7 +169,7 @@ const PlanCardComponent = ({ plan, modelo }) => {
           <TrackedLink
             href={`/planes/${plan.id}`}
             event={EVENTS.SELECT_ITEM}
-            getParams={getTrackParams}
+            getEcommerceParams={getEcommerceParams}
             source={SOURCES.CARD}
             location={LOCATIONS.PLANES_LIST}
             componentId="plan-card-cta-ver"

@@ -87,6 +87,8 @@ const SkeletonCard = () => (
  * @param {boolean} viewportClip - Clipping en borde del viewport (solo mobile en inicio y en /usados)
  * @param {boolean} homeDesktopFourColumns - Solo inicio desktop: cards un poco más angostas para mostrar 4 a la vez
  * @param {boolean} flushLeadingEdge - Alinea el inicio del scroll con el borde del contenedor (p. ej. /usados con título arriba)
+ * @param {string} trackingLocation - LOCATIONS enum inyectado por el padre para select_item
+ * @param {string} trackingListName - ITEM_LIST enum inyectado por el padre para select_item
  */
 export const UsadosCarousel = ({
   vehicles = [],
@@ -94,6 +96,8 @@ export const UsadosCarousel = ({
   viewportClip = false,
   homeDesktopFourColumns = false,
   flushLeadingEdge = false,
+  trackingLocation,
+  trackingListName,
 }) => {
   const carouselRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -256,7 +260,13 @@ export const UsadosCarousel = ({
           )}
           {vehicles.map((vehicle, index) => (
             <div key={vehicle.id || vehicle._id} className={styles.cardWrapper}>
-              <CardSimilar auto={vehicle} isPriority={index < 2} usadosCarousel />
+              <CardSimilar
+                auto={vehicle}
+                isPriority={index < 2}
+                usadosCarousel
+                trackingLocation={trackingLocation}
+                trackingListName={trackingListName}
+              />
             </div>
           ))}
           {viewportClip && (

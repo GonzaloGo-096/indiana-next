@@ -24,6 +24,8 @@ export default function WhatsAppLink({
   componentId,
   item,
   messageTemplateId,
+  leadType,
+  vertical,
   onClick,
   target = "_blank",
   rel = "noopener noreferrer",
@@ -52,9 +54,14 @@ export default function WhatsAppLink({
           component_id: componentId,
           ...(phoneHash ? { phone_number_hash: phoneHash } : {}),
           ...(messageTemplateId ? { message_template_id: messageTemplateId } : {}),
+          ...(leadType ? { lead_type: leadType } : {}),
+          ...(vertical ? { vertical } : {}),
           ...(item || {}),
         };
-        pushDataLayer(EVENTS.WHATSAPP_CLICK, base);
+        pushDataLayer(EVENTS.WHATSAPP_CLICK, {
+          ...base,
+          lead_source: LEAD_SOURCES.WHATSAPP,
+        });
         pushDataLayer(EVENTS.GENERATE_LEAD, {
           ...base,
           lead_source: LEAD_SOURCES.WHATSAPP,
@@ -64,7 +71,7 @@ export default function WhatsAppLink({
       }
       if (typeof onClick === "function") onClick(e);
     },
-    [source, location, componentId, phoneHash, messageTemplateId, item, onClick],
+    [source, location, componentId, phoneHash, messageTemplateId, leadType, vertical, item, onClick],
   );
 
   return (

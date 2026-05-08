@@ -9,7 +9,7 @@ import cta from "@/components/home/HomeSectionCtas.module.css";
 import contact from "@/components/ui/ContactButtons.module.css";
 import WhatsAppLink from "@/components/analytics/WhatsAppLink";
 import ItemViewTracker from "@/components/analytics/ItemViewTracker";
-import { SOURCES, LOCATIONS } from "@/lib/analytics/events";
+import { SOURCES, LOCATIONS, LEAD_TYPES, VERTICALS } from "@/lib/analytics/events";
 import { buildItemParamsFromPlan } from "@/lib/analytics/params";
 import styles from "./plan-detalle.module.css";
 
@@ -331,7 +331,7 @@ export default async function PlanDetallePage({ params }) {
           cuota: plan.cuotas_desde,
         })}
         location={LOCATIONS.PLAN_DETAIL}
-        source="plan_detail"
+        source={SOURCES.INLINE}
         componentId="detail_page"
       />
       <div className={`${styles.backRow} w-full`}>
@@ -584,10 +584,14 @@ export default async function PlanDetallePage({ params }) {
             source={SOURCES.INLINE}
             location={LOCATIONS.PLAN_DETAIL}
             componentId="whatsapp-detalle-plan"
+            messageTemplateId={plan.id}
+            leadType={LEAD_TYPES.PLAN_INQUIRY}
+            vertical={VERTICALS.ZERO_KM}
             item={buildItemParamsFromPlan({
               id: plan.id,
               nombre: plan.plan,
               modelo: plan.modelos?.[0],
+              cuota: plan.cuotas_desde,
             })}
             className={`${cta.button} ${cta.buttonInline} ${styles.planContactWhatsapp} inline-flex items-center`}
             aria-label="Solicitar cotización por WhatsApp"

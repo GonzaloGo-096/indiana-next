@@ -3,13 +3,15 @@
  * Importar desde "@/lib/analytics" en componentes y hooks.
  */
 
-export { pushDataLayer } from "./dataLayer";
+export { pushDataLayer, pushEcommerceEvent } from "./dataLayer";
 export {
   EVENTS,
   SOURCES,
   LOCATIONS,
   ITEM_LIST,
   LEAD_SOURCES,
+  LEAD_TYPES,
+  VERTICALS,
   ITEM_CATEGORY,
   REQUIRED_CONTEXT_EVENTS,
   VALID_SOURCES,

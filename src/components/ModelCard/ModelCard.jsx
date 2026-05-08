@@ -63,13 +63,22 @@ function ModelCard({
     trackingListName ||
     (location === LOCATIONS.HOME ? ITEM_LIST.HOME_FEATURED : ITEM_LIST.OKM_GRID);
 
-  // Callback (no objeto) para no invalidar memo en re-renders del padre.
-  const getTrackParams = useCallback(
-    () => ({
-      ...buildItemParamsFromAuto({ slug, titulo }, listName),
-    }),
-    [slug, titulo, listName],
-  );
+  // Callback ecommerce (no objeto) para no invalidar memo en re-renders del padre.
+  // Retorna { items, itemListName, ...rootParams } que TrackedLink pasa a pushEcommerceEvent.
+  const getEcommerceParams = useCallback(() => {
+    const itemParams = buildItemParamsFromAuto({ slug, titulo }, listName);
+    if (!itemParams) return { items: [], itemListName: listName };
+    return {
+      items: [{ ...itemParams, index: 0 }],
+      itemListName: listName,
+      // root params para custom dimensions simples
+      item_id: itemParams.item_id,
+      item_name: itemParams.item_name,
+      item_category: itemParams.item_category,
+      item_list_name: listName,
+    };
+  }, [slug, titulo, listName]);
+
   const getPlanesParams = useCallback(
     () => ({ label: "Ver planes", target_path: "/planes" }),
     [],
@@ -145,7 +154,7 @@ function ModelCard({
           <TrackedLink
             href={`/0km/${slug}`}
             event={EVENTS.SELECT_ITEM}
-            getParams={getTrackParams}
+            getEcommerceParams={getEcommerceParams}
             source={SOURCES.CARD}
             location={location}
             componentId="model-card-cta-ver"
@@ -183,7 +192,7 @@ function ModelCard({
     <TrackedLink
       href={`/0km/${slug}`}
       event={EVENTS.SELECT_ITEM}
-      getParams={getTrackParams}
+      getEcommerceParams={getEcommerceParams}
       source={SOURCES.CARD}
       location={location}
       componentId="model-card-wrapper"

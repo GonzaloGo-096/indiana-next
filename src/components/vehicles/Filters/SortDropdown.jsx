@@ -1,214 +1,208 @@
 "use client";
 
 /**
- * SortDropdown - Dropdown simple para ordenamiento
- * 
- * Características:
- * - Dropdown simple que se despliega desde el botón
- * - Mismos estilos que el dropdown de navegación
- * - Se posiciona debajo del botón que lo activa
- * - No es invasivo, no bloquea la pantalla
- * 
- * @author Indiana Peugeot
- * @version 1.0.0 - Migrado a Next.js
+ * SortDropdown — Dropdown de ordenamiento para el listado de vehículos.
+ *
+ * ✅ ARQUITECTURA:
+ * - Renderizado via React Portal en document.body: escapa cualquier
+ *   overflow:hidden del árbol de layout (toolbarRegion, actionButtons, etc.)
+ *   sin necesitar cambios en los estilos del contenedor padre.
+ * - Verificación de visibilidad del trigger (offsetParent): si el botón
+ *   disparador está oculto con display:none (ej. la instancia mobile cuando
+ *   se usa el layout desktop), el componente retorna null y sus listeners
+ *   nunca se registran — elimina el bug de doble-instancia donde el dropdown
+ *   oculto cerraba el visible en mousedown antes del click.
+ * - Posición fixed calculada con getBoundingClientRect(), se ajusta al
+ *   alinear a la derecha si el dropdown desbordaría la viewport.
+ *
+ * ✅ ACCESIBILIDAD:
+ * - role="menu" + role="menuitemradio" (patrón correcto para opciones
+ *   mutuamente exclusivas dentro de un menú; aria-checked refleja selección).
+ * - ESC cierra y devuelve foco al trigger.
+ * - focus-visible visible.
+ *
+ * @version 2.0.0
  */
 
-import { useEffect, useRef, memo } from 'react'
-import { CheckIcon } from '../../ui/icons/CheckIcon'
-import { SORT_OPTIONS } from '../../../constants/filterOptions'
-import { isValidSortOption } from '../../../utils/filters'
+import { useEffect, useLayoutEffect, useRef, useState, memo } from "react";
+import { createPortal } from "react-dom";
+import { CheckIcon } from "../../ui/icons/CheckIcon";
+import { SORT_OPTIONS } from "../../../constants/filterOptions";
+import { isValidSortOption } from "../../../utils/filters";
+import styles from "./SortDropdown.module.css";
 
-const SortDropdown = memo(({ 
-  isOpen = false, 
-  selectedSort = null,
-  onSortChange = () => {},
-  onClose = () => {},
-  disabled = false,
-  preventAutoClose = false,
-  triggerRef = null  // Ref del botón que abre el dropdown
-}) => {
-  const dropdownRef = useRef(null)
+// ─── helpers ────────────────────────────────────────────────────────────────
 
-  // ✅ Accesibilidad: Cerrar con ESC
-  useEffect(() => {
-    if (!isOpen) return
+/**
+ * Calcula las coordenadas viewport del dropdown a partir del rectángulo del
+ * botón trigger. Si el dropdown se saldría por la derecha, lo alinea al borde
+ * derecho del trigger.
+ */
+function computeCoords(triggerEl, minWidth = 220) {
+  const rect = triggerEl.getBoundingClientRect();
+  const width = Math.max(rect.width, minWidth);
+  const rightEdge = rect.left + width;
+  const left =
+    rightEdge > window.innerWidth
+      ? Math.max(0, rect.right - width)
+      : rect.left;
 
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        onClose()
+  return {
+    top: rect.bottom + 8,
+    left,
+    minWidth: width,
+  };
+}
+
+// ─── componente ─────────────────────────────────────────────────────────────
+
+const SortDropdown = memo(
+  /**
+   * @param {Object}   props
+   * @param {boolean}  props.isOpen         - Controla si el dropdown está abierto.
+   * @param {string|null} props.selectedSort - Valor del sort activo (null = sin orden).
+   * @param {Function} props.onSortChange   - Callback al seleccionar opción (recibe el valor o null).
+   * @param {Function} props.onClose        - Callback para cerrar el dropdown.
+   * @param {boolean}  props.disabled       - Deshabilita todas las opciones.
+   * @param {Object}   props.triggerRef     - Ref del botón que abrió el dropdown.
+   */
+  ({
+    isOpen = false,
+    selectedSort = null,
+    onSortChange = () => {},
+    onClose = () => {},
+    disabled = false,
+    triggerRef = null,
+  }) => {
+    const dropdownRef = useRef(null);
+    const [coords, setCoords] = useState(null);
+
+    // ── Visibility guard ──────────────────────────────────────────────────
+    // Si el trigger está dentro de un contenedor display:none (ej. la instancia
+    // mobile cuando está activo el layout desktop), offsetParent === null.
+    // En ese caso no renderizamos nada ni registramos listeners.
+    const triggerVisible =
+      triggerRef?.current != null &&
+      triggerRef.current.offsetParent !== null;
+
+    // ── Posición inicial (sincrónica, antes del primer paint) ─────────────
+    useLayoutEffect(() => {
+      if (!isOpen || !triggerVisible) {
+        setCoords(null);
+        return;
       }
-    }
+      setCoords(computeCoords(triggerRef.current));
+    }, [isOpen, triggerVisible]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    document.addEventListener('keydown', handleEscape)
-    return () => document.removeEventListener('keydown', handleEscape)
-  }, [isOpen, onClose])
+    // ── Cerrar en scroll / resize ─────────────────────────────────────────
+    useEffect(() => {
+      if (!isOpen || !triggerVisible) return;
+      const handleScroll = () => onClose();
+      const handleResize = () => {
+        if (triggerRef?.current) {
+          setCoords(computeCoords(triggerRef.current));
+        }
+      };
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      window.addEventListener("resize", handleResize);
+      return () => {
+        window.removeEventListener("scroll", handleScroll);
+        window.removeEventListener("resize", handleResize);
+      };
+    }, [isOpen, triggerVisible, onClose, triggerRef]);
 
-  // ✅ Click outside para cerrar (excluyendo el botón trigger)
-  useEffect(() => {
-    if (!isOpen) return
+    // ── ESC → cerrar y devolver foco ──────────────────────────────────────
+    useEffect(() => {
+      if (!isOpen || !triggerVisible) return;
+      const handleEscape = (e) => {
+        if (e.key === "Escape") {
+          onClose();
+          triggerRef?.current?.focus();
+        }
+      };
+      document.addEventListener("keydown", handleEscape);
+      return () => document.removeEventListener("keydown", handleEscape);
+    }, [isOpen, triggerVisible, onClose, triggerRef]);
 
-    const handleClickOutside = (e) => {
-      const isClickOnDropdown = dropdownRef.current?.contains(e.target)
-      const isClickOnTrigger = triggerRef?.current?.contains(e.target)
-      
-      // Solo cerrar si el click NO es en el dropdown NI en el botón
-      if (!isClickOnDropdown && !isClickOnTrigger) {
-        onClose()
-      }
-    }
+    // ── Click fuera → cerrar ──────────────────────────────────────────────
+    useEffect(() => {
+      if (!isOpen || !triggerVisible) return;
+      const handleMouseDown = (e) => {
+        const onDropdown = dropdownRef.current?.contains(e.target);
+        const onTrigger = triggerRef?.current?.contains(e.target);
+        if (!onDropdown && !onTrigger) onClose();
+      };
+      document.addEventListener("mousedown", handleMouseDown);
+      return () => document.removeEventListener("mousedown", handleMouseDown);
+    }, [isOpen, triggerVisible, onClose, triggerRef]);
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [isOpen, onClose, triggerRef])
+    // ── Handlers de selección ─────────────────────────────────────────────
+    const handleSelect = (value) => {
+      if (disabled || !isValidSortOption(value)) return;
+      onSortChange(value);
+      onClose();
+    };
 
-  // ✅ Handler para seleccionar opción
-  const handleSortSelect = (sortOption) => {
-    if (disabled || !isValidSortOption(sortOption)) return
-    
-    onSortChange(sortOption)
-    
-    // ✅ NUEVO: Solo cerrar si no está en modo preventAutoClose
-    if (!preventAutoClose) {
-      onClose()
-    }
-  }
+    const handleClear = () => {
+      if (disabled) return;
+      onSortChange(null);
+      onClose();
+    };
 
-  // ✅ Handler para limpiar sorting
-  const handleClearSort = () => {
-    if (disabled) return
-    
-    onSortChange(null)
-    
-    // ✅ NUEVO: Solo cerrar si no está en modo preventAutoClose
-    if (!preventAutoClose) {
-      onClose()
-    }
-  }
+    // ── Guard de renderizado ──────────────────────────────────────────────
+    if (!isOpen || !triggerVisible || !coords) return null;
 
-  if (!isOpen) return null
-
-  return (
-    <div 
-      ref={dropdownRef}
-      style={{
-        position: 'absolute',
-        top: '100%',
-        left: '0',
-        right: '0',
-        backgroundColor: 'rgba(18, 18, 18, 0.95)',
-        backdropFilter: 'blur(12px)',
-        border: '1px solid rgba(255, 255, 255, 0.15)',
-        borderRadius: '8px',
-        minWidth: '200px',
-        padding: '8px 0',
-        marginTop: '8px',
-        boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
-        zIndex: 1300,
-        animation: 'fadeInDown 0.2s ease-out'
-      }}
-      role="listbox"
-      aria-label="Opciones de ordenamiento"
-    >
-      {/* Opción "Sin ordenamiento" */}
-      <button
-        onClick={handleClearSort}
-        disabled={disabled}
+    // ── Portal ────────────────────────────────────────────────────────────
+    return createPortal(
+      <div
+        ref={dropdownRef}
+        className={styles.dropdown}
         style={{
-          width: '100%',
-          padding: '12px 20px',
-          backgroundColor: selectedSort === null ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-          border: 'none',
-          color: 'white',
-          fontSize: '16px',
-          fontFamily: 'Barlow Condensed, sans-serif',
-          fontWeight: selectedSort === null ? '600' : '400',
-          textAlign: 'left',
-          cursor: disabled ? 'not-allowed' : 'pointer',
-          opacity: disabled ? 0.5 : 1,
-          transition: 'all 0.2s ease',
-          whiteSpace: 'nowrap',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
+          top: coords.top,
+          left: coords.left,
+          minWidth: coords.minWidth,
         }}
-        className={`sort-option ${disabled ? 'disabled' : ''} ${selectedSort === null ? 'selected' : ''}`}
-        role="option"
-        aria-selected={selectedSort === null}
+        role="menu"
+        aria-label="Ordenar por"
       >
-        <span>Sin ordenamiento</span>
-        {selectedSort === null && <CheckIcon size={16} />}
-      </button>
+        {/* Sin ordenamiento */}
+        <button
+          type="button"
+          onClick={handleClear}
+          disabled={disabled}
+          className={`${styles.option}${selectedSort === null ? ` ${styles.selected}` : ""}`}
+          role="menuitemradio"
+          aria-checked={selectedSort === null}
+        >
+          <span>Sin ordenamiento</span>
+          {selectedSort === null && <CheckIcon size={14} />}
+        </button>
 
-      {/* Opciones de ordenamiento */}
-      {SORT_OPTIONS.map((option) => {
-        const isSelected = selectedSort === option.value
-        
-        return (
-          <button
-            key={option.value}
-            onClick={() => handleSortSelect(option.value)}
-            disabled={disabled}
-            style={{
-              width: '100%',
-              padding: '12px 20px',
-              backgroundColor: isSelected ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
-              border: 'none',
-              color: 'white',
-              fontSize: '16px',
-              fontFamily: 'Barlow Condensed, sans-serif',
-              fontWeight: isSelected ? '600' : '400',
-              textAlign: 'left',
-              cursor: disabled ? 'not-allowed' : 'pointer',
-              opacity: disabled ? 0.5 : 1,
-              transition: 'all 0.2s ease',
-              whiteSpace: 'nowrap',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between'
-            }}
-            className={`sort-option ${disabled ? 'disabled' : ''} ${isSelected ? 'selected' : ''}`}
-            role="option"
-            aria-selected={isSelected}
-          >
-            <span>{option.label}</span>
-            {isSelected && <CheckIcon size={16} />}
-          </button>
-        )
-      })}
+        <div className={styles.divider} aria-hidden="true" />
 
-      {/* Estilos CSS optimizados */}
-      <style>{`
-        @keyframes fadeInDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .sort-option:hover:not(.disabled):not(.selected) {
-          background-color: rgba(255, 255, 255, 0.08) !important;
-        }
-        
-        .sort-option.selected {
-          background-color: rgba(255, 255, 255, 0.08);
-        }
-        
-        .sort-option.disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-      `}</style>
-    </div>
-  )
-})
+        {/* Opciones de sort */}
+        {SORT_OPTIONS.map((option) => {
+          const isSelected = selectedSort === option.value;
+          return (
+            <button
+              key={option.value}
+              type="button"
+              onClick={() => handleSelect(option.value)}
+              disabled={disabled}
+              className={`${styles.option}${isSelected ? ` ${styles.selected}` : ""}`}
+              role="menuitemradio"
+              aria-checked={isSelected}
+            >
+              <span>{option.label}</span>
+              {isSelected && <CheckIcon size={14} />}
+            </button>
+          );
+        })}
+      </div>,
+      document.body
+    );
+  }
+);
 
-SortDropdown.displayName = 'SortDropdown'
-
-export default SortDropdown
-
-
-
+SortDropdown.displayName = "SortDropdown";
+export default SortDropdown;

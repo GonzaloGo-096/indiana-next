@@ -1,5 +1,6 @@
 import { absoluteUrl } from "../../../lib/site-url";
 import { staticImages } from "../../../config/cloudinaryStaticImages";
+import { LEAD_TYPES } from "../../../lib/analytics/events";
 import PostventaServiceCard from "../../../components/postventa/PostventaServiceCard";
 import Image from "next/image";
 import styles from "./postventa.module.css";
@@ -16,6 +17,7 @@ const servicesData = [
     buttonText: "Reservá tu turno",
     whatsappMessage:
       "¡Hola! Quiero reservar un turno para el service de mi vehículo. ¿Cuál es la disponibilidad más cercana?",
+    leadType: LEAD_TYPES.SERVICE_BOOKING,
   },
   {
     id: "chapa-pintura",
@@ -27,6 +29,7 @@ const servicesData = [
     buttonText: "Cotizá con nosotros",
     whatsappMessage:
       "¡Hola! Necesito una cotización para trabajo de chapa y pintura. ¿Podrían enviarme información de precios?",
+    leadType: LEAD_TYPES.BODYWORK_QUOTE,
   },
   {
     id: "repuestos",
@@ -38,6 +41,7 @@ const servicesData = [
     buttonText: "Consultá productos",
     whatsappMessage:
       "¡Hola! Necesito información sobre repuestos para mi vehículo. ¿Tienen stock disponible?",
+    leadType: LEAD_TYPES.PARTS_INQUIRY,
   },
 ];
 

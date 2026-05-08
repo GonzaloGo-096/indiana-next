@@ -9,9 +9,12 @@
  *
  * @author Indiana Peugeot
  */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import UsadosCarousel from "../usados/UsadosCarousel";
+import ItemListViewTracker from "@/components/analytics/ItemListViewTracker";
+import { SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
+import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 
 export function HomeUsadosCarousel({ vehicles = [] }) {
   const [mounted, setMounted] = useState(false);
@@ -27,12 +30,30 @@ export function HomeUsadosCarousel({ vehicles = [] }) {
   // Desktop: sin viewportClip y sin compact; .carouselHomeDesktopFour solo aplica en CSS ≥992px.
   const useMobileStyle = mounted && isMobile;
 
+  const trackedItems = useMemo(
+    () =>
+      vehicles
+        .map((v) => buildItemParamsFromUsado(v, ITEM_LIST.HOME_FEATURED))
+        .filter(Boolean),
+    [vehicles]
+  );
+
   return (
-    <UsadosCarousel
-      vehicles={vehicles}
-      compact={useMobileStyle}
-      viewportClip={useMobileStyle}
-      homeDesktopFourColumns
-    />
+    <>
+      <ItemListViewTracker
+        items={trackedItems}
+        location={LOCATIONS.HOME}
+        source={SOURCES.CAROUSEL}
+        itemListName={ITEM_LIST.HOME_FEATURED}
+      />
+      <UsadosCarousel
+        vehicles={vehicles}
+        compact={useMobileStyle}
+        viewportClip={useMobileStyle}
+        homeDesktopFourColumns
+        trackingLocation={LOCATIONS.HOME}
+        trackingListName={ITEM_LIST.HOME_FEATURED}
+      />
+    </>
   );
 }

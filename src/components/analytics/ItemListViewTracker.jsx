@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { pushDataLayer } from "@/lib/analytics/dataLayer";
+import { pushEcommerceEvent } from "@/lib/analytics/dataLayer";
 import { EVENTS } from "@/lib/analytics/events";
 
 /**
  * Dispara `view_item_list` cuando cambia la lista visible (no por scroll).
+ * Usa pushEcommerceEvent: incluye reset { ecommerce: null } y wrapper ecommerce.items[].
  *
  * @param {object} props
  * @param {object[]} props.items - array de items ya construidos con buildItemParamsFrom*
@@ -13,7 +14,7 @@ import { EVENTS } from "@/lib/analytics/events";
  * @param {string} props.location - LOCATIONS.*
  * @param {string} [props.source] - SOURCES.* (ej: SOURCES.LISTING_PAGE)
  * @param {string} [props.signature] - clave para detectar cambios (filtros aplicados, etc.).
- *   Si no se pasa, se usan los IDs concatenados.
+ *   Si no se pasa, se usan los IDs concatenados de los primeros 10 items.
  */
 export default function ItemListViewTracker({
   items,
@@ -34,14 +35,18 @@ export default function ItemListViewTracker({
         .join(",")}`;
     if (lastSigRef.current === sig) return;
     lastSigRef.current = sig;
-    pushDataLayer(EVENTS.VIEW_ITEM_LIST, {
-      item_list_name: itemListName || "",
+    pushEcommerceEvent(EVENTS.VIEW_ITEM_LIST, {
       location: location || "",
       ...(source ? { source } : {}),
+      itemListName: itemListName || "",
       items: items
         .filter(Boolean)
         .slice(0, 10)
-        .map((it) => ({ ...it, item_list_name: it.item_list_name || itemListName })),
+        .map((it, index) => ({
+          ...it,
+          item_list_name: it.item_list_name || itemListName,
+          index,
+        })),
     });
   }, [items, itemListName, location, source, signature]);
   return null;

@@ -34,7 +34,7 @@ import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import { buildVehicleDetailUrl } from "../../../../utils/vehicleSlug";
 import { getVehicleOfferDisplay } from "../../../../utils/vehicleOffer";
 import { debugIngest } from "../../../../lib/debugIngestClient";
-import { pushDataLayer } from "@/lib/analytics/dataLayer";
+import { pushEcommerceEvent } from "@/lib/analytics/dataLayer";
 import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import styles from "./CardAuto.module.css";
@@ -72,14 +72,20 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
       return;
     }
 
-    // Analytics: select_item
+    // Analytics: select_item con wrapper ecommerce estándar GA4
     const itemParams = buildItemParamsFromUsado(auto, ITEM_LIST.USADOS_GRID);
     if (itemParams) {
-      pushDataLayer(EVENTS.SELECT_ITEM, {
-        ...itemParams,
+      pushEcommerceEvent(EVENTS.SELECT_ITEM, {
         source: SOURCES.CARD,
         location: LOCATIONS.USADOS_LIST,
-        component_id: "vehicle-card-usados",
+        component_id: "vehicle-card-vehiculos-grid",
+        // root params para custom dimensions simples
+        item_id: itemParams.item_id,
+        item_name: itemParams.item_name,
+        item_category: itemParams.item_category,
+        item_list_name: ITEM_LIST.USADOS_GRID,
+        itemListName: ITEM_LIST.USADOS_GRID,
+        items: [{ ...itemParams, index: 0 }],
       });
     }
     

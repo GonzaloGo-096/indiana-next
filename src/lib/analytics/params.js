@@ -19,11 +19,53 @@ function toCleanString(v, max = 100) {
   return s.length > max ? s.slice(0, max) : s;
 }
 
-function toNumberOrNull(v) {
+/**
+ * Convierte un valor numérico o string a número, o null si no es parseable.
+ *
+ * Detecta el formato por posición del último separador:
+ *   "22.557.000"      → 22557000  (puntos = miles AR/EU — múltiples puntos)
+ *   "22557000.000000" → 22557000  (punto = decimal — un solo punto, formato JSON/MongoDB)
+ *   "22.557.000,00"   → 22557000  (puntos miles + coma decimal)
+ *   "22,557,000"      → 22557000  (comas = miles US — múltiples comas)
+ *   "22557,50"        → 22557.5   (coma = decimal solitaria)
+ *   "22,557.00"       → 22557     (punto decimal posterior a coma miles)
+ */
+export function toNumberOrNull(v) {
   if (v == null) return null;
   if (typeof v === "number") return Number.isFinite(v) ? v : null;
   if (typeof v === "string") {
-    const cleaned = v.replace(/[^\d.,-]/g, "").replace(/\./g, "").replace(",", ".");
+    const s = v.replace(/[^\d.,-]/g, "");
+    if (!s || s === "-") return null;
+
+    const lastDot   = s.lastIndexOf(".");
+    const lastComma = s.lastIndexOf(",");
+    const dots      = (s.match(/\./g) || []).length;
+    const commas    = (s.match(/,/g)  || []).length;
+
+    let cleaned;
+    if (dots > 1 && commas === 0) {
+      // "22.557.000" — puntos = separadores de miles AR/EU
+      cleaned = s.replace(/\./g, "");
+    } else if (commas > 1 && dots === 0) {
+      // "22,557,000" — comas = separadores de miles US
+      cleaned = s.replace(/,/g, "");
+    } else if (dots >= 1 && commas >= 1) {
+      // Ambos presentes: el separador que aparece ÚLTIMO es el decimal
+      cleaned = lastDot > lastComma
+        ? s.replace(/,/g, "")                    // "22,557.00" → decimal=punto
+        : s.replace(/\./g, "").replace(",", "."); // "22.557,00" → decimal=coma
+    } else {
+      // 0 ó 1 separador solo.
+      // Caso especial: un único punto seguido de EXACTAMENTE 3 dígitos = miles AR: "1.000" → 1000
+      // Cualquier otra cantidad de dígitos decimales = separador decimal: "22557000.000000" → 22557000
+      const singleDotGroups = !commas && dots === 1 ? s.match(/^(\d+)\.(\d{3})$/) : null;
+      if (singleDotGroups) {
+        cleaned = s.replace(".", ""); // "1.000" → "1000", "22.500" → "22500"
+      } else {
+        cleaned = s.replace(",", "."); // "22557000.000000" → as-is, "22557,50" → "22557.50"
+      }
+    }
+
     const n = Number(cleaned);
     return Number.isFinite(n) ? n : null;
   }

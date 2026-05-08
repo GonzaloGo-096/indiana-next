@@ -28,7 +28,7 @@ import contact from "@/components/ui/ContactButtons.module.css";
 import cta from "@/components/home/HomeSectionCtas.module.css";
 import WhatsAppLink from "@/components/analytics/WhatsAppLink";
 import ItemViewTracker from "@/components/analytics/ItemViewTracker";
-import { SOURCES, LOCATIONS } from "@/lib/analytics/events";
+import { SOURCES, LOCATIONS, LEAD_TYPES, VERTICALS } from "@/lib/analytics/events";
 import { buildItemParamsFromAuto } from "@/lib/analytics/params";
 import styles from "./0km-detalle.module.css";
 
@@ -361,7 +361,7 @@ export default async function CeroKilometroDetallePage({ params }) {
           titulo: `${modelo.marca || "Peugeot"} ${modelo.nombre}`,
         })}
         location={LOCATIONS.OKM_DETAIL}
-        source="okm_detail"
+        source={SOURCES.INLINE}
         componentId="detail_page"
       />
       {/* Hero Image (solo desktop) - Client Component para evitar carga en mobile */}
@@ -437,6 +437,9 @@ export default async function CeroKilometroDetallePage({ params }) {
             source={SOURCES.INLINE}
             location={LOCATIONS.OKM_DETAIL}
             componentId="whatsapp-detalle-0km"
+            messageTemplateId="zero_km_detail"
+            leadType={LEAD_TYPES.ZERO_KM_INQUIRY}
+            vertical={VERTICALS.ZERO_KM}
             item={buildItemParamsFromAuto({
               slug: autoSlug,
               titulo: `${modelo.marca || "Peugeot"} ${modelo.nombre}`,

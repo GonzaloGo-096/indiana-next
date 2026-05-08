@@ -12,6 +12,8 @@ import {
   SOURCES,
   LOCATIONS,
   ITEM_LIST,
+  LEAD_TYPES,
+  VERTICALS,
 } from "@/lib/analytics/events";
 import { buildItemParamsFromPlan } from "@/lib/analytics/params";
 import styles from "./planes.module.css";
@@ -161,12 +163,17 @@ export function PlanesClient({ planesPorModelo }) {
             Consultá con nuestros asesores sobre el plan que mejor se adapte a tu
             situación.
           </p>
+          {/* TODO: centralizar href usando buildWhatsAppUrl(channel) desde whatsappFloating.js
+              cuando se exporte el canal PLANES con nombre distinto a data/planes.js */}
           <WhatsAppLink
             href="https://wa.me/543816295959?text=Hola!%20Quiero%20consultar%20sobre%20los%20planes%20de%20financiaci%C3%B3n%20Peugeot"
             phone={PLANES_WHATSAPP_PHONE}
             source={SOURCES.INLINE}
             location={LOCATIONS.PLANES_LIST}
             componentId="whatsapp-planes-listado"
+            messageTemplateId="planes_list"
+            leadType={LEAD_TYPES.PLAN_INQUIRY}
+            vertical={VERTICALS.ZERO_KM}
             className={`${contact.buttonWhatsapp} ${contact.buttonWhatsappFull}`}
           >
             <svg
