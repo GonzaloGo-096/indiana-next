@@ -287,6 +287,20 @@ export const hasAnyFilter = (filters = {}) => {
  * @param {string} sortOption - Opción de ordenamiento
  * @returns {Array} Array ordenado (nueva copia, no muta original)
  */
+/**
+ * Precio visible para el usuario: precioOferta si hay oferta activa, sino precio original.
+ */
+function getEffectivePrice(v) {
+  const isOffer = v.oferta === true || v.oferta === "true";
+  if (isOffer && v.precioOferta != null && !Number.isNaN(Number(v.precioOferta))) {
+    return Number(v.precioOferta);
+  }
+  if (isOffer && Number(v.descuento) > 0) {
+    return Math.round((Number(v.precio) || 0) * (1 - Number(v.descuento) / 100));
+  }
+  return Number(v.precio) || 0;
+}
+
 export const sortVehicles = (vehicles = [], sortOption) => {
   if (!sortOption || !Array.isArray(vehicles) || vehicles.length === 0) {
     return vehicles;
@@ -295,9 +309,9 @@ export const sortVehicles = (vehicles = [], sortOption) => {
   return [...vehicles].sort((a, b) => {
     switch (sortOption) {
       case "precio_desc":
-        return (b.precio || 0) - (a.precio || 0);
+        return getEffectivePrice(b) - getEffectivePrice(a);
       case "precio_asc":
-        return (a.precio || 0) - (b.precio || 0);
+        return getEffectivePrice(a) - getEffectivePrice(b);
       case "km_desc":
         return (b.kilometraje || 0) - (a.kilometraje || 0);
       case "km_asc":

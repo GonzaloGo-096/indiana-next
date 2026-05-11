@@ -2,33 +2,17 @@
 
 /**
  * VehiculosClient - Client Component para interactividad
- * 
- * ✅ RESPONSABILIDADES:
- * - Manejo de filtros y paginación (estado en URL)
- * - Actualización de URL con router.push/replace
- * - Renderizado de UI (filtros, grid, paginación)
- * 
- * ✅ ARQUITECTURA:
- * - Estado en URL (searchParams) - única fuente de verdad
- * - No duplica lógica: usa buildSearchParams() de filters.js
- * - Fetch adicional solo si cambian filtros/página
- * 
- * @author Indiana Peugeot
- * @version 1.0.0 - Migración desde React
+ *
+ * Responsabilidades:
+ * - Renderizado de UI (filtros, grid, paginación, carrusel de marcas)
+ * - Estado visual (dropdown sort, panel filtros, scroll de marcas)
+ *
+ * La lógica de datos, URL, fetch, analytics y sessionStorage vive
+ * en useVehiclesList().
  */
 
-import { useState, useCallback, useMemo, useEffect, useLayoutEffect, useRef } from "react";
+import { useState, useCallback, useMemo, useLayoutEffect, useRef } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
-import {
-  buildSearchParams,
-  parseFilters,
-  sortVehicles,
-  hasAnyFilter,
-  getActiveFilterChips,
-} from "../../../../utils/filters";
-import { vehiclesService } from "../../../../lib/services/vehiclesApi";
-import { mapVehiclesPage } from "../../../../lib/mappers/vehicleMapper";
 import cta from "@/components/home/HomeSectionCtas.module.css";
 import styles from "./vehiculos.module.css";
 
@@ -39,12 +23,9 @@ import ActiveFilterChips from "../../../../components/vehicles/Filters/ActiveFil
 import ActionButtons from "../../../../components/vehicles/ActionButtons/ActionButtons";
 import ItemListViewTracker from "@/components/analytics/ItemListViewTracker";
 import { SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
-import { buildItemParamsFromUsado } from "@/lib/analytics/params";
-import { STORAGE_KEYS } from "../../../../constants/storageKeys";
-import { VEHICLE_CONSTANTS } from "../../../../constants/vehicles";
-import { debugIngest } from "../../../../lib/debugIngestClient";
 
-/** Indicador mínimo (trazo fino, distinto del chevron de MultiSelect) */
+import { useVehiclesList } from "./useVehiclesList";
+
 function BrandStripNudge({ direction }) {
   const left = direction === "left";
   return (
@@ -67,20 +48,19 @@ function BrandStripNudge({ direction }) {
   );
 }
 
-// ✅ Code splitting: BrandsCarousel solo se carga cuando es necesario
 const BrandsCarousel = dynamic(
   () => import("../../../../components/vehicles/BrandsCarousel"),
   {
-    loading: () => <div style={{ minHeight: "80px" }} />, // Placeholder mínimo
-    ssr: false, // ✅ Deshabilitar SSR para evitar conflictos con Suspense
+    loading: () => <div style={{ minHeight: "80px" }} />,
+    ssr: false,
   }
 );
 
 /**
  * @param {Object} props
  * @param {Object} props.initialData - Datos iniciales del Server Component
- * @param {Object} props.initialFilters - Filtros iniciales
- * @param {number} props.initialPage - Página inicial
+ * @param {Object} props.initialFilters - Filtros iniciales (unused, kept for API compat)
+ * @param {number} props.initialPage - Página inicial (unused, kept for API compat)
  * @param {string} props.error - Error inicial (opcional)
  */
 export default function VehiculosClient({
@@ -89,30 +69,47 @@ export default function VehiculosClient({
   initialPage = 1,
   error: initialError = null,
 }) {
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  // --- Data hook (URL, fetch, sort, filters, analytics) ----------------------
+  const {
+    data,
+    sortedVehicles,
+    isLoading,
+    isLoadingMore,
+    error,
+    setError,
+    currentFilters,
+    currentSort,
+    isFiltered,
+    selectedBrands,
+    activeFilterChips,
+    applyFilters,
+    loadMore,
+    changeSort,
+    clearFilters,
+    selectBrand,
+    trackingItems,
+    listSignature,
+  } = useVehiclesList({ initialData, initialError });
 
-  // Estado local para datos actuales
-  const [data, setData] = useState(initialData);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [error, setError] = useState(initialError);
-  const [selectedSort, setSelectedSort] = useState(null);
+  // --- UI state (visual only) ------------------------------------------------
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+  const [stripFiltersOpen, setStripFiltersOpen] = useState(false);
+  const [brandsScroll, setBrandsScroll] = useState({
+    canScrollLeft: false,
+    canScrollRight: true,
+  });
+
   const filterFormRef = useRef(null);
   const sortButtonRef = useRef(null);
   const sortButtonRefDesktop = useRef(null);
   const brandsCarouselRef = useRef(null);
   const brandsCarouselScrollRestoreRef = useRef(null);
-  const [brandsScroll, setBrandsScroll] = useState({
-    canScrollLeft: false,
-    canScrollRight: true,
-  });
+
+  // --- UI handlers -----------------------------------------------------------
+
   const handleBrandsScrollabilityChange = useCallback((next) => {
     setBrandsScroll(next);
   }, []);
-
-  const [stripFiltersOpen, setStripFiltersOpen] = useState(false);
 
   useLayoutEffect(() => {
     if (!stripFiltersOpen) return;
@@ -123,406 +120,25 @@ export default function VehiculosClient({
     track.scrollLeft = saved;
   }, [stripFiltersOpen]);
 
-  // ✅ OPTIMIZADO: Extraer todos los valores de searchParams en un solo useMemo
-  // Esto reduce múltiples re-renders y puede ayudar con el error de Suspense
-  // ⚠️ NO mergear con FILTER_DEFAULTS: si el usuario no filtró, dejamos los
-  // filtros "ralos". Eso evita que vehiclesService.getVehicles mande precio/km
-  // al backend y filtre autos que tendrían que aparecer. FilterFormSimple ya
-  // se encarga de mostrar los sliders en sus extremos cuando no hay valor.
-  const searchParamsData = useMemo(() => {
-    const sparse = parseFilters(searchParams);
-    return {
-      filters: sparse,
-      page: Number(searchParams.get("page")) || 1,
-      sort: searchParams.get("sort") || null,
-    };
-  }, [searchParams]);
-
-  const currentFilters = searchParamsData.filters;
-  const currentPage = searchParamsData.page;
-  const currentSort = searchParamsData.sort;
-
-  // ✅ Guardar lista acumulada de vehículos en sessionStorage cuando cambia
-  // Permite restaurar páginas cargadas via infinite scroll al volver desde detalle
-  // ✅ CRÍTICO: No guardar si hay scroll pendiente de restaurar — evita sobreescribir
-  //    los datos guardados (p.ej. 64 autos) con los datos del server (p.ej. 8 autos)
-  //    antes de que el efecto de restauración los lea.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!data.vehicles || data.vehicles.length === 0) return;
-    if (sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL)) return;
-    try {
-      sessionStorage.setItem(STORAGE_KEYS.VEHICLES_LIST_DATA, JSON.stringify(data));
-    } catch {
-      // Ignorar errores de cuota
-    }
-  }, [data]);
-
-  // ✅ Restaurar posición de scroll y lista de vehículos al volver desde detalle
-  // ✅ IMPORTANTE: Se ejecuta DESPUÉS de ScrollToTopOnMount
-  // Orden: Scroll al top (ScrollToTopOnMount) → Restaurar datos → Restaurar scroll
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    debugIngest({
-      hypothesisId: "E",
-      location: "VehiculosClient.jsx:useEffect[]",
-      message: "useEffect[] FIRED - componente montado",
-      data: {
-        scrollY: window.scrollY,
-        savedScroll: sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL),
-        savedDataKeys: sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_DATA)
-          ? "present"
-          : "absent",
-        t: Date.now(),
-      },
-    });
-
-    const restoreScrollAndData = () => {
-      try {
-        const savedScrollRaw = sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
-        if (!savedScrollRaw) return;
-
-        const scrollData = JSON.parse(savedScrollRaw);
-        const isRecent = scrollData.timestamp &&
-          (Date.now() - scrollData.timestamp) < VEHICLE_CONSTANTS.SCROLL_DATA_MAX_AGE;
-
-        if (scrollData.path !== "/usados/vehiculos" || !isRecent) {
-          sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
-          sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_DATA);
-          return;
-        }
-
-        // ✅ Restaurar lista acumulada si hay más de una página cargada
-        let dataRestored = false;
-        const savedListRaw = sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_DATA);
-        if (savedListRaw) {
-          try {
-            const savedList = JSON.parse(savedListRaw);
-            if (savedList?.vehicles?.length > 0) {
-              debugIngest({
-                hypothesisId: "E",
-                location: "VehiculosClient.jsx:restoreData",
-                message: "restaurando lista de vehículos",
-                data: {
-                  vehiculosGuardados: savedList.vehicles.length,
-                  vehiculosActuales: data.vehicles?.length,
-                  scrollTarget: scrollData.position,
-                },
-              });
-              setData(savedList);
-              dataRestored = true;
-            }
-          } catch {}
-        }
-
-        // ✅ Esperar a que React renderice los vehículos restaurados antes de scrollear
-        // Si se restauraron datos: 600ms (React necesita re-renderizar + browser repintar)
-        // Si no: 300ms (contenido ya estaba listo)
-        const scrollDelay = dataRestored ? 600 : 300;
-
-        setTimeout(() => {
-          debugIngest({
-            hypothesisId: "E",
-            location: "VehiculosClient.jsx:scrollTo",
-            message: "ejecutando scrollTo",
-            data: {
-              targetPosition: scrollData.position,
-              pageHeight: document.body.scrollHeight,
-              dataRestored,
-              scrollDelay,
-            },
-          });
-          window.scrollTo({ top: scrollData.position, behavior: "instant" });
-          sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
-          sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_DATA);
-        }, scrollDelay);
-
-      } catch (error) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("Error al restaurar scroll:", error);
-        }
-        sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
-        sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_DATA);
-      }
-    };
-
-    // ✅ Pequeño delay inicial para que ScrollToTopOnMount corra primero
-    const timeoutId = setTimeout(restoreScrollAndData, VEHICLE_CONSTANTS.SCROLL_RESTORE_TIMEOUT);
-    return () => clearTimeout(timeoutId);
-  }, []); // Solo ejecutar una vez al montar
-
-  // Sincronizar sorting con URL
-  useEffect(() => {
-    setSelectedSort(currentSort);
-  }, [currentSort]);
-
-  // Verificar si hay filtros activos
-  const isFiltered = useMemo(() => {
-    const result = hasAnyFilter(currentFilters);
-    debugIngest({
-      hypothesisId: "C",
-      location: "VehiculosClient.jsx:isFiltered",
-      message: "isFiltered calculado",
-      data: {
-        currentFilters,
-        isFiltered: result,
-        tienePageEnFiltros: "page" in currentFilters,
-      },
-    });
-    return result;
-  }, [currentFilters]);
-
-  // Marcas seleccionadas
-  const selectedBrands = useMemo(() => {
-    return currentFilters.marca || [];
-  }, [currentFilters.marca]);
-
-  // Vehículos ordenados (si hay sorting)
-  const sortedVehicles = useMemo(() => {
-    if (!currentSort) return data.vehicles || [];
-    return sortVehicles(data.vehicles || [], currentSort);
-  }, [data.vehicles, currentSort]);
-
-  /**
-   * Actualizar URL con nuevos filtros/página
-   */
-  const updateURL = useCallback(
-    (newFilters, newPage = null, newSort = null) => {
-      const params = buildSearchParams(newFilters);
-
-      // Agregar página si se especifica
-      if (newPage !== null && newPage > 1) {
-        params.set("page", String(newPage));
-      } else if (newPage === 1) {
-        params.delete("page"); // No incluir page=1 en URL
-      }
-
-      // Agregar sorting si se especifica
-      if (newSort) {
-        params.set("sort", newSort);
-      } else if (newSort === null && currentSort) {
-        params.delete("sort"); // Remover sorting si se limpia
-      }
-
-      // Actualizar URL (replace para no agregar al historial)
-      const newURL = `/usados/vehiculos${params.toString() ? `?${params.toString()}` : ""}`;
-      router.replace(newURL);
-    },
-    [router, currentSort]
-  );
-
-  /**
-   * Aplicar filtros
-   * ✅ REEMPLAZA vehículos (nuevos filtros = nueva búsqueda)
-   * ✅ Restaura posición de scroll si hay una guardada
-   */
-  const handleApplyFilters = useCallback(
-    async (newFilters) => {
-      setIsLoading(true);
-      setIsLoadingMore(false); // Reset loading more
-      setError(null);
-
-      // Actualizar URL (resetear a página 1)
-      updateURL(newFilters, 1, currentSort);
-
-      debugIngest({
-        hypothesisId: "D",
-        location: "VehiculosClient.jsx:handleApplyFilters",
-        message: "filtros aplicados - URL actualizada, iniciando fetch",
-        data: { newFilters, currentSort, currentFiltersAntesDeFetch: currentFilters },
-      });
-
-      // Fetch desde cliente
-      try {
-        const backendData = await vehiclesService.getVehicles({
-          filters: newFilters,
-          limit: VEHICLE_CONSTANTS.LIST_PAGE_SIZE,
-          cursor: 1,
-        });
-        const mappedData = mapVehiclesPage(backendData, 1);
-        // ✅ REEMPLAZAR vehículos (nuevos filtros)
-        setData(mappedData);
-        
-        // ✅ Restaurar posición de scroll si hay una guardada (p. ej. al limpiar todos los filtros)
-        const savedPosition = sessionStorage.getItem(STORAGE_KEYS.VEHICLES_SCROLL_POSITION);
-        if (savedPosition) {
-          // ✅ Usar doble requestAnimationFrame para mejor sincronización con el DOM
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              window.scrollTo({
-                top: Number(savedPosition),
-                behavior: 'smooth'
-              });
-              // Limpiar después de restaurar
-              sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_SCROLL_POSITION);
-            });
-          });
-        }
-      } catch (err) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error("[VehiculosClient] Error fetching vehicles:", err);
-        }
-        // ✅ Limpiar sessionStorage en caso de error
-        sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_SCROLL_POSITION);
-        setError(err.message || "Error al cargar vehículos");
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [updateURL, currentSort]
-  );
-
-  const handleRemoveOneFilterChip = useCallback(
-    (nextFilters) => {
-      handleApplyFilters(nextFilters);
-    },
-    [handleApplyFilters]
-  );
-
-  /**
-   * Cambiar sorting.
-   * - Cierra el dropdown de inmediato (feedback visual).
-   * - Actualiza la URL reseteando a página 1 (un cambio de orden es un
-   *   nuevo punto de partida; evita conservar cursores de páginas acumuladas).
-   * - El ordenamiento es client-side sobre los vehículos ya cargados;
-   *   sortedVehicles se recalcula automáticamente al actualizarse currentSort.
-   */
   const handleSortChange = useCallback(
     (newSort) => {
       setIsSortDropdownOpen(false);
-      updateURL(currentFilters, 1, newSort);
+      changeSort(newSort);
     },
-    [currentFilters, updateURL]
+    [changeSort],
   );
 
   const handleClearSortOnly = useCallback(() => {
-    // Delega en handleSortChange para comportamiento consistente:
-    // cierra dropdown, resetea URL a page 1 y limpia el sort.
     handleSortChange(null);
   }, [handleSortChange]);
 
-  const activeFilterChips = useMemo(
-    () => getActiveFilterChips(currentFilters),
-    [currentFilters]
-  );
-
-  /**
-   * Cargar más vehículos (infinite scroll)
-   * ✅ ACUMULA vehículos en lugar de reemplazarlos
-   * ✅ NO actualiza URL para evitar scroll hacia arriba
-   * ✅ FILTRA duplicados basándose en ID del vehículo
-   * ✅ USA data.nextPage del backend (fuente de verdad para paginación)
-   */
-  const handleLoadMore = useCallback(
-    async () => {
-      if (process.env.NODE_ENV === 'development') {
-        console.log("[VehiculosClient] handleLoadMore llamado", { 
-          isLoadingMore, 
-          hasNextPage: data?.hasNextPage, 
-          nextPage: data?.nextPage
-        });
-      }
-      
-      if (isLoadingMore) return;
-      if (!data?.hasNextPage) return;
-
-      setIsLoadingMore(true);
-      setError(null);
-
-      // ✅ CRÍTICO: Usar data.nextPage del backend
-      const nextPage = data?.nextPage;
-      
-      if (!nextPage) {
-        if (process.env.NODE_ENV === 'development') {
-          console.warn("[VehiculosClient] No hay nextPage disponible aunque hasNextPage es true", { data });
-        }
-        setIsLoadingMore(false);
-        return;
-      }
-
-      // Fetch desde cliente
-      try {
-        const backendData = await vehiclesService.getVehicles({
-          filters: currentFilters,
-          limit: VEHICLE_CONSTANTS.LIST_PAGE_SIZE,
-          cursor: nextPage,
-        });
-        
-        const mappedData = mapVehiclesPage(backendData, nextPage);
-        
-        // ✅ ACUMULAR vehículos filtrando duplicados por ID
-        // ✅ PRESERVAR hasNextPage y nextPage de la nueva página cargada
-        setData((prevData) => {
-          const existingIds = new Set((prevData.vehicles || []).map(v => v.id));
-          const newVehicles = (mappedData.vehicles || []).filter(v => v.id && !existingIds.has(v.id));
-          
-          const prevVehicles = prevData.vehicles || [];
-          const accumulatedVehicles = [...prevVehicles, ...newVehicles];
-          
-          const newData = {
-            vehicles: accumulatedVehicles, // ✅ PRIMERO: establecer vehículos acumulados
-            total: mappedData.total || prevData.total || 0,
-            totalDocs: mappedData.totalDocs || prevData.totalDocs || 0,
-            hasNextPage: mappedData.hasNextPage,
-            nextPage: mappedData.nextPage, // ✅ Confiar en el mapper para validación
-            currentCursor: mappedData.currentCursor,
-            totalPages: mappedData.totalPages || prevData.totalPages || 0,
-          };
-          
-          return newData;
-        });
-      } catch (err) {
-        if (process.env.NODE_ENV === 'development') {
-          console.error("[VehiculosClient] Error fetching more vehicles:", err);
-        }
-        // ✅ Limpiar sessionStorage en caso de error
-        sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_SCROLL_POSITION);
-        setError(err.message || "Error al cargar más vehículos");
-      } finally {
-        setIsLoadingMore(false);
-      }
+  const handleRemoveOneFilterChip = useCallback(
+    (nextFilters) => {
+      applyFilters(nextFilters);
     },
-    [currentFilters, data, isLoadingMore] // ✅ Incluir data en dependencias para tener el valor actualizado
+    [applyFilters],
   );
 
-  /**
-   * Limpiar filtros y restaurar posición de scroll
-   * ✅ Guarda la posición de scroll actual antes de limpiar
-   * ✅ La posición se restaurará automáticamente en handleApplyFilters
-   */
-  const handleClearFilters = useCallback(() => {
-    // ✅ Guardar posición de scroll actual antes de limpiar filtros
-    const scrollPosition = window.scrollY || window.pageYOffset;
-    sessionStorage.setItem(STORAGE_KEYS.VEHICLES_SCROLL_POSITION, String(scrollPosition));
-    
-    // Limpiar filtros (handleApplyFilters restaurará el scroll automáticamente)
-    handleApplyFilters({});
-  }, [handleApplyFilters]);
-
-  /**
-   * Seleccionar marca desde carrusel
-   */
-  const handleBrandSelect = useCallback(
-    (brandName) => {
-      const currentBrands = currentFilters.marca || [];
-      const isSelected = currentBrands.includes(brandName);
-      
-      const newBrands = isSelected
-        ? currentBrands.filter((b) => b !== brandName)
-        : [...currentBrands, brandName];
-
-      handleApplyFilters({
-        ...currentFilters,
-        marca: newBrands.length > 0 ? newBrands : undefined,
-      });
-    },
-    [currentFilters, handleApplyFilters]
-  );
-
-  /**
-   * Toggle filtros (mobile/desktop)
-   */
   const handleFilterClick = useCallback(() => {
     const track = brandsCarouselRef.current?.getTrackElement?.();
     brandsCarouselScrollRestoreRef.current =
@@ -530,31 +146,24 @@ export default function VehiculosClient({
     filterFormRef.current?.toggleFilters();
   }, []);
 
-  /**
-   * Toggle sort dropdown
-   */
   const handleSortClick = useCallback(() => {
     setIsSortDropdownOpen((prev) => !prev);
   }, []);
 
-  /**
-   * Cerrar sort dropdown
-   */
   const handleCloseSortDropdown = useCallback(() => {
     setIsSortDropdownOpen(false);
   }, []);
 
+  // --- Derived UI values -----------------------------------------------------
+
   const isSortDisabled = isLoading || (data.vehicles || []).length === 0;
 
-  const showBrandScrollArrows = useMemo(() => {
-    return brandsScroll.canScrollLeft || brandsScroll.canScrollRight;
-  }, [brandsScroll.canScrollLeft, brandsScroll.canScrollRight]);
+  const showBrandScrollArrows = useMemo(
+    () => brandsScroll.canScrollLeft || brandsScroll.canScrollRight,
+    [brandsScroll.canScrollLeft, brandsScroll.canScrollRight],
+  );
 
-  // Items GA4 para view_item_list — construidos desde los vehículos visibles.
-  const trackingItems = sortedVehicles
-    .map((v) => buildItemParamsFromUsado(v, ITEM_LIST.USADOS_GRID))
-    .filter(Boolean);
-  const listSignature = `${currentSort || ""}|${searchParams?.toString?.() || ""}`;
+  // --- Render ----------------------------------------------------------------
 
   return (
     <div className={`${styles.page} w-full min-w-0 antialiased`}>
@@ -594,7 +203,10 @@ export default function VehiculosClient({
         <div className={`${styles.carouselSection} w-full min-w-0`}>
           {stripFiltersOpen && (
             <div className={styles.brandStripHeading}>
-              <h2 className={styles.brandStripHeadingTitle} id="vehiculos-marca-titulo">
+              <h2
+                className={styles.brandStripHeadingTitle}
+                id="vehiculos-marca-titulo"
+              >
                 Marca
               </h2>
             </div>
@@ -604,8 +216,12 @@ export default function VehiculosClient({
               showBrandScrollArrows ? styles.brandsCarouselRow_hasScroll : ""
             }`}
             role="region"
-            aria-labelledby={stripFiltersOpen ? "vehiculos-marca-titulo" : undefined}
-            aria-label={stripFiltersOpen ? undefined : "Marcas (filtro del listado)"}
+            aria-labelledby={
+              stripFiltersOpen ? "vehiculos-marca-titulo" : undefined
+            }
+            aria-label={
+              stripFiltersOpen ? undefined : "Marcas (filtro del listado)"
+            }
           >
             {showBrandScrollArrows && (
               <button
@@ -621,7 +237,7 @@ export default function VehiculosClient({
             <BrandsCarousel
               ref={brandsCarouselRef}
               selectedBrands={selectedBrands}
-              onBrandSelect={handleBrandSelect}
+              onBrandSelect={selectBrand}
               embedded
               onScrollabilityChange={handleBrandsScrollabilityChange}
             />
@@ -642,7 +258,7 @@ export default function VehiculosClient({
             <FilterFormSimple
               ref={filterFormRef}
               currentFilters={currentFilters}
-              onApplyFilters={handleApplyFilters}
+              onApplyFilters={applyFilters}
               isLoading={isLoading}
               isError={!!error}
               error={error ? { message: error } : null}
@@ -650,7 +266,7 @@ export default function VehiculosClient({
               onStripFiltersOpenChange={setStripFiltersOpen}
               onRetry={() => {
                 setError(null);
-                handleApplyFilters(currentFilters);
+                applyFilters(currentFilters);
               }}
             />
           </div>
@@ -660,7 +276,7 @@ export default function VehiculosClient({
             onSortClick={handleSortClick}
             onSortChange={handleSortChange}
             onCloseSortDropdown={handleCloseSortDropdown}
-            selectedSort={selectedSort}
+            selectedSort={currentSort}
             isSortDisabled={isSortDisabled}
             isSortDropdownOpen={isSortDropdownOpen}
             sortButtonRef={sortButtonRef}
@@ -675,7 +291,7 @@ export default function VehiculosClient({
           onSortClick={handleSortClick}
           onSortChange={handleSortChange}
           onCloseSortDropdown={handleCloseSortDropdown}
-          selectedSort={selectedSort}
+          selectedSort={currentSort}
           isSortDisabled={isSortDisabled}
           isSortDropdownOpen={isSortDropdownOpen}
           sortButtonRef={sortButtonRefDesktop}
@@ -691,7 +307,7 @@ export default function VehiculosClient({
           sort={currentSort}
           onRemoveChip={handleRemoveOneFilterChip}
           onClearSort={handleClearSortOnly}
-          onClearAllFilters={handleClearFilters}
+          onClearAllFilters={clearFilters}
           showClearAllFilters={isFiltered}
           disabled={isLoading}
         />
@@ -705,13 +321,12 @@ export default function VehiculosClient({
             isLoading={isLoading}
             hasNextPage={data?.hasNextPage ?? false}
             isLoadingMore={isLoadingMore}
-            onLoadMore={handleLoadMore}
+            onLoadMore={loadMore}
             isError={!!error}
             error={error ? { message: error } : null}
             onRetry={() => {
               setError(null);
-              // Refetch
-              handleApplyFilters(currentFilters);
+              applyFilters(currentFilters);
             }}
           />
         </div>
@@ -719,4 +334,3 @@ export default function VehiculosClient({
     </div>
   );
 }
-

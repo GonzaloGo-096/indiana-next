@@ -45,7 +45,7 @@ import styles from "./CardAuto.module.css";
  * @param {Object} props.auto - Objeto con información del vehículo
  * @param {string} props.imagePriority - Prioridad de carga de imagen: "high" | "auto" | "low"
  */
-export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
+export const CardAuto = memo(({ auto, imagePriority = "auto", index = 0 }) => {
   const router = useRouter();
 
   // ✅ VALIDAR DATOS DEL VEHÍCULO
@@ -79,13 +79,11 @@ export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
         source: SOURCES.CARD,
         location: LOCATIONS.USADOS_LIST,
         component_id: "vehicle-card-vehiculos-grid",
-        // root params para custom dimensions simples
         item_id: itemParams.item_id,
         item_name: itemParams.item_name,
         item_category: itemParams.item_category,
-        item_list_name: ITEM_LIST.USADOS_GRID,
         itemListName: ITEM_LIST.USADOS_GRID,
-        items: [{ ...itemParams, index: 0 }],
+        items: [{ ...itemParams, index }],
       });
     }
     

@@ -6,25 +6,39 @@ function getGtmId() {
   return process.env.NEXT_PUBLIC_GTM_ID?.trim() ?? "";
 }
 
+function getGtmMarketingId() {
+  return process.env.NEXT_PUBLIC_GTM_MARKETING_ID?.trim() ?? "";
+}
+
 function getMetaPixelId() {
   return process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() ?? "";
 }
 
+function gtmSnippet(id) {
+  return `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','${id}');`;
+}
+
 /**
- * GTM + Meta Pixel (base): noscript en body + loaders vía next/script.
- * Solo montar cuando el layout decida (p. ej. no mantenimiento, no /admin).
+ * GTM (Indiana + agencia de marketing) + Meta Pixel.
+ * Cada contenedor GTM carga de forma independiente con su propio id de Script.
  * IDs desde NEXT_PUBLIC_* (ver .env.example).
  */
 export default function MarketingTracking() {
   const gtmId = getGtmId();
+  const gtmMarketingId = getGtmMarketingId();
   const pixelId = getMetaPixelId();
 
-  if (!gtmId && !pixelId) {
+  if (!gtmId && !gtmMarketingId && !pixelId) {
     return null;
   }
 
   return (
     <>
+      {/* noscript fallbacks */}
       {gtmId ? (
         <noscript>
           <iframe
@@ -33,6 +47,17 @@ export default function MarketingTracking() {
             width={0}
             style={{ display: "none", visibility: "hidden" }}
             title="Google Tag Manager"
+          />
+        </noscript>
+      ) : null}
+      {gtmMarketingId ? (
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${gtmMarketingId}`}
+            height={0}
+            width={0}
+            style={{ display: "none", visibility: "hidden" }}
+            title="Google Tag Manager – Marketing"
           />
         </noscript>
       ) : null}
@@ -48,13 +73,17 @@ export default function MarketingTracking() {
         </noscript>
       ) : null}
 
+      {/* Contenedor Indiana */}
       {gtmId ? (
         <Script id="gtm-loader" strategy="afterInteractive">
-          {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','${gtmId}');`}
+          {gtmSnippet(gtmId)}
+        </Script>
+      ) : null}
+
+      {/* Contenedor agencia de marketing */}
+      {gtmMarketingId ? (
+        <Script id="gtm-loader-marketing" strategy="afterInteractive">
+          {gtmSnippet(gtmMarketingId)}
         </Script>
       ) : null}
 

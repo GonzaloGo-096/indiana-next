@@ -16,7 +16,6 @@
  */
 
 import { useState, useEffect, useCallback, useRef, forwardRef, memo, useImperativeHandle, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
 import RangeSlider from '../../ui/RangeSlider/RangeSlider'
 import { CloseIcon } from '../../ui/icons/CloseIcon'
 import { combustibles, cajas, FILTER_BOUNDS, FILTER_DEFAULTS } from '../../../constants/filterOptions'
@@ -52,8 +51,7 @@ const FilterFormSimpleComponent = forwardRef(({
   onStripFiltersOpenChange,
 }, ref) => {
   const { isMobile } = useDevice()
-  const router = useRouter()
-  
+
   // ✅ ESTADOS SIMPLES
   // Estado para visibilidad en desktop
   const [isVisibleDesktop, setIsVisibleDesktop] = useState(false)
@@ -206,16 +204,17 @@ const FilterFormSimpleComponent = forwardRef(({
   }, [])
 
   const handleClear = useCallback(() => {
-    setFilters({
+    const empty = {
       marca: [],
       caja: [],
       combustible: [],
       año: [FILTER_DEFAULTS.AÑO.min, FILTER_DEFAULTS.AÑO.max],
       precio: [FILTER_DEFAULTS.PRECIO.min, FILTER_DEFAULTS.PRECIO.max],
       kilometraje: [FILTER_DEFAULTS.KILOMETRAJE.min, FILTER_DEFAULTS.KILOMETRAJE.max]
-    })
-    router.push(window.location.pathname)
-  }, [router])
+    };
+    setFilters(empty);
+    onApplyFilters({});
+  }, [onApplyFilters])
 
   // Cerrar con Escape (drawer móvil clásico o panel strip móvil/desktop)
   useEffect(() => {

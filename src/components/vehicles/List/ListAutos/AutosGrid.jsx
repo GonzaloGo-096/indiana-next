@@ -108,9 +108,9 @@ ListAutosSkeleton.displayName = "ListAutosSkeleton";
 /**
  * Componente de tarjeta individual optimizado
  */
-const MemoizedCardAuto = memo(({ vehicle, priority = "auto" }) => (
+const MemoizedCardAuto = memo(({ vehicle, priority = "auto", index }) => (
   <div className={styles.cardWrapper}>
-    <CardAuto auto={vehicle} imagePriority={priority} />
+    <CardAuto auto={vehicle} imagePriority={priority} index={index} />
   </div>
 ));
 
@@ -167,6 +167,7 @@ const AutosGrid = memo(
             key={stableKey}
             vehicle={vehicle}
             priority={index < 6 ? "high" : "auto"}
+            index={index}
           />
         );
       });
