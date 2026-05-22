@@ -29,9 +29,12 @@ export default function VehicleDetailClient({ vehicle }) {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
   }, [vehicleKey]);
 
-  // ✅ Función para volver preservando scroll
+  // Volver al listado preservando filtros y posición de scroll.
+  // router.back() usa el historial del browser: si el usuario llegó desde
+  // el listado filtrado, vuelve a esa URL exacta. Si abrió el detalle
+  // directamente, vuelve a la página anterior del historial del browser.
   const handleBack = useCallback(() => {
-    router.push("/usados/vehiculos");
+    router.back();
   }, [router]);
 
   if (!vehicle) {

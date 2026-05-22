@@ -93,18 +93,60 @@
 
 @media (max-width: 768px) {
   .modeloImageCard {
-    max-width: 380px;
-    padding: var(--spacing-5);
+    max-width: 440px;
+    padding: var(--spacing-4);
   }
-  
+
   .modeloImage {
-    max-width: 450px;
+    max-width: 100%;
   }
 }
 
+/*
+  Desktop grid: modelos con pocos planes (2008, Partner, Expert) que
+  caben en pantalla sin scroll. Solo se activa con .desktopGrid (planes.length <= 2).
+  208 sigue siendo carrusel (planes.length > 2).
+*/
 @media (min-width: 769px) {
-  .modeloImageCard {
-    margin-right: var(--spacing-5);
+  /* Menos espacio entre título y contenido en todos los modelos */
+  .planesCarouselSection {
+    margin-top: var(--spacing-2);
+  }
+
+  .desktopGrid .carouselTrack {
+    contain: none !important;
+    overflow: visible !important;
+    flex-wrap: nowrap !important;
+    scroll-snap-type: none !important;
+    padding-inline: 0 !important;
+    padding-top: var(--spacing-4) !important;
+    padding-bottom: var(--spacing-4) !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    /* Encoger todos los items (imagen + cards) sutilmente y de forma uniforme */
+    zoom: 0.88;
+    /* Reducir gap entre items */
+    gap: clamp(16px, 2vw, 24px) !important;
+  }
+
+  /* 208 (carrusel) — mismo zoom, gap y arranque izquierdo que los modelos grid */
+  .carouselTrack {
+    padding-inline-start: 0 !important;
+    zoom: 0.88;
+    gap: clamp(16px, 2vw, 24px) !important;
+  }
+
+  .desktopGrid .carouselWrapperInPlanes::before,
+  .desktopGrid .carouselWrapperInPlanes::after {
+    display: none;
+  }
+
+  .desktopGrid .carouselScrollBtn {
+    display: none !important;
+  }
+
+  .desktopGrid .carouselDots {
+    display: none;
   }
 }
 

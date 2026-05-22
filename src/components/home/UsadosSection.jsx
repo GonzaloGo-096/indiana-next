@@ -56,7 +56,7 @@ export function UsadosSection({ vehicles = [] }) {
           )}
           <div className={cta.buttonsContainer}>
             <Link href="/usados/vehiculos" className={`${cta.button} ${cta.buttonWhite}`}>
-              Ver todos los usados
+              Ver modelos usados
             </Link>
             <Link href="/usados" className={`${cta.button} ${cta.buttonWhite}`}>
               Ver promociones

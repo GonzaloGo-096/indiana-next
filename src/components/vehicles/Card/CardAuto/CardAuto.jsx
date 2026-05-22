@@ -16,7 +16,6 @@
  */
 
 import { memo, useMemo, useCallback, useState } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -33,7 +32,6 @@ import { getBrandLogo } from "../../../../utils/getBrandLogo";
 import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import { buildVehicleDetailUrl } from "../../../../utils/vehicleSlug";
 import { getVehicleOfferDisplay } from "../../../../utils/vehicleOffer";
-import { debugIngest } from "../../../../lib/debugIngestClient";
 import { pushEcommerceEvent } from "@/lib/analytics/dataLayer";
 import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
@@ -46,8 +44,6 @@ import styles from "./CardAuto.module.css";
  * @param {string} props.imagePriority - Prioridad de carga de imagen: "high" | "auto" | "low"
  */
 export const CardAuto = memo(({ auto, imagePriority = "auto", index = 0 }) => {
-  const router = useRouter();
-
   // ✅ VALIDAR DATOS DEL VEHÍCULO
   const isValidAuto = auto && (auto.id || auto._id);
 
@@ -95,19 +91,7 @@ export const CardAuto = memo(({ auto, imagePriority = "auto", index = 0 }) => {
         timestamp: Date.now(),
       };
       sessionStorage.setItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL, JSON.stringify(scrollData));
-      debugIngest({
-        hypothesisId: "E",
-        location: "CardAuto.jsx:handleCardClick",
-        message: "scroll guardado - navegando al detalle",
-        data: {
-          key: STORAGE_KEYS.VEHICLES_LIST_SCROLL,
-          scrollData,
-          windowScrollY: window.scrollY,
-        },
-      });
     }
-    
-    // Permitir que el Link navegue normalmente
   }, [auto]);
 
   const offerData = useMemo(() => getVehicleOfferDisplay(auto), [auto]);
@@ -202,8 +186,6 @@ export const CardAuto = memo(({ auto, imagePriority = "auto", index = 0 }) => {
       className={styles.card}
       data-testid="vehicle-card"
       data-vehicle-id={vehicleId}
-      role="button"
-      tabIndex={0}
       onClick={handleCardClick}
       aria-label={`Ver detalles de ${formattedData.brandModel}`}
     >

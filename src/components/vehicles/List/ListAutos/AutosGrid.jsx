@@ -15,6 +15,8 @@
 
 import { memo, useMemo, useCallback } from "react";
 import { CardAuto } from "../../Card/CardAuto";
+import { pushDataLayer } from "@/lib/analytics/dataLayer";
+import { EVENTS, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import styles from "./ListAutos.module.css";
 
 /**
@@ -128,12 +130,21 @@ const AutosGrid = memo(
     isLoadingMore = false,
     onLoadMore = null,
   }) => {
+    const loadedCount = vehicles?.length || 0;
+    const totalCount = Number(totalVehicles) > 0 ? Number(totalVehicles) : 0;
+
     // ✅ Callback memoizado para loadMore
     const handleLoadMore = useCallback(() => {
       if (hasNextPage && !isLoadingMore && onLoadMore) {
+        pushDataLayer(EVENTS.LOAD_MORE_CLICK, {
+          location: LOCATIONS.USADOS_LIST,
+          list_name: ITEM_LIST.USADOS_GRID,
+          loaded_count: loadedCount,
+          total_count: totalCount,
+        });
         onLoadMore();
       }
-    }, [hasNextPage, isLoadingMore, onLoadMore]);
+    }, [hasNextPage, isLoadingMore, onLoadMore, loadedCount, totalCount]);
 
     // ✅ OPTIMIZADO: Memoizar el grid de vehículos con keys estables
     const vehiclesGrid = useMemo(() => {
@@ -173,8 +184,6 @@ const AutosGrid = memo(
       });
     }, [vehicles]);
 
-    const loadedCount = vehicles?.length || 0;
-    const totalCount = Number(totalVehicles) > 0 ? Number(totalVehicles) : 0;
     const loadMoreLabel =
       totalCount > 0
         ? `${loadedCount.toLocaleString("es-AR")} / ${totalCount.toLocaleString("es-AR")}`
@@ -207,8 +216,18 @@ const AutosGrid = memo(
       );
     }
 
+    const isRefetching = isLoading && loadedCount > 0;
+
     return (
       <div className={styles.gridContainer}>
+        {/* Overlay semitransparente durante refetch por cambio de filtros */}
+        {isRefetching && (
+          <div className={styles.refetchOverlay} role="status" aria-label="Actualizando resultados">
+            <div className={styles.refetchSpinner} aria-hidden="true" />
+            <p className={styles.refetchText}>Actualizando…</p>
+          </div>
+        )}
+
         {/* Grid de vehículos */}
         <div className={styles.grid}>{vehiclesGrid}</div>
 

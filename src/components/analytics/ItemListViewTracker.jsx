@@ -29,7 +29,6 @@ export default function ItemListViewTracker({
     const sig =
       signature ||
       `${itemListName}|${items
-        .slice(0, 10)
         .map((i) => i?.item_id)
         .filter(Boolean)
         .join(",")}`;
@@ -41,7 +40,6 @@ export default function ItemListViewTracker({
       itemListName: itemListName || "",
       items: items
         .filter(Boolean)
-        .slice(0, 10)
         .map((it, index) => ({
           ...it,
           item_list_name: it.item_list_name || itemListName,

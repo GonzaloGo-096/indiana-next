@@ -132,6 +132,15 @@ export default function VehiculosClient({
     handleSortChange(null);
   }, [handleSortChange]);
 
+  // Aplicar filtros desde el formulario "Aplicar" → agrega al historial del browser
+  // (el usuario puede deshacer con back). Otros callers (carrusel, chips) usan replace.
+  const handleApplyFiltersFromForm = useCallback(
+    (newFilters) => {
+      applyFilters(newFilters, { addToHistory: true });
+    },
+    [applyFilters],
+  );
+
   const handleRemoveOneFilterChip = useCallback(
     (nextFilters) => {
       applyFilters(nextFilters);
@@ -258,7 +267,7 @@ export default function VehiculosClient({
             <FilterFormSimple
               ref={filterFormRef}
               currentFilters={currentFilters}
-              onApplyFilters={applyFilters}
+              onApplyFilters={handleApplyFiltersFromForm}
               isLoading={isLoading}
               isError={!!error}
               error={error ? { message: error } : null}
@@ -317,7 +326,7 @@ export default function VehiculosClient({
         <div className={`${styles.vehiclesGrid} w-full min-w-0`}>
           <AutosGrid
             vehicles={sortedVehicles}
-            totalVehicles={data?.totalDocs || data?.total || 0}
+            totalVehicles={data?.total || 0}
             isLoading={isLoading}
             hasNextPage={data?.hasNextPage ?? false}
             isLoadingMore={isLoadingMore}

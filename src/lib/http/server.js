@@ -23,12 +23,19 @@ export async function fetchWithTimeout(url, options = {}) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), getApiTimeout());
 
+  // En dev: forzar no-store solo si el caller no configuró ISR (next.revalidate).
+  // Así en dev los datos son siempre frescos sin romper el contrato de cache del caller.
+  // En prod: respetar exactamente lo que pasa el caller (ISR u otras directivas).
+  const devCacheOverride =
+    process.env.NODE_ENV === "development" && !options.next?.revalidate
+      ? { cache: "no-store" }
+      : {};
+
   try {
     const response = await fetch(url, {
       ...options,
+      ...devCacheOverride,
       signal: controller.signal,
-      cache:
-        process.env.NODE_ENV === "development" ? "no-store" : undefined,
     });
     clearTimeout(timeoutId);
     return response;
@@ -53,8 +60,8 @@ export async function fetchWithTimeout(url, options = {}) {
 
         const response = await fetch(fallbackUrl, {
           ...options,
+          ...devCacheOverride,
           signal: fallbackController.signal,
-          cache: "no-store",
         });
         clearTimeout(fallbackTimeoutId);
         return response;

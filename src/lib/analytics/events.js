@@ -31,6 +31,7 @@ export const EVENTS = Object.freeze({
   GALLERY_NAVIGATE: "gallery_navigate",
   FILTER_APPLIED: "filter_applied",
   SORT_APPLIED: "sort_applied",
+  LOAD_MORE_CLICK: "load_more_click",
   CAROUSEL_INTERACT: "carousel_interact",
   NAV_TOGGLE: "nav_toggle",
   SCROLL_DEPTH: "scroll_depth",

@@ -254,8 +254,12 @@ export const ModeloSection = ({ modelo, planes }) => {
   const scrollLeft = useCallback(() => scrollByPage(-1), [scrollByPage]);
   const scrollRight = useCallback(() => scrollByPage(1), [scrollByPage]);
 
+  // En desktop, 208 (3 planes) es el único que necesita carrusel;
+  // el resto cabe en pantalla y se muestra completo.
+  const desktopGrid = planes.length <= 2;
+
   return (
-    <section className={`${styles.modeloSection} min-w-0 w-full`}>
+    <section className={`${styles.modeloSection} ${desktopGrid ? styles.desktopGrid : ""} min-w-0 w-full`}>
       <h2 className={styles.modeloTitle}>
         <PeugeotIcon className={styles.modeloTitleIcon} size={48} color="#000000" />
         Planes {modeloDisplay}
@@ -268,7 +272,7 @@ export const ModeloSection = ({ modelo, planes }) => {
         <div className={`${kmStyles.carouselWrapper} ${styles.carouselWrapperInPlanes}`}>
           <button
             type="button"
-            className={`${kmStyles.scrollButton} ${kmStyles.scrollButtonLeft}`}
+            className={`${kmStyles.scrollButton} ${kmStyles.scrollButtonLeft} ${styles.carouselScrollBtn}`}
             onClick={scrollLeft}
             disabled={!canScrollLeft}
             aria-label="Anterior"
@@ -288,7 +292,7 @@ export const ModeloSection = ({ modelo, planes }) => {
 
           <button
             type="button"
-            className={`${kmStyles.scrollButton} ${kmStyles.scrollButtonRight}`}
+            className={`${kmStyles.scrollButton} ${kmStyles.scrollButtonRight} ${styles.carouselScrollBtn}`}
             onClick={scrollRight}
             disabled={!canScrollRight}
             aria-label="Siguiente"

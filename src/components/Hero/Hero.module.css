@@ -97,27 +97,35 @@
   position: absolute;
   inset: 0;
   z-index: 0;
+  overflow: hidden;
+}
+
+/* <picture> debe ocupar el 100% del contenedor para que el <img> absoluto se ancle correctamente */
+.backgroundPicture picture {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .backgroundImage {
   object-fit: cover;
-  object-position: center;
-}
-
-/* Mostrar mobile por defecto, desktop en pantallas grandes */
-.backgroundImageMobile {
-  display: block;
+  /* Mobile: encuadre vertical centrado en la parte baja del auto */
+  object-position: center 62%;
   transform: scale(1.22);
   transform-origin: center center;
-  object-position: center 62%;
+  /* Necesario para que <img> dentro de <picture> ocupe el fill del padre */
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 
-.backgroundImageDesktop {
-  display: none;
-  /* Zoom interno del 408 sin modificar el tamaño del Hero */
-  transform: scale(1.38);
-  transform-origin: center center;
-  object-position: center 64%;
+@media (min-width: 769px) {
+  .backgroundImage {
+    /* Desktop: encuadre más arriba para ver el techo del auto */
+    object-position: center 64%;
+    transform: scale(1.38);
+  }
 }
 
 /* Pie del hero: más claro al centro del borde inferior, más sutil hacia los costados */
@@ -141,16 +149,6 @@
       rgba(228, 236, 248, 0.1) 74%,
       rgba(200, 216, 236, 0.26) 100%
     );
-}
-
-@media (min-width: 768px) {
-  .backgroundImageMobile {
-    display: none;
-  }
-
-  .backgroundImageDesktop {
-    display: block;
-  }
 }
 
 /* ===== CONTENIDO ===== */

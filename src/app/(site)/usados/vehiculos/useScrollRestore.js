@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import { VEHICLE_CONSTANTS } from "../../../../constants/vehicles";
-import { debugIngest } from "../../../../lib/debugIngestClient";
 
 /**
  * Guarda datos acumulados en sessionStorage y los restaura (junto con la
@@ -34,20 +33,6 @@ export function useScrollRestore({ data, setData, searchParamsFingerprint }) {
   // --- Restaurar al volver --------------------------------------------------
   useEffect(() => {
     if (typeof window === "undefined") return;
-
-    debugIngest({
-      hypothesisId: "E",
-      location: "useScrollRestore:mount",
-      message: "checking scroll restore",
-      data: {
-        scrollY: window.scrollY,
-        savedScroll: sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL),
-        savedDataKeys: sessionStorage.getItem(STORAGE_KEYS.VEHICLES_LIST_DATA)
-          ? "present"
-          : "absent",
-        t: Date.now(),
-      },
-    });
 
     const restoreScrollAndData = () => {
       try {
@@ -80,16 +65,6 @@ export function useScrollRestore({ data, setData, searchParamsFingerprint }) {
             ).toString();
             const savedFp = savedList?._fp ?? "";
             if (savedList?.vehicles?.length > 0 && savedFp === currentFp) {
-              debugIngest({
-                hypothesisId: "E",
-                location: "useScrollRestore:restoreData",
-                message: "restaurando lista de vehículos",
-                data: {
-                  vehiculosGuardados: savedList.vehicles.length,
-                  vehiculosActuales: data.vehicles?.length,
-                  scrollTarget: scrollData.position,
-                },
-              });
               const { _fp, ...cleanData } = savedList;
               setData(cleanData);
               dataRestored = true;
@@ -99,21 +74,10 @@ export function useScrollRestore({ data, setData, searchParamsFingerprint }) {
           }
         }
 
-        const scrollDelay = dataRestored ? 600 : 300;
+      const scrollDelay = dataRestored ? 600 : 300;
 
-        setTimeout(() => {
-          debugIngest({
-            hypothesisId: "E",
-            location: "useScrollRestore:scrollTo",
-            message: "ejecutando scrollTo",
-            data: {
-              targetPosition: scrollData.position,
-              pageHeight: document.body.scrollHeight,
-              dataRestored,
-              scrollDelay,
-            },
-          });
-          window.scrollTo({ top: scrollData.position, behavior: "instant" });
+      setTimeout(() => {
+        window.scrollTo({ top: scrollData.position, behavior: "instant" });
           sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL);
           sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_LIST_DATA);
         }, scrollDelay);

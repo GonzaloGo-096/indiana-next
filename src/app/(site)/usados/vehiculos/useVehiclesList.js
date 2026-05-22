@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useMemo, useRef } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   buildSearchParams,
@@ -18,6 +18,34 @@ import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import { VEHICLE_CONSTANTS } from "../../../../constants/vehicles";
 import { useScrollRestore } from "./useScrollRestore";
+
+/**
+ * Convierte el objeto de filtros (formato parseFilters) a params planos
+ * aptos para analytics: strings y números, sin arrays anidados ni claves
+ * con acentos, para que GTM pueda leerlos directamente como dimensiones.
+ */
+function buildFiltersAnalyticsParams(filters) {
+  const out = {};
+  if (filters.marca?.length) out.marca = filters.marca.join(",");
+  if (filters.caja?.length) out.caja = filters.caja.join(",");
+  if (filters.combustible?.length) out.combustible = filters.combustible.join(",");
+  if (filters.precio?.length === 2) {
+    const [min, max] = filters.precio;
+    if (Number.isFinite(min)) out.precio_min = min;
+    if (Number.isFinite(max)) out.precio_max = max;
+  }
+  if (filters.año?.length === 2) {
+    const [min, max] = filters.año;
+    if (Number.isFinite(min)) out.anio_min = min;
+    if (Number.isFinite(max)) out.anio_max = max;
+  }
+  if (filters.kilometraje?.length === 2) {
+    const [, max] = filters.kilometraje;
+    if (Number.isFinite(max)) out.km_max = max;
+  }
+  out.filters_count = Object.keys(out).length;
+  return out;
+}
 
 /**
  * Hook que encapsula toda la lógica de datos de /usados/vehiculos:
@@ -42,6 +70,19 @@ export function useVehiclesList({ initialData, initialError = null }) {
   const filtersAbortRef = useRef(null);
   const loadMoreLockRef = useRef(false);
 
+  // Prefetch caché: { cursor, filtersKey, mappedData } | null
+  const prefetchCacheRef = useRef(null);
+  // AbortController para el fetch de prefetch en vuelo
+  const prefetchAbortRef = useRef(null);
+  // ID del idle callback (o del setTimeout fallback en Safari)
+  const prefetchIdleRef = useRef(null);
+
+  // Guard para el efecto de sincronización URL↔datos.
+  // true = omitir la próxima ejecución del efecto (porque el cambio de URL
+  // fue iniciado por nosotros vía applyFilters/changeSort, no por back/forward).
+  // Se inicializa en true para ignorar la primera ejecución en mount.
+  const skipNextSyncRef = useRef(true);
+
   // --- URL parsing -----------------------------------------------------------
 
   const searchParamsData = useMemo(() => {
@@ -63,7 +104,38 @@ export function useVehiclesList({ initialData, initialError = null }) {
 
   const searchParamsFingerprint = searchParams?.toString?.() || "";
 
+  // Fingerprint solo de los filtros (excluye sort y page).
+  // Sirve como dep del efecto de sync: sort-only o page-only changes no
+  // deben disparar un nuevo fetch — el sort es client-side y page no se
+  // expone como param real en la UX actual.
+  const filtersFingerprint = useMemo(() => {
+    const p = new URLSearchParams(searchParams?.toString?.() || "");
+    p.delete("sort");
+    p.delete("page");
+    const entries = Array.from(p.entries()).sort(([a], [b]) =>
+      a.localeCompare(b),
+    );
+    return entries.map(([k, v]) => `${k}=${v}`).join("&");
+  }, [searchParams]);
+
   useScrollRestore({ data, setData, searchParamsFingerprint });
+
+  // Sincronización URL ↔ datos: detecta cambios de filtros que provienen
+  // de navegación externa (back/forward del browser, link directo con query).
+  // En esos casos applyFilters no fue llamado, así que el state no corresponde
+  // a la URL y hay que refetchear.
+  //
+  // Flujo normal (applyFilters):  applyFilters pone skipNextSyncRef=true antes
+  // de cambiar la URL → efecto corre → skip → no hay doble fetch.
+  // Flujo externo (back/forward): skipNextSyncRef sigue en false → efecto
+  // corre → refetch con los filtros actuales de la URL.
+  useEffect(() => {
+    if (skipNextSyncRef.current) {
+      skipNextSyncRef.current = false;
+      return;
+    }
+    applyFilters(currentFilters, { addToHistory: false });
+  }, [filtersFingerprint]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // --- Computed values -------------------------------------------------------
 
@@ -94,9 +166,13 @@ export function useVehiclesList({ initialData, initialError = null }) {
    *   - string válido ("precio_asc")  → ?sort=...
    *   - null                           → elimina ?sort
    *   - undefined (omitido)            → preserva el sort actual
+   *
+   * `addToHistory`: si true usa router.push (back deshace la navegación),
+   * si false (default) usa router.replace (no agrega al historial).
+   * Usar push solo en acciones intencionales del usuario (ej: "Aplicar" filtros).
    */
   const updateURL = useCallback(
-    (newFilters, newPage = null, newSort = undefined) => {
+    (newFilters, newPage = null, newSort = undefined, addToHistory = false) => {
       const params = buildSearchParams(newFilters);
 
       if (newPage !== null && newPage > 1) {
@@ -115,7 +191,12 @@ export function useVehiclesList({ initialData, initialError = null }) {
       }
 
       const qs = params.toString();
-      router.replace(`/usados/vehiculos${qs ? `?${qs}` : ""}`);
+      const href = `/usados/vehiculos${qs ? `?${qs}` : ""}`;
+      if (addToHistory) {
+        router.push(href);
+      } else {
+        router.replace(href);
+      }
     },
     [router, currentSort],
   );
@@ -123,16 +204,24 @@ export function useVehiclesList({ initialData, initialError = null }) {
   // --- Handlers --------------------------------------------------------------
 
   const applyFilters = useCallback(
-    async (newFilters) => {
+    async (newFilters, { addToHistory = false } = {}) => {
+      // Marcar antes de cambiar la URL: el efecto de sync debe ignorar
+      // este cambio porque ya lo estamos manejando acá.
+      skipNextSyncRef.current = true;
+
       filtersAbortRef.current?.abort();
       const ac = new AbortController();
       filtersAbortRef.current = ac;
+
+      // Invalidar caché de prefetch: los datos son de otro contexto de filtros.
+      prefetchAbortRef.current?.abort();
+      prefetchCacheRef.current = null;
 
       setIsLoading(true);
       setIsLoadingMore(false);
       setError(null);
 
-      updateURL(newFilters, 1);
+      updateURL(newFilters, 1, undefined, addToHistory);
 
       try {
         const backendData = await vehiclesService.getVehicles({
@@ -144,11 +233,26 @@ export function useVehiclesList({ initialData, initialError = null }) {
         const mappedData = mapVehiclesPage(backendData, 1);
         setData(mappedData);
 
+        const resultsCount = mappedData.total ?? 0;
+        const filtersAnalytics = buildFiltersAnalyticsParams(newFilters);
+
         pushDataLayer(EVENTS.FILTER_APPLIED, {
           location: LOCATIONS.USADOS_LIST,
-          filters: newFilters,
-          results_count: mappedData.totalDocs ?? mappedData.total ?? 0,
+          component_id: "filter-form-vehiculos",
+          results_count: resultsCount,
+          ...filtersAnalytics,
         });
+
+        // view_search_results solo cuando hay filtros activos — si el
+        // usuario limpió todos los filtros no es una búsqueda.
+        if (hasAnyFilter(newFilters)) {
+          pushDataLayer(EVENTS.VIEW_SEARCH_RESULTS, {
+            search_term: filtersAnalytics.marca || "usados_filtros",
+            results_count: resultsCount,
+            location: LOCATIONS.USADOS_LIST,
+            filters_count: filtersAnalytics.filters_count,
+          });
+        }
 
         const savedPosition = sessionStorage.getItem(
           STORAGE_KEYS.VEHICLES_SCROLL_POSITION,
@@ -189,14 +293,30 @@ export function useVehiclesList({ initialData, initialError = null }) {
     setIsLoadingMore(true);
     setError(null);
 
-    try {
-      const backendData = await vehiclesService.getVehicles({
-        filters: currentFilters,
-        limit: VEHICLE_CONSTANTS.LIST_PAGE_SIZE,
-        cursor: nextPage,
-      });
+    // Cancelar el prefetch en vuelo: ya no hace falta, loadMore toma el control.
+    prefetchAbortRef.current?.abort();
 
-      const mappedData = mapVehiclesPage(backendData, nextPage);
+    try {
+      // ── Cache hit: el prefetch ya trajo los datos ──────────────────────────
+      const cached = prefetchCacheRef.current;
+      const hasCacheHit =
+        cached &&
+        cached.cursor === nextPage &&
+        cached.paramsFingerprint === searchParamsFingerprint;
+
+      let mappedData;
+      if (hasCacheHit) {
+        mappedData = cached.mappedData;
+        prefetchCacheRef.current = null; // consumir: no reutilizar
+      } else {
+        // ── Cache miss: fetch normal ──────────────────────────────────────────
+        const backendData = await vehiclesService.getVehicles({
+          filters: currentFilters,
+          limit: VEHICLE_CONSTANTS.LIST_PAGE_SIZE,
+          cursor: nextPage,
+        });
+        mappedData = mapVehiclesPage(backendData, nextPage);
+      }
 
       setData((prevData) => {
         const existingIds = new Set(
@@ -209,7 +329,6 @@ export function useVehiclesList({ initialData, initialError = null }) {
         return {
           vehicles: [...(prevData.vehicles || []), ...newVehicles],
           total: mappedData.total || prevData.total || 0,
-          totalDocs: mappedData.totalDocs || prevData.totalDocs || 0,
           hasNextPage: mappedData.hasNextPage,
           nextPage: mappedData.nextPage,
           currentCursor: mappedData.currentCursor,
@@ -268,6 +387,68 @@ export function useVehiclesList({ initialData, initialError = null }) {
     },
     [currentFilters, applyFilters],
   );
+
+  // --- Prefetch de siguiente página ------------------------------------------
+  //
+  // 150ms después de que los datos se renderizan, se inicia un fetch silencioso
+  // de la siguiente página. Si el usuario hace click en "Cargar más" y la caché
+  // está lista, los datos se aplican de inmediato.
+  //
+  // Por qué searchParamsFingerprint (string) en lugar de currentFilters (objeto):
+  // React compara deps por referencia. useMemo puede crear un nuevo objeto de
+  // filtros aunque el URL no cambie, lo que reiniciaría el timer en cada render.
+  // Un string siempre compara por valor → el effect solo se reinicia si el URL
+  // realmente cambia.
+  //
+  // Invariantes de seguridad:
+  //  · Se cancela al cambiar URL, al desmontar el componente, o al usar la caché.
+  //  · Fallo silencioso: loadMore hace el fetch normal sin degradar la UX.
+  //  · La caché se invalida al consumirla (no se reutiliza entre páginas o contextos).
+
+  useEffect(() => {
+    if (!data.hasNextPage || !data.nextPage) {
+      prefetchCacheRef.current = null;
+      return;
+    }
+
+    const nextPage = data.nextPage;
+    const paramsFingerprint = searchParamsFingerprint;
+
+    // Cancelar prefetch anterior (timer o fetch en vuelo).
+    prefetchAbortRef.current?.abort();
+    prefetchCacheRef.current = null;
+    clearTimeout(prefetchIdleRef.current);
+
+    const doPrefetch = async () => {
+      const ac = new AbortController();
+      prefetchAbortRef.current = ac;
+
+      try {
+        const backendData = await vehiclesService.getVehicles({
+          filters: currentFilters,
+          limit: VEHICLE_CONSTANTS.LIST_PAGE_SIZE,
+          cursor: nextPage,
+          signal: ac.signal,
+        });
+
+        if (ac.signal.aborted) return;
+
+        const mappedData = mapVehiclesPage(backendData, nextPage);
+        prefetchCacheRef.current = { cursor: nextPage, paramsFingerprint, mappedData };
+      } catch {
+        // Fallo silencioso: loadMore hará el fetch normal.
+        prefetchCacheRef.current = null;
+      }
+    };
+
+    prefetchIdleRef.current = setTimeout(doPrefetch, 150);
+
+    return () => {
+      prefetchAbortRef.current?.abort();
+      prefetchCacheRef.current = null;
+      clearTimeout(prefetchIdleRef.current);
+    };
+  }, [data.hasNextPage, data.nextPage, searchParamsFingerprint]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // --- Analytics computed ----------------------------------------------------
 
