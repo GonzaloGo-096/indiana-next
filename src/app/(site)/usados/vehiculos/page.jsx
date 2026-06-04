@@ -340,8 +340,6 @@ export default async function VehiculosPage({ searchParams }) {
         >
           <VehiculosClient
             initialData={mappedData}
-            initialFilters={filters}
-            initialPage={page}
           />
         </Suspense>
       </>
@@ -379,8 +377,6 @@ export default async function VehiculosPage({ searchParams }) {
             hasNextPage: false,
             nextPage: null,
           }}
-          initialFilters={parseFilters(resolvedSearchParams || {})}
-          initialPage={Number(resolvedSearchParams?.page) || 1}
           error={errorMessage}
         />
       </Suspense>

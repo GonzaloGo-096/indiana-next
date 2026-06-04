@@ -150,6 +150,15 @@ const CarFormRHF = ({
     return marcaSelectOptions.filter((m) => normalizeForSearch(m).includes(q))
   }, [marcaSelectOptions, marcaSearchQuery])
 
+  /** Marca tipeada que no coincide exactamente con ninguna del catálogo (combobox libre) */
+  const customMarcaCandidate = useMemo(() => {
+    const raw = marcaSearchQuery.trim()
+    if (!raw) return ''
+    const q = normalizeForSearch(raw)
+    const exact = marcaSelectOptions.some((m) => normalizeForSearch(m) === q)
+    return exact ? '' : raw
+  }, [marcaSelectOptions, marcaSearchQuery])
+
   // ✅ INICIALIZAR FORMULARIO CON DATOS INICIALES
   useEffect(() => {
     if (initialData && Object.keys(initialData).length > 0) {
@@ -643,6 +652,19 @@ const CarFormRHF = ({
                               if (e.key === 'Escape') {
                                 e.stopPropagation()
                                 setMarcaDropdownOpen(false)
+                                return
+                              }
+                              if (e.key === 'Enter') {
+                                e.preventDefault()
+                                const pick =
+                                  customMarcaCandidate ||
+                                  filteredMarcaSelectOptions[0] ||
+                                  ''
+                                if (!pick) return
+                                field.onChange(pick)
+                                field.onBlur()
+                                clearErrors('marca')
+                                setMarcaDropdownOpen(false)
                               }
                             }}
                             onClick={(e) => e.stopPropagation()}
@@ -670,14 +692,32 @@ const CarFormRHF = ({
                               Seleccionar marca
                             </button>
                           </li>
-                          {filteredMarcaSelectOptions.length === 0 ? (
+                          {customMarcaCandidate ? (
+                            <li role="presentation">
+                              <button
+                                type="button"
+                                role="option"
+                                aria-selected={field.value === customMarcaCandidate}
+                                className={`${styles.marcaDropdownOption} ${styles.marcaDropdownOptionCustom}`}
+                                onClick={() => {
+                                  field.onChange(customMarcaCandidate)
+                                  field.onBlur()
+                                  clearErrors('marca')
+                                  setMarcaDropdownOpen(false)
+                                }}
+                              >
+                                Usar “{customMarcaCandidate}”
+                              </button>
+                            </li>
+                          ) : null}
+                          {filteredMarcaSelectOptions.length === 0 && !customMarcaCandidate ? (
                             <li
                               className={styles.marcaDropdownEmpty}
                               role="presentation"
                             >
                               Ninguna marca coincide con tu búsqueda
                             </li>
-                          ) : (
+                          ) : filteredMarcaSelectOptions.length === 0 ? null : (
                             filteredMarcaSelectOptions.map((m) => (
                               <li key={m} role="presentation">
                                 <button

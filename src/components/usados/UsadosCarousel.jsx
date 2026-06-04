@@ -266,6 +266,7 @@ export const UsadosCarousel = ({
                 usadosCarousel
                 trackingLocation={trackingLocation}
                 trackingListName={trackingListName}
+                index={index}
               />
             </div>
           ))}

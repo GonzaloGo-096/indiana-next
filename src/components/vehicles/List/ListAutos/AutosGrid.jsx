@@ -245,6 +245,7 @@ const AutosGrid = memo(
                   handleLoadMore();
                 }}
                 disabled={isLoadingMore}
+                aria-busy={isLoadingMore}
               >
                 <span className={styles.loadMoreInner}>
                   {isLoadingMore && <span className={styles.loadMoreSpinner} aria-hidden="true" />}

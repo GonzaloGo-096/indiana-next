@@ -1,6 +1,6 @@
 /**
- * useVehiclesList - Hook unificado para listas de vehículos
- * 
+ * useAdminVehiclesList - Hook para listas de vehículos en el panel admin
+ *
  * @author Indiana Usados
  * @version 4.0.0 - Next.js compatible
  */
@@ -11,7 +11,7 @@ import { useInfiniteQuery } from '@tanstack/react-query'
 import vehiclesService from '@/lib/services/vehiclesApi'
 import { mapVehiclesPage } from '@/lib/mappers/vehicleMapper'
 
-export const useVehiclesList = (filters = {}, options = {}) => {
+export const useAdminVehiclesList = (filters = {}, options = {}) => {
   // PAGE SIZE CONFIGURABLE (default: 8 para página pública)
   const PAGE_SIZE = options.pageSize ?? 8
   // MERGE DEFAULTS: false por defecto. Nadie aplica filtros invisibles a menos
@@ -36,14 +36,14 @@ export const useVehiclesList = (filters = {}, options = {}) => {
       return result
     },
     initialPageParam: 1,
-    
+
     // Extrae hasNextPage directo del backend
     getNextPageParam: (lastPage) => {
       const hasNext = lastPage?.allPhotos?.hasNextPage
       const next = lastPage?.allPhotos?.nextPage
       return hasNext ? next : undefined
     },
-    
+
     // Usa mapper único
     select: (data) => {
       const pages = data.pages.map(mapVehiclesPage)
@@ -69,6 +69,3 @@ export const useVehiclesList = (filters = {}, options = {}) => {
     refetch: query.refetch
   }
 }
-
-
-

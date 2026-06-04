@@ -259,12 +259,12 @@ export const PriceRangeCarousel = ({ currentVehicle }) => {
               </div>
             ) : (
               // Cards de vehículos
-              vehicles.map((vehicle) => (
+              vehicles.map((vehicle, index) => (
                 <div
                   key={vehicle.id || vehicle._id}
                   className={styles.cardWrapper}
                 >
-                  <CardSimilar auto={vehicle} />
+                  <CardSimilar auto={vehicle} index={index} />
                 </div>
               ))
             )}

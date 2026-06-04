@@ -728,6 +728,12 @@
   color: var(--color-brand-900, #1e3a8a);
 }
 
+.marcaDropdownOptionCustom {
+  font-style: italic;
+  color: var(--color-brand-700, #1d4ed8);
+  border-bottom: 1px dashed var(--cf-border);
+}
+
 .input,
 .textarea,
 .select {

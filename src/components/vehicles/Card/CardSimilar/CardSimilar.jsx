@@ -51,6 +51,7 @@ export const CardSimilar = memo(({
   usadosCarousel = false,
   trackingLocation = LOCATIONS.USADOS_DETAIL,
   trackingListName = ITEM_LIST.SIMILAR,
+  index = 0,
 }) => {
   const vehicleId = auto?.id || auto?._id;
 
@@ -84,7 +85,7 @@ export const CardSimilar = memo(({
         item_category: itemParams.item_category,
         item_list_name: trackingListName,
         itemListName: trackingListName,
-        items: [{ ...itemParams, index: 0 }],
+        items: [{ ...itemParams, index }],
       });
     }
 

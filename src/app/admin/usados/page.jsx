@@ -2,7 +2,7 @@
 
 import { useCallback, useId, useMemo, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { useVehiclesList } from '@/hooks/useVehiclesList'
+import { useAdminVehiclesList } from '@/hooks/useAdminVehiclesList'
 import { useCarMutation } from '@/hooks/admin/useCarMutation'
 import { useAdminVehicleModal } from '@/hooks/admin/useAdminVehicleModal'
 import { toAdminListItem } from '@/mappers/admin/toAdminListItem'
@@ -56,7 +56,7 @@ export default function AdminUsadosPage() {
 
   // ✅ Admin ve TODO el inventario: sin defaults invisibles de precio/km.
   // (mergeDefaults: false ya es el default global; lo dejamos explícito por claridad).
-  const { vehicles, isLoading, error, refetch } = useVehiclesList(backendFilters(), {
+  const { vehicles, isLoading, error, refetch } = useAdminVehiclesList(backendFilters(), {
     pageSize: 1000,
     mergeDefaults: false,
   })

@@ -15,6 +15,9 @@ import { revalidateTag } from 'next/cache'
 import { NextResponse } from 'next/server'
 import { getSiteUrl } from '@/lib/site-url'
 import { verifyAdminBearerToken } from '@/lib/auth/verifyAdminBearerServer'
+import { createLogger } from '@/lib/logger'
+
+const log = createLogger('revalidate')
 
 // ✅ CONFIGURACIÓN
 // REVALIDATE_SECRET: obligatorio solo si usás el header x-revalidate-secret (cron, CLI).
@@ -47,9 +50,8 @@ async function warmupUrl(url) {
   } catch (error) {
     // ✅ IGNORAR ERRORES: El warmup es "fire and forget" (best-effort)
     // Si un vehículo fue eliminado (404) o hay timeout, no afecta la revalidación
-    if (process.env.NODE_ENV === 'development') {
-      console.warn(`[revalidate] Warmup falló para ${url}:`, error.message)
-    }
+    // Se loggea como debug porque es esperable (404 de vehículos borrados, timeouts ocasionales).
+    log.debug(`Warmup falló para ${url}:`, error.message)
     return false
   }
 }
@@ -206,9 +208,7 @@ export async function POST(request) {
   } catch (error) {
     const tookMs = Date.now() - startTime
 
-    if (process.env.NODE_ENV === 'development') {
-      console.error('[revalidate] Error:', error)
-    }
+    log.error('Error:', error)
 
     return NextResponse.json(
       {

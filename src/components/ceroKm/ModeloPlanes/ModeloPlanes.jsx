@@ -14,8 +14,7 @@ import styles from "./ModeloPlanes.module.css";
 
 /**
  * ModeloPlanes - Componente genérico para mostrar planes de financiación de un modelo
- * 
- * Reemplaza ScrollParallaxTransition208 y ScrollParallaxTransition2008
+ *
  * Funciona para cualquier modelo que tenga planes: 208, 2008, partner, expert
  * 
  * @param {Object} props

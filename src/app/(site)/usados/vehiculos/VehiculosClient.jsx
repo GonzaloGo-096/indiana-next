@@ -59,14 +59,10 @@ const BrandsCarousel = dynamic(
 /**
  * @param {Object} props
  * @param {Object} props.initialData - Datos iniciales del Server Component
- * @param {Object} props.initialFilters - Filtros iniciales (unused, kept for API compat)
- * @param {number} props.initialPage - Página inicial (unused, kept for API compat)
  * @param {string} props.error - Error inicial (opcional)
  */
 export default function VehiculosClient({
   initialData,
-  initialFilters = {},
-  initialPage = 1,
   error: initialError = null,
 }) {
   // --- Data hook (URL, fetch, sort, filters, analytics) ----------------------

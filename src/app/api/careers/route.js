@@ -11,6 +11,9 @@
  */
 
 import { NextResponse } from "next/server";
+import { createLogger } from "@/lib/logger";
+
+const log = createLogger("careers");
 
 const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/jpg"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -73,17 +76,15 @@ export async function POST(request) {
     }
 
     // Log seguro (sin volcar el archivo completo)
-    if (process.env.NODE_ENV === "development") {
-      console.log("[careers] Postulación recibida:", {
-        puesto,
-        nombreApellido,
-        email,
-        telefono: telefono || "(no indicado)",
-        mensaje: mensaje ? `${mensaje.substring(0, 50)}...` : "(vacío)",
-        cvName: cvFile.name,
-        cvSize: cvFile.size,
-      });
-    }
+    log.debug("Postulación recibida:", {
+      puesto,
+      nombreApellido,
+      email,
+      telefono: telefono || "(no indicado)",
+      mensaje: mensaje ? `${mensaje.substring(0, 50)}...` : "(vacío)",
+      cvName: cvFile.name,
+      cvSize: cvFile.size,
+    });
 
     // TODO: Enviar email con los datos de la postulación.
     // Estructura sugerida para el backend:
@@ -95,9 +96,7 @@ export async function POST(request) {
 
     return NextResponse.json({ ok: true });
   } catch (error) {
-    if (process.env.NODE_ENV === "development") {
-      console.error("[careers] Error:", error);
-    }
+    log.error("Error:", error);
     return NextResponse.json(
       { ok: false, error: "Error al procesar la postulación" },
       { status: 500 }
