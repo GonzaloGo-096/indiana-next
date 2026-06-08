@@ -1,0 +1,419 @@
+- generic [ref=e1]:
+  - generic [ref=e4]:
+    - banner [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e12]: Analytics
+        - button "Abrir el selector universal." [ref=e10927] [cursor=pointer]:
+          - generic [ref=e10928]:
+            - generic [ref=e10929]:
+              - generic [ref=e10930]: Todas las cuentas
+              - img [ref=e10931]: chevron_right
+              - generic [ref=e10932]: Indiana
+            - generic [ref=e10933]:
+              - generic [ref=e10935]: Indiana
+              - img [ref=e10936]: arrow_drop_down
+        - search [ref=e28]:
+          - img [ref=e29]: search
+          - textbox "Buscar" [ref=e5677]:
+            - /placeholder: Pruebe a buscar "Administrar"
+        - button "Cambiar de producto" [ref=e5678] [cursor=pointer]:
+          - img [ref=e34]
+        - button "Menú de ayuda" [ref=e5679] [cursor=pointer]:
+          - img [ref=e39]: help
+        - button "Abrir el panel del selector de cuentas de usuario." [ref=e5680] [cursor=pointer]
+    - generic [ref=e46]:
+      - generic [ref=e49]:
+        - generic [ref=e50]:
+          - navigation "Páginas principales" [ref=e5681]:
+            - link "Página principal" [ref=e10940] [cursor=pointer]:
+              - img [ref=e10941]:
+                - img [ref=e10942]
+              - generic [ref=e10945]: Página principal
+            - link "Informes" [ref=e10947] [cursor=pointer]:
+              - img [ref=e10948]: insert_chart_filled
+              - generic [ref=e10949]: Informes
+            - link "Explorar" [ref=e10951] [cursor=pointer]:
+              - img [ref=e10952]: data_exploration
+              - generic [ref=e10953]: Explorar
+            - link "Publicidad" [ref=e10955] [cursor=pointer]:
+              - img [ref=e10956]: ads_click
+              - generic [ref=e10957]: Publicidad
+          - navigation "Páginas de configuración" [ref=e5686]:
+            - link "Tareas" [ref=e10959] [cursor=pointer]:
+              - img [ref=e10960]: task_alt
+              - generic [ref=e10961]: Tareas
+            - link "Administrar" [ref=e10963] [cursor=pointer]:
+              - img [ref=e10964]: settings_filled
+              - generic [ref=e10965]: Administrar
+        - generic [ref=e10967]:
+          - navigation "Páginas secundarias" [ref=e10968]:
+            - button "Crear" [ref=e10973] [cursor=pointer]:
+              - img [ref=e10974]: add
+              - generic [ref=e10976]:
+                - text: Crear
+                - img [ref=e10977]: arrow_drop_down
+          - tree [ref=e10980]:
+            - treeitem "Administrar" [level=1] [ref=e10981]:
+              - button "Administrar" [ref=e10983] [cursor=pointer]:
+                - generic [ref=e10986]: Administrar
+            - treeitem "Mis preferencias" [level=1] [ref=e10989]:
+              - button "Mis preferencias" [ref=e10991] [cursor=pointer]:
+                - generic [ref=e10994]: Mis preferencias
+            - treeitem "Configuración de la cuenta" [expanded] [level=1] [ref=e10997]:
+              - generic [ref=e10998]:
+                - separator [ref=e10999]
+                - button "Configuración de la cuenta" [ref=e11000] [cursor=pointer]:
+                  - generic [ref=e11003]:
+                    - generic [ref=e11004]: Configuración de la cuenta
+                    - img [ref=e11005]: keyboard_arrow_up
+            - treeitem "Cuenta" [level=2] [ref=e11008]:
+              - button "Cuenta" [ref=e11010] [cursor=pointer]:
+                - generic [ref=e11012]:
+                  - img [ref=e11013]: arrow_right
+                  - generic [ref=e11014]: Cuenta
+            - treeitem "Configuración de la propiedad" [expanded] [level=1] [ref=e11017]:
+              - generic [ref=e11018]:
+                - separator [ref=e11019]
+                - button "Configuración de la propiedad" [ref=e11020] [cursor=pointer]:
+                  - generic [ref=e11023]:
+                    - generic [ref=e11024]: Configuración de la propiedad
+                    - img [ref=e11025]: keyboard_arrow_up
+            - treeitem "Propiedad" [level=2] [ref=e11028]:
+              - button "Propiedad" [ref=e11030] [cursor=pointer]:
+                - generic [ref=e11032]:
+                  - img [ref=e11033]: arrow_right
+                  - generic [ref=e11034]: Propiedad
+            - treeitem "Recogida y modificación de datos" [level=2] [ref=e11037]:
+              - button "Recogida y modificación de datos" [ref=e11039] [cursor=pointer]:
+                - generic [ref=e11041]:
+                  - img [ref=e11042]: arrow_right
+                  - generic [ref=e11043]: Recogida y modificación de datos
+            - treeitem "Visualización de datos" [expanded] [level=2] [ref=e11046]:
+              - button "Visualización de datos" [ref=e11048] [cursor=pointer]:
+                - generic [ref=e11050]:
+                  - img [ref=e11051]: arrow_drop_down
+                  - generic [ref=e11052]: Visualización de datos
+            - treeitem "Eventos" [level=3] [ref=e11055]:
+              - button "Eventos" [ref=e11057] [cursor=pointer]:
+                - generic [ref=e11060]: Eventos
+            - treeitem "Configuración de red" [level=3] [ref=e11063]:
+              - button "Configuración de red" [ref=e11065] [cursor=pointer]:
+                - generic [ref=e11068]: Configuración de red
+            - treeitem "Audiencias" [level=3] [ref=e11071]:
+              - button "Audiencias" [ref=e11073] [cursor=pointer]:
+                - generic [ref=e11076]: Audiencias
+            - treeitem "Anotaciones" [level=3] [ref=e11079]:
+              - button "Anotaciones" [ref=e11081] [cursor=pointer]:
+                - generic [ref=e11084]: Anotaciones
+            - treeitem "Comparaciones" [level=3] [ref=e11087]:
+              - button "Comparaciones" [ref=e11089] [cursor=pointer]:
+                - generic [ref=e11092]: Comparaciones
+            - treeitem "Segmentos" [level=3] [ref=e11095]:
+              - button "Segmentos" [ref=e11097] [cursor=pointer]:
+                - generic [ref=e11100]: Segmentos
+            - treeitem "Definiciones personalizadas" [level=3] [ref=e11103]:
+              - button "Definiciones personalizadas" [ref=e11105] [cursor=pointer]:
+                - generic [ref=e11108]: Definiciones personalizadas
+            - treeitem "Grupos de canales" [level=3] [ref=e11111]:
+              - button "Grupos de canales" [ref=e11113] [cursor=pointer]:
+                - generic [ref=e11116]: Grupos de canales
+            - treeitem "Identidad para los informes" [level=3] [ref=e11119]:
+              - button "Identidad para los informes" [ref=e11121] [cursor=pointer]:
+                - generic [ref=e11124]: Identidad para los informes
+            - treeitem "DebugView" [level=3] [ref=e11127]:
+              - button "DebugView" [ref=e11129] [cursor=pointer]:
+                - generic [ref=e11132]: DebugView
+            - treeitem "Vinculaciones con otros productos" [level=2] [ref=e11135]:
+              - button "Vinculaciones con otros productos" [ref=e11137] [cursor=pointer]:
+                - generic [ref=e11139]:
+                  - img [ref=e11140]: arrow_right
+                  - generic [ref=e11141]: Vinculaciones con otros productos
+          - separator [ref=e11144]
+        - button "Interruptor de navegación" [expanded] [ref=e11146] [cursor=pointer]:
+          - img [ref=e11147]: keyboard_arrow_left
+      - generic [ref=e11150]:
+        - main [ref=e11151]:
+          - generic [ref=e11152]:
+            - generic [ref=e11154]:
+              - heading "Definiciones personalizadas" [level=1] [ref=e11158]
+              - button "Información sobre la cuota" [ref=e11161] [cursor=pointer]:
+                - generic [ref=e11162]: Información sobre la cuota
+            - generic [ref=e11169]:
+              - generic [ref=e11170]:
+                - generic [ref=e11171]:
+                  - generic [ref=e11175]:
+                    - img [ref=e11177]: search
+                    - searchbox "Escribe para filtrar" [ref=e11179]
+                  - button "Crear dimensión personalizada" [ref=e11184] [cursor=pointer]:
+                    - generic [ref=e11185]: Crear dimensión personalizada
+                - generic [ref=e11188]:
+                  - tablist [ref=e11191]:
+                    - generic [ref=e11192]:
+                      - tab "Dimensiones personalizadas" [selected] [ref=e11193] [cursor=pointer]:
+                        - generic [ref=e11196]: Dimensiones personalizadas
+                      - tab "Métricas personalizadas" [ref=e11197] [cursor=pointer]:
+                        - generic [ref=e11200]: Métricas personalizadas
+                      - tab "Métricas calculadas" [ref=e11201] [cursor=pointer]:
+                        - generic [ref=e11204]: Métricas calculadas
+                  - generic:
+                    - tabpanel "Dimensiones personalizadas"
+              - table "Definiciones personalizadas" [ref=e11206]:
+                - row "Nombre de dimensión Descripción Ámbito Propiedad de usuario o parámetro Último cambio Opciones" [ref=e11207]:
+                  - columnheader "Nombre de dimensión" [ref=e11208] [cursor=pointer]:
+                    - button "Nombre de dimensión" [ref=e11209]:
+                      - generic [ref=e11211]: Nombre de dimensión
+                      - img [ref=e11213]
+                  - columnheader "Descripción" [ref=e11215] [cursor=pointer]:
+                    - button "Descripción" [ref=e11216]:
+                      - generic [ref=e11218]: Descripción
+                      - img [ref=e11220]
+                  - columnheader "Ámbito" [ref=e11222] [cursor=pointer]:
+                    - button "Ámbito" [ref=e11223]:
+                      - generic [ref=e11225]: Ámbito
+                      - img [ref=e11227]
+                  - columnheader "Propiedad de usuario o parámetro" [ref=e11229] [cursor=pointer]:
+                    - button "Propiedad de usuario o parámetro" [ref=e11230]:
+                      - generic [ref=e11232]: Propiedad de usuario o parámetro
+                      - img [ref=e11234]
+                  - columnheader "Último cambio" [ref=e11236] [cursor=pointer]:
+                    - button "Último cambio" [ref=e11237]:
+                      - generic [ref=e11239]: Último cambio
+                      - img [ref=e11241]
+                  - columnheader "Opciones" [ref=e11243]:
+                    - generic [ref=e11244]: Opciones
+                - row "Component ID Identificador técnico del componente UI Evento component_id 6 may 2026 Menú de la fila" [ref=e11245]:
+                  - cell "Component ID" [ref=e11246]:
+                    - generic [ref=e11248]: Component ID
+                  - cell "Identificador técnico del componente UI" [ref=e11249]:
+                    - generic [ref=e11250]:
+                      - generic [ref=e11251]: Identificador técnico del componente UI
+                      - generic [ref=e11252]: Identificador técnico del componente UI
+                  - cell "Evento" [ref=e11253]:
+                    - generic [ref=e11255]: Evento
+                  - cell "component_id" [ref=e11256]:
+                    - generic [ref=e11258]: component_id
+                  - cell "6 may 2026" [ref=e11259]:
+                    - generic [ref=e11261]: 6 may 2026
+                  - cell "Menú de la fila" [ref=e11262]:
+                    - button "Menú de la fila" [ref=e11263] [cursor=pointer]:
+                      - img [ref=e11264]: more_vert
+                - row "Item Category Categoría del item medido Evento item_category 6 may 2026 Menú de la fila" [ref=e11267]:
+                  - cell "Item Category" [ref=e11268]:
+                    - generic [ref=e11270]: Item Category
+                  - cell "Categoría del item medido" [ref=e11271]:
+                    - generic [ref=e11272]:
+                      - generic [ref=e11273]: Categoría del item medido
+                      - generic [ref=e11274]: Categoría del item medido
+                  - cell "Evento" [ref=e11275]:
+                    - generic [ref=e11277]: Evento
+                  - cell "item_category" [ref=e11278]:
+                    - generic [ref=e11280]: item_category
+                  - cell "6 may 2026" [ref=e11281]:
+                    - generic [ref=e11283]: 6 may 2026
+                  - cell "Menú de la fila" [ref=e11284]:
+                    - button "Menú de la fila" [ref=e11285] [cursor=pointer]:
+                      - img [ref=e11286]: more_vert
+                - row "Item List Name Nombre lógico de la lista visualizada Evento item_list_name 6 may 2026 Menú de la fila" [ref=e11289]:
+                  - cell "Item List Name" [ref=e11290]:
+                    - generic [ref=e11292]: Item List Name
+                  - cell "Nombre lógico de la lista visualizada" [ref=e11293]:
+                    - generic [ref=e11294]:
+                      - generic [ref=e11295]: Nombre lógico de la lista visualizada
+                      - generic [ref=e11296]: Nombre lógico de la lista visualizada
+                  - cell "Evento" [ref=e11297]:
+                    - generic [ref=e11299]: Evento
+                  - cell "item_list_name" [ref=e11300]:
+                    - generic [ref=e11302]: item_list_name
+                  - cell "6 may 2026" [ref=e11303]:
+                    - generic [ref=e11305]: 6 may 2026
+                  - cell "Menú de la fila" [ref=e11306]:
+                    - button "Menú de la fila" [ref=e11307] [cursor=pointer]:
+                      - img [ref=e11308]: more_vert
+                - row "Item Name Nombre comercial del vehículo Evento item_name 6 may 2026 Menú de la fila" [ref=e11311]:
+                  - cell "Item Name" [ref=e11312]:
+                    - generic [ref=e11314]: Item Name
+                  - cell "Nombre comercial del vehículo" [ref=e11315]:
+                    - generic [ref=e11316]:
+                      - generic [ref=e11317]: Nombre comercial del vehículo
+                      - generic [ref=e11318]: Nombre comercial del vehículo
+                  - cell "Evento" [ref=e11319]:
+                    - generic [ref=e11321]: Evento
+                  - cell "item_name" [ref=e11322]:
+                    - generic [ref=e11324]: item_name
+                  - cell "6 may 2026" [ref=e11325]:
+                    - generic [ref=e11327]: 6 may 2026
+                  - cell "Menú de la fila" [ref=e11328]:
+                    - button "Menú de la fila" [ref=e11329] [cursor=pointer]:
+                      - img [ref=e11330]: more_vert
+                - row "Lead Source Evento lead_source 7 may 2026 Menú de la fila" [ref=e11333]:
+                  - cell "Lead Source" [ref=e11334]:
+                    - generic [ref=e11336]: Lead Source
+                  - cell [ref=e11337]
+                  - cell "Evento" [ref=e11339]:
+                    - generic [ref=e11341]: Evento
+                  - cell "lead_source" [ref=e11342]:
+                    - generic [ref=e11344]: lead_source
+                  - cell "7 may 2026" [ref=e11345]:
+                    - generic [ref=e11347]: 7 may 2026
+                  - cell "Menú de la fila" [ref=e11348]:
+                    - button "Menú de la fila" [ref=e11349] [cursor=pointer]:
+                      - img [ref=e11350]: more_vert
+                - row "Lead Type Evento lead_type 7 may 2026 Menú de la fila" [ref=e11353]:
+                  - cell "Lead Type" [ref=e11354]:
+                    - generic [ref=e11356]: Lead Type
+                  - cell [ref=e11357]
+                  - cell "Evento" [ref=e11359]:
+                    - generic [ref=e11361]: Evento
+                  - cell "lead_type" [ref=e11362]:
+                    - generic [ref=e11364]: lead_type
+                  - cell "7 may 2026" [ref=e11365]:
+                    - generic [ref=e11367]: 7 may 2026
+                  - cell "Menú de la fila" [ref=e11368]:
+                    - button "Menú de la fila" [ref=e11369] [cursor=pointer]:
+                      - img [ref=e11370]: more_vert
+                - row "Location Ubicación lógica dentro del sitio Evento location 6 may 2026 Menú de la fila" [ref=e11373]:
+                  - cell "Location" [ref=e11374]:
+                    - generic [ref=e11376]: Location
+                  - cell "Ubicación lógica dentro del sitio" [ref=e11377]:
+                    - generic [ref=e11378]:
+                      - generic [ref=e11379]: Ubicación lógica dentro del sitio
+                      - generic [ref=e11380]: Ubicación lógica dentro del sitio
+                  - cell "Evento" [ref=e11381]:
+                    - generic [ref=e11383]: Evento
+                  - cell "location" [ref=e11384]:
+                    - generic [ref=e11386]: location
+                  - cell "6 may 2026" [ref=e11387]:
+                    - generic [ref=e11389]: 6 may 2026
+                  - cell "Menú de la fila" [ref=e11390]:
+                    - button "Menú de la fila" [ref=e11391] [cursor=pointer]:
+                      - img [ref=e11392]: more_vert
+                - row "Message Template ID Evento message_template_id 7 may 2026 Menú de la fila" [ref=e11395]:
+                  - cell "Message Template ID" [ref=e11396]:
+                    - generic [ref=e11398]: Message Template ID
+                  - cell [ref=e11399]
+                  - cell "Evento" [ref=e11401]:
+                    - generic [ref=e11403]: Evento
+                  - cell "message_template_id" [ref=e11404]:
+                    - generic [ref=e11406]: message_template_id
+                  - cell "7 may 2026" [ref=e11407]:
+                    - generic [ref=e11409]: 7 may 2026
+                  - cell "Menú de la fila" [ref=e11410]:
+                    - button "Menú de la fila" [ref=e11411] [cursor=pointer]:
+                      - img [ref=e11412]: more_vert
+                - row "Source Origen de la interacción o evento Evento source 6 may 2026 Menú de la fila" [ref=e11415]:
+                  - cell "Source" [ref=e11416]:
+                    - generic [ref=e11418]: Source
+                  - cell "Origen de la interacción o evento" [ref=e11419]:
+                    - generic [ref=e11420]:
+                      - generic [ref=e11421]: Origen de la interacción o evento
+                      - generic [ref=e11422]: Origen de la interacción o evento
+                  - cell "Evento" [ref=e11423]:
+                    - generic [ref=e11425]: Evento
+                  - cell "source" [ref=e11426]:
+                    - generic [ref=e11428]: source
+                  - cell "6 may 2026" [ref=e11429]:
+                    - generic [ref=e11431]: 6 may 2026
+                  - cell "Menú de la fila" [ref=e11432]:
+                    - button "Menú de la fila" [ref=e11433] [cursor=pointer]:
+                      - img [ref=e11434]: more_vert
+                - row "vertical Evento vertical 7 may 2026 Menú de la fila" [ref=e11437]:
+                  - cell "vertical" [ref=e11438]:
+                    - generic [ref=e11440]: vertical
+                  - cell [ref=e11441]
+                  - cell "Evento" [ref=e11443]:
+                    - generic [ref=e11445]: Evento
+                  - cell "vertical" [ref=e11446]:
+                    - generic [ref=e11448]: vertical
+                  - cell "7 may 2026" [ref=e11449]:
+                    - generic [ref=e11451]: 7 may 2026
+                  - cell "Menú de la fila" [ref=e11452]:
+                    - button "Menú de la fila" [ref=e11453] [cursor=pointer]:
+                      - img [ref=e11454]: more_vert
+              - group [ref=e11457]:
+                - generic [ref=e11459]:
+                  - generic [ref=e11460]:
+                    - generic [ref=e11461]: "Elementos por página:"
+                    - combobox "Elementos por página:" [ref=e11466] [cursor=pointer]:
+                      - generic [ref=e11467]:
+                        - generic [ref=e11469]: "25"
+                        - img [ref=e11472]
+                  - generic [ref=e11474]:
+                    - status [ref=e11475]: 1–10 de 10
+                    - button "Primera página" [disabled] [ref=e11476]:
+                      - img [ref=e11477]
+                    - button "Página anterior" [disabled] [ref=e11481]:
+                      - img [ref=e11482]
+                    - button "Página siguiente" [disabled] [ref=e11486]:
+                      - img [ref=e11487]
+                    - button "Última página" [disabled] [ref=e11491]:
+                      - img [ref=e11492]
+        - contentinfo [ref=e11496]:
+          - text: ©2026 Google |
+          - link "Página principal de Analytics" [ref=e11497] [cursor=pointer]:
+            - /url: https://www.google.com/analytics/?hl=es
+          - text: "|"
+          - link "Términos del Servicio" [ref=e11498] [cursor=pointer]:
+            - /url: https://www.google.com/analytics/tos.html?hl=es
+          - text: "|"
+          - link "Política de Privacidad" [ref=e11499] [cursor=pointer]:
+            - /url: https://www.google.com/policies/privacy/?hl=es
+          - text: "|"
+          - button "Enviar comentarios" [ref=e11500] [cursor=pointer]:
+            - img [ref=e11501]: feedback
+            - generic [ref=e11502]: Enviar comentarios
+      - generic:
+        - button "Abrir el menú contextual"
+  - generic [ref=e2]: Es el método de exploración que se usa para presentar los datos.
+  - generic:
+    - generic [ref=e7432]:
+      - generic [ref=e7433]: Hay disponible una versión más reciente de esta exploración. La exploración no se ha guardado.
+      - generic [ref=e7434]:
+        - button "Opciones" [ref=e7435] [cursor=pointer]:
+          - generic [ref=e7436]: Opciones
+        - button "Cerrar" [ref=e7439] [cursor=pointer]:
+          - generic [ref=e7440]: Cerrar
+    - dialog "Nueva dimensión personalizada" [ref=e11508]:
+      - generic [ref=e11509]:
+        - generic [ref=e11511]:
+          - generic [ref=e11512]:
+            - button "Cerrar la ventana del control deslizante" [ref=e11514] [cursor=pointer]:
+              - img [ref=e11515]: close
+            - heading "Nueva dimensión personalizada" [level=1] [ref=e11519]
+          - button "Guardar" [ref=e11584] [cursor=pointer]:
+            - generic [ref=e11585]: Guardar
+        - generic [ref=e11521]:
+          - img [ref=e11522]: warning_amber
+          - generic [ref=e11523]:
+            - generic [ref=e11524]:
+              - generic [ref=e11525]: Aviso
+              - generic [ref=e11526]: Crear una dimensión personalizada con un número elevado de valores únicos puede influir negativamente en los informes. Sigue las prácticas recomendadas para crear dimensiones personalizadas.
+            - link "Más información sobre las prácticas recomendadas" [ref=e11528] [cursor=pointer]:
+              - /url: https://support.google.com/analytics/answer/10075209?hl=es&utm_id=ad#best-practices
+              - generic [ref=e11529]: Más información sobre las prácticas recomendadas
+        - generic [ref=e11533]:
+          - generic [ref=e11534]:
+            - generic [ref=e11535]:
+              - text: Nombre de la dimensión
+              - button "Descripción del nombre de la definición personalizada" [ref=e11536] [cursor=pointer]:
+                - img [ref=e11537]: help_outline
+              - textbox "Nombre de la dimensión" [ref=e11543]: Item Variant
+            - generic [ref=e11544]:
+              - text: Alcance
+              - button "Descripción del ámbito de la definición personalizada" [ref=e11545] [cursor=pointer]:
+                - img [ref=e11546]: help_outline
+              - combobox "Alcance" [ref=e11552] [cursor=pointer]:
+                - generic [ref=e11553]:
+                  - generic [ref=e11555]: Evento
+                  - img [ref=e11558]
+          - generic [ref=e11561]:
+            - text: Descripción
+            - button "Descripción del campo de descripción de la definición personalizada" [ref=e11562] [cursor=pointer]:
+              - img [ref=e11563]: help_outline
+            - textbox "Descripción" [ref=e11569]: "Versión y km del vehículo (ej: Allure Pack HDI · 104.000 km)"
+          - generic [ref=e11572]:
+            - text: Parámetro de evento
+            - button "Descripción del nombre del desarrollador de la definición personalizada" [ref=e11573] [cursor=pointer]:
+              - img [ref=e11574]: help_outline
+            - generic [ref=e11578]:
+              - combobox "Parámetro de evento" [active] [ref=e11580]: item_va
+              - img [ref=e11582]: arrow_drop_down

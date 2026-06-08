@@ -1,7 +1,18 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell(\"ok - puerto 3000 libre y .next limpio\")"
+      "PowerShell(\"ok - puerto 3000 libre y .next limpio\")",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_snapshot",
+      "mcp__playwright__browser_tabs",
+      "mcp__playwright__browser_wait_for",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_network_requests",
+      "mcp__playwright__browser_press_key",
+      "mcp__playwright__browser_evaluate",
+      "PowerShell(npx vitest run src/lib/__tests__ 2>&1 | Select-Object -Last 12)"
     ]
   }
 }

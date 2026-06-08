@@ -1,0 +1,638 @@
+﻿{
+    "exportFormatVersion":  2,
+    "exportTime":  "2026-06-05 19:03:11",
+    "containerVersion":  {
+                             "path":  "accounts/6351586507/containers/250370263/versions/0",
+                             "accountId":  "6351586507",
+                             "containerId":  "250370263",
+                             "containerVersionId":  "0",
+                             "container":  {
+                                               "path":  "accounts/6351586507/containers/250370263",
+                                               "accountId":  "6351586507",
+                                               "containerId":  "250370263",
+                                               "name":  "www.indiana.com.ar",
+                                               "publicId":  "GTM-TPJCFTBB",
+                                               "usageContext":  [
+                                                                    "WEB"
+                                                                ],
+                                               "fingerprint":  "1776976911940",
+                                               "tagManagerUrl":  "https://tagmanager.google.com/#/container/accounts/6351586507/containers/250370263/workspaces?apiLink=container",
+                                               "features":  {
+                                                                "supportUserPermissions":  true,
+                                                                "supportEnvironments":  true,
+                                                                "supportWorkspaces":  true,
+                                                                "supportGtagConfigs":  false,
+                                                                "supportBuiltInVariables":  true,
+                                                                "supportClients":  false,
+                                                                "supportFolders":  true,
+                                                                "supportTags":  true,
+                                                                "supportTemplates":  true,
+                                                                "supportTriggers":  true,
+                                                                "supportVariables":  true,
+                                                                "supportVersions":  true,
+                                                                "supportZones":  true,
+                                                                "supportTransformations":  false
+                                                            },
+                                               "tagIds":  [
+                                                              "GTM-TPJCFTBB"
+                                                          ]
+                                           },
+                             "tag":  [
+                                         {
+                                             "accountId":  "6351586507",
+                                             "containerId":  "250370263",
+                                             "tagId":  "300",
+                                             "name":  "GA4 - Event - form_submit",
+                                             "type":  "gaawe",
+                                             "parameter":  [
+                                                               {
+                                                                   "type":  "BOOLEAN",
+                                                                   "key":  "sendEcommerceData",
+                                                                   "value":  "false"
+                                                               },
+                                                               {
+                                                                   "type":  "TEMPLATE",
+                                                                   "key":  "eventName",
+                                                                   "value":  "form_submit"
+                                                               },
+                                                               {
+                                                                   "type":  "LIST",
+                                                                   "key":  "eventSettingsTable",
+                                                                   "list":  [
+                                                                                {
+                                                                                    "type":  "MAP",
+                                                                                    "map":  [
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameter",
+                                                                                                    "value":  "form_id"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameterValue",
+                                                                                                    "value":  "{{DLV - form_id}}"
+                                                                                                }
+                                                                                            ]
+                                                                                },
+                                                                                {
+                                                                                    "type":  "MAP",
+                                                                                    "map":  [
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameter",
+                                                                                                    "value":  "location"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameterValue",
+                                                                                                    "value":  "{{DLV - location}}"
+                                                                                                }
+                                                                                            ]
+                                                                                },
+                                                                                {
+                                                                                    "type":  "MAP",
+                                                                                    "map":  [
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameter",
+                                                                                                    "value":  "success"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameterValue",
+                                                                                                    "value":  "{{DLV - success}}"
+                                                                                                }
+                                                                                            ]
+                                                                                }
+                                                                            ]
+                                                               },
+                                                               {
+                                                                   "type":  "TEMPLATE",
+                                                                   "key":  "measurementIdOverride",
+                                                                   "value":  "G-9HJ64VGVLH"
+                                                               }
+                                                           ],
+                                             "firingTriggerId":  [
+                                                                     "200"
+                                                                 ],
+                                             "tagFiringOption":  "ONCE_PER_EVENT",
+                                             "consentSettings":  {
+                                                                     "consentStatus":  "NOT_SET"
+                                                                 }
+                                         },
+                                         {
+                                             "accountId":  "6351586507",
+                                             "containerId":  "250370263",
+                                             "tagId":  "301",
+                                             "name":  "GA4 - Event - phone_click",
+                                             "type":  "gaawe",
+                                             "parameter":  [
+                                                               {
+                                                                   "type":  "BOOLEAN",
+                                                                   "key":  "sendEcommerceData",
+                                                                   "value":  "false"
+                                                               },
+                                                               {
+                                                                   "type":  "TEMPLATE",
+                                                                   "key":  "eventName",
+                                                                   "value":  "phone_click"
+                                                               },
+                                                               {
+                                                                   "type":  "LIST",
+                                                                   "key":  "eventSettingsTable",
+                                                                   "list":  [
+                                                                                {
+                                                                                    "type":  "MAP",
+                                                                                    "map":  [
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameter",
+                                                                                                    "value":  "source"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameterValue",
+                                                                                                    "value":  "{{DLV - source}}"
+                                                                                                }
+                                                                                            ]
+                                                                                },
+                                                                                {
+                                                                                    "type":  "MAP",
+                                                                                    "map":  [
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameter",
+                                                                                                    "value":  "location"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameterValue",
+                                                                                                    "value":  "{{DLV - location}}"
+                                                                                                }
+                                                                                            ]
+                                                                                },
+                                                                                {
+                                                                                    "type":  "MAP",
+                                                                                    "map":  [
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameter",
+                                                                                                    "value":  "component_id"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameterValue",
+                                                                                                    "value":  "{{DLV - component_id}}"
+                                                                                                }
+                                                                                            ]
+                                                                                },
+                                                                                {
+                                                                                    "type":  "MAP",
+                                                                                    "map":  [
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameter",
+                                                                                                    "value":  "phone_number_hash"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameterValue",
+                                                                                                    "value":  "{{DLV - phone_number_hash}}"
+                                                                                                }
+                                                                                            ]
+                                                                                }
+                                                                            ]
+                                                               },
+                                                               {
+                                                                   "type":  "TEMPLATE",
+                                                                   "key":  "measurementIdOverride",
+                                                                   "value":  "G-9HJ64VGVLH"
+                                                               }
+                                                           ],
+                                             "firingTriggerId":  [
+                                                                     "201"
+                                                                 ],
+                                             "tagFiringOption":  "ONCE_PER_EVENT",
+                                             "consentSettings":  {
+                                                                     "consentStatus":  "NOT_SET"
+                                                                 }
+                                         },
+                                         {
+                                             "accountId":  "6351586507",
+                                             "containerId":  "250370263",
+                                             "tagId":  "302",
+                                             "name":  "GA4 - Event - view_search_results",
+                                             "type":  "gaawe",
+                                             "parameter":  [
+                                                               {
+                                                                   "type":  "BOOLEAN",
+                                                                   "key":  "sendEcommerceData",
+                                                                   "value":  "false"
+                                                               },
+                                                               {
+                                                                   "type":  "TEMPLATE",
+                                                                   "key":  "eventName",
+                                                                   "value":  "view_search_results"
+                                                               },
+                                                               {
+                                                                   "type":  "LIST",
+                                                                   "key":  "eventSettingsTable",
+                                                                   "list":  [
+                                                                                {
+                                                                                    "type":  "MAP",
+                                                                                    "map":  [
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameter",
+                                                                                                    "value":  "location"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameterValue",
+                                                                                                    "value":  "{{DLV - location}}"
+                                                                                                }
+                                                                                            ]
+                                                                                },
+                                                                                {
+                                                                                    "type":  "MAP",
+                                                                                    "map":  [
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameter",
+                                                                                                    "value":  "component_id"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameterValue",
+                                                                                                    "value":  "{{DLV - component_id}}"
+                                                                                                }
+                                                                                            ]
+                                                                                },
+                                                                                {
+                                                                                    "type":  "MAP",
+                                                                                    "map":  [
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameter",
+                                                                                                    "value":  "results_count"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameterValue",
+                                                                                                    "value":  "{{DLV - results_count}}"
+                                                                                                }
+                                                                                            ]
+                                                                                },
+                                                                                {
+                                                                                    "type":  "MAP",
+                                                                                    "map":  [
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameter",
+                                                                                                    "value":  "filters_count"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameterValue",
+                                                                                                    "value":  "{{DLV - filters_count}}"
+                                                                                                }
+                                                                                            ]
+                                                                                },
+                                                                                {
+                                                                                    "type":  "MAP",
+                                                                                    "map":  [
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameter",
+                                                                                                    "value":  "marca"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameterValue",
+                                                                                                    "value":  "{{DLV - marca}}"
+                                                                                                }
+                                                                                            ]
+                                                                                }
+                                                                            ]
+                                                               },
+                                                               {
+                                                                   "type":  "TEMPLATE",
+                                                                   "key":  "measurementIdOverride",
+                                                                   "value":  "G-9HJ64VGVLH"
+                                                               }
+                                                           ],
+                                             "firingTriggerId":  [
+                                                                     "202"
+                                                                 ],
+                                             "tagFiringOption":  "ONCE_PER_EVENT",
+                                             "consentSettings":  {
+                                                                     "consentStatus":  "NOT_SET"
+                                                                 }
+                                         },
+                                         {
+                                             "accountId":  "6351586507",
+                                             "containerId":  "250370263",
+                                             "tagId":  "303",
+                                             "name":  "GA4 - Event - gallery_open",
+                                             "type":  "gaawe",
+                                             "parameter":  [
+                                                               {
+                                                                   "type":  "BOOLEAN",
+                                                                   "key":  "sendEcommerceData",
+                                                                   "value":  "false"
+                                                               },
+                                                               {
+                                                                   "type":  "TEMPLATE",
+                                                                   "key":  "eventName",
+                                                                   "value":  "gallery_open"
+                                                               },
+                                                               {
+                                                                   "type":  "LIST",
+                                                                   "key":  "eventSettingsTable",
+                                                                   "list":  [
+                                                                                {
+                                                                                    "type":  "MAP",
+                                                                                    "map":  [
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameter",
+                                                                                                    "value":  "source"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameterValue",
+                                                                                                    "value":  "{{DLV - source}}"
+                                                                                                }
+                                                                                            ]
+                                                                                },
+                                                                                {
+                                                                                    "type":  "MAP",
+                                                                                    "map":  [
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameter",
+                                                                                                    "value":  "location"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameterValue",
+                                                                                                    "value":  "{{DLV - location}}"
+                                                                                                }
+                                                                                            ]
+                                                                                },
+                                                                                {
+                                                                                    "type":  "MAP",
+                                                                                    "map":  [
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameter",
+                                                                                                    "value":  "component_id"
+                                                                                                },
+                                                                                                {
+                                                                                                    "type":  "TEMPLATE",
+                                                                                                    "key":  "parameterValue",
+                                                                                                    "value":  "{{DLV - component_id}}"
+                                                                                                }
+                                                                                            ]
+                                                                                }
+                                                                            ]
+                                                               },
+                                                               {
+                                                                   "type":  "TEMPLATE",
+                                                                   "key":  "measurementIdOverride",
+                                                                   "value":  "G-9HJ64VGVLH"
+                                                               }
+                                                           ],
+                                             "firingTriggerId":  [
+                                                                     "203"
+                                                                 ],
+                                             "tagFiringOption":  "ONCE_PER_EVENT",
+                                             "consentSettings":  {
+                                                                     "consentStatus":  "NOT_SET"
+                                                                 }
+                                         }
+                                     ],
+                             "trigger":  [
+                                             {
+                                                 "accountId":  "6351586507",
+                                                 "containerId":  "250370263",
+                                                 "triggerId":  "200",
+                                                 "name":  "CE - form_submit",
+                                                 "type":  "CUSTOM_EVENT",
+                                                 "customEventFilter":  [
+                                                                           {
+                                                                               "type":  "EQUALS",
+                                                                               "parameter":  [
+                                                                                                 {
+                                                                                                     "type":  "TEMPLATE",
+                                                                                                     "key":  "arg0",
+                                                                                                     "value":  "{{_event}}"
+                                                                                                 },
+                                                                                                 {
+                                                                                                     "type":  "TEMPLATE",
+                                                                                                     "key":  "arg1",
+                                                                                                     "value":  "form_submit"
+                                                                                                 }
+                                                                                             ]
+                                                                           }
+                                                                       ]
+                                             },
+                                             {
+                                                 "accountId":  "6351586507",
+                                                 "containerId":  "250370263",
+                                                 "triggerId":  "201",
+                                                 "name":  "CE - phone_click",
+                                                 "type":  "CUSTOM_EVENT",
+                                                 "customEventFilter":  [
+                                                                           {
+                                                                               "type":  "EQUALS",
+                                                                               "parameter":  [
+                                                                                                 {
+                                                                                                     "type":  "TEMPLATE",
+                                                                                                     "key":  "arg0",
+                                                                                                     "value":  "{{_event}}"
+                                                                                                 },
+                                                                                                 {
+                                                                                                     "type":  "TEMPLATE",
+                                                                                                     "key":  "arg1",
+                                                                                                     "value":  "phone_click"
+                                                                                                 }
+                                                                                             ]
+                                                                           }
+                                                                       ]
+                                             },
+                                             {
+                                                 "accountId":  "6351586507",
+                                                 "containerId":  "250370263",
+                                                 "triggerId":  "202",
+                                                 "name":  "CE - view_search_results",
+                                                 "type":  "CUSTOM_EVENT",
+                                                 "customEventFilter":  [
+                                                                           {
+                                                                               "type":  "EQUALS",
+                                                                               "parameter":  [
+                                                                                                 {
+                                                                                                     "type":  "TEMPLATE",
+                                                                                                     "key":  "arg0",
+                                                                                                     "value":  "{{_event}}"
+                                                                                                 },
+                                                                                                 {
+                                                                                                     "type":  "TEMPLATE",
+                                                                                                     "key":  "arg1",
+                                                                                                     "value":  "view_search_results"
+                                                                                                 }
+                                                                                             ]
+                                                                           }
+                                                                       ]
+                                             },
+                                             {
+                                                 "accountId":  "6351586507",
+                                                 "containerId":  "250370263",
+                                                 "triggerId":  "203",
+                                                 "name":  "CE - gallery_open",
+                                                 "type":  "CUSTOM_EVENT",
+                                                 "customEventFilter":  [
+                                                                           {
+                                                                               "type":  "EQUALS",
+                                                                               "parameter":  [
+                                                                                                 {
+                                                                                                     "type":  "TEMPLATE",
+                                                                                                     "key":  "arg0",
+                                                                                                     "value":  "{{_event}}"
+                                                                                                 },
+                                                                                                 {
+                                                                                                     "type":  "TEMPLATE",
+                                                                                                     "key":  "arg1",
+                                                                                                     "value":  "gallery_open"
+                                                                                                 }
+                                                                                             ]
+                                                                           }
+                                                                       ]
+                                             }
+                                         ],
+                             "variable":  [
+                                              {
+                                                  "accountId":  "6351586507",
+                                                  "containerId":  "250370263",
+                                                  "variableId":  "100",
+                                                  "name":  "DLV - form_id",
+                                                  "type":  "v",
+                                                  "parameter":  [
+                                                                    {
+                                                                        "type":  "INTEGER",
+                                                                        "key":  "dataLayerVersion",
+                                                                        "value":  "2"
+                                                                    },
+                                                                    {
+                                                                        "type":  "BOOLEAN",
+                                                                        "key":  "setDefaultValue",
+                                                                        "value":  "false"
+                                                                    },
+                                                                    {
+                                                                        "type":  "TEMPLATE",
+                                                                        "key":  "name",
+                                                                        "value":  "form_id"
+                                                                    }
+                                                                ]
+                                              },
+                                              {
+                                                  "accountId":  "6351586507",
+                                                  "containerId":  "250370263",
+                                                  "variableId":  "101",
+                                                  "name":  "DLV - success",
+                                                  "type":  "v",
+                                                  "parameter":  [
+                                                                    {
+                                                                        "type":  "INTEGER",
+                                                                        "key":  "dataLayerVersion",
+                                                                        "value":  "2"
+                                                                    },
+                                                                    {
+                                                                        "type":  "BOOLEAN",
+                                                                        "key":  "setDefaultValue",
+                                                                        "value":  "false"
+                                                                    },
+                                                                    {
+                                                                        "type":  "TEMPLATE",
+                                                                        "key":  "name",
+                                                                        "value":  "success"
+                                                                    }
+                                                                ]
+                                              },
+                                              {
+                                                  "accountId":  "6351586507",
+                                                  "containerId":  "250370263",
+                                                  "variableId":  "102",
+                                                  "name":  "DLV - results_count",
+                                                  "type":  "v",
+                                                  "parameter":  [
+                                                                    {
+                                                                        "type":  "INTEGER",
+                                                                        "key":  "dataLayerVersion",
+                                                                        "value":  "2"
+                                                                    },
+                                                                    {
+                                                                        "type":  "BOOLEAN",
+                                                                        "key":  "setDefaultValue",
+                                                                        "value":  "false"
+                                                                    },
+                                                                    {
+                                                                        "type":  "TEMPLATE",
+                                                                        "key":  "name",
+                                                                        "value":  "results_count"
+                                                                    }
+                                                                ]
+                                              },
+                                              {
+                                                  "accountId":  "6351586507",
+                                                  "containerId":  "250370263",
+                                                  "variableId":  "103",
+                                                  "name":  "DLV - filters_count",
+                                                  "type":  "v",
+                                                  "parameter":  [
+                                                                    {
+                                                                        "type":  "INTEGER",
+                                                                        "key":  "dataLayerVersion",
+                                                                        "value":  "2"
+                                                                    },
+                                                                    {
+                                                                        "type":  "BOOLEAN",
+                                                                        "key":  "setDefaultValue",
+                                                                        "value":  "false"
+                                                                    },
+                                                                    {
+                                                                        "type":  "TEMPLATE",
+                                                                        "key":  "name",
+                                                                        "value":  "filters_count"
+                                                                    }
+                                                                ]
+                                              },
+                                              {
+                                                  "accountId":  "6351586507",
+                                                  "containerId":  "250370263",
+                                                  "variableId":  "104",
+                                                  "name":  "DLV - marca",
+                                                  "type":  "v",
+                                                  "parameter":  [
+                                                                    {
+                                                                        "type":  "INTEGER",
+                                                                        "key":  "dataLayerVersion",
+                                                                        "value":  "2"
+                                                                    },
+                                                                    {
+                                                                        "type":  "BOOLEAN",
+                                                                        "key":  "setDefaultValue",
+                                                                        "value":  "false"
+                                                                    },
+                                                                    {
+                                                                        "type":  "TEMPLATE",
+                                                                        "key":  "name",
+                                                                        "value":  "marca"
+                                                                    }
+                                                                ]
+                                              }
+                                          ],
+                             "fingerprint":  "1780686191572",
+                             "tagManagerUrl":  "https://tagmanager.google.com/#/versions/accounts/6351586507/containers/250370263/versions/0?apiLink=version"
+                         }
+}
