@@ -10,7 +10,8 @@
  * Hasta que el usuario decida, GA4 trabaja en modo "modelado" (sin cookies).
  */
 
-import { pushGtagCommand } from "./dataLayer";
+import { pushGtagCommand, pushDataLayer } from "./dataLayer";
+import { EVENTS } from "./events";
 
 export const CONSENT_STORAGE_KEY = "indiana_consent_v1";
 export const CONSENT_STATUS = Object.freeze({
@@ -92,18 +93,22 @@ export function readStoredConsent() {
  */
 export function persistConsent(prefs) {
   if (typeof window === "undefined") return;
+  const analytics = prefs.analytics === true;
+  const ads = prefs.ads === true;
   try {
-    const payload = {
-      analytics: prefs.analytics === true,
-      ads: prefs.ads === true,
-      ts: Date.now(),
-    };
+    const payload = { analytics, ads, ts: Date.now() };
     window.localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(payload));
     updateConsent(payload);
   } catch {
     // Si localStorage falla (modo privado, cuotas), igual aplicamos consent en memoria.
-    updateConsent(prefs);
+    updateConsent({ analytics, ads });
   }
+  // Evento para medir en GA4 la tasa de aceptación del banner (granted/denied).
+  // Se dispara DESPUÉS de updateConsent: si acepta, viaja con consent ya 'granted';
+  // si rechaza, GA lo recibe como ping cookieless (modelado) y suma al denominador.
+  pushDataLayer(analytics ? EVENTS.CONSENT_GRANTED : EVENTS.CONSENT_DENIED, {
+    ads_consent: ads ? "granted" : "denied",
+  });
 }
 
 /**

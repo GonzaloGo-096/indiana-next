@@ -22,6 +22,10 @@ export const EVENTS = Object.freeze({
   FORM_START: "form_start",
   FORM_SUBMIT: "form_submit",
 
+  // Consent (cookie banner) — para medir tasa de aceptación de tracking
+  CONSENT_GRANTED: "consent_granted",
+  CONSENT_DENIED: "consent_denied",
+
   // Custom (snake_case GA4-style)
   WHATSAPP_CLICK: "whatsapp_click",
   PHONE_CLICK: "phone_click",
