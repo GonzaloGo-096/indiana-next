@@ -182,8 +182,14 @@ export function pushGtagCommand(...args) {
   if (typeof window === "undefined") return;
   try {
     window.dataLayer = window.dataLayer || [];
-    // gtag empuja el `arguments` literal (array-like) al dataLayer
-    window.dataLayer.push(args);
+    // gtag exige empujar el objeto `arguments` literal (array-like), NUNCA un
+    // Array real: GTM ignora silenciosamente los comandos (p. ej. consent)
+    // pusheados como Array. Bug histórico: `args` (rest param) es Array y los
+    // updates de consent del banner no aplicaban hasta el siguiente pageload.
+    function gtag() {
+      window.dataLayer.push(arguments);
+    }
+    gtag(...args);
   } catch {
     /* noop */
   }

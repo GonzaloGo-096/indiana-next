@@ -145,13 +145,22 @@ export function buildItemParamsFromUsado(usado, listName) {
   if (!id) return null;
   const marca = toCleanString(usado.marca);
   const modelo = toCleanString(usado.modelo);
-  const name = [marca, modelo].filter(Boolean).join(" ") || id;
+  // item_name incluye el año para distinguir vehículos del mismo modelo en reportes
+  // (hay muchos "Peugeot 208" usados de distintos años/km que de otro modo colapsan
+  // en una sola fila). El km va en item_variant junto a la versión.
+  const anio = toCleanString(usado.anio);
+  const name = [marca, modelo, anio].filter(Boolean).join(" ") || id;
+  const km = usado.kilometraje != null ? toCleanString(usado.kilometraje) : "";
+  const variant = [usado.version, km ? `${km} km` : ""]
+    .map((v) => toCleanString(v))
+    .filter(Boolean)
+    .join(" · ");
   return {
     ...pruneNulls({
       item_id: id,
       item_name: name,
       item_brand: marca || "multimarca",
-      item_variant: toCleanString(usado.version),
+      item_variant: variant,
       price: toNumberOrNull(usado.precio || usado.price),
       currency: CURRENCY_ARS,
       item_list_name: toCleanString(listName),
