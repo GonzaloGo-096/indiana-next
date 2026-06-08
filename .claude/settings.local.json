@@ -12,7 +12,10 @@
       "mcp__playwright__browser_network_requests",
       "mcp__playwright__browser_press_key",
       "mcp__playwright__browser_evaluate",
-      "PowerShell(npx vitest run src/lib/__tests__ 2>&1 | Select-Object -Last 12)"
+      "PowerShell(npx vitest run src/lib/__tests__ 2>&1 | Select-Object -Last 12)",
+      "Bash(git rm *)",
+      "Bash(git add *)",
+      "Bash(git commit --quiet -m 'chore: quitar snapshots temporales de automatizacion del repo *)"
     ]
   }
 }
