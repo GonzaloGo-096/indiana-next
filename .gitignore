@@ -42,3 +42,25 @@ next-env.d.ts
 
 .vercel
 .playwright-mcp/
+
+# Snapshots temporales de automatizacion (Claude/Playwright)
+*.snapshot.md
+/dim*.md
+/newdim.md
+/param*.md
+/step*.md
+/funnel*.md
+/ff-*.md
+/filter*.md
+/okm*.md
+/picker*.md
+/p[0-9]*.md
+/conds.md
+/cond-*.md
+/freeform.md
+/fu-*.md
+/import*.md
+/metric-*.md
+/tag-assistant.md
+/vil-*.md
+/fd1.md
