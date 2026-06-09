@@ -10,7 +10,7 @@
  * La primera línea de defensa es no agregar la key de PII en quien dispara el evento.
  */
 
-import { REQUIRED_CONTEXT_EVENTS } from "./events";
+import { REQUIRED_CONTEXT_EVENTS, LEAD_EVENTS } from "./events";
 
 const MAX_STRING_LEN = 500;
 
@@ -84,6 +84,36 @@ function sanitizeParams(params) {
   return out;
 }
 
+/**
+ * GA4 RESERVA el nombre de parámetro `source` (y medium/campaign/term/content) para la
+ * atribución de tráfico/campaña: si un evento manda `source`, GA4 lo toma como la "Fuente
+ * de la sesión". Nuestro `source` es la UBICACIÓN del componente (inline/card/floating/...),
+ * no un canal. Para que NO ensucie la fuente de tráfico, lo renombramos a `component_source`
+ * antes de empujarlo. (GTM debe leer `component_source`; ver dimensión custom en GA4.)
+ */
+function renameReservedKeys(params) {
+  if (params && Object.prototype.hasOwnProperty.call(params, "source")) {
+    params.component_source = params.source;
+    delete params.source;
+  }
+  return params;
+}
+
+/**
+ * Regla de negocio: los eventos de LEAD NO llevan datos monetarios. El item
+ * (de buildItemParamsFrom*) trae price/currency para los eventos de navegación
+ * (view_item/select_item, donde el precio SÍ es útil), pero a un contacto no le
+ * asignamos valor $. Quitamos price/currency/value cuando el evento es un lead.
+ */
+const MONETARY_KEYS = ["price", "currency", "value"];
+function stripMonetaryForLeads(event, params) {
+  if (!LEAD_EVENTS.has(event)) return params;
+  for (const k of MONETARY_KEYS) {
+    if (Object.prototype.hasOwnProperty.call(params, k)) delete params[k];
+  }
+  return params;
+}
+
 function warnMissingContext(event, params) {
   if (!isDev) return;
   if (!REQUIRED_CONTEXT_EVENTS.has(event)) return;
@@ -106,6 +136,8 @@ export function pushDataLayer(event, params = {}) {
     if (typeof event !== "string" || event.length === 0) return;
     const safe = sanitizeParams(params);
     warnMissingContext(event, safe);
+    renameReservedKeys(safe);
+    stripMonetaryForLeads(event, safe);
     window.dataLayer = window.dataLayer || [];
     const payload = { event, ...safe };
     window.dataLayer.push(payload);
@@ -154,6 +186,8 @@ export function pushEcommerceEvent(event, { items, itemListName, ...contextParam
     window.dataLayer.push({ ecommerce: null });
     const safeContext = sanitizeParams(contextParams);
     warnMissingContext(event, safeContext);
+    renameReservedKeys(safeContext);
+    stripMonetaryForLeads(event, safeContext);
     const payload = {
       event,
       ...safeContext,

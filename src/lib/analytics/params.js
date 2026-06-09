@@ -90,8 +90,17 @@ function pruneNulls(obj) {
 export function buildItemParamsFromAuto(auto, listName) {
   if (!auto || typeof auto !== "object") return null;
   const id = toCleanString(auto.slug || auto.id);
-  const name = toCleanString(auto.titulo || auto.nombre || auto.modelo || id);
   if (!id) return null;
+  // item_name SIEMPRE con la marca: el 0km es todo Peugeot, pero el `titulo` a veces
+  // viene sin marca ("Expert") → en reportes salía "Expert" en vez de "Peugeot Expert".
+  // Anteponemos "Peugeot" salvo que el nombre ya la incluya. NO toca la UI: esto es
+  // capa de analytics; el `titulo` visual de la card queda igual (desacoplado).
+  const baseName = toCleanString(auto.titulo || auto.nombre || auto.modelo);
+  const name = baseName
+    ? baseName.toLowerCase().includes("peugeot")
+      ? baseName
+      : `Peugeot ${baseName}`
+    : id;
   // item_category se asigna FUERA de pruneNulls para garantizar que nunca sea
   // eliminada (pruneNulls descarta null/undefined/"") ni llegue como null al dataLayer.
   return {
@@ -118,8 +127,20 @@ export function buildItemParamsFromAuto(auto, listName) {
 export function buildItemParamsFromPlan(plan, listName) {
   if (!plan || typeof plan !== "object") return null;
   const id = toCleanString(plan.id || plan.slug);
-  const name = toCleanString(plan.nombre || plan.titulo || id);
   if (!id) return null;
+  // item_name = "Modelo · Plan" (decisión B). Los nombres de plan en los datos son
+  // inconsistentes ("Easy" sin modelo vs "2008 Active T200" con modelo): anteponemos
+  // el modelo SOLO si el nombre no lo incluye ya, para no duplicar. El modelo viene
+  // en minúscula ("expert"/"208") → se capitaliza para que quede prolijo en reportes.
+  const modelo = toCleanString(plan.modelo);
+  const planName = toCleanString(plan.nombre || plan.titulo);
+  const modeloLabel = modelo ? modelo.charAt(0).toUpperCase() + modelo.slice(1) : "";
+  const alreadyHasModelo =
+    modelo && planName.toLowerCase().includes(modelo.toLowerCase());
+  const name =
+    modeloLabel && planName && !alreadyHasModelo
+      ? `${modeloLabel} · ${planName}`
+      : planName || modeloLabel || id;
   return {
     ...pruneNulls({
       item_id: id,

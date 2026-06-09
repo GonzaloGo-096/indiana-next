@@ -128,6 +128,21 @@ export const REQUIRED_CONTEXT_EVENTS = Object.freeze(
 );
 
 /**
+ * Eventos de LEAD: por regla de negocio NO deben llevar datos monetarios
+ * (price/currency/value). A un contacto no se le asigna valor $.
+ * dataLayer.js los limpia antes de pushear.
+ */
+export const LEAD_EVENTS = Object.freeze(
+  new Set([
+    EVENTS.GENERATE_LEAD,
+    EVENTS.WHATSAPP_CLICK,
+    EVENTS.PHONE_CLICK,
+    EVENTS.EMAIL_CLICK,
+    EVENTS.FORM_SUBMIT,
+  ]),
+);
+
+/**
  * Mapeo invertido para validar enums (los wrappers UI los chequean en dev).
  */
 export const VALID_SOURCES = Object.freeze(new Set(Object.values(SOURCES)));
