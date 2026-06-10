@@ -114,6 +114,20 @@ function stripMonetaryForLeads(event, params) {
   return params;
 }
 
+/**
+ * GA4 reserva `item_name` (y demás item_*) a nivel ÍTEM: en eventos de ecommerce
+ * (view_item/select_item) que llevan items[], GA4 enruta `item_name` a scope de ÍTEM
+ * y la dimensión custom event-scoped queda (not set). Para tener el modelo en UNA
+ * dimensión event-scoped consistente en TODOS los eventos (y poder cruzar vistas vs
+ * consultas por modelo), copiamos el nombre a un parámetro propio NO reservado: `modelo`.
+ */
+function addModeloAlias(params) {
+  if (params && params.item_name && !params.modelo) {
+    params.modelo = params.item_name;
+  }
+  return params;
+}
+
 function warnMissingContext(event, params) {
   if (!isDev) return;
   if (!REQUIRED_CONTEXT_EVENTS.has(event)) return;
@@ -138,6 +152,7 @@ export function pushDataLayer(event, params = {}) {
     warnMissingContext(event, safe);
     renameReservedKeys(safe);
     stripMonetaryForLeads(event, safe);
+    addModeloAlias(safe);
     window.dataLayer = window.dataLayer || [];
     const payload = { event, ...safe };
     window.dataLayer.push(payload);
@@ -188,6 +203,7 @@ export function pushEcommerceEvent(event, { items, itemListName, ...contextParam
     warnMissingContext(event, safeContext);
     renameReservedKeys(safeContext);
     stripMonetaryForLeads(event, safeContext);
+    addModeloAlias(safeContext);
     const payload = {
       event,
       ...safeContext,
