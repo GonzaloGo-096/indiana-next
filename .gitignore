@@ -64,3 +64,7 @@ next-env.d.ts
 /tag-assistant.md
 /vil-*.md
 /fd1.md
+
+# Snapshots temporales de automatizacion (no versionar)
+okm-*.png
+ga4-filters.yml

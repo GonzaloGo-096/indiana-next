@@ -48,22 +48,19 @@ const nextConfig = {
   // Desactivar reactCompiler para acelerar build (puede reactivarse si es necesario)
   reactCompiler: false,
   images: {
-    remotePatterns: [
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com",
-        pathname: "/**",
-      },
-    ],
-    // Optimizaciones de imágenes
-    formats: ["image/webp", "image/avif"],
-    // ✅ OPTIMIZADO: Aumentar cache TTL para mejor rendimiento
-    minimumCacheTTL: 31536000, // 1 año (máximo recomendado)
-    // Calidades permitidas (debe incluir todas las usadas en el código)
-    qualities: [75, 80, 85, 90],
-    // ✅ OPTIMIZADO: Tamaños de dispositivo para mejor srcset
+    // 🔑 Delega el resize a Cloudinary mediante src/lib/imageLoader.js.
+    // Apaga el optimizador de Vercel (/_next/image) → adiós 402 y costo $0.
+    loaderFile: "./src/lib/imageLoader.js",
+
+    // deviceSizes / imageSizes SE MANTIENEN: Next los usa para decidir qué
+    // anchos pide el srcset y se los pasa al loader. Siguen siendo relevantes.
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+
+    // NOTA: con loaderFile propio, remotePatterns / formats / qualities /
+    // minimumCacheTTL ya NO aplican (no hay fetch al optimizador de Vercel).
+    // Se eliminaron para no confundir; el formato y la calidad ahora los
+    // resuelve Cloudinary (f_auto / q_auto) dentro del loader.
   },
   // Optimizaciones de producción
   compress: true,
