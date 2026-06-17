@@ -74,5 +74,11 @@ export const staticImages = {
   footer: {},
 }
 
+/**
+ * Placeholder único para vehículos sin foto (usados / 0km).
+ * Fuente de verdad: usar SIEMPRE esta constante, no hardcodear el path.
+ */
+export const VEHICLE_PLACEHOLDER = staticImages.usados.placeholder.src
+
 
 

@@ -68,3 +68,4 @@ next-env.d.ts
 # Snapshots temporales de automatizacion (no versionar)
 okm-*.png
 ga4-filters.yml
+preview-*.png

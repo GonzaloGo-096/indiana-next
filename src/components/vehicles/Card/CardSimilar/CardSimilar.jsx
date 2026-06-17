@@ -34,6 +34,7 @@ import { pushEcommerceEvent } from "@/lib/analytics/dataLayer";
 import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import styles from "./CardSimilar.module.css";
+import { VEHICLE_PLACEHOLDER } from "../../../../config/cloudinaryStaticImages";
 
 /**
  * Componente CardSimilar optimizado
@@ -57,8 +58,8 @@ export const CardSimilar = memo(({
 
   // ✅ URL de imagen principal optimizada
   const primaryImage = useMemo(() => {
-    if (!auto) return "/auto1.jpg";
-    return auto.fotoPrincipal || auto.imagen || "/auto1.jpg";
+    if (!auto) return VEHICLE_PLACEHOLDER;
+    return auto.fotoPrincipal || auto.imagen || VEHICLE_PLACEHOLDER;
   }, [auto]);
 
   // URL del detalle — usada como href del <Link>

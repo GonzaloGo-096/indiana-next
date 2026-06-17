@@ -36,6 +36,7 @@ import { pushEcommerceEvent } from "@/lib/analytics/dataLayer";
 import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import styles from "./CardAuto.module.css";
+import { VEHICLE_PLACEHOLDER } from "../../../../config/cloudinaryStaticImages";
 
 /**
  * Componente CardAuto optimizado
@@ -49,8 +50,8 @@ export const CardAuto = memo(({ auto, imagePriority = "auto", index = 0 }) => {
 
   // ✅ URL de imagen principal optimizada con useMemo
   const primaryImage = useMemo(() => {
-    if (!auto) return "/auto1.jpg";
-    return auto.fotoPrincipal || auto.imagen || "/auto1.jpg";
+    if (!auto) return VEHICLE_PLACEHOLDER;
+    return auto.fotoPrincipal || auto.imagen || VEHICLE_PLACEHOLDER;
   }, [auto]);
 
   // ✅ Estado de carga de imagen para shimmer

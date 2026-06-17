@@ -11,8 +11,9 @@
  */
 
 import { extractAllImageUrls } from "./imageExtractors";
+import { VEHICLE_PLACEHOLDER } from "../config/cloudinaryStaticImages";
 
-const DEFAULT_CAR_IMAGE = "/assets/logos/logos-indiana/desktop/logo-chico-solid.webp";
+const DEFAULT_CAR_IMAGE = VEHICLE_PLACEHOLDER;
 
 /**
  * Obtiene todas las imágenes para el carrusel de un vehículo

@@ -16,11 +16,12 @@
  * @version 1.0.0 - Migración desde React
  */
 
+import { VEHICLE_PLACEHOLDER } from "../config/cloudinaryStaticImages";
+
 /**
- * URL de imagen por defecto (placeholder)
- * TODO: Reemplazar con imagen real cuando esté disponible
+ * URL de imagen por defecto (placeholder). Fuente única en config.
  */
-const DEFAULT_CAR_IMAGE = "/assets/logos/logos-indiana/desktop/logo-chico-solid.webp";
+const DEFAULT_CAR_IMAGE = VEHICLE_PLACEHOLDER;
 
 /**
  * Extrae URL de un campo de imagen (maneja objetos, strings y null)
