@@ -26,7 +26,7 @@ export function VersionItemsImageDesktop({ modeloNombre }) {
         width={1200}
         height={600}
         className={styles.itemsImage}
-        sizes="(min-width: 992px) 100vw, 100vw"
+        sizes="(min-width: 768px) 100vw, 1px"
         quality={85}
         loading="lazy"
       />

@@ -38,7 +38,7 @@ export function HeroImageDesktop({ heroImage }) {
           className={styles.heroImage}
           priority
           quality={85}
-          sizes="1200px"
+          sizes="(max-width: 767px) 1px, 100vw"
         />
       )}
     </div>

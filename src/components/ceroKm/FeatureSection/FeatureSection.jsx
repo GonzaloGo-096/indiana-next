@@ -54,7 +54,7 @@ export const FeatureSection = memo(function FeatureSection({
                 width={800}
                 height={600}
                 className={`${styles.image} ${styles.imageMobile}`}
-                sizes="(max-width: 768px) 100vw, 60vw"
+                sizes="(max-width: 768px) 100vw, 1px"
                 quality={80}
                 loading="lazy"
               />
@@ -66,7 +66,7 @@ export const FeatureSection = memo(function FeatureSection({
                 width={1200}
                 height={800}
                 className={`${styles.image} ${styles.imageDesktop}`}
-                sizes="(max-width: 768px) 100vw, 60vw"
+                sizes="(max-width: 768px) 1px, 60vw"
                 quality={85}
                 loading="lazy"
               />

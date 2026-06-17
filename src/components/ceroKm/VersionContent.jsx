@@ -131,7 +131,10 @@ export const VersionContent = memo(function VersionContent({
               width={800}
               height={600}
               className={styles.itemsImage}
-              sizes="100vw"
+              /* Solo se ve en mobile. En desktop el layout queda oculto pero
+                 la imagen igual se descargaba (~70KB): con "1px" baja una
+                 versión de 16px (~300 bytes). Patrón del Hero. */
+              sizes="(max-width: 767px) 100vw, 1px"
               quality={85}
               loading="lazy"
             />
