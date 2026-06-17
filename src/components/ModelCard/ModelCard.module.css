@@ -284,17 +284,24 @@
   transform-origin: center 52%;
 }
 
-/* 2008: subir levemente dentro del encuadre */
-.compact.softSurface.frameless[data-slug="2008"] .image {
-  object-position: center 40%;
-  transform: scale(0.97);
-  transform-origin: center 52%;
+/* 208: leve corrimiento a la izquierda dentro del encuadre */
+.compact.softSurface.frameless[data-slug="208"] .image {
+  object-position: center 44%;
+  transform: translateX(-5%);
 }
 
-/* 408: más presencia visual sin cambiar tamaño de card */
+/* 2008: bajar dentro del encuadre para alinear el piso con 3008+ */
+.compact.softSurface.frameless[data-slug="2008"] .image {
+  object-position: center 72%;
+  transform: scale(0.97);
+  transform-origin: center 72%;
+}
+
+/* 408: levemente más grande y más abajo dentro del encuadre */
 .compact.softSurface.frameless[data-slug="408"] .image {
-  transform: scale(1.12);
-  transform-origin: center 56%;
+  object-position: center 84%;
+  transform: scale(1.18);
+  transform-origin: center 84%;
 }
 
 /* Compact: autos más grandes dentro de la card (menos padding en la imagen) */
@@ -360,7 +367,7 @@
 }
 
 .card.compact.softSurface.frameless[data-slug="408"]:hover .image {
-  transform: scale(1.16);
+  transform: scale(1.22);
 }
 
 .content {
@@ -461,8 +468,8 @@
   }
 
   .compact.softSurface {
-    min-width: 520px !important;
-    max-width: 650px !important;
+    min-width: 420px !important;
+    max-width: 520px !important;
   }
   
   .image {

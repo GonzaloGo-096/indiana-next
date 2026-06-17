@@ -338,6 +338,18 @@
   margin-top: clamp(-2.35rem, -5vw, -1.1rem);
 }
 
+/* Desktop: sección más compacta — menos aire arriba y CTAs más cerca del carrusel */
+@media (min-width: 992px) {
+  .section {
+    padding-top: clamp(2rem, 3.5vw, 3rem);
+    padding-bottom: clamp(2rem, 3.5vw, 3rem);
+  }
+
+  .ceroCtaPull {
+    margin-top: clamp(-4rem, -5vw, -2.75rem);
+  }
+}
+
 @media (max-width: 767px) {
   .section {
     padding-top: clamp(2.5rem, 6vw, 3.25rem);
