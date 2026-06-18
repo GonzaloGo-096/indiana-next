@@ -99,6 +99,23 @@
   text-align: left;
 }
 
+/* Fila: selector de colores (izquierda) + botón de contacto (al final/derecha) */
+.colorCtaRow {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+/* Dentro de la fila, el bloque de colores ocupa solo su ancho natural
+   (sin width:100%) para dejar lugar al botón a la derecha. */
+.colorCtaRow .colorSection,
+.colorCtaRow .colorSectionRight {
+  width: auto;
+}
+
 /* ===== IMAGEN ===== */
 .imageContainer {
   position: relative;

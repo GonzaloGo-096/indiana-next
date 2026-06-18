@@ -7,7 +7,7 @@ import { VersionContent } from "../../../../components/ceroKm/VersionContent";
  * Client Component wrapper para manejar estado de versión/color.
  * Usa el contexto compartido para que la versión activa sea la misma en tabs y en la foto por versión.
  */
-export function ModeloDetalleClient({ autoSlug, modelo }) {
+export function ModeloDetalleClient({ autoSlug, modelo, contactCta }) {
   const {
     versiones,
     versionActiva,
@@ -30,6 +30,7 @@ export function ModeloDetalleClient({ autoSlug, modelo }) {
       imagenActual={imagenActual}
       onColorChange={cambiarColor}
       modelSlug={autoSlug}
+      contactCta={contactCta}
     />
   );
 }

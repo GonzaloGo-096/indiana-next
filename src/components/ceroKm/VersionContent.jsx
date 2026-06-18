@@ -39,6 +39,7 @@ export const VersionContent = memo(function VersionContent({
   imagenActual,
   onColorChange,
   modelSlug,
+  contactCta = null,
 }) {
   if (!version) return null;
 
@@ -83,21 +84,24 @@ export const VersionContent = memo(function VersionContent({
           )}
         </div>
 
-        {/* Selector de colores */}
-        {coloresDisponibles && coloresDisponibles.length > 0 && (
-          <div className={styles.colorSection}>
-            <h3 className={styles.colorTitle}>Colores</h3>
-            <ColorSelector
-              colores={coloresDisponibles}
-              colorActivo={colorActivo?.key}
-              onColorChange={onColorChange}
-              size="md"
-            />
-            {colorActivo && (
-              <span className={styles.colorLabel}>{colorActivo.label}</span>
-            )}
-          </div>
-        )}
+        {/* Selector de colores + CTA de contacto en la misma fila (botón al final) */}
+        <div className={styles.colorCtaRow}>
+          {coloresDisponibles && coloresDisponibles.length > 0 && (
+            <div className={styles.colorSection}>
+              <h3 className={styles.colorTitle}>Colores</h3>
+              <ColorSelector
+                colores={coloresDisponibles}
+                colorActivo={colorActivo?.key}
+                onColorChange={onColorChange}
+                size="md"
+              />
+              {colorActivo && (
+                <span className={styles.colorLabel}>{colorActivo.label}</span>
+              )}
+            </div>
+          )}
+          {contactCta}
+        </div>
 
         {/* Tabs de versiones: arriba de los datos, no del contenedor de la imagen */}
         {hasMultipleVersions && (
@@ -196,23 +200,26 @@ export const VersionContent = memo(function VersionContent({
             </div>
             <p className={styles.versionDescription}>{version.descripcion}</p>
 
-            {/* Selector de colores: abajo del contenido, opciones un poco más chicas */}
-            {coloresDisponibles && coloresDisponibles.length > 0 && (
-              <div className={styles.colorSectionRight}>
-                <h3 className={styles.colorTitle}>Colores</h3>
-                <div className={styles.colorSelectorWrap}>
-                  <ColorSelector
-                    colores={coloresDisponibles}
-                    colorActivo={colorActivo?.key}
-                    onColorChange={onColorChange}
-                    size="md"
-                  />
+            {/* Selector de colores + CTA de contacto en la misma fila (botón al final) */}
+            <div className={styles.colorCtaRow}>
+              {coloresDisponibles && coloresDisponibles.length > 0 && (
+                <div className={styles.colorSectionRight}>
+                  <h3 className={styles.colorTitle}>Colores</h3>
+                  <div className={styles.colorSelectorWrap}>
+                    <ColorSelector
+                      colores={coloresDisponibles}
+                      colorActivo={colorActivo?.key}
+                      onColorChange={onColorChange}
+                      size="md"
+                    />
+                  </div>
+                  {colorActivo && (
+                    <span className={styles.colorLabel}>{colorActivo.label}</span>
+                  )}
                 </div>
-                {colorActivo && (
-                  <span className={styles.colorLabel}>{colorActivo.label}</span>
-                )}
-              </div>
-            )}
+              )}
+              {contactCta}
+            </div>
           </div>
         </div>
       </article>
