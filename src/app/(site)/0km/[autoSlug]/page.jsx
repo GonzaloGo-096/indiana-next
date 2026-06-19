@@ -407,7 +407,7 @@ export default async function CeroKilometroDetallePage({ params }) {
                 slug: autoSlug,
                 titulo: `${modelo.marca || "Peugeot"} ${modelo.nombre}`,
               })}
-              className={`${cta.button} ${cta.buttonInline}`}
+              className={contact.buttonWhatsapp}
             >
               <svg
                 className={contact.whatsappIcon}

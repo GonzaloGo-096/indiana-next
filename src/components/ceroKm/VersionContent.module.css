@@ -99,21 +99,29 @@
   text-align: left;
 }
 
-/* Fila: selector de colores (izquierda) + botón de contacto (al final/derecha) */
+/* Mobile (base): el botón de contacto va DEBAJO de los colores (apilado) */
 .colorCtaRow {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 16px;
   width: 100%;
-  flex-wrap: wrap;
 }
 
-/* Dentro de la fila, el bloque de colores ocupa solo su ancho natural
-   (sin width:100%) para dejar lugar al botón a la derecha. */
+/* El bloque de colores ocupa solo su ancho natural (sin width:100%) */
 .colorCtaRow .colorSection,
 .colorCtaRow .colorSectionRight {
   width: auto;
+}
+
+/* Desktop: colores y botón en la misma fila (botón al final/derecha) */
+@media (min-width: 768px) {
+  .colorCtaRow {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
 }
 
 /* ===== IMAGEN ===== */
