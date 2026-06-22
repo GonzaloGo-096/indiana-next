@@ -223,6 +223,24 @@
   margin-bottom: var(--spacing-2);
 }
 
+/* Última fila del bloque de datos: CTA de WhatsApp centrado */
+.planCtaRow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2);
+  width: 100%;
+  margin: var(--spacing-4) 0 var(--spacing-2);
+  text-align: center;
+}
+
+/* Desktop: un poco más de aire entre los datos y el CTA */
+@media (min-width: 768px) {
+  .planCtaRow {
+    margin-top: var(--spacing-6);
+  }
+}
+
 /* ===== UNA FILA DE CUBÍCULOS: Licitación mínima + resto. Separación clara del bloque superior ===== */
 .planDetailsSection {
   width: 100%;
@@ -820,30 +838,7 @@
   margin-right: 0.15em;
 }
 
-/* ===== BOTÓN DE CONTACTO WHATSAPP ===== */
-.contactSection {
-  width: 100%;
-  margin-top: 0;
-  margin-bottom: var(--spacing-8);
-  padding-top: var(--spacing-4);
-  padding-bottom: var(--spacing-6);
-  padding-left: 0;
-  padding-right: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-sizing: border-box;
-}
-
-/* Envuelve el botón + microcopy en columna centrada */
-.contactInner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-3);
-}
-
-/* Microcopy bajo el CTA */
+/* ===== CONTACTO: microcopy bajo el CTA de WhatsApp ===== */
 .contactMicrocopy {
   margin: 0;
   font-family: var(--font-poppins, system-ui, sans-serif);
@@ -855,54 +850,7 @@
   max-width: 38ch;
 }
 
-/* WhatsApp: ContactButtons.module.css */
-
-/* CTA WhatsApp: un escalón por encima del .button genérico (solo esta página) */
-.planContactWhatsapp {
-  padding: 0.9375rem 1.875rem;
-  min-height: 3.125rem;
-  font-size: clamp(0.75rem, 1.55vw, 0.90625rem);
-  letter-spacing: 0.09em;
-  gap: 0.625rem;
-}
-
-.planContactWhatsapp svg {
-  width: 1.5rem;
-  height: 1.5rem;
-  flex-shrink: 0;
-}
-
 @media (max-width: 767px) {
-  .contactSection {
-    margin-top: 0;
-    margin-bottom: var(--spacing-4);
-    padding-top: var(--spacing-3);
-    padding-bottom: var(--spacing-4);
-  }
-
-  .planContactWhatsapp {
-    width: 100%;
-    max-width: 100%;
-    padding: 0.875rem 1.5rem;
-    min-height: 3rem;
-    font-size: 0.9375rem;
-    letter-spacing: 0.06em;
-    justify-content: center;
-    gap: 0.625rem;
-  }
-
-  .planContactWhatsapp svg {
-    width: 1.25rem;
-    height: 1.25rem;
-  }
-
-  .contactSection {
-    margin-top: var(--spacing-8);
-    margin-bottom: var(--spacing-8);
-    padding-top: var(--spacing-6);
-    padding-bottom: var(--spacing-6);
-  }
-
   .legalDisclaimer {
     margin-top: var(--spacing-8);
   }
