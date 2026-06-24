@@ -102,6 +102,7 @@ export const UsadosCarousel = ({
   const carouselRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   const hasUserScrolled = useRef(false); // ✅ Rastrea si el usuario ha interactuado con el scroll
   const isMountedRef = useRef(true);
 
@@ -118,6 +119,45 @@ export const UsadosCarousel = ({
     // ✅ Flecha derecha si hay más contenido
     setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
   }, []);
+
+  // Desplazar a una card puntual al tocar un dot
+  const scrollToIndex = useCallback((index) => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+    const cards = carousel.querySelectorAll(`.${styles.cardWrapper}`);
+    const card = cards[index];
+    if (!(card instanceof HTMLElement)) return;
+    hasUserScrolled.current = true;
+    card.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+  }, []);
+
+  // Índice activo de los dots: card cuyo centro está más cerca del centro del viewport.
+  // Se usa como handler del prop onScroll del contenedor (React lo re-conecta al
+  // nodo correcto en cada render, incluso si el carrusel se re-monta al cambiar
+  // viewportClip), evitando el listener "pegado a un nodo viejo".
+  const updateActiveIndex = useCallback(() => {
+    const carousel = carouselRef.current;
+    if (!carousel) return;
+    const cards = carousel.querySelectorAll(`.${styles.cardWrapper}`);
+    if (!cards.length) return;
+    const viewportCenter = carousel.scrollLeft + carousel.clientWidth / 2;
+    let closest = 0;
+    let closestDist = Number.POSITIVE_INFINITY;
+    cards.forEach((card, i) => {
+      const center = card.offsetLeft + card.clientWidth / 2;
+      const dist = Math.abs(center - viewportCenter);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closest = i;
+      }
+    });
+    setActiveIndex(closest);
+  }, []);
+
+  // Alinear el indicador al estado inicial y cuando llegan los vehículos (async).
+  useEffect(() => {
+    updateActiveIndex();
+  }, [vehicles.length, updateActiveIndex]);
 
   // ✅ Efecto para resetear scroll al inicio cuando cambian los vehículos
   useEffect(() => {
@@ -198,7 +238,10 @@ export const UsadosCarousel = ({
         cancelAnimationFrame(rafId);
       }
     };
-  }, [updateArrowVisibility]);
+    // `vehicles.length` en deps: los vehículos se cargan async (home/usados);
+    // sin esto el efecto corre con el carrusel aún sin montar y el listener de
+    // scroll nunca se adjunta (flechas y dots no se actualizan al deslizar).
+  }, [updateArrowVisibility, vehicles.length]);
 
   // ✅ Funciones de scroll
   const scrollLeft = useCallback(() => {
@@ -244,7 +287,7 @@ export const UsadosCarousel = ({
   }
 
   const carouselContent = (
-    <div ref={carouselRef} className={styles.carouselContainer}>
+    <div ref={carouselRef} className={styles.carouselContainer} onScroll={updateActiveIndex}>
       {vehicles.length === 0 ? (
         <div className={styles.emptyState}>
           <p>No hay vehículos disponibles</p>
@@ -307,6 +350,36 @@ export const UsadosCarousel = ({
     </div>
   );
 
+  // Indicador de posición (dots). Visible en mobile, donde no hay flechas.
+  const dots =
+    vehicles.length > 1 ? (
+      <div className={styles.dots} role="tablist" aria-label="Indicador del carrusel de usados">
+        {vehicles.map((vehicle, i) => {
+          const isActive = i === activeIndex;
+          return (
+            <button
+              key={`${vehicle.id || vehicle._id || i}-dot`}
+              type="button"
+              className={`${styles.dot} ${isActive ? styles.dotActive : ""}`}
+              onClick={() => scrollToIndex(i)}
+              role="tab"
+              aria-selected={isActive}
+              aria-label={`Ir al vehículo ${i + 1} de ${vehicles.length}`}
+              aria-current={isActive ? "true" : "false"}
+              tabIndex={isActive ? 0 : -1}
+            />
+          );
+        })}
+      </div>
+    ) : null;
+
+  const carouselWithDots = (
+    <>
+      {carouselInner}
+      {dots}
+    </>
+  );
+
   const wrapperClassName = [
     styles.carouselWrapper,
     compact ? styles.carouselCompact : "",
@@ -319,10 +392,10 @@ export const UsadosCarousel = ({
 
   return viewportClip ? (
     <div className={styles.viewportClip}>
-      <div className={wrapperClassName}>{carouselInner}</div>
+      <div className={wrapperClassName}>{carouselWithDots}</div>
     </div>
   ) : (
-    <div className={wrapperClassName}>{carouselInner}</div>
+    <div className={wrapperClassName}>{carouselWithDots}</div>
   );
 };
 

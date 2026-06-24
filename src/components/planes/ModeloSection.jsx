@@ -147,7 +147,7 @@ export const ModeloSection = ({ modelo, planes }) => {
   const fotosCards = useMemo(
     () =>
       fotosColores.map((foto, i) => (
-        <div key={`foto-${modelo}-${i}`} className={styles.modeloImageCard}>
+        <div key={`foto-${modelo}-${i}`} className={styles.modeloImageCard} data-modelo={modelo}>
           <Image
             src={foto.url}
             alt={foto.alt}
@@ -209,6 +209,14 @@ export const ModeloSection = ({ modelo, planes }) => {
     checkActiveItem();
     const container = scrollContainerRef.current;
     if (container) {
+      // Arrancar siempre en el primer elemento (foto del modelo). Con snap
+      // centrado en mobile, queda centrado al cargar. rAF para ganarle a la
+      // restauración de scroll del navegador.
+      container.scrollLeft = 0;
+      requestAnimationFrame(() => {
+        if (scrollContainerRef.current) scrollContainerRef.current.scrollLeft = 0;
+      });
+
       // ✅ OPTIMIZADO: requestAnimationFrame para scroll
       let rafId = null;
       const onScroll = () => {
@@ -309,7 +317,7 @@ export const ModeloSection = ({ modelo, planes }) => {
         <CarouselDots
           count={itemCount}
           activeIndex={activeItem}
-          variant="planes"
+          variant="pill"
           onDotClick={handleDotClick}
         />
       </div>

@@ -357,21 +357,6 @@
   min-width: 0;
 }
 
-/* Sección de versión (dentro del header, antes de los 3 datos) */
-.versionSection {
-  width: 100%;
-  padding-top: var(--spacing-4);
-  padding-bottom: 0;
-  display: flex;
-  flex-direction: row;
-  align-items: baseline;
-  justify-content: flex-start;
-  gap: var(--spacing-3);
-  flex-wrap: wrap; /* ✅ Permitir wrap si no cabe horizontalmente */
-  min-width: 0;
-  max-width: 100%;
-}
-
 .headerRightBottom .version_text {
   margin-left: 0;
 }

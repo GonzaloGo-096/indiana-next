@@ -38,6 +38,8 @@ export const GalleryModal = memo(
   }) => {
     const [mounted, setMounted] = useState(false);
     const prevIndexRef = useRef(activeIndex);
+    const touchStartX = useRef(0);
+    const touchEndX = useRef(0);
 
     // Solo renderizar en cliente
     useEffect(() => {
@@ -93,15 +95,42 @@ export const GalleryModal = memo(
       onIndexChange?.(newIndex);
     }, [activeIndex, images.length, onIndexChange]);
 
-    // Bloquear scroll del body
-    useEffect(() => {
-      if (isOpen) {
-        const originalOverflow = document.body.style.overflow;
-        document.body.style.overflow = "hidden";
-        return () => {
-          document.body.style.overflow = originalOverflow;
-        };
+    // Swipe táctil (mobile): deslizar sobre la imagen cambia de foto
+    const handleTouchStart = useCallback((e) => {
+      touchStartX.current = e.touches[0].clientX;
+      touchEndX.current = 0;
+    }, []);
+
+    const handleTouchMove = useCallback((e) => {
+      touchEndX.current = e.touches[0].clientX;
+    }, []);
+
+    const handleTouchEnd = useCallback(() => {
+      if (!touchStartX.current || !touchEndX.current) return;
+      const distance = touchStartX.current - touchEndX.current;
+      if (Math.abs(distance) > 50) {
+        if (distance > 0) goToNext();
+        else goToPrev();
       }
+      touchStartX.current = 0;
+      touchEndX.current = 0;
+    }, [goToNext, goToPrev]);
+
+    // Bloquear scroll de la página de fondo. Bloqueamos html Y body porque
+    // según el navegador/layout el scroller puede ser cualquiera de los dos;
+    // si solo se bloquea uno, la página de atrás sigue desplazándose.
+    useEffect(() => {
+      if (!isOpen) return;
+      const html = document.documentElement;
+      const body = document.body;
+      const prevHtmlOverflow = html.style.overflow;
+      const prevBodyOverflow = body.style.overflow;
+      html.style.overflow = "hidden";
+      body.style.overflow = "hidden";
+      return () => {
+        html.style.overflow = prevHtmlOverflow;
+        body.style.overflow = prevBodyOverflow;
+      };
     }, [isOpen]);
 
     // Manejo de teclado
@@ -174,7 +203,12 @@ export const GalleryModal = memo(
           </button>
 
           {/* Imagen principal */}
-          <div className={styles.modalImageContainer}>
+          <div
+            className={styles.modalImageContainer}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+          >
             {imageUrl && (
               <Image
                 src={imageUrl}

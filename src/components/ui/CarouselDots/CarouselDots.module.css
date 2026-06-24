@@ -8,16 +8,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 7px;
   padding: 8px 0;
 }
 
+/* Pill (default): mismo indicador que usamos en el inicio (0km / usados) */
 .dot {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 0;
+  border: none;
+  box-sizing: content-box;
   width: 6px;
   height: 6px;
   border-radius: 999px;
-  background: var(--color-neutral-300);
-  opacity: 0.7;
+  background: color-mix(in srgb, var(--color-brand-500, #061b9c) 26%, transparent);
+  opacity: 1;
   transition:
     background-color var(--transition-smooth),
     opacity var(--transition-smooth),
@@ -26,15 +32,13 @@
 }
 
 .dot:hover {
-  opacity: 0.9;
+  opacity: 0.85;
 }
 
 .dotActive {
-  width: 18px; /* pill */
+  width: 22px; /* pill */
   height: 6px;
-  border-radius: 999px;
-  background: var(--color-brand-500);
-  box-shadow: 0 2px 6px var(--color-brand-500-rgba-20);
+  background: var(--color-brand-500, #061b9c);
   opacity: 1;
 }
 

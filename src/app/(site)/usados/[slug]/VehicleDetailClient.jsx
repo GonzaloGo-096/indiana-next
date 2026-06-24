@@ -30,11 +30,16 @@ export default function VehicleDetailClient({ vehicle }) {
   }, [vehicleKey]);
 
   // Volver al listado preservando filtros y posición de scroll.
-  // router.back() usa el historial del browser: si el usuario llegó desde
-  // el listado filtrado, vuelve a esa URL exacta. Si abrió el detalle
-  // directamente, vuelve a la página anterior del historial del browser.
+  // Si el usuario navegó dentro del sitio (history.length > 1), router.back()
+  // vuelve al listado filtrado en su posición exacta. Pero si llegó por link
+  // directo (WhatsApp, Google, pestaña nueva) no hay historial propio y back()
+  // lo sacaría del sitio o no haría nada: en ese caso vamos al listado.
   const handleBack = useCallback(() => {
-    router.back();
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/usados");
+    }
   }, [router]);
 
   if (!vehicle) {

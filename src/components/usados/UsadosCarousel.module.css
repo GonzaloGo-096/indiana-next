@@ -436,6 +436,47 @@
   }
 }
 
+/* ===== DOTS (indicador de posición) — mismo lenguaje que el carrusel 0km =====
+   Visible en mobile/tablet (donde no hay flechas); se oculta en desktop (≥992px). */
+.dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 4px;
+  padding-bottom: var(--spacing-2);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: color-mix(in srgb, var(--color-brand-500, #061b9c) 26%, transparent);
+  transition:
+    width 0.24s ease,
+    background-color 0.24s ease;
+}
+
+.dotActive {
+  width: 22px;
+  background: var(--color-brand-500, #061b9c);
+}
+
+.dot:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-brand-500, #061b9c) 55%, transparent);
+  outline-offset: 2px;
+}
+
+/* Desktop: la navegación es por flechas; los dots no se muestran */
+@media (min-width: 992px) {
+  .dots {
+    display: none;
+  }
+}
+
 /* ===== ERROR/EMPTY STATE ===== */
 .emptyState {
   width: 100%;

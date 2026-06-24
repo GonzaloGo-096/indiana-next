@@ -101,25 +101,36 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 40px;
-  height: 40px;
-  background: var(--color-neutral-900);
+  width: 34px;
+  height: 34px;
+  /* Sutil: glass translúcido en vez de círculo negro sólido */
+  background: rgba(17, 24, 39, 0.32);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border: none;
   border-radius: 50%;
-  display: none; /* Ocultas por defecto (mobile) */
+  /* Visible también en mobile: hint de que la foto es un carrusel */
+  display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    opacity 0.2s ease,
+    transform 0.2s ease;
   z-index: 10;
   color: var(--color-white);
-  opacity: 0.9;
+  opacity: 0.82;
 }
 
 .mainArrow:hover {
   opacity: 1;
-  background: var(--color-neutral-800);
-  transform: translateY(-50%) scale(1.1);
+  background: rgba(17, 24, 39, 0.5);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.mainArrow:active {
+  transform: translateY(-50%) scale(0.96);
 }
 
 .mainArrowLeft {
@@ -131,14 +142,20 @@
 }
 
 .mainArrow svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
-/* ✅ Mostrar flechas solo en desktop */
+/* Desktop: un toque más grandes */
 @media (min-width: 769px) {
   .mainArrow {
-    display: flex;
+    width: 40px;
+    height: 40px;
+  }
+
+  .mainArrow svg {
+    width: 20px;
+    height: 20px;
   }
 }
 

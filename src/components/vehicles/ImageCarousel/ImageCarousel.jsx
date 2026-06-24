@@ -55,11 +55,18 @@ export const ImageCarousel = ({
   const [isMainLoaded, setIsMainLoaded] = useState(false);
   const handleMainLoad = useCallback(() => setIsMainLoaded(true), []);
 
-  // Resetear cuando cambia la imagen activa
+  // Al cambiar de imagen: arrancar en estado "cargando" (shimmer + fade-in).
+  // PERO si la imagen ya está cacheada y completa, el evento onLoad puede no
+  // dispararse nunca (la carga terminó antes de que React enganche el listener),
+  // y la foto quedaría en opacity:0 = blanca. Lo cubrimos chequeando
+  // img.complete y marcándola como cargada a mano. Esto pasa típicamente con
+  // la primera foto (priority/eager) y al volver a una imagen ya vista.
   useEffect(() => {
-    queueMicrotask(() => {
-      setIsMainLoaded(false);
-    });
+    setIsMainLoaded(false);
+    const img = mainImageContainerRef.current?.querySelector("img");
+    if (img && img.complete && img.naturalWidth > 0) {
+      setIsMainLoaded(true);
+    }
   }, [currentIndex]);
 
   // ===== Navegación =====
@@ -198,7 +205,7 @@ export const ImageCarousel = ({
           />
         )}
 
-        {/* Flechas de navegación - Solo desktop */}
+        {/* Flechas de navegación - sutiles, visibles también en mobile como hint de carrusel */}
         {showArrows && allImages.length > 1 && (
           <>
             <button

@@ -479,6 +479,13 @@
   outline-offset: 2px;
 }
 
+/* Desktop: la navegación es por flechas; los dots quedan solo en mobile. */
+@media (min-width: 768px) {
+  .carouselProgressDots {
+    display: none;
+  }
+}
+
 /* Home (inicio): el track usa todo el ancho del bloque de sección (4+ cards en desktop) */
 .carouselWrapperHome {
   max-width: 100%;
@@ -546,6 +553,63 @@
   }
 }
 
+/* ===== HOME 0km · MOBILE: affordance de carrusel (peek) + dots profesionales =====
+   Scopeado a la sección del inicio (bleed + spacious). No afecta /0km. */
+@media (max-width: 767px) {
+  /* Dots debajo del carrusel (posición convencional) + ancho de card del peek */
+  .carouselSectionBleed.carouselSectionHomeSpacious {
+    --okm-card: min(78vw, 360px);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Card más angosta para que asome la siguiente: señal clara de "deslizable".
+     La raíz de la card en el home es un <a> con data-slug (no <article>). */
+  .carouselSectionBleed.carouselSectionHomeSpacious .carousel > div > [data-slug] {
+    min-width: var(--okm-card) !important;
+    max-width: var(--okm-card) !important;
+  }
+
+  /* Snap centrado: el auto activo queda al medio y los vecinos asoman a ambos lados.
+     padding-inline = (50% - card/2) auto-centra la 1ª y última card sin depender
+     del ancho exacto del track (scrollbar, padding de wrapper, bleed, etc.). */
+  .carouselSectionBleed.carouselSectionHomeSpacious .carousel {
+    gap: 14px;
+    padding-inline: calc(50% - var(--okm-card) / 2);
+    padding-bottom: 6px;
+  }
+
+  .carouselSectionBleed.carouselSectionHomeSpacious .carousel > div {
+    scroll-snap-align: center;
+  }
+  .carouselSectionBleed.carouselSectionHomeSpacious .carouselWrapper {
+    order: 1;
+  }
+  .carouselSectionBleed.carouselSectionHomeSpacious .carouselProgressDots {
+    order: 2;
+    /* Negativo: sube los dots hacia el auto (se meten en la zona transparente
+       del PNG) sin agregar alto — los botones suben con ellos. */
+    margin-top: -22px;
+    /* Aire entre los indicadores y los botones (baja un poco los CTAs). */
+    margin-bottom: 14px;
+  }
+
+  /* Indicador "pill" expandible: sobrio, con buen contraste sobre fondo claro */
+  .carouselSectionBleed.carouselSectionHomeSpacious .carouselProgressDot {
+    width: 6px;
+    height: 6px;
+    opacity: 1;
+    background: color-mix(in srgb, var(--color-brand-500, #061b9c) 26%, transparent);
+    box-shadow: none;
+  }
+  .carouselSectionBleed.carouselSectionHomeSpacious .carouselProgressDotActive {
+    width: 22px;
+    height: 6px;
+    background: var(--color-brand-500, #061b9c);
+    box-shadow: none;
+  }
+}
+
 .carousel {
   display: flex;
   gap: clamp(28px, 4vw, 42px);
@@ -570,24 +634,32 @@
 /* ===== SCROLL BUTTONS - Sutiles, absolute, fuera del contenedor ===== */
 .scrollButton {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(8px) saturate(125%);
+  -webkit-backdrop-filter: blur(8px) saturate(125%);
   display: none;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--color-neutral-600);
+  transition:
+    background-color 0.22s ease,
+    box-shadow 0.22s ease,
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+  color: var(--color-brand-600, #050f7a);
+  box-shadow:
+    0 6px 18px rgba(15, 23, 42, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
   z-index: 10;
 }
 
 .scrollButton svg {
-  width: 16px;
-  height: 16px;
-  stroke-width: 2;
+  width: 20px;
+  height: 20px;
+  stroke-width: 2.2;
 }
 
 .scrollButtonLeft {
@@ -618,14 +690,22 @@
   }
 
   .scrollButton:hover:not(:disabled) {
-    background: rgba(0, 0, 0, 0.1);
-    color: var(--color-neutral-900);
-    border-color: rgba(0, 0, 0, 0.12);
-    transform: translateY(-50%) scale(1.05);
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--color-brand-700, #040a5c);
+    border-color: rgba(255, 255, 255, 0.92);
+    box-shadow:
+      0 8px 22px rgba(15, 23, 42, 0.18),
+      inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    transform: translateY(-50%) scale(1.06);
   }
 
   .scrollButton:active:not(:disabled) {
-    transform: translateY(-50%) scale(0.96);
+    transform: translateY(-50%) scale(0.97);
+  }
+
+  .scrollButton:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--color-brand-500, #061b9c) 60%, transparent);
+    outline-offset: 3px;
   }
 
   .scrollButton:disabled {
@@ -640,11 +720,11 @@
   }
 
   .carouselSection .scrollButtonLeft {
-    left: 0;
+    left: clamp(8px, 1.5vw, 16px);
   }
 
   .carouselSection .scrollButtonRight {
-    right: 0 !important;
+    right: clamp(8px, 1.5vw, 16px) !important;
     left: auto !important;
   }
 
@@ -1057,15 +1137,15 @@
   }
   
   .scrollButton {
-    width: 40px;
-    height: 40px;
+    width: 46px;
+    height: 46px;
   }
-  
+
   .scrollButton svg {
     width: 20px;
     height: 20px;
   }
-  
+
   .scrollButtonLeft {
     left: clamp(16px, 2vw, 24px);
   }
@@ -1081,11 +1161,11 @@
   }
 
   .carouselSection .scrollButtonLeft {
-    left: 8px;
+    left: clamp(16px, 2.4vw, 32px);
   }
 
   .carouselSection .scrollButtonRight {
-    right: 8px !important;
+    right: clamp(16px, 2.4vw, 32px) !important;
     left: auto !important;
   }
 

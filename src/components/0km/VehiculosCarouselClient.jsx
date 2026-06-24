@@ -72,6 +72,14 @@ export function VehiculosCarouselClient({
     const carousel = carouselRef.current;
     if (!carousel) return;
 
+    // Arrancar siempre en la primera card (evita que el navegador restaure
+    // una posición previa; con snap centrado en mobile deja la 1ª centrada).
+    // Se fuerza en el frame siguiente para ganarle a la restauración de scroll.
+    carousel.scrollLeft = 0;
+    requestAnimationFrame(() => {
+      if (carouselRef.current) carouselRef.current.scrollLeft = 0;
+    });
+
     checkScrollButtons();
 
     let rafId = null;

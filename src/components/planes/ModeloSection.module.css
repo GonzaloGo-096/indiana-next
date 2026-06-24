@@ -76,6 +76,11 @@
   display: block;
 }
 
+/* Encuadre por modelo: el 2008 se ve mejor un poco más a la izquierda y abajo */
+.modeloImageCard[data-modelo="2008"] .modeloImage {
+  transform: translate(-12px, 12px);
+}
+
 /* ===== BOTÓN DEBAJO DE LA IMAGEN DEL MODELO ===== */
 .modeloImageButtonContainer {
   width: 100%;
@@ -92,13 +97,54 @@
 }
 
 @media (max-width: 768px) {
+  /* Primer ítem (foto del modelo): más grande y centrado, con peek de la card
+     siguiente para que se note que es un carrusel (mismo criterio que 0km). */
+  .modeloSection {
+    --planes-card: 80vw; /* auto un poco más chico */
+  }
+
+  /* Romper el padding lateral del contenedor (16px) para que el carrusel llegue
+     al borde y el auto arranque casi pegado a la izquierda. */
+  .planesCarouselSection {
+    margin-inline: -16px;
+  }
+
   .modeloImageCard {
-    max-width: 440px;
-    padding: var(--spacing-4);
+    width: var(--planes-card);
+    max-width: var(--planes-card);
+    padding: 0;
   }
 
   .modeloImage {
     max-width: 100%;
+  }
+
+  .planesCarouselSection .carouselWrapperInPlanes {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .planesCarouselSection .carouselTrack {
+    padding-inline-start: 6px; /* casi pegado al borde izquierdo */
+    padding-inline-end: max(var(--spacing-6), calc(50vw - 150px));
+    scroll-padding-inline-start: 6px;
+    gap: 12px;
+  }
+
+  .planesCarouselSection .carouselTrack > * {
+    scroll-snap-align: start;
+  }
+
+  /* Botón "Ver modelo" más chico y un poco más separado de la imagen */
+  .modeloImageButtonContainer {
+    margin-top: var(--spacing-5);
+    padding-top: 0;
+  }
+
+  .modeloImageButtonContainer .modeloImageButton {
+    min-height: 0;
+    padding: 0.5rem 1.15rem;
+    font-size: 0.8125rem;
   }
 }
 
@@ -136,6 +182,13 @@
     gap: clamp(16px, 2vw, 24px) !important;
   }
 
+  /* La foto del modelo arranca pegada a la izquierda (sin padding ni centrado):
+     el contenido del carrusel empieza al inicio, sin espacio en blanco extra. */
+  .modeloImageCard {
+    padding-left: 0;
+    align-items: flex-start;
+  }
+
   .desktopGrid .carouselWrapperInPlanes::before,
   .desktopGrid .carouselWrapperInPlanes::after {
     display: none;
@@ -148,13 +201,25 @@
   .desktopGrid .carouselDots {
     display: none;
   }
+
+  /* 208 (único carrusel en desktop): el indicador solo necesita la altura del
+     punto (6px). El padding interno del componente (8px+8px) es espacio muerto
+     en desktop, así que lo comprimimos pegando el indicador al carrusel. */
+  .carouselDots {
+    margin-top: calc(-1 * var(--spacing-2));
+  }
+
+  .carouselDots > div {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 }
 
-/* ===== INDICADOR (DOTS) - Separación sutil del carrusel ===== */
+/* ===== INDICADOR (DOTS) - Sin espacio superior ===== */
 .carouselDots {
   display: flex;
   justify-content: center;
-  margin-top: var(--spacing-4); /* aire sutil */
-  padding-top: var(--spacing-2);
+  margin-top: 0;
+  padding-top: 0;
 }
 
