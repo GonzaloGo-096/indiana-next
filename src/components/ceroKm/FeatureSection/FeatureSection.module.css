@@ -27,10 +27,14 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* ===== CONTAINER (Mobile: stack vertical) ===== */
+/* ===== CONTAINER (Mobile/tablet: stack vertical con contenido arriba y foto abajo) =====
+   La imagen está primero en el DOM (por SEO/lectura), pero visualmente queremos
+   título + texto primero y luego la foto. Usamos column-reverse para invertir el
+   orden visual sin tocar el JSX. En desktop (≥992px) el container pasa a grid,
+   así que column-reverse deja de aplicar. */
 .container {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   width: 100%;
   contain: layout style paint; /* ✅ Optimización: aislar repaints */
 }

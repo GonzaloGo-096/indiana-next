@@ -81,6 +81,13 @@
   transform: translate(-12px, 12px);
 }
 
+/* Partner se ve más grande que el resto por el encuadre lateral cerrado.
+   Lo achicamos visualmente para que quede parejo con el resto de los modelos. */
+.modeloImageCard[data-modelo="partner"] .modeloImage {
+  transform: scale(0.8);
+  transform-origin: center center;
+}
+
 /* ===== BOTÓN DEBAJO DE LA IMAGEN DEL MODELO ===== */
 .modeloImageButtonContainer {
   width: 100%;

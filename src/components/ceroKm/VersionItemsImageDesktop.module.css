@@ -11,7 +11,10 @@
   margin-right: calc(-50vw + 50%);
   margin-top: -20px;
   margin-bottom: 0;
-  padding: 0 0 clamp(32px, 4vw, 48px);
+  /* Sin padding inferior: la foto pega directo contra la siguiente sección
+     (antes había clamp(32px, 4vw, 48px) que generaba una franja blanca entre
+     la imagen y el fondo de la sección de features). */
+  padding: 0;
   box-sizing: border-box;
 }
 
@@ -21,7 +24,9 @@
   }
 }
 
-/* Foto por versión: tamaño natural, sin zoom ni deformación */
+/* Foto por versión: tamaño natural, sin zoom ni deformación.
+   Sin border-radius porque la imagen es full-bleed (100vw) y bordes redondeados
+   dejarían asomar el fondo de la sección siguiente en las esquinas. */
 .itemsImage {
   width: 100%;
   height: auto;
@@ -29,5 +34,5 @@
   display: block;
   object-fit: contain;
   object-position: center top;
-  border-radius: var(--border-radius-lg);
+  border-radius: 0;
 }

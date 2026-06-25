@@ -430,6 +430,17 @@ export default async function CeroKilometroDetallePage({ params }) {
         )}
       </ModeloSelectorProvider>
 
+      {/* Sección de planes de financiación (solo para modelos con planes: 208, 2008, partner, expert)
+          Va arriba de las features para que la pieza comercial (precio/cuotas) quede más cerca
+          del carrusel y la foto de equipamiento. */}
+      {(() => {
+        const planes = getPlanesPorModelo(autoSlug);
+        if (planes && planes.length > 0) {
+          return <ModeloPlanes modeloSlug={autoSlug} />;
+        }
+        return null;
+      })()}
+
       {/* Secciones de características destacadas (si el modelo las tiene) */}
       {modelo.features && modelo.features.length > 0 && (
         <>
@@ -447,16 +458,6 @@ export default async function CeroKilometroDetallePage({ params }) {
           })}
         </>
       )}
-
-      {/* Sección de planes de financiación (solo para modelos con planes: 208, 2008, partner, expert) */}
-      {(() => {
-        const planes = getPlanesPorModelo(autoSlug);
-        if (planes && planes.length > 0) {
-          return <ModeloPlanes modeloSlug={autoSlug} />;
-        }
-        return null;
-      })()}
-
 
       {/* Galería de imágenes del modelo (fija, no cambia con versión) */}
       {modelo.galeria && (

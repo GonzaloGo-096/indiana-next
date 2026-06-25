@@ -1,0 +1,273 @@
+/**
+ * MainImageCarousel.module.css - Estilos del carrusel de imágenes principales
+ *
+ * - Mobile-first
+ * - Misma proporción y "feel" que la foto principal de VersionContent
+ * - Flechas visibles en desktop (a los costados); ocultas en mobile (uso swipe)
+ * - Miniaturas clickeables debajo (en ambos breakpoints)
+ *
+ * @author Indiana Usados
+ */
+
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.container:focus-visible {
+  outline: none;
+}
+
+/* ===== ÁREA DE IMAGEN PRINCIPAL ===== */
+.mainArea {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--color-white);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.imageWrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Crossfade entre fotos: todas montadas, solo la activa visible */
+.image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center center;
+  padding: 12px;
+  opacity: 0;
+  transition: opacity 0.28s ease;
+  pointer-events: none;
+}
+
+.imageActive {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Mobile: la foto se ve un poco más grande sin deformar */
+@media (max-width: 767px) {
+  .image {
+    padding: 0;
+    transform: scale(1.18);
+    transform-origin: center center;
+  }
+}
+
+/* Desktop: foto principal con más presencia (un poco más alta que el 2:1 anterior) */
+@media (min-width: 768px) {
+  .mainArea {
+    aspect-ratio: 16 / 9;
+  }
+
+  .image {
+    padding: 0;
+    object-fit: cover;
+    object-position: center 38%;
+  }
+}
+
+/* Las imágenes 3 (trasera) y 4 (zona de carga / costado-atrás) vienen más
+   recortadas que las 2 primeras, así que se ven más grandes. Las achicamos
+   un poco para que el balance entre slides sea consistente. */
+.imageWrap .image:nth-child(3),
+.imageWrap .image:nth-child(4) {
+  transform: scale(0.92);
+  transform-origin: center center;
+}
+
+@media (max-width: 767px) {
+  .imageWrap .image:nth-child(3),
+  .imageWrap .image:nth-child(4) {
+    transform: scale(1.08);
+  }
+}
+
+/* ===== FLECHAS ===== */
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(8px) saturate(125%);
+  -webkit-backdrop-filter: blur(8px) saturate(125%);
+  color: var(--color-brand-600, #050f7a);
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  box-shadow:
+    0 6px 18px rgba(15, 23, 42, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.arrow:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-50%) scale(1.06);
+}
+
+.arrow:active {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.arrow:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-brand-500, #061b9c) 60%, transparent);
+  outline-offset: 3px;
+}
+
+.arrowLeft {
+  left: 8px;
+}
+
+.arrowRight {
+  right: 8px;
+}
+
+/* Mobile: ocultar flechas (uso swipe) */
+@media (max-width: 767px) {
+  .arrow {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .arrow {
+    width: 44px;
+    height: 44px;
+  }
+
+  .arrowLeft {
+    left: 12px;
+  }
+
+  .arrowRight {
+    right: 12px;
+  }
+}
+
+/* ===== CONTADOR (1 / 4) ===== */
+.counter {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  z-index: 3;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.55);
+  color: var(--color-white);
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-poppins);
+  letter-spacing: 0.4px;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .counter {
+    bottom: 14px;
+    right: 16px;
+    font-size: 0.8125rem;
+  }
+}
+
+/* ===== MINIATURAS ===== */
+/* Mobile: centradas */
+.thumbnails {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 6px 0 0 0;
+}
+
+.thumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: 76px;
+  height: 56px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: var(--color-white);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+}
+
+.thumb:hover {
+  border-color: var(--color-neutral-300);
+  transform: translateY(-1px);
+}
+
+.thumb:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--color-brand-500, #061b9c) 60%, transparent);
+  outline-offset: 2px;
+}
+
+.thumbActive {
+  border-color: var(--color-brand-500, #061b9c);
+  box-shadow:
+    0 0 0 1px var(--color-brand-500, #061b9c),
+    0 2px 6px rgba(15, 23, 42, 0.12);
+}
+
+.thumbImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+/* Desktop: miniaturas grandes, alineadas a la izquierda */
+@media (min-width: 768px) {
+  .thumbnails {
+    gap: 14px;
+    justify-content: flex-start;
+    padding-top: 10px;
+  }
+
+  .thumb {
+    width: 112px;
+    height: 80px;
+    border-radius: 10px;
+  }
+}
+
+@media (min-width: 1200px) {
+  .thumb {
+    width: 128px;
+    height: 92px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .image,
+  .arrow,
+  .thumb {
+    transition: none;
+  }
+}

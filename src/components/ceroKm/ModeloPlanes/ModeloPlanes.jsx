@@ -145,7 +145,7 @@ const ModeloPlanes = ({ modeloSlug }) => {
         <span className={styles.titleSep} aria-hidden="true" />
         <Link
           href="/planes"
-          className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline} ${styles.verTodosButton}`}
+          className={`${cta.button} ${cta.buttonWhite} ${cta.buttonInline} ${cta.buttonCompact} ${styles.verTodosButton}`}
         >
           Ver todos
         </Link>

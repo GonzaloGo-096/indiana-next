@@ -65,7 +65,6 @@ next-env.d.ts
 /vil-*.md
 /fd1.md
 
-# Snapshots temporales de automatizacion (no versionar)
-okm-*.png
+# Snapshots de debug/automatizacion (Playwright, agentes) - no versionar
+/_dev-screenshots/
 ga4-filters.yml
-preview-*.png

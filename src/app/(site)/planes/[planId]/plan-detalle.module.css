@@ -76,7 +76,6 @@
   color: var(--color-neutral-800);
   font-family: var(--font-display);
   margin: 0 0 var(--spacing-2) 0;
-  text-transform: uppercase;
   letter-spacing: var(--title-letter-spacing);
   text-align: center; /* ✅ Centrado */
   line-height: 1.3;

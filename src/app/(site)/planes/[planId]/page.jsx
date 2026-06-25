@@ -45,13 +45,13 @@ function obtenerVersionDelPlan(plan) {
 
   // Mapeo específico por plan
   const mapeoVersiones = {
-    "2008-t200": "ALLURE",
-    "2008-active-t200": "ACTIVE",
-    easy: "ALLURE",
-    "plus-at": "ALLURE AT",
-    "plus-208": "ALLURE",
+    "2008-t200": "Allure",
+    "2008-active-t200": "Active",
+    easy: "Allure",
+    "plus-at": "Allure AT",
+    "plus-208": "Allure",
     "expert-carga": "L3 HDI 150",
-    "partner-hdi": "CONFORT 1.6 HDI 92",
+    "partner-hdi": "Van L2 HDI 92 AM26",
   };
 
   // Buscar por ID del plan

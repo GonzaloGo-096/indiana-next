@@ -284,6 +284,14 @@
   transform-origin: center 52%;
 }
 
+/* Partner: la foto lateral (partner-4) viene más recortada que el resto de
+   modelos, así que se ve más grande dentro de la card. Achicamos para
+   alinearla visualmente con Expert/3008/5008 en ambos breakpoints. */
+.compact.softSurface.frameless[data-slug="partner"] .image {
+  transform: scale(0.78);
+  transform-origin: center 52%;
+}
+
 /* 208: leve corrimiento a la izquierda dentro del encuadre */
 .compact.softSurface.frameless[data-slug="208"] .image {
   object-position: center 44%;

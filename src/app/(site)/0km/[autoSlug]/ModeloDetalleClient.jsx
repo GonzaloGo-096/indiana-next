@@ -31,6 +31,7 @@ export function ModeloDetalleClient({ autoSlug, modelo, contactCta }) {
       onColorChange={cambiarColor}
       modelSlug={autoSlug}
       contactCta={contactCta}
+      imagenesPrincipales={modelo.imagenesPrincipales}
     />
   );
 }

@@ -4,6 +4,7 @@ import { memo } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { ColorSelector } from "./ColorSelector";
+import { MainImageCarousel } from "./MainImageCarousel";
 import styles from "./VersionContent.module.css";
 
 const VersionTabs = dynamic(
@@ -27,6 +28,8 @@ const VersionTabs = dynamic(
  * @param {Object} props.imagenActual - { url, alt, hasImage }
  * @param {Function} props.onColorChange - Callback al cambiar color
  * @param {string} [props.modelSlug] - Slug del modelo (ej. '208', '2008') para ajustes de posición de imagen
+ * @param {Object} [props.imagenesPrincipales] - { mobile: [...], desktop: [...] } para mostrar carrusel
+ *   de fotos principales en modelos sin colores. Si está presente, reemplaza la foto fija.
  */
 export const VersionContent = memo(function VersionContent({
   version,
@@ -40,6 +43,7 @@ export const VersionContent = memo(function VersionContent({
   onColorChange,
   modelSlug,
   contactCta = null,
+  imagenesPrincipales = null,
 }) {
   if (!version) return null;
 
@@ -50,39 +54,54 @@ export const VersionContent = memo(function VersionContent({
   const imageAlt =
     imagenActual?.alt || `${modeloNombre} ${version.nombre}`;
 
+  // Carrusel de fotos principales (modelos sin colores con múltiples fotos, ej: Partner)
+  const mobileCarouselImages = imagenesPrincipales?.mobile || [];
+  const desktopCarouselImages = imagenesPrincipales?.desktop || [];
+  const hasMobileCarousel = mobileCarouselImages.length > 0;
+  const hasDesktopCarousel = desktopCarouselImages.length > 0;
+
   // Renderizar AMBOS layouts siempre para evitar errores de hidratación
   // CSS se encarga de mostrar/ocultar según breakpoint
   return (
     <>
-      {/* Layout Mobile: imagen del auto por color */}
+      {/* Layout Mobile: imagen del auto por color (o carrusel de fotos principales) */}
       <article className={styles.mobileContainer}>
-        <div className={styles.imageContainer} data-model-slug={modelSlug || undefined}>
-          {imageUrl ? (
-            <Image
-              src={imageUrl}
-              alt={imageAlt}
-              width={800}
-              height={600}
-              className={styles.image}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-              quality={85}
-              loading="lazy"
-            />
-          ) : (
-            <div
-              className={styles.imagePlaceholder}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: "var(--color-neutral-400)",
-                fontSize: "0.875rem",
-              }}
-            >
-              Imagen no disponible
-            </div>
-          )}
-        </div>
+        {hasMobileCarousel ? (
+          <MainImageCarousel
+            images={mobileCarouselImages}
+            modelName={modeloNombre}
+            modelSlug={modelSlug}
+            priorityFirst
+          />
+        ) : (
+          <div className={styles.imageContainer} data-model-slug={modelSlug || undefined}>
+            {imageUrl ? (
+              <Image
+                src={imageUrl}
+                alt={imageAlt}
+                width={800}
+                height={600}
+                className={styles.image}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                quality={85}
+                loading="lazy"
+              />
+            ) : (
+              <div
+                className={styles.imagePlaceholder}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "var(--color-neutral-400)",
+                  fontSize: "0.875rem",
+                }}
+              >
+                Imagen no disponible
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Selector de colores + CTA de contacto en la misma fila (botón al final) */}
         <div className={styles.colorCtaRow}>
@@ -114,7 +133,8 @@ export const VersionContent = memo(function VersionContent({
           </div>
         )}
 
-        {/* Info: solo título y párrafo */}
+        {/* Info: solo título y párrafo (si el modelo no tiene texto descriptivo,
+            la sección itemsImage de abajo cumple ese rol con badges visuales) */}
         <div className={styles.infoSection}>
           <h3 className={styles.modeloVersionLabel}>Modelo versión</h3>
           <div className={styles.versionTitleRow}>
@@ -123,7 +143,9 @@ export const VersionContent = memo(function VersionContent({
               {version.nombre}
             </h2>
           </div>
-          <p className={styles.versionDescription}>{version.descripcion}</p>
+          {version.descripcion && (
+            <p className={styles.versionDescription}>{version.descripcion}</p>
+          )}
         </div>
 
         {/* Foto por versión (mobile): debajo de los datos, tamaño natural sin deformar */}
@@ -148,36 +170,47 @@ export const VersionContent = memo(function VersionContent({
 
       {/* Layout Desktop: imagen del auto por color; derecha = contenido + colores */}
       <article className={styles.desktopWrapper}>
-        <div className={styles.desktopContainer}>
-          {/* Columna izquierda: solo imagen */}
+        <div
+          className={`${styles.desktopContainer} ${hasDesktopCarousel ? styles.desktopContainerCarousel : ""}`}
+        >
+          {/* Columna izquierda: solo imagen (o carrusel de fotos principales) */}
           <div className={styles.leftColumn}>
-            <div className={styles.imageContainer} data-model-slug={modelSlug || undefined}>
-              {imageUrl ? (
-                <Image
-                  src={imageUrl}
-                  alt={imageAlt}
-                  width={800}
-                  height={600}
-                  className={styles.image}
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
-                  quality={85}
-                  loading="lazy"
-                />
-              ) : (
-                <div
-                  className={styles.imagePlaceholder}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: "var(--color-neutral-400)",
-                    fontSize: "0.875rem",
-                  }}
-                >
-                  Imagen no disponible
-                </div>
-              )}
-            </div>
+            {hasDesktopCarousel ? (
+              <MainImageCarousel
+                images={desktopCarouselImages}
+                modelName={modeloNombre}
+                modelSlug={modelSlug}
+                priorityFirst
+              />
+            ) : (
+              <div className={styles.imageContainer} data-model-slug={modelSlug || undefined}>
+                {imageUrl ? (
+                  <Image
+                    src={imageUrl}
+                    alt={imageAlt}
+                    width={800}
+                    height={600}
+                    className={styles.image}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 600px"
+                    quality={85}
+                    loading="lazy"
+                  />
+                ) : (
+                  <div
+                    className={styles.imagePlaceholder}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "var(--color-neutral-400)",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    Imagen no disponible
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Columna derecha: Tabs + Info + selector de colores abajo (centrado) */}
@@ -198,7 +231,9 @@ export const VersionContent = memo(function VersionContent({
                 {version.nombre}
               </h2>
             </div>
-            <p className={styles.versionDescription}>{version.descripcion}</p>
+            {version.descripcion && (
+              <p className={styles.versionDescription}>{version.descripcion}</p>
+            )}
 
             {/* Selector de colores + CTA de contacto en la misma fila (botón al final) */}
             <div className={styles.colorCtaRow}>

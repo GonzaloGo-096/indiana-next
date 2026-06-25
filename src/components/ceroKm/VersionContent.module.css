@@ -325,6 +325,14 @@
   overflow: hidden;
 }
 
+/* Si el último elemento del contenedor mobile es itemsImageMobile (full-bleed),
+   eliminamos el padding inferior del contenedor para que la foto pegue contra
+   la siguiente sección. Sin esto queda una franja blanca de otro tono debajo
+   de la foto antes de la sección de features. */
+.mobileContainer:has(.itemsImageMobile:last-child) {
+  padding-bottom: 0;
+}
+
 /* Foto por versión: tamaño natural, sin zoom ni deformación */
 .itemsImageMobile .itemsImage {
   width: 100%;
@@ -403,3 +411,37 @@
   }
 }
 
+/* ===================================================================
+   VARIANTE: CARRUSEL PRINCIPAL (ej. Partner)
+   ===================================================================
+   Cuando el modelo usa MainImageCarousel (en lugar de la foto fija +
+   selector de colores), la columna derecha es más liviana (sin colores).
+   Le damos más lugar a la foto y a las miniaturas en desktop.
+*/
+@media (min-width: 768px) {
+  .desktopContainer.desktopContainerCarousel {
+    grid-template-columns: 1.4fr 1fr;
+    gap: 32px;
+    min-height: 480px;
+  }
+
+  .desktopContainer.desktopContainerCarousel .leftColumn {
+    padding-right: 0;
+  }
+}
+
+@media (min-width: 992px) {
+  .desktopContainer.desktopContainerCarousel {
+    grid-template-columns: 1.6fr 1fr;
+    gap: 44px;
+    min-height: 560px;
+  }
+
+  .desktopContainer.desktopContainerCarousel .leftColumn {
+    padding-right: 0;
+  }
+
+  .desktopContainer.desktopContainerCarousel .rightColumn {
+    padding-left: 4px;
+  }
+}
