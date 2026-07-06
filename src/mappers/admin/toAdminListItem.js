@@ -27,15 +27,15 @@ export function toAdminListItem(vehicle = {}) {
   // ID seguro (prioridad: _id > id)
   const id = v._id || v.id || null
 
-  // Oferta: boolean (backend puede enviar true/false)
-  const oferta = v.oferta === true || v.oferta === 'true'
-  const rawDescuento = v.descuento ?? 0
-  const descuento = Math.min(100, Math.max(0, Number(rawDescuento) || 0))
-  const precioOferta = oferta && descuento > 0
-    ? (v.precioOferta != null && !isNaN(Number(v.precioOferta))
-        ? Number(v.precioOferta)
-        : Math.round(precio * (1 - descuento / 100)))
-    : null
+  // Oferta: se detecta por precioOferta < precio (el backend ya lo calcula
+  // desde el descuento { valor, tipo }). No depende del flag `oferta`.
+  const rawPrecioOferta = Number(v.precioOferta)
+  const precioOferta =
+    Number.isFinite(rawPrecioOferta) && rawPrecioOferta > 0 && rawPrecioOferta < precio
+      ? rawPrecioOferta
+      : null
+  const oferta = precioOferta != null
+  const descuento = oferta ? Math.round((1 - precioOferta / precio) * 100) : 0
 
   return {
     id,

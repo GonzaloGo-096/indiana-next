@@ -10,6 +10,7 @@ import {
   setError,
 } from '@/components/admin/hooks/useCarModal.reducer'
 import vehiclesService from '@/lib/services/vehiclesApi'
+import { normalizeDiscount } from '@/lib/pricing/discount'
 
 /**
  * Estado y acciones del modal crear/editar vehículo en el panel admin.
@@ -37,13 +38,14 @@ export function useAdminVehicleModal({ createMutation, updateMutation, refetch }
         return
       }
 
-      // El detalle (getonephoto) a veces no devuelve oferta/descuento; el listado (getallphotos) sí.
-      // Usar valores del vehículo de la lista como fallback para que el formulario cargue correctamente.
-      const listOferta = vehicle.oferta === true || vehicle.oferta === 'true'
-      const listDescuento = Math.min(100, Math.max(0, Number(vehicle.descuento) || 0))
-      if (listOferta && listDescuento > 0) {
-        carData.oferta = true
-        carData.descuento = listDescuento
+      // El detalle (getonephoto) a veces no devuelve el descuento; el listado (getallphotos) sí.
+      // Fallback: si el detalle vino sin descuento, usar el del vehículo de la lista.
+      if ((!carData.descuentoValor || carData.descuentoValor === 0) && vehicle.descuento != null) {
+        const disc = normalizeDiscount(vehicle.descuento, vehicle.oferta)
+        if (disc.valor > 0) {
+          carData.descuentoTipo = disc.tipo
+          carData.descuentoValor = disc.valor
+        }
       }
 
       dispatch(openEditForm(carData))

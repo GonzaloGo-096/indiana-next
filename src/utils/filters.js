@@ -291,14 +291,12 @@ export const hasAnyFilter = (filters = {}) => {
  * Precio visible para el usuario: precioOferta si hay oferta activa, sino precio original.
  */
 function getEffectivePrice(v) {
-  const isOffer = v.oferta === true || v.oferta === "true";
-  if (isOffer && v.precioOferta != null && !Number.isNaN(Number(v.precioOferta))) {
-    return Number(v.precioOferta);
+  const precio = Number(v.precio) || 0;
+  const precioOferta = Number(v.precioOferta);
+  if (Number.isFinite(precioOferta) && precioOferta > 0 && precioOferta < precio) {
+    return precioOferta;
   }
-  if (isOffer && Number(v.descuento) > 0) {
-    return Math.round((Number(v.precio) || 0) * (1 - Number(v.descuento) / 100));
-  }
-  return Number(v.precio) || 0;
+  return precio;
 }
 
 export const sortVehicles = (vehicles = [], sortOption) => {
