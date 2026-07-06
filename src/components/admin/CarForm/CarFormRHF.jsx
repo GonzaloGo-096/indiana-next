@@ -20,6 +20,8 @@ import { marcas as MARCAS_LIST } from '@/constants/filterOptions'
 import { isValidImage, filterValidFiles } from '@/utils/files'
 import { normalizeCilindrada } from '@/utils/formatters'
 import { normalizeForSearch } from '@/utils/normalizeForSearch'
+import { DISCOUNT_TIPO } from '@/lib/pricing/discount'
+import { validateDiscount } from '@/lib/pricing/validateDiscount'
 
 // ✅ CONSTANTES
 const MODE = {
@@ -83,12 +85,12 @@ const CarFormRHF = ({
       kilometraje: '',
       traccion: '',
       HP: '',
-      oferta: false,
-      descuento: 0
+      descuentoTipo: DISCOUNT_TIPO.MONTO_FIJO,
+      descuentoValor: 0
     }
   })
 
-  const ofertaValue = useWatch({ control, name: 'oferta', defaultValue: false })
+  const tipoValue = useWatch({ control, name: 'descuentoTipo', defaultValue: DISCOUNT_TIPO.MONTO_FIJO })
 
   const [marcaDropdownOpen, setMarcaDropdownOpen] = useState(false)
   const [marcaSearchQuery, setMarcaSearchQuery] = useState('')
@@ -222,12 +224,14 @@ const CarFormRHF = ({
       }
     })
 
-    // ✅ VALIDAR OFERTA / DESCUENTO
-    if (data.oferta === true || data.oferta === 'true') {
-      const desc = Number(data.descuento)
-      if (isNaN(desc) || desc < 0 || desc > 100) {
-        errors.descuento = 'Descuento debe ser un número entre 0 y 100'
-      }
+    // ✅ VALIDAR DESCUENTO (valor + tipo) — espejo de las reglas del backend
+    const descuentoError = validateDiscount({
+      valor: data.descuentoValor,
+      tipo: data.descuentoTipo,
+      precio: data.precio,
+    })
+    if (descuentoError) {
+      errors.descuentoValor = descuentoError
     }
 
     // ✅ VALIDAR IMÁGENES SEGÚN MODO
@@ -239,11 +243,15 @@ const CarFormRHF = ({
   // ✅ CONSTRUIR FORMDATA SEGÚN MODO
   const buildVehicleFormData = useCallback((data) => {
     const formData = new FormData()
-    const oferta = data.oferta === true || data.oferta === 'true'
 
-    // ✅ AGREGAR CAMPOS DE DATOS PRIMITIVOS
+    // ✅ AGREGAR CAMPOS DE DATOS PRIMITIVOS (el descuento se maneja aparte)
     Object.entries(data).forEach(([key, value]) => {
-      if (EXCLUDED_FROM_FORMDATA.includes(key) || key === 'oferta' || key === 'descuento') return
+      if (
+        EXCLUDED_FROM_FORMDATA.includes(key) ||
+        key === 'descuentoTipo' ||
+        key === 'descuentoValor'
+      )
+        return
 
       if (NUMERIC_FIELDS.includes(key)) {
         const numValue = Number(value).toString()
@@ -258,13 +266,18 @@ const CarFormRHF = ({
       }
     })
 
-    // ✅ OFERTA Y DESCUENTO (siempre enviar; inputs disabled pueden no estar en data)
-    formData.append('oferta', oferta ? 'true' : 'false')
-    formData.append('descuento', oferta ? String(Math.min(100, Math.max(0, Number(data.descuento) || 0))) : '0')
-    
+    // ✅ DESCUENTO: objeto { valor, tipo } stringificado (formato nuevo del backend).
+    // El backend hace JSON.parse y calcula el precio final; el front NO calcula nada.
+    const tipo =
+      data.descuentoTipo === DISCOUNT_TIPO.PORCENTAJE
+        ? DISCOUNT_TIPO.PORCENTAJE
+        : DISCOUNT_TIPO.MONTO_FIJO
+    const valor = Math.max(0, Number(data.descuentoValor) || 0)
+    formData.append('descuento', JSON.stringify({ valor, tipo }))
+
     // ✅ AGREGAR IMÁGENES SEGÚN ESTADO
     buildImageFormData(formData)
-    
+
     return formData
   }, [buildImageFormData])
 
@@ -895,42 +908,44 @@ const CarFormRHF = ({
         </div>
       </div>
 
-      {/* ✅ SECCIÓN OFERTA - Separada visualmente de los datos */}
+      {/* ✅ SECCIÓN DESCUENTO - primero el tipo, después el valor */}
       <div className={styles.offerSection}>
-        <h4 className={styles.offerSectionTitle}>Oferta</h4>
+        <h4 className={styles.offerSectionTitle}>Descuento</h4>
+        <p className={styles.offerHint}>
+          Elegí el tipo y poné el valor. Dejalo en 0 si el auto no tiene descuento.
+        </p>
         <div className={styles.offerRow}>
-          <label className={styles.offerCheckboxLabel}>
-            <input
-              type="checkbox"
-              {...register('oferta', {
-                onChange: (e) => {
-                  if (!e.target.checked) setValue('descuento', 0)
-                }
-              })}
-              className={styles.offerCheckbox}
-            />
-            <span className={styles.offerCheckboxText}>En oferta</span>
-          </label>
+          {/* 1) Tipo primero */}
           <div className={styles.offerInputWrap}>
-            <label className={styles.offerInputLabel}>Descuento (%)</label>
+            <label className={styles.offerInputLabel}>Tipo</label>
+            <select
+              {...register('descuentoTipo')}
+              className={styles.offerSelect}
+            >
+              <option value={DISCOUNT_TIPO.MONTO_FIJO}>Monto fijo ($)</option>
+              <option value={DISCOUNT_TIPO.PORCENTAJE}>Porcentaje (%)</option>
+            </select>
+          </div>
+
+          {/* 2) Valor después (su significado depende del tipo) */}
+          <div className={styles.offerInputWrap}>
+            <label className={styles.offerInputLabel}>
+              {tipoValue === DISCOUNT_TIPO.PORCENTAJE
+                ? 'Descuento (%)'
+                : 'Monto a descontar ($)'}
+            </label>
             <input
               type="number"
               min={0}
-              max={100}
-              step={1}
-              disabled={!ofertaValue}
-              {...register('descuento', {
-                min: { value: 0, message: 'Mínimo 0' },
-                max: { value: 100, message: 'Máximo 100' },
-                valueAsNumber: true
-              })}
-              className={!ofertaValue ? `${styles.offerInput} ${styles.offerInputDisabled}` : styles.offerInput}
+              step={tipoValue === DISCOUNT_TIPO.PORCENTAJE ? 1 : 1000}
+              {...register('descuentoValor', { valueAsNumber: true })}
+              className={styles.offerInput}
             />
           </div>
         </div>
-        {errors.descuento && (
+        {errors.descuentoValor && (
           <div className={styles.offerError}>
-            <span className={styles.error}>{errors.descuento.message}</span>
+            <span className={styles.error}>{errors.descuentoValor.message}</span>
           </div>
         )}
       </div>
