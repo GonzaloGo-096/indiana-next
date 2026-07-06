@@ -937,7 +937,7 @@ const CarFormRHF = ({
             <input
               type="number"
               min={0}
-              step={tipoValue === DISCOUNT_TIPO.PORCENTAJE ? 1 : 1000}
+              step="any"
               {...register('descuentoValor', { valueAsNumber: true })}
               className={styles.offerInput}
             />
