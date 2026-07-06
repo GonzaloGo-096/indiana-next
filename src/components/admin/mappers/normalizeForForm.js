@@ -6,6 +6,7 @@
  */
 
 import { extractVehicleImageUrls, extractAllImageUrls } from '@/utils/imageExtractors'
+import { normalizeDiscount } from '@/lib/pricing/discount'
 
 /**
  * Extrae el objeto detalle desde posibles envoltorios de respuesta
@@ -65,10 +66,8 @@ export const normalizeDetailToFormInitialData = (rawDetail) => {
     }
   })
 
-  // Oferta: boolean y descuento 0-100
-  const oferta = d.oferta === true || d.oferta === 'true'
-  const rawDescuento = d.descuento ?? 0
-  const descuento = oferta ? Math.min(100, Math.max(0, Number(rawDescuento) || 0)) : 0
+  // Descuento: formato nuevo { valor, tipo }. Tolera formato viejo (número + oferta bool).
+  const disc = normalizeDiscount(d.descuento, d.oferta)
 
   return {
     _id: d._id || d.id || '',
@@ -92,8 +91,8 @@ export const normalizeDetailToFormInitialData = (rawDetail) => {
     llantas: d.llantas || '',
     HP: d.HP ?? d.hp ?? '',
     detalle: d.detalle || d.description || '',
-    oferta,
-    descuento,
+    descuentoTipo: disc.tipo,
+    descuentoValor: disc.valor,
     urls
   }
 }
