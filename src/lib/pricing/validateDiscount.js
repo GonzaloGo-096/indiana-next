@@ -18,10 +18,11 @@ import { DISCOUNT_TIPO } from "./discount";
  * @returns {string|null} mensaje de error, o null si está OK
  */
 export function validateDiscount({ valor, tipo, precio }) {
-  const v = Number(valor);
+  // Campo vacío o NaN = sin descuento (equivale a 0). No es un error.
+  const v = Number(valor) || 0;
 
-  if (!Number.isFinite(v) || v < 0) {
-    return "El valor del descuento debe ser un número mayor o igual a 0";
+  if (v < 0) {
+    return "El valor del descuento no puede ser negativo";
   }
 
   if (tipo === DISCOUNT_TIPO.PORCENTAJE) {
