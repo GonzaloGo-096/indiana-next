@@ -48,7 +48,7 @@ export function toAdminListItem(vehicle = {}) {
     precioOferta,
     firstImageUrl,
     oferta,
-    descuento: oferta ? descuento : 0,
+    descuento,
     // Preservar original para operaciones que requieren datos completos
     _original: v
   }
