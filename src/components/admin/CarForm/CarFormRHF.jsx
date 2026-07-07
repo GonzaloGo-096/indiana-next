@@ -937,6 +937,7 @@ const CarFormRHF = ({
             <input
               type="number"
               min={0}
+              max={tipoValue === DISCOUNT_TIPO.PORCENTAJE ? 100 : undefined}
               step="any"
               {...register('descuentoValor', { valueAsNumber: true })}
               className={styles.offerInput}
