@@ -21,6 +21,9 @@ import {
   extractAllImageUrls,
 } from "../../utils/imageExtractors";
 import { VEHICLE_CONSTANTS } from "../../constants/vehicles";
+import { createLogger } from "../logger";
+
+const log = createLogger("mapper:vehicle");
 
 /**
  * Transforma una página de vehículos del backend al formato frontend
@@ -115,8 +118,8 @@ export const mapVehiclesPage = (backendPage, currentCursor = null) => {
       totalPages: Math.ceil((totalDocs || 0) / VEHICLE_CONSTANTS.LIST_PAGE_SIZE),
     };
   } catch (error) {
-    console.error(
-      "[Mapper] Error transformando página de vehículos:",
+    log.error(
+      "Error transformando página de vehículos:",
       error.message,
       { page: backendPage }
     );
@@ -165,8 +168,8 @@ export const mapVehicle = (backendVehicle) => {
       imágenes: allImages,
     };
   } catch (error) {
-    console.error(
-      "[Mapper] Error transformando vehículo:",
+    log.error(
+      "Error transformando vehículo:",
       error.message
     );
     return null;

@@ -23,6 +23,30 @@ function isVerboseEnabled() {
   return process.env.API_DEBUG === "true";
 }
 
+/**
+ * Costura para telemetría.
+ *
+ * Todo `log.error(...)` pasa por acá, así que enchufar un servicio de errores
+ * (Sentry o el que sea) es registrar un reporter una sola vez, en vez de tocar
+ * los ~24 sitios que hoy logean errores sueltos. Mientras no haya reporter,
+ * el comportamiento es exactamente el de antes: escribir a consola.
+ */
+let errorReporter = null;
+
+export function setErrorReporter(fn) {
+  errorReporter = typeof fn === "function" ? fn : null;
+}
+
+function report(scope, args) {
+  if (!errorReporter) return;
+  try {
+    errorReporter({ scope, args });
+  } catch {
+    // Un reporter roto no puede tumbar la app ni tapar el error original.
+    // Es el único catch mudo justificado del proyecto.
+  }
+}
+
 export function createLogger(scope) {
   const prefix = scope ? `[${scope}]` : "";
 
@@ -38,6 +62,7 @@ export function createLogger(scope) {
     },
     error: (...args) => {
       console.error(prefix, ...args);
+      report(scope, args);
     },
   };
 }
