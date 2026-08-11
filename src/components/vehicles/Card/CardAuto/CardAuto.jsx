@@ -32,6 +32,7 @@ import { getBrandLogo } from "../../../../utils/getBrandLogo";
 import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import { buildVehicleDetailUrl } from "../../../../utils/vehicleSlug";
 import { getVehicleOfferDisplay } from "../../../../utils/vehicleOffer";
+import { VehiclePrice } from "../../VehiclePrice/VehiclePrice";
 import { pushEcommerceEvent } from "@/lib/analytics/dataLayer";
 import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
@@ -290,23 +291,11 @@ export const CardAuto = memo(({ auto, imagePriority = "auto", index = 0 }) => {
 
         {/* CONTENEDOR 4: Precio */}
         <div className={styles.container4}>
-          <div className={styles.price_label_container}>
-            <span className={styles.price_label}>desde:</span>
-          </div>
-          <div className={styles.price_display}>
-            {offerData.hasOffer ? (
-              <>
-                <span className={styles.price_original}>
-                  {offerData.priceOriginal}
-                </span>
-                <span className={styles.price_value}>
-                  {offerData.priceOffer}
-                </span>
-              </>
-            ) : (
-              <span className={styles.price_value}>{formattedData.price}</span>
-            )}
-          </div>
+          <VehiclePrice
+            styles={styles}
+            offer={offerData}
+            fallbackPrice={formattedData.price}
+          />
         </div>
       </div>
       </div>

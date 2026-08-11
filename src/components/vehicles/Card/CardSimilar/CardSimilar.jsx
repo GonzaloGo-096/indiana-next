@@ -30,6 +30,7 @@ import { CajaIconDetalle } from "../../../ui/icons/CajaIconDetalle";
 import { STORAGE_KEYS } from "../../../../constants/storageKeys";
 import { buildVehicleDetailUrl } from "../../../../utils/vehicleSlug";
 import { getVehicleOfferDisplay } from "../../../../utils/vehicleOffer";
+import { VehiclePrice } from "../../VehiclePrice/VehiclePrice";
 import { pushEcommerceEvent } from "@/lib/analytics/dataLayer";
 import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
@@ -237,20 +238,11 @@ export const CardSimilar = memo(({
 
         {/* CONTENEDOR 4: Precio */}
         <div className={styles.container4}>
-          <div className={styles.price_label_container}>
-            <span className={styles.price_label}>desde:</span>
-          </div>
-
-          <div className={styles.price_display}>
-            {offer.hasOffer ? (
-              <>
-                <span className={styles.price_original}>{offer.priceOriginal}</span>
-                <span className={styles.price_value}>{offer.priceOffer}</span>
-              </>
-            ) : (
-              <span className={styles.price_value}>{formattedData.price}</span>
-            )}
-          </div>
+          <VehiclePrice
+            styles={styles}
+            offer={offer}
+            fallbackPrice={formattedData.price}
+          />
         </div>
       </div>
     </Link>
