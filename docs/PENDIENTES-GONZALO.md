@@ -111,7 +111,21 @@ verificar yo.
 
 ---
 
-## 🟡 7. El chequeo de calidad automático está apagado
+## 🟡 7. Un archivo quedó sin uso: ¿lo borro?
+
+**De qué se trata.** Al arreglar el inicio, el archivo que pedía los autos
+desde el navegador (`src/components/home/HomeUsadosSectionClient.jsx`, 44
+líneas) dejó de usarse. Ya no lo llama nadie.
+
+**Qué necesito.** Tu OK para borrarlo. No lo elimino por mi cuenta porque tu
+regla es que nada se borra sin avisar.
+
+**Bloquea algo?** No. Ahí quedó, sin molestar: como no lo importa nadie, no
+entra en el sitio ni suma peso.
+
+---
+
+## 🟡 8. El chequeo de calidad automático está apagado
 
 **De qué se trata.** El proyecto tiene un revisor automático de código
 (`lint`) que hoy marca **15 errores**. No los hice yo: ya venían. Nadie los

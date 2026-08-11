@@ -2,7 +2,7 @@ import Link from "next/link";
 import Hero from "../../components/Hero";
 import cta from "../../components/home/HomeSectionCtas.module.css";
 import { CeroKmSection } from "../../components/home/CeroKmSection";
-import { HomeUsadosSectionClient } from "../../components/home/HomeUsadosSectionClient";
+import { UsadosSection } from "../../components/home/UsadosSection";
 import { staticImages } from "../../config/cloudinaryStaticImages";
 import { getSiteUrl } from "../../lib/site-url";
 import styles from "../page.module.css";
@@ -96,7 +96,7 @@ export default async function Home() {
     <div className={styles.home}>
       <Hero />
       <CeroKmSection />
-      <HomeUsadosSectionClient />
+      <UsadosSection />
       <section
         className={styles.postventa}
         aria-labelledby="home-postventa-title"
