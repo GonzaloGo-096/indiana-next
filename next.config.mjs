@@ -82,8 +82,10 @@ const nextConfig = {
       },
     ];
   },
-  // Desactivar reactCompiler para acelerar build (puede reactivarse si es necesario)
-  reactCompiler: false,
+  // reactCompiler quedaba en false con el paquete babel-plugin-react-compiler
+  // instalado: costo de mantenimiento sin ningún efecto. Se sacó el paquete y
+  // la opción, que además ya viene desactivada por defecto.
+  // Para reactivarlo: `npm i -D babel-plugin-react-compiler` + `reactCompiler: true`.
   images: {
     // 🔑 Delega el resize a Cloudinary mediante src/lib/imageLoader.js.
     // Apaga el optimizador de Vercel (/_next/image) → adiós 402 y costo $0.

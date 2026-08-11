@@ -68,3 +68,8 @@ next-env.d.ts
 # Snapshots de debug/automatizacion (Playwright, agentes) - no versionar
 /_dev-screenshots/
 ga4-filters.yml
+
+# Logs de desarrollo que quedaron commiteados por error
+dev-output.log
+*.log
+.cursor/

@@ -7,7 +7,7 @@
  * @version 2.0.0 - Next.js compatible
  */
 
-import axiosInstance from '@/lib/api/axiosInstance'
+import axiosInstance from '@/lib/http/client'
 import { buildSearchParams } from '@/utils/filters'
 
 const vehiclesService = {

@@ -8,7 +8,7 @@
  */
 
 import { AUTH_CONFIG } from '@/config/auth'
-import { authAxiosInstance } from '@/lib/api/axiosInstance'
+import { authAxiosInstance } from '@/lib/http/client'
 import { getApiBaseUrl, getApiTimeout } from '@/lib/config/api'
 
 /**

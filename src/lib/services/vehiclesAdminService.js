@@ -7,7 +7,7 @@
  * @version 1.1.0 - Usa API Route de Next.js para optimización de imágenes
  */
 
-import { authAxiosInstance } from '@/lib/api/axiosInstance'
+import { authAxiosInstance } from '@/lib/http/client'
 import { AUTH_CONFIG } from '@/config/auth'
 
 const vehiclesAdminService = {
