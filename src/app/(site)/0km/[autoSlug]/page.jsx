@@ -30,7 +30,10 @@ import WhatsAppLink from "@/components/analytics/WhatsAppLink";
 import ItemViewTracker from "@/components/analytics/ItemViewTracker";
 import { SOURCES, LOCATIONS, LEAD_TYPES, VERTICALS } from "@/lib/analytics/events";
 import { buildItemParamsFromAuto } from "@/lib/analytics/params";
+import { createLogger } from "@/lib/logger";
 import styles from "./0km-detalle.module.css";
+
+const log = createLogger("0km:detalle");
 
 const WHATSAPP_PHONE_0KM = "543816295959";
 
@@ -229,17 +232,20 @@ export async function generateStaticParams() {
     const slugs = getModelosSlugs();
 
     if (!Array.isArray(slugs) || slugs.length === 0) {
-      console.warn("No se encontraron slugs de modelos para generar rutas estáticas");
-      return [];
+      // Los modelos son data local (src/data/modelos), no la API: si están
+      // vacíos es un bug del código, no una caída del backend. Fallar acá es
+      // preferible a desplegar el sitio sin las páginas de detalle de 0km.
+      throw new Error(
+        "getModelosSlugs() no devolvió modelos. Revisar src/data/modelos."
+      );
     }
 
     return slugs.map((slug) => ({
       autoSlug: slug,
     }));
   } catch (error) {
-    console.error("Error generating static params:", error);
-    // Retornar array vacío en caso de error para evitar fallo del build
-    return [];
+    log.error("generateStaticParams falló:", error);
+    throw error;
   }
 }
 
@@ -308,7 +314,7 @@ export async function generateMetadata({ params }) {
       },
     };
   } catch (error) {
-    console.error("Error generating metadata:", error);
+    log.error("generateMetadata falló, usando fallback:", error);
     return {
       title: "Modelo no disponible",
       description: "Error al cargar la información del modelo.",

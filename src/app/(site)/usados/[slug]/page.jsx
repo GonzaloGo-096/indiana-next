@@ -23,6 +23,9 @@ import VehicleDetailClient from "./VehicleDetailClient";
 import ItemViewTracker from "@/components/analytics/ItemViewTracker";
 import { LOCATIONS, SOURCES } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
+import { createLogger } from "@/lib/logger";
+
+const log = createLogger("usados:detalle");
 
 function formatPrecioForMeta(precio) {
   if (precio == null || precio === "") return "";
@@ -259,7 +262,7 @@ export default async function VehicleDetailPage({ params }) {
     if (error?.digest?.startsWith?.("NEXT_REDIRECT")) throw error;
     if (error?.digest === "NEXT_NOT_FOUND") throw error;
 
-    console.error("[VehicleDetailPage] Error:", error?.message || error);
+    log.error("Error renderizando el detalle:", error?.message || error);
 
     const msg = typeof error?.message === "string" ? error.message : "";
     if (msg.includes("not found") || msg.includes("404")) {

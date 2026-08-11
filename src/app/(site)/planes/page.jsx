@@ -1,7 +1,10 @@
 import { getAllPlanes, extraerModeloBase } from "../../../data/planes";
 import { absoluteUrl } from "../../../lib/site-url";
 import { PlanesClient } from "./PlanesClient";
+import { createLogger } from "@/lib/logger";
 import styles from "./planes.module.css";
+
+const log = createLogger("planes");
 
 /**
  * Helper para generar Structured Data (JSON-LD) del listado de planes
@@ -68,7 +71,7 @@ export async function generateMetadata() {
       },
     };
   } catch (error) {
-    console.error("Error generating metadata for planes page:", error);
+    log.error("generateMetadata falló, usando fallback:", error);
     return {
       title: "Planes de Ahorro Peugeot",
       description: "Planes de ahorro Peugeot en Tucumán.",

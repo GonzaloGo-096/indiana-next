@@ -18,7 +18,10 @@ import { mapVehiclesPage } from "../../../../lib/mappers/vehicleMapper";
 import { parseFilters } from "../../../../utils/filters";
 import { getSiteUrl, tryAbsoluteUrl } from "../../../../lib/site-url";
 import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
+import { createLogger } from "@/lib/logger";
 import VehiculosClient from "./VehiculosClient";
+
+const log = createLogger("usados:listado");
 
 /**
  * Metadata dinámica para SEO
@@ -264,7 +267,7 @@ export async function generateMetadata({ searchParams }) {
     ) {
       throw err;
     }
-    console.error("[usados/vehiculos] generateMetadata:", msg);
+    log.error("generateMetadata falló, usando fallback:", msg);
     return {
       title: "Vehículos Usados Multimarca",
       description:
@@ -319,7 +322,7 @@ export default async function VehiculosPage({ searchParams }) {
         jsonLdHtml = JSON.stringify(jsonLd);
       }
     } catch (jsonErr) {
-      console.error("[VehiculosPage] JSON-LD omitido:", jsonErr?.message || jsonErr);
+      log.error("JSON-LD omitido:", jsonErr?.message || jsonErr);
     }
 
     return (
@@ -345,7 +348,7 @@ export default async function VehiculosPage({ searchParams }) {
       </>
     );
   } catch (error) {
-    console.error("[VehiculosPage] Error:", error?.message || error);
+    log.error("Error renderizando el listado:", error?.message || error);
 
     // Si es error 404, usar notFound()
     if (error.message?.includes("not found") || error.message?.includes("404")) {

@@ -16,7 +16,10 @@ import { mapVehiclesPage } from "../../../lib/mappers/vehicleMapper";
 import UsadosPageCarousel from "./UsadosPageCarousel";
 import PromocionesCarousel from "./PromocionesCarousel";
 import cta from "@/components/home/HomeSectionCtas.module.css";
+import { createLogger } from "@/lib/logger";
 import styles from "./usados.module.css";
+
+const log = createLogger("usados:promos");
 
 /**
  * Metadata para SEO
@@ -65,7 +68,7 @@ export async function generateMetadata() {
       },
     };
   } catch (err) {
-    console.error("[usados] generateMetadata:", err?.message || err);
+    log.error("generateMetadata falló, usando fallback:", err?.message || err);
     return {
       title,
       description,
@@ -112,7 +115,11 @@ export default async function UsadosPage() {
     }
     vehicles = list;
   } catch (error) {
-    console.error("[UsadosPage] Error fetching vehicles:", error?.message || error);
+    // Misma clase de falla que tenía la home: si esto se traga en silencio,
+    // la página renderiza sin vehículos y nadie se entera. El fallback a lista
+    // vacía se mantiene (la página tiene más contenido que el carrusel), pero
+    // ahora el error queda registrado y llega a telemetría.
+    log.error("Error trayendo vehículos, la sección queda vacía:", error?.message || error);
     vehicles = [];
   }
 
