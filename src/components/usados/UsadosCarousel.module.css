@@ -549,11 +549,13 @@
     padding: var(--spacing-4) var(--spacing-4) var(--spacing-6) var(--spacing-4);
   }
 
+  /* 320px = ancho propio de CardSimilar. A 294px el precio tachado de una oferta
+     no entraba entero y salía cortado con "…", que se lee como otro número. */
   .carouselHomeDesktopFour .cardWrapper {
-    min-width: 294px;
-    max-width: 294px;
-    width: 294px;
-    flex: 0 0 294px;
+    min-width: 320px;
+    max-width: 320px;
+    width: 320px;
+    flex: 0 0 320px;
   }
 
   /* CardSimilar: el root fija 320px; forzamos al ancho del wrapper y sin márgenes laterales */
