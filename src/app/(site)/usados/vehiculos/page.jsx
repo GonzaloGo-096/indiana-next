@@ -161,7 +161,10 @@ function getVehiclesListJsonLd(vehicles) {
   let siteBase;
   try {
     siteBase = getSiteUrl();
-  } catch {
+  } catch (error) {
+    // Sin base no se puede armar el JSON-LD. Degradar es correcto, pero en
+    // silencio significaba perder structured data en produccion sin senal.
+    log.warn("Sin site URL: se omite el JSON-LD del listado.", error?.message || error);
     return null;
   }
 
