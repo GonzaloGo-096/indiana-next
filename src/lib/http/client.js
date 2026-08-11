@@ -11,8 +11,20 @@
 import axios from "axios";
 import { getApiBaseUrl, getApiTimeout } from "@/lib/config/api";
 
+/**
+ * Instancia pública: apunta a NUESTRO servidor, no al backend.
+ *
+ * /api/catalogo es un proxy de lectura que reenvía al backend. Antes esto
+ * pegaba directo al backend desde el navegador, y era el único punto del sitio
+ * que le hablaba a otro dominio: si ese backend no autorizaba el origen, el
+ * navegador descartaba la respuesta y el listado mostraba "Network Error".
+ * Pasando por el proxy, el problema no puede ocurrir en ningún entorno.
+ *
+ * Ruta relativa a propósito: estas llamadas solo corren en el navegador. El
+ * camino de servidor usa vehiclesApi.server, que sí va directo (y cachea).
+ */
 const axiosInstance = axios.create({
-  baseURL: getApiBaseUrl(),
+  baseURL: "/api/catalogo",
   timeout: getApiTimeout(),
   headers: {
     "Content-Type": "application/json",
