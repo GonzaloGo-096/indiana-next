@@ -5,6 +5,7 @@ import PostventaServiceCard from "../../../components/postventa/PostventaService
 import Image from "next/image";
 import { createLogger } from "@/lib/logger";
 import styles from "./postventa.module.css";
+import { serializeJsonLd } from "@/lib/seo/jsonLd";
 
 const log = createLogger("postventa");
 
@@ -144,7 +145,7 @@ export default function PostventaPage() {
       {jsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
         />
       )}
       {/* Hero Section */}

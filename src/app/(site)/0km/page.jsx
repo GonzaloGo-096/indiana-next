@@ -9,6 +9,7 @@ import ItemListViewTracker from "@/components/analytics/ItemListViewTracker";
 import { SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import { buildItemParamsFromAuto } from "@/lib/analytics/params";
 import styles from "./0km.module.css";
+import { serializeJsonLd } from "@/lib/seo/jsonLd";
 
 /**
  * CeroKilometrosPage - Server Component
@@ -188,7 +189,7 @@ export default function CeroKilometrosPage() {
       {jsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
         />
       )}
 

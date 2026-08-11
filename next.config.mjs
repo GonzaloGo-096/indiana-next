@@ -24,27 +24,64 @@ const nextConfig = {
     ];
   },
   // ============================================================
-  // CSP (Content Security Policy) — TODO opcional, fase 2
+  // Cabeceras de seguridad
   // ============================================================
-  // Activar headers() con CSP cuando se quiera endurecer la seguridad.
-  // Importante: testear en Vercel Preview antes de prod, CSP estricta puede
-  // romper scripts inline o estilos. Las directivas mínimas para GTM+GA4+Meta:
-  //
-  // async headers() {
-  //   const csp = [
-  //     "default-src 'self'",
-  //     // GTM/GA4 requieren 'unsafe-inline' (snippets inline) y 'unsafe-eval' (custom HTML tags).
-  //     "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net",
-  //     "connect-src 'self' https://www.google-analytics.com https://*.analytics.google.com https://stats.g.doubleclick.net https://www.facebook.com",
-  //     "img-src 'self' data: https: https://www.google-analytics.com https://www.googletagmanager.com https://www.facebook.com https://res.cloudinary.com",
-  //     "frame-src https://www.googletagmanager.com",
-  //     "style-src 'self' 'unsafe-inline'",
-  //     "font-src 'self' data:",
-  //   ].join("; ");
-  //   return [
-  //     { source: "/(.*)", headers: [{ key: "Content-Security-Policy", value: csp }] },
-  //   ];
-  // },
+  async headers() {
+    // La CSP arranca en modo REPORTE, no bloqueo. Motivo: el sitio depende de
+    // GTM, GA4 y Meta Pixel, y una CSP estricta mal calibrada los apaga sin
+    // aviso. En Report-Only el navegador reporta lo que habría bloqueado pero
+    // no rompe nada. Después de leer los reportes se pasa a bloqueo cambiando
+    // el nombre de la cabecera a "Content-Security-Policy".
+    const csp = [
+      "default-src 'self'",
+      // GTM/GA4 necesitan 'unsafe-inline' (snippets inline) y 'unsafe-eval'
+      // (custom HTML tags). No es negociable mientras se use GTM.
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://connect.facebook.net",
+      "connect-src 'self' https://www.google-analytics.com https://*.analytics.google.com https://stats.g.doubleclick.net https://www.facebook.com https://back-indiana.vercel.app https://back-indiana-preview.vercel.app",
+      "img-src 'self' data: blob: https:",
+      "frame-src https://www.googletagmanager.com",
+      "style-src 'self' 'unsafe-inline'",
+      "font-src 'self' data:",
+      "base-uri 'self'",
+      "form-action 'self'",
+      "object-src 'none'",
+      "frame-ancestors 'self'",
+    ].join("; ");
+
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          // Reportar violaciones sin bloquear. Ver comentario de arriba.
+          { key: "Content-Security-Policy-Report-Only", value: csp },
+
+          // Impide que el sitio se cargue dentro de un iframe ajeno
+          // (clickjacking). frame-ancestors de la CSP hace lo mismo en
+          // navegadores modernos; esto cubre a los viejos.
+          { key: "X-Frame-Options", value: "SAMEORIGIN" },
+
+          // El navegador no adivina el tipo de archivo: usa el declarado.
+          { key: "X-Content-Type-Options", value: "nosniff" },
+
+          // No filtrar la URL completa al navegar a otro dominio.
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+
+          // Apaga APIs que el sitio no usa.
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), interest-cohort=()",
+          },
+
+          // HTTPS obligatorio por 2 años, incluidos subdominios.
+          // Vercel ya fuerza HTTPS; esto además protege el primer pedido.
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=63072000; includeSubDomains; preload",
+          },
+        ],
+      },
+    ];
+  },
   // Desactivar reactCompiler para acelerar build (puede reactivarse si es necesario)
   reactCompiler: false,
   images: {

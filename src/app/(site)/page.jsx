@@ -7,6 +7,7 @@ import { UsadosSection } from "../../components/home/UsadosSection";
 import { staticImages } from "../../config/cloudinaryStaticImages";
 import { getSiteUrl } from "../../lib/site-url";
 import styles from "../page.module.css";
+import { serializeJsonLd } from "@/lib/seo/jsonLd";
 
 // Structured Data: Organization + LocalBusiness + AutomotiveBusiness
 function getStructuredData() {
@@ -145,7 +146,7 @@ export default async function Home() {
       </section>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(structuredData) }}
       />
     </div>
   );

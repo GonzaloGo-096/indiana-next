@@ -20,6 +20,7 @@ import { getSiteUrl, tryAbsoluteUrl } from "../../../../lib/site-url";
 import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
 import { createLogger } from "@/lib/logger";
 import VehiculosClient from "./VehiculosClient";
+import { serializeJsonLd } from "@/lib/seo/jsonLd";
 
 const log = createLogger("usados:listado");
 
@@ -322,7 +323,7 @@ export default async function VehiculosPage({ searchParams }) {
     try {
       const jsonLd = getVehiclesListJsonLd(mappedData.vehicles || []);
       if (jsonLd) {
-        jsonLdHtml = JSON.stringify(jsonLd);
+        jsonLdHtml = serializeJsonLd(jsonLd);
       }
     } catch (jsonErr) {
       log.error("JSON-LD omitido:", jsonErr?.message || jsonErr);

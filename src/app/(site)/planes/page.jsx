@@ -3,6 +3,7 @@ import { absoluteUrl } from "../../../lib/site-url";
 import { PlanesClient } from "./PlanesClient";
 import { createLogger } from "@/lib/logger";
 import styles from "./planes.module.css";
+import { serializeJsonLd } from "@/lib/seo/jsonLd";
 
 const log = createLogger("planes");
 
@@ -112,7 +113,7 @@ export default function PlanesPage() {
       {jsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
         />
       )}
       <PlanesClient planesPorModelo={planesPorModelo} />

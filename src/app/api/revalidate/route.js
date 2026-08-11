@@ -26,6 +26,59 @@ const REVALIDATE_SECRET = (process.env.REVALIDATE_SECRET || '').trim()
 const MAX_WARMUP_IDS = 15
 const WARMUP_BATCH_SIZE = 5
 
+// ── Rate limit por IP ────────────────────────────────────────────────────────
+//
+// Sin esto, cada intento fallido dispara verifyAdminBearerToken, que consulta
+// al backend. O sea que un anónimo podía usar este endpoint para martillar el
+// login del backend; y con un token válido, cada llamada lanza hasta 15
+// pedidos de warmup.
+//
+// Ventana deslizante en memoria: alcanza para el caso real (lo llama el panel
+// al guardar un auto, un puñado de veces por día). No sobrevive a un reinicio
+// ni se comparte entre instancias serverless, y está bien: es un freno al
+// abuso, no un control de cuotas.
+const RATE_LIMIT_WINDOW_MS = 60_000
+const RATE_LIMIT_MAX = 10
+const intentosPorIp = new Map()
+
+function getClientIp(request) {
+  const fwd = request.headers.get('x-forwarded-for')
+  if (fwd) return fwd.split(',')[0].trim()
+  return request.headers.get('x-real-ip') || 'desconocida'
+}
+
+/**
+ * @returns {{ ok: true } | { ok: false, retryAfter: number }}
+ */
+function checkRateLimit(request) {
+  const ip = getClientIp(request)
+  const ahora = Date.now()
+
+  const previos = (intentosPorIp.get(ip) || []).filter(
+    (t) => ahora - t < RATE_LIMIT_WINDOW_MS,
+  )
+
+  if (previos.length >= RATE_LIMIT_MAX) {
+    const masViejo = previos[0]
+    return {
+      ok: false,
+      retryAfter: Math.ceil((RATE_LIMIT_WINDOW_MS - (ahora - masViejo)) / 1000),
+    }
+  }
+
+  previos.push(ahora)
+  intentosPorIp.set(ip, previos)
+
+  // Limpieza oportunista: sin esto el Map crece sin techo con IPs que no vuelven.
+  if (intentosPorIp.size > 500) {
+    for (const [k, v] of intentosPorIp) {
+      if (v.every((t) => ahora - t >= RATE_LIMIT_WINDOW_MS)) intentosPorIp.delete(k)
+    }
+  }
+
+  return { ok: true }
+}
+
 /**
  * Función helper para hacer warmup de una URL
  * 
@@ -101,6 +154,20 @@ async function warmupUrls(urls) {
  */
 export async function POST(request) {
   const startTime = Date.now()
+
+  // Freno antes de cualquier trabajo: sin esto, cada intento fallido consulta
+  // al backend para validar el token.
+  const limite = checkRateLimit(request)
+  if (!limite.ok) {
+    log.warn(`Rate limit alcanzado para ${getClientIp(request)}`)
+    return NextResponse.json(
+      {
+        error: 'Demasiados pedidos',
+        message: `Reintentá en ${limite.retryAfter} segundos.`,
+      },
+      { status: 429, headers: { 'Retry-After': String(limite.retryAfter) } },
+    )
+  }
 
   try {
     // ✅ Autorización: secret (automatización) O JWT de admin validado en backend

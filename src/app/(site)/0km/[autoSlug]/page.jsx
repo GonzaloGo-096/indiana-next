@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { getModelo, getModelosSlugs } from "../../../../data/modelos";
+import { serializeJsonLd } from "@/lib/seo/jsonLd";
 
 /** Normaliza el segmento dinámico (Turbopack / encoding / tipos raros) */
 function normalizeAutoSlug(raw) {
@@ -345,7 +346,7 @@ export default async function CeroKilometroDetallePage({ params }) {
     let jsonLdHtml = null;
     if (jsonLd) {
       try {
-        jsonLdHtml = JSON.stringify(jsonLd);
+        jsonLdHtml = serializeJsonLd(jsonLd);
       } catch (stringifyErr) {
         if (process.env.NODE_ENV === "development") {
           console.warn("[0km detalle] JSON-LD omitido:", stringifyErr);
