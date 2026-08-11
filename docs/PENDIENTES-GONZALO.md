@@ -77,21 +77,52 @@ ahora para que no te sorprendan después. **Ninguna se borra sin tu OK.**
 
 ---
 
-## 🟡 5. Revisión visual tuya después de un cambio puntual
+## 🟡 5. Revisión visual tuya — YA APLICADO, mirá cuando puedas
 
-**De qué se trata.** Hay 15 reglas de diseño responsive (las que adaptan el
-sitio al celular) que están mal escritas y **nunca funcionaron**. Al
-arreglarlas, van a empezar a aplicarse estilos que nadie vio nunca.
+**De qué se trata.** Había 15 reglas de diseño responsive mal escritas que
+**nunca funcionaron**. Ya las arreglé, así que empezaron a aplicarse estilos
+que nadie vio nunca.
 
-**Qué necesito.** Que después de ese cambio mires el sitio en el celular y me
-digas si algo se ve raro. Yo lo voy a revisar igual, pero cuatro ojos ven
-mejor y vos conocés cómo tiene que verse.
+**8 de las 15 no podían cambiar nada** (eran clases que no usa nadie). Las
+otras 7 sí cambian cosas, y esto es lo que hay que mirar:
 
-**Bloquea algo?** No, avisa cuando llegue (Bloque 3).
+| Dónde | Qué cambia |
+|---|---|
+| Todo el sitio | Los márgenes laterales pasan de 16px fijos a 16 / 24 / 32 px según celular, tablet o pantalla grande |
+| Postventa | Las fotos de las tarjetas de servicio son más altas en tablet y desktop |
+| 0km | El botón de WhatsApp y los textos editoriales, un poco más chicos en celular |
+| Planes | Espaciado de la sección de confianza en celular |
+
+**Qué necesito.** Que mires esas cuatro cosas en celular y en compu, y me
+digas si algo te parece peor que antes. Todo esto era la intención original
+del diseño, pero el sitio vivió con la otra apariencia y vos sos el que sabe
+cómo debe verse.
+
+**Si algo no te gusta**, se revierte solo ese cambio con un comando, sin
+tocar nada más.
+
+**Bloquea algo?** No.
 
 ---
 
-## 🟡 6. Probar una carga de auto en el panel (5 minutos)
+## 🟡 6. Un token de espaciado que no existe (encontrado de paso)
+
+**De qué se trata.** Al arreglar lo anterior apareció otro problema tapado:
+la escala de espaciados del sitio llega hasta `--spacing-6`, pero hay 5
+lugares que usan `--spacing-8` y `--spacing-10`, que **nunca se definieron**.
+Ahí el navegador descarta la instrucción en silencio.
+
+Ya corregí el caso que me tocaba (los márgenes del sitio). Los otros 5 están
+en Planes, detalle de plan y Postventa.
+
+**Qué necesito.** Definir esos valores cambiaría espaciados en varias páginas
+a la vez, así que prefiero hacerlo aparte y que lo mires. Decime cuándo.
+
+**Bloquea algo?** No, hoy funciona igual que siempre.
+
+---
+
+## 🟡 7. Probar una carga de auto en el panel (5 minutos)
 
 **De qué se trata.** Cerré el agujero de seguridad de las fotos: ahora el
 servidor exige que estés logueado **antes** de procesar el archivo. Verificado:
@@ -111,7 +142,7 @@ verificar yo.
 
 ---
 
-## 🟡 7. Un archivo quedó sin uso: ¿lo borro?
+## 🟡 8. Un archivo quedó sin uso: ¿lo borro?
 
 **De qué se trata.** Al arreglar el inicio, el archivo que pedía los autos
 desde el navegador (`src/components/home/HomeUsadosSectionClient.jsx`, 44
@@ -125,7 +156,7 @@ entra en el sitio ni suma peso.
 
 ---
 
-## 🟡 8. El chequeo de calidad automático está apagado
+## 🟡 9. El chequeo de calidad automático está apagado
 
 **De qué se trata.** El proyecto tiene un revisor automático de código
 (`lint`) que hoy marca **15 errores**. No los hice yo: ya venían. Nadie los

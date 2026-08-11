@@ -267,7 +267,17 @@
        ======================================== */
     --container-padding-mobile: var(--spacing-4);
     --container-padding-tablet: var(--spacing-6);
-    --container-padding-desktop: var(--spacing-8);
+    /* Apuntaba a --spacing-8, que NUNCA se definió: la escala termina en
+       --spacing-6. La declaración se descartaba y el padding quedaba en 0.
+       No se notaba porque la media query que la usaba estaba rota (usaba
+       var() dentro de @media, que no funciona). Al arreglar la media query
+       el bug salió a la luz.
+       Se usa 2rem literal, que continúa la escala (0.25 de paso) y respeta
+       la intención de que desktop tenga más aire que tablet.
+       PENDIENTE APARTE: --spacing-8 y --spacing-10 se usan en 5 lugares más
+       y tampoco existen; ahí las declaraciones también se descartan. Merece
+       su propio cambio con revisión visual. */
+    --container-padding-desktop: 2rem;
 
     --section-padding-mobile: var(--spacing-4);
     --section-padding-tablet: var(--spacing-6);
