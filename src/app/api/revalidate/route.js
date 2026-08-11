@@ -181,10 +181,22 @@ export async function POST(request) {
         urlsToWarmup.push(`${baseUrl}/usados/vehiculos`)
       }
 
-      // Agregar URLs de detalle (solo si hay IDs)
-      for (const id of vehicleIds) {
-        urlsToWarmup.push(`${baseUrl}/usados/${id}`)
-      }
+      // NO se calientan las fichas de detalle.
+      //
+      // Antes se armaba `${baseUrl}/usados/${id}`, pero la ruta publica es
+      // /usados/[slug] con el formato marca-modelo-anio-id. Verificado: pedir
+      // la URL con el id pelado devuelve 200 con Cache-Control no-cache y sin
+      // la ficha (es la pantalla de redireccion), asi que ese warmup nunca
+      // calento nada; solo gastaba tiempo y reportaba exito.
+      //
+      // Armar el slug correcto necesita marca/modelo/anio, datos que este
+      // endpoint no recibe: solo llegan los IDs. Pasarlos implicaria cambiar
+      // el contrato y tres capas del admin, para ahorrar ~430ms en la primera
+      // visita a una ficha recien editada. No compensa hoy.
+      //
+      // Importante: esto NO afecta la frescura. revalidateTag('vehicle-detail')
+      // y `vehicle:${id}` ya invalidan la cache mas arriba; lo unico que se
+      // pierde es el pre-renderizado, y la ficha se genera en la primera visita.
 
       // Hacer warmup si hay URLs (lista o detalles)
       if (urlsToWarmup.length > 0) {

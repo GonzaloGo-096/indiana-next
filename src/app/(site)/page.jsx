@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import Hero from "../../components/Hero";
 import cta from "../../components/home/HomeSectionCtas.module.css";
 import { CeroKmSection } from "../../components/home/CeroKmSection";
@@ -109,11 +110,20 @@ export default async function Home() {
             POST-VENTA
           </h2>
           <div className={styles.postventaBanner}>
-            <img
+            {/* next/image y no <img>: con la etiqueta plana el loader de
+                Cloudinary nunca intervenía y la imagen se servía original,
+                585 KB. Con transformaciones baja a ~25 KB.
+                El tamaño real lo sigue poniendo el CSS (.postventaImage:
+                alto fijo en mobile, auto en desktop, object-fit cover);
+                width/height acá son solo la relación de aspecto que Next
+                necesita para reservar el espacio. */}
+            <Image
               src={staticImages.postventa.hero.src}
               alt={staticImages.postventa.hero.alt}
               className={styles.postventaImage}
-              decoding="async"
+              width={1600}
+              height={600}
+              sizes="(max-width: 1200px) 100vw, 1200px"
               loading="lazy"
             />
             <div className={styles.postventaContent}>

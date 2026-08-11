@@ -57,10 +57,17 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
 
-    // NOTA: con loaderFile propio, remotePatterns / formats / qualities /
-    // minimumCacheTTL ya NO aplican (no hay fetch al optimizador de Vercel).
-    // Se eliminaron para no confundir; el formato y la calidad ahora los
-    // resuelve Cloudinary (f_auto / q_auto) dentro del loader.
+    // qualities: el loader propio SÍ recibe y usa el `quality` de cada
+    // <Image> (lo traduce a q_<n> de Cloudinary), pero Next igual valida el
+    // valor contra esta lista y avisa en desarrollo si no está declarado.
+    // Sin esto, la consola se llenaba de "quality 80 is not configured".
+    // Son las cinco calidades que usa el código hoy.
+    qualities: [70, 75, 80, 85, 90],
+
+    // NOTA: con loaderFile propio, remotePatterns / formats / minimumCacheTTL
+    // ya NO aplican (no hay fetch al optimizador de Vercel). Se eliminaron
+    // para no confundir; el formato lo resuelve Cloudinary (f_auto) dentro
+    // del loader.
   },
   // Optimizaciones de producción
   compress: true,

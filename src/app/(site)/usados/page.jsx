@@ -81,7 +81,19 @@ export async function generateMetadata() {
  * ISR ligero: evita ejecutar el Server Component en cada visita (mejor TTFB que force-dynamic).
  * Los datos del carrusel pueden tardar hasta este intervalo en reflejar cambios del API.
  */
-export const revalidate = 120;
+// Sin `export const revalidate`: la frescura la gobiernan los tags.
+//
+// Antes habia `revalidate = 120`, que hacia re-renderizar la pagina cada 2
+// minutos sobre datos que el Data Cache retiene 6 horas (vehiclesApi.server
+// fetchea con revalidate 21600 + tags). O sea ~30 ejecuciones por hora para
+// producir exactamente el mismo HTML.
+//
+// Lo que realmente actualiza esto es revalidateTag('vehicles-list'), que
+// dispara el admin al guardar un vehiculo. Eso invalida datos y pagina juntos.
+//
+// Condicion para que esto sea seguro: que se sepa cuando esa revalidacion
+// falla. Antes fallaba en silencio; desde el Bloque 1 queda registrada en
+// revalidatePublicCache.
 
 /**
  * Página principal de usados
