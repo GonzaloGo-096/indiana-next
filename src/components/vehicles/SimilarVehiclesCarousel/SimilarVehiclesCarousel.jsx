@@ -16,7 +16,7 @@
  */
 
 import { useMemo } from "react";
-import { useSimilarVehicles } from "../../../hooks/useSimilarVehicles";
+import { useSimilarVehicles } from "@/hooks/useSimilarVehicles";
 import { VehicleCarousel } from "../VehicleCarousel/VehicleCarousel";
 import styles from "./SimilarVehiclesCarousel.module.css";
 

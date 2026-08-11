@@ -16,10 +16,10 @@
  */
 
 import { useState, useEffect, useCallback, useRef, forwardRef, memo, useImperativeHandle, useMemo } from 'react'
-import RangeSlider from '../../ui/RangeSlider/RangeSlider'
-import { CloseIcon } from '../../ui/icons/CloseIcon'
-import { combustibles, cajas, FILTER_BOUNDS, FILTER_DEFAULTS } from '../../../constants/filterOptions'
-import { useDevice } from '../../../hooks/useDevice'
+import RangeSlider from '@/components/ui/RangeSlider/RangeSlider'
+import { CloseIcon } from '@/components/ui/icons/CloseIcon'
+import { combustibles, cajas, FILTER_BOUNDS, FILTER_DEFAULTS } from '@/constants/filterOptions'
+import { useDevice } from '@/hooks/useDevice'
 import styles from './FilterFormSimple.module.css'
 
 // ✅ FIX HIDRATACIÓN: Función de formateo consistente entre servidor y cliente

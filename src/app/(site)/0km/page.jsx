@@ -1,10 +1,10 @@
-import { getAllModelos, getHomeCeroKmCardImage } from "../../../data/modelos";
-import { getPlanesPorModelo } from "../../../data/planes";
-import { VehiculosCarouselClient } from "../../../components/0km/VehiculosCarouselClient";
-import { UtilitariosCarouselClient } from "../../../components/0km/UtilitariosCarouselClient";
-import { getSiteUrl, absoluteUrl } from "../../../lib/site-url";
+import { getAllModelos, getHomeCeroKmCardImage } from "@/data/modelos";
+import { getPlanesPorModelo } from "@/data/planes";
+import { VehiculosCarouselClient } from "@/components/0km/VehiculosCarouselClient";
+import { UtilitariosCarouselClient } from "@/components/0km/UtilitariosCarouselClient";
+import { getSiteUrl, absoluteUrl } from "@/lib/site-url";
 import Link from "next/link";
-import cta from "../../../components/home/HomeSectionCtas.module.css";
+import cta from "@/components/home/HomeSectionCtas.module.css";
 import ItemListViewTracker from "@/components/analytics/ItemListViewTracker";
 import { SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import { buildItemParamsFromAuto } from "@/lib/analytics/params";

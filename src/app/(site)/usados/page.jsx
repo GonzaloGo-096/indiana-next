@@ -10,9 +10,9 @@
  */
 
 import Link from "next/link";
-import { tryAbsoluteUrl } from "../../../lib/site-url";
-import { vehiclesService } from "../../../lib/services/vehiclesApi.server";
-import { mapVehiclesPage } from "../../../lib/mappers/vehicleMapper";
+import { tryAbsoluteUrl } from "@/lib/site-url";
+import { vehiclesService } from "@/lib/services/vehiclesApi.server";
+import { mapVehiclesPage } from "@/lib/mappers/vehicleMapper";
 import UsadosPageCarousel from "./UsadosPageCarousel";
 import PromocionesCarousel from "./PromocionesCarousel";
 import cta from "@/components/home/HomeSectionCtas.module.css";

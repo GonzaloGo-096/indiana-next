@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { getModelo, getModelosSlugs } from "../../../../data/modelos";
+import { getModelo, getModelosSlugs } from "@/data/modelos";
 import { serializeJsonLd } from "@/lib/seo/jsonLd";
 
 /** Normaliza el segmento dinámico (Turbopack / encoding / tipos raros) */
@@ -19,12 +19,12 @@ function normalizeAutoSlug(raw) {
 
 /** Permite /0km/[slug] aunque no esté en el último build de SSG (dev / nuevos modelos) */
 export const dynamicParams = true;
-import { getPlanesPorModelo } from "../../../../data/planes";
-import { absoluteUrl } from "../../../../lib/site-url";
+import { getPlanesPorModelo } from "@/data/planes";
+import { absoluteUrl } from "@/lib/site-url";
 import { ModeloDetalleClient } from "./ModeloDetalleClient";
 import { HeroImageDesktop } from "./HeroImageDesktop";
-import { ModeloSelectorProvider } from "../../../../components/ceroKm/ModeloSelectorContext";
-import { VersionItemsImageDesktop } from "../../../../components/ceroKm/VersionItemsImageDesktop";
+import { ModeloSelectorProvider } from "@/components/ceroKm/ModeloSelectorContext";
+import { VersionItemsImageDesktop } from "@/components/ceroKm/VersionItemsImageDesktop";
 import contact from "@/components/ui/ContactButtons.module.css";
 import cta from "@/components/home/HomeSectionCtas.module.css";
 import WhatsAppLink from "@/components/analytics/WhatsAppLink";
@@ -49,7 +49,7 @@ const WHATSAPP_PHONE_0KM = "543816295959";
 // ModeloPlanes - Solo para modelos con planes (208, 2008, partner, expert)
 // Exporta como default, usar import directo
 const ModeloPlanes = dynamic(
-  () => import("../../../../components/ceroKm/ModeloPlanes/ModeloPlanes"),
+  () => import("@/components/ceroKm/ModeloPlanes/ModeloPlanes"),
   {
     loading: () => (
       <div
@@ -71,7 +71,7 @@ const ModeloPlanes = dynamic(
 // FeatureSection - Solo para modelos con features
 // Usar ruta directa al componente (evitar index.js que puede causar problemas)
 const FeatureSection = dynamic(
-  () => import("../../../../components/ceroKm/FeatureSection/FeatureSection"),
+  () => import("@/components/ceroKm/FeatureSection/FeatureSection"),
   {
     loading: () => (
       <div
@@ -107,7 +107,7 @@ const FeatureSection = dynamic(
 // ModelGallery - Solo para modelos con galería
 // Ahora tiene default export, usar import directo
 const ModelGallery = dynamic(
-  () => import("../../../../components/ceroKm/ModelGallery"),
+  () => import("@/components/ceroKm/ModelGallery"),
   {
     loading: () => (
       <div

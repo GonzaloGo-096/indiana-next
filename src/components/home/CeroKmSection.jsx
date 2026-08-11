@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getAllModelos, getHomeCeroKmCardImage } from "../../data/modelos";
+import { getAllModelos, getHomeCeroKmCardImage } from "@/data/modelos";
 import { VehiculosCarouselClient } from "../0km/VehiculosCarouselClient";
 import styles from "./CeroKmSection.module.css";
 import cta from "./HomeSectionCtas.module.css";

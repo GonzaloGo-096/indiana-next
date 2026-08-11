@@ -17,7 +17,7 @@
 import { memo, useEffect, useCallback, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
-import { ChevronIcon } from "../../ui/icons/ChevronIcon";
+import { ChevronIcon } from "@/components/ui/icons/ChevronIcon";
 import { pushDataLayer } from "@/lib/analytics/dataLayer";
 import { EVENTS, SOURCES, LOCATIONS } from "@/lib/analytics/events";
 import styles from "./GalleryModal.module.css";

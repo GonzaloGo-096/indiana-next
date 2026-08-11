@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getAllPlanes, getPlanPorId, extraerModeloBase } from "../../../../data/planes";
-import { getModelo, COLORES } from "../../../../data/modelos";
-import { absoluteUrl } from "../../../../lib/site-url";
-import { formatPrice } from "../../../../utils/formatters";
+import { getAllPlanes, getPlanPorId, extraerModeloBase } from "@/data/planes";
+import { getModelo, COLORES } from "@/data/modelos";
+import { absoluteUrl } from "@/lib/site-url";
+import { formatPrice } from "@/utils/formatters";
 import { PlanImageDesktop } from "./PlanImageDesktop";
 import cta from "@/components/home/HomeSectionCtas.module.css";
 import contact from "@/components/ui/ContactButtons.module.css";

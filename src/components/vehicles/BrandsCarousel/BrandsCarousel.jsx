@@ -16,7 +16,7 @@ import {
   useImperativeHandle,
 } from "react";
 import Image from "next/image";
-import { BRAND_LOGOS } from "../../../config/brandLogos";
+import { BRAND_LOGOS } from "@/config/brandLogos";
 import styles from "./BrandsCarousel.module.css";
 
 const CAROUSEL_ORDER = [

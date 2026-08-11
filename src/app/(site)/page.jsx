@@ -1,11 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import Hero from "../../components/Hero";
-import cta from "../../components/home/HomeSectionCtas.module.css";
-import { CeroKmSection } from "../../components/home/CeroKmSection";
-import { UsadosSection } from "../../components/home/UsadosSection";
-import { staticImages } from "../../config/cloudinaryStaticImages";
-import { getSiteUrl } from "../../lib/site-url";
+import Hero from "@/components/Hero";
+import cta from "@/components/home/HomeSectionCtas.module.css";
+import { CeroKmSection } from "@/components/home/CeroKmSection";
+import { UsadosSection } from "@/components/home/UsadosSection";
+import { staticImages } from "@/config/cloudinaryStaticImages";
+import { getSiteUrl } from "@/lib/site-url";
 import styles from "../page.module.css";
 import { serializeJsonLd } from "@/lib/seo/jsonLd";
 

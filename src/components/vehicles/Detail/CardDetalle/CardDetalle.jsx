@@ -25,14 +25,14 @@ import {
   formatKilometraje,
   formatCilindradaDisplay,
   formatHPDisplay,
-} from "../../../../utils/formatters";
-import { getVehicleOfferDisplay } from "../../../../utils/vehicleOffer";
-import { getBrandLogo } from "../../../../utils/getBrandLogo";
-import { getCarouselImages } from "../../../../utils/carouselImages";
-import { ImageCarousel } from "../../ImageCarousel/ImageCarousel";
-import { GalleryModal } from "../../GalleryModal/GalleryModal";
-import { VehiclePrice } from "../../VehiclePrice/VehiclePrice";
-import contact from "../../../ui/ContactButtons.module.css";
+} from "@/utils/formatters";
+import { getVehicleOfferDisplay } from "@/utils/vehicleOffer";
+import { getBrandLogo } from "@/utils/getBrandLogo";
+import { getCarouselImages } from "@/utils/carouselImages";
+import { ImageCarousel } from "@/components/vehicles/ImageCarousel/ImageCarousel";
+import { GalleryModal } from "@/components/vehicles/GalleryModal/GalleryModal";
+import { VehiclePrice } from "@/components/vehicles/VehiclePrice/VehiclePrice";
+import contact from "@/components/ui/ContactButtons.module.css";
 import WhatsAppLink from "@/components/analytics/WhatsAppLink";
 import { SOURCES, LOCATIONS, LEAD_TYPES, VERTICALS } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";

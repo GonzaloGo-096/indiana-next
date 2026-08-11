@@ -1,6 +1,6 @@
 import Image from "next/image";
 import styles from "./Hero.module.css";
-import { staticImages } from "../../config/cloudinaryStaticImages";
+import { staticImages } from "@/config/cloudinaryStaticImages";
 import cta from "../home/HomeSectionCtas.module.css";
 
 const Hero = ({ className }) => {

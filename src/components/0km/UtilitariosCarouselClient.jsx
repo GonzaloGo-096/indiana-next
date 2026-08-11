@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import ModelCard from "../ModelCard/ModelCard";
-import styles from "../../app/(site)/0km/0km.module.css";
+import styles from "@/app/(site)/0km/0km.module.css";
 
 /**
  * UtilitariosCarouselClient - Client Component para carrusel de utilitarios

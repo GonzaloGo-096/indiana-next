@@ -27,17 +27,17 @@ import {
   formatValue,
   formatCilindradaDisplay,
   formatHPDisplay,
-} from "../../../../utils/formatters";
-import { getBrandLogo } from "../../../../utils/getBrandLogo";
-import { STORAGE_KEYS } from "../../../../constants/storageKeys";
-import { buildVehicleDetailUrl } from "../../../../utils/vehicleSlug";
-import { getVehicleOfferDisplay } from "../../../../utils/vehicleOffer";
-import { VehiclePrice } from "../../VehiclePrice/VehiclePrice";
+} from "@/utils/formatters";
+import { getBrandLogo } from "@/utils/getBrandLogo";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
+import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
+import { getVehicleOfferDisplay } from "@/utils/vehicleOffer";
+import { VehiclePrice } from "@/components/vehicles/VehiclePrice/VehiclePrice";
 import { pushEcommerceEvent } from "@/lib/analytics/dataLayer";
 import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import styles from "./CardAuto.module.css";
-import { VEHICLE_PLACEHOLDER } from "../../../../config/cloudinaryStaticImages";
+import { VEHICLE_PLACEHOLDER } from "@/config/cloudinaryStaticImages";
 
 /**
  * Componente CardAuto optimizado

@@ -18,7 +18,7 @@ import {
   getActiveFilterChips,
   mergeDefaultRanges,
 } from "../filters";
-import { FILTER_DEFAULTS } from "../../constants/filterOptions";
+import { FILTER_DEFAULTS } from "@/constants/filterOptions";
 
 const RANGO_COMPLETO = {
   año: [FILTER_DEFAULTS.AÑO.min, FILTER_DEFAULTS.AÑO.max],

@@ -1,4 +1,4 @@
-import styles from "../../../loading.module.css";
+import styles from "@/app/loading.module.css";
 
 /**
  * Loading State para /0km/[autoSlug]

@@ -26,9 +26,9 @@
 
 import { useEffect, useLayoutEffect, useRef, useState, memo } from "react";
 import { createPortal } from "react-dom";
-import { CheckIcon } from "../../ui/icons/CheckIcon";
-import { SORT_OPTIONS } from "../../../constants/filterOptions";
-import { isValidSortOption } from "../../../utils/filters";
+import { CheckIcon } from "@/components/ui/icons/CheckIcon";
+import { SORT_OPTIONS } from "@/constants/filterOptions";
+import { isValidSortOption } from "@/utils/filters";
 import styles from "./SortDropdown.module.css";
 
 // ─── helpers ────────────────────────────────────────────────────────────────

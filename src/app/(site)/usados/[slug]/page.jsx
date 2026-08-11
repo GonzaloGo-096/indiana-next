@@ -11,9 +11,9 @@
  */
 
 import { notFound, permanentRedirect } from "next/navigation";
-import { vehiclesService } from "../../../../lib/services/vehiclesApi.server";
-import { mapVehicle } from "../../../../lib/mappers/vehicleMapper";
-import { absoluteUrl } from "../../../../lib/site-url";
+import { vehiclesService } from "@/lib/services/vehiclesApi.server";
+import { mapVehicle } from "@/lib/mappers/vehicleMapper";
+import { absoluteUrl } from "@/lib/site-url";
 import { serializeJsonLd } from "@/lib/seo/jsonLd";
 import {
   buildVehicleDetailUrl,

@@ -14,7 +14,7 @@
  */
 
 import { memo, useMemo, useCallback } from "react";
-import { CardAuto } from "../../Card/CardAuto";
+import { CardAuto } from "@/components/vehicles/Card/CardAuto";
 import { pushDataLayer } from "@/lib/analytics/dataLayer";
 import { EVENTS, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import styles from "./ListAutos.module.css";

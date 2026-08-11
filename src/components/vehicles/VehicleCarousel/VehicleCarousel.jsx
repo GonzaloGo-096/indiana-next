@@ -25,7 +25,7 @@
 
 import { useRef, useCallback, useState, useEffect, useMemo } from "react";
 import { CardSimilar } from "../Card/CardSimilar/CardSimilar";
-import { ChevronIcon } from "../../ui/icons/ChevronIcon";
+import { ChevronIcon } from "@/components/ui/icons/ChevronIcon";
 
 /** Desplazamiento por click de flecha, igual que en UsadosCarousel. */
 const SCROLL_STEP = 1400;

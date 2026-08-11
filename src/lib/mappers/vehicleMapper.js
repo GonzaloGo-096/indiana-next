@@ -19,8 +19,8 @@
 import {
   extractVehicleImageUrls,
   extractAllImageUrls,
-} from "../../utils/imageExtractors";
-import { VEHICLE_CONSTANTS } from "../../constants/vehicles";
+} from "@/utils/imageExtractors";
+import { VEHICLE_CONSTANTS } from "@/constants/vehicles";
 import { createLogger } from "../logger";
 
 const log = createLogger("mapper:vehicle");

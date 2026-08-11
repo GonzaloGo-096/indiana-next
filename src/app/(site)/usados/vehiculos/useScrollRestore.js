@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
-import { STORAGE_KEYS } from "../../../../constants/storageKeys";
-import { VEHICLE_CONSTANTS } from "../../../../constants/vehicles";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
+import { VEHICLE_CONSTANTS } from "@/constants/vehicles";
 
 /**
  * Guarda datos acumulados en sessionStorage y los restaura (junto con la

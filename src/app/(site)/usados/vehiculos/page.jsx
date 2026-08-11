@@ -13,10 +13,10 @@
 
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { vehiclesService } from "../../../../lib/services/vehiclesApi.server";
-import { mapVehiclesPage } from "../../../../lib/mappers/vehicleMapper";
-import { parseFilters } from "../../../../utils/filters";
-import { getSiteUrl, tryAbsoluteUrl } from "../../../../lib/site-url";
+import { vehiclesService } from "@/lib/services/vehiclesApi.server";
+import { mapVehiclesPage } from "@/lib/mappers/vehicleMapper";
+import { parseFilters } from "@/utils/filters";
+import { getSiteUrl, tryAbsoluteUrl } from "@/lib/site-url";
 import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
 import { createLogger } from "@/lib/logger";
 import VehiculosClient from "./VehiculosClient";

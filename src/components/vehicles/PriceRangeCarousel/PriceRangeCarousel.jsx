@@ -16,7 +16,7 @@
  * @version 2.0.0 - Comportamiento extraído a VehicleCarousel
  */
 
-import { usePriceRangeVehicles } from "../../../hooks/usePriceRangeVehicles";
+import { usePriceRangeVehicles } from "@/hooks/usePriceRangeVehicles";
 import { VehicleCarousel } from "../VehicleCarousel/VehicleCarousel";
 import styles from "./PriceRangeCarousel.module.css";
 

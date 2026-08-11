@@ -10,7 +10,7 @@
  * @author Indiana Peugeot
  */
 import { useState, useEffect, useMemo } from "react";
-import { useMediaQuery } from "../../hooks/useMediaQuery";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 import UsadosCarousel from "../usados/UsadosCarousel";
 import ItemListViewTracker from "@/components/analytics/ItemListViewTracker";
 import { SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";

@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import {
   buildWhatsAppUrl,
   resolveWhatsAppForPathname,
-} from "../../../config/whatsappFloating";
+} from "@/config/whatsappFloating";
 import WhatsAppLink from "@/components/analytics/WhatsAppLink";
 import { SOURCES } from "@/lib/analytics/events";
 import { locationFromPathname } from "@/lib/analytics/locationFromPath";

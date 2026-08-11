@@ -1,5 +1,5 @@
-import { getAllPlanes, extraerModeloBase } from "../../../data/planes";
-import { absoluteUrl } from "../../../lib/site-url";
+import { getAllPlanes, extraerModeloBase } from "@/data/planes";
+import { absoluteUrl } from "@/lib/site-url";
 import { PlanesClient } from "./PlanesClient";
 import { createLogger } from "@/lib/logger";
 import styles from "./planes.module.css";

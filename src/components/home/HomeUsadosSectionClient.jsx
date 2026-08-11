@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { UsadosSection } from "./UsadosSection";
-import { vehiclesService } from "../../lib/services/vehiclesApi";
-import { mapVehiclesPage } from "../../lib/mappers/vehicleMapper";
+import { vehiclesService } from "@/lib/services/vehiclesApi";
+import { mapVehiclesPage } from "@/lib/mappers/vehicleMapper";
 
 /**
  * Carga la sección de usados en cliente para evitar bloquear el SSR del home.

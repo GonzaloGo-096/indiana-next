@@ -1,7 +1,7 @@
-import { absoluteUrl } from "../../../lib/site-url";
-import { staticImages } from "../../../config/cloudinaryStaticImages";
-import { LEAD_TYPES } from "../../../lib/analytics/events";
-import PostventaServiceCard from "../../../components/postventa/PostventaServiceCard";
+import { absoluteUrl } from "@/lib/site-url";
+import { staticImages } from "@/config/cloudinaryStaticImages";
+import { LEAD_TYPES } from "@/lib/analytics/events";
+import PostventaServiceCard from "@/components/postventa/PostventaServiceCard";
 import Image from "next/image";
 import { createLogger } from "@/lib/logger";
 import styles from "./postventa.module.css";

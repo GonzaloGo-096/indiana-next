@@ -23,19 +23,19 @@ import {
   formatCaja,
   formatBrandModel,
   formatValue,
-} from "../../../../utils/formatters";
-import { AnioIcon } from "../../../ui/icons/AnioIcon";
-import { KmIcon } from "../../../ui/icons/KmIcon";
-import { CajaIconDetalle } from "../../../ui/icons/CajaIconDetalle";
-import { STORAGE_KEYS } from "../../../../constants/storageKeys";
-import { buildVehicleDetailUrl } from "../../../../utils/vehicleSlug";
-import { getVehicleOfferDisplay } from "../../../../utils/vehicleOffer";
-import { VehiclePrice } from "../../VehiclePrice/VehiclePrice";
+} from "@/utils/formatters";
+import { AnioIcon } from "@/components/ui/icons/AnioIcon";
+import { KmIcon } from "@/components/ui/icons/KmIcon";
+import { CajaIconDetalle } from "@/components/ui/icons/CajaIconDetalle";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
+import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
+import { getVehicleOfferDisplay } from "@/utils/vehicleOffer";
+import { VehiclePrice } from "@/components/vehicles/VehiclePrice/VehiclePrice";
 import { pushEcommerceEvent } from "@/lib/analytics/dataLayer";
 import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import styles from "./CardSimilar.module.css";
-import { VEHICLE_PLACEHOLDER } from "../../../../config/cloudinaryStaticImages";
+import { VEHICLE_PLACEHOLDER } from "@/config/cloudinaryStaticImages";
 
 /**
  * Componente CardSimilar optimizado
