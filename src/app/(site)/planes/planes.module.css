@@ -251,7 +251,7 @@
   letter-spacing: 0.2px;
 }
 
-@media (max-width: var(--mobile-max)) {
+@media (max-width: 767px) {
   .trustSection {
     margin-top: clamp(48px, 6vw, 64px);
     padding: clamp(28px, 4vw, 36px) clamp(20px, 4vw, 28px);

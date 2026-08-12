@@ -13,7 +13,7 @@
  * @author Indiana Peugeot
  */
 import { useState, useEffect, useCallback, useRef } from "react";
-import { ChevronIcon } from "../../../components/ui/icons/ChevronIcon";
+import { ChevronIcon } from "@/components/ui/icons/ChevronIcon";
 import styles from "./usados.module.css";
 
 const PROMOS_IMAGES = {

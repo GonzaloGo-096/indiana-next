@@ -4,6 +4,9 @@
  */
 
 import { AUTH_CONFIG } from '@/config/auth'
+import { createLogger } from '@/lib/logger'
+
+const log = createLogger('admin:revalidate')
 
 /**
  * @param {object} opts
@@ -41,11 +44,25 @@ export async function revalidatePublicCache({
       }),
     })
     const data = await response.json().catch(() => ({}))
-    return Boolean(response.ok && data.ok === true)
-  } catch (error) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn('[revalidatePublicCache]', error)
+    const ok = Boolean(response.ok && data.ok === true)
+
+    if (!ok) {
+      // Antes esto devolvia false en silencio: si la revalidacion fallaba,
+      // el admin creia haber publicado y el sitio publico quedaba viejo sin
+      // que nadie se enterara. Es la unica senal de que la cache no se limpio.
+      log.error('La revalidacion no se aplico. El sitio publico puede quedar desactualizado.', {
+        status: response.status,
+        respuesta: data,
+        vehicleIds,
+      })
     }
+
+    return ok
+  } catch (error) {
+    log.error('No se pudo llamar a /api/revalidate. El sitio publico puede quedar desactualizado.', {
+      message: error?.message || String(error),
+      vehicleIds,
+    })
     return false
   }
 }

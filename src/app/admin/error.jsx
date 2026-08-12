@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { errorBoundaryStyles } from "../../components/errors/errorBoundaryStyles";
+import { errorBoundaryStyles } from "@/components/errors/errorBoundaryStyles";
 
 /**
  * Error boundary del panel admin: sin Nav/footer de marketing.

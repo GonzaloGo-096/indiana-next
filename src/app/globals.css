@@ -135,13 +135,13 @@ h1, h2, h3 {
   padding: 0 var(--container-padding-mobile);
 }
 
-@media (min-width: var(--breakpoint-sm)) {
+@media (min-width: 576px) {
   .container {
     padding: 0 var(--container-padding-tablet);
   }
 }
 
-@media (min-width: var(--breakpoint-lg)) {
+@media (min-width: 992px) {
   .container {
     padding: 0 var(--container-padding-desktop);
   }
@@ -192,7 +192,7 @@ h1, h2, h3 {
   margin: 0 auto;
 }
 
-@media (max-width: var(--breakpoint-md)) {
+@media (max-width: 768px) {
   .admin-container {
     padding: var(--spacing-4) var(--spacing-2);
   }

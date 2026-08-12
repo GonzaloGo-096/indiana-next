@@ -16,6 +16,9 @@
 import { getApiBaseUrl } from "@/lib/config/api";
 import { fetchWithTimeout } from "@/lib/http/server";
 import { buildSearchParams } from "@/utils/filters";
+import { createLogger } from "@/lib/logger";
+
+const log = createLogger("api:server");
 
 /**
  * Servicio de vehículos para Server Components
@@ -97,7 +100,7 @@ export const vehiclesService = {
       }
 
       if (!response.ok) {
-        console.error("[API Server] getVehicles HTTP error:", {
+        log.error("getVehicles HTTP error:", {
           status: response.status,
           statusText: response.statusText,
           endpoint,
@@ -112,7 +115,7 @@ export const vehiclesService = {
         const text = await response.text();
         data = text ? JSON.parse(text) : null;
       } catch (parseErr) {
-        console.error("[API Server] getVehicles respuesta no JSON:", {
+        log.error("getVehicles respuesta no JSON:", {
           endpoint,
           message: parseErr?.message,
         });
@@ -220,7 +223,7 @@ export const vehiclesService = {
       });
 
       if (!response.ok) {
-        console.error("[API Server] getVehicleById HTTP error:", {
+        log.error("getVehicleById HTTP error:", {
           id: cleanId,
           status: response.status,
           statusText: response.statusText,
@@ -239,7 +242,7 @@ export const vehiclesService = {
         const text = await response.text();
         data = text ? JSON.parse(text) : null;
       } catch (parseErr) {
-        console.error("[API Server] getVehicleById respuesta no JSON:", {
+        log.error("getVehicleById respuesta no JSON:", {
           id: cleanId,
           endpoint,
           message: parseErr?.message,
@@ -255,7 +258,7 @@ export const vehiclesService = {
 
       return vehicle;
     } catch (error) {
-      console.error("[API Server] Error fetching vehicle by ID:", {
+      log.error("Error fetching vehicle by ID:", {
         id: cleanId,
         message: error.message,
       });

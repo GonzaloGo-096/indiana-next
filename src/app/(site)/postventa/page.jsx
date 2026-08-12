@@ -1,9 +1,13 @@
-import { absoluteUrl } from "../../../lib/site-url";
-import { staticImages } from "../../../config/cloudinaryStaticImages";
-import { LEAD_TYPES } from "../../../lib/analytics/events";
-import PostventaServiceCard from "../../../components/postventa/PostventaServiceCard";
+import { absoluteUrl } from "@/lib/site-url";
+import { staticImages } from "@/config/cloudinaryStaticImages";
+import { LEAD_TYPES } from "@/lib/analytics/events";
+import PostventaServiceCard from "@/components/postventa/PostventaServiceCard";
 import Image from "next/image";
+import { createLogger } from "@/lib/logger";
 import styles from "./postventa.module.css";
+import { serializeJsonLd } from "@/lib/seo/jsonLd";
+
+const log = createLogger("postventa");
 
 // Datos de los servicios actualizados según referencia
 const servicesData = [
@@ -119,7 +123,7 @@ export async function generateMetadata() {
       },
     };
   } catch (error) {
-    console.error("Error generating metadata for postventa page:", error);
+    log.error("generateMetadata falló, usando fallback:", error);
     return {
       title: "Servicios Postventa",
       description: "Service, chapa y pintura y repuestos originales en Tucumán.",
@@ -141,7 +145,7 @@ export default function PostventaPage() {
       {jsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
         />
       )}
       {/* Hero Section */}

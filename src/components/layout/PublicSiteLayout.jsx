@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import PublicSiteChrome from "./PublicSiteChrome";
-import loadingStyles from "../../app/loading.module.css";
+import loadingStyles from "@/app/loading.module.css";
 
 function PageFallback() {
   return <div className={loadingStyles.container} aria-hidden />;

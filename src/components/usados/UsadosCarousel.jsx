@@ -154,6 +154,29 @@ export const UsadosCarousel = ({
     setActiveIndex(closest);
   }, []);
 
+  // Versión estrangulada por frame para el evento de scroll.
+  //
+  // updateActiveIndex hace querySelectorAll + lecturas de offsetLeft y
+  // clientWidth sobre todas las tarjetas: eso fuerza al navegador a recalcular
+  // layout. Colgado directo del onScroll corría en cada evento (decenas por
+  // swipe), provocando layout thrashing en teléfonos de gama baja.
+  //
+  // Es el mismo patrón que ya usa el otro handler de scroll de este archivo.
+  const rafIdRef = useRef(null);
+  const onScrollThrottled = useCallback(() => {
+    if (rafIdRef.current) return;
+    rafIdRef.current = requestAnimationFrame(() => {
+      updateActiveIndex();
+      rafIdRef.current = null;
+    });
+  }, [updateActiveIndex]);
+
+  useEffect(() => {
+    return () => {
+      if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
+    };
+  }, []);
+
   // Alinear el indicador al estado inicial y cuando llegan los vehículos (async).
   useEffect(() => {
     updateActiveIndex();
@@ -287,7 +310,7 @@ export const UsadosCarousel = ({
   }
 
   const carouselContent = (
-    <div ref={carouselRef} className={styles.carouselContainer} onScroll={updateActiveIndex}>
+    <div ref={carouselRef} className={styles.carouselContainer} onScroll={onScrollThrottled}>
       {vehicles.length === 0 ? (
         <div className={styles.emptyState}>
           <p>No hay vehículos disponibles</p>

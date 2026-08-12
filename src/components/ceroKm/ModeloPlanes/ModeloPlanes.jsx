@@ -2,14 +2,14 @@
 
 import React, { useState, useMemo, useCallback } from "react";
 import Link from "next/link";
-import { getPlanesPorModelo } from "../../../data/planes";
-import { getModelo } from "../../../data/modelos";
-import { PlanCard } from "../../planes/PlanCard";
-import { CarouselDots } from "../../ui/CarouselDots/CarouselDots";
-import { PeugeotIcon } from "../../ui/icons/PeugeotIcon";
-import { getClosestChildIndex, scrollToChildIndex } from "../../../utils/carouselActiveIndex";
-import cta from "../../home/HomeSectionCtas.module.css";
-import kmStyles from "../../../app/(site)/0km/0km.module.css";
+import { getPlanesPorModelo } from "@/data/planes";
+import { getModelo } from "@/data/modelos";
+import { PlanCard } from "@/components/planes/PlanCard";
+import { CarouselDots } from "@/components/ui/CarouselDots/CarouselDots";
+import { PeugeotIcon } from "@/components/ui/icons/PeugeotIcon";
+import { getClosestChildIndex, scrollToChildIndex } from "@/utils/carouselActiveIndex";
+import cta from "@/components/home/HomeSectionCtas.module.css";
+import kmStyles from "@/app/(site)/0km/0km.module.css";
 import styles from "./ModeloPlanes.module.css";
 
 /**

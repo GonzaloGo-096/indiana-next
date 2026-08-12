@@ -1,8 +1,8 @@
 "use client";
 
-import { SORT_OPTIONS } from "../../../constants/filterOptions";
-import { CloseIcon } from "../../ui/icons/CloseIcon";
-import { TrashIcon } from "../../ui/icons/TrashIcon";
+import { SORT_OPTIONS } from "@/constants/filterOptions";
+import { CloseIcon } from "@/components/ui/icons/CloseIcon";
+import { TrashIcon } from "@/components/ui/icons/TrashIcon";
 import styles from "./ActiveFilterChips.module.css";
 
 function sortLabel(sort) {

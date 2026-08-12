@@ -84,7 +84,7 @@
 /* Botón WhatsApp: ContactButtons.module.css */
 
 /* ===== RESPONSIVE DESIGN ===== */
-@media (min-width: var(--tablet-min)) {
+@media (min-width: 768px) {
   .imageContainer {
     height: 180px; /* Proporcional en tablet */
   }
@@ -95,7 +95,7 @@
   }
 }
 
-@media (min-width: var(--desktop-min)) {
+@media (min-width: 992px) {
   .imageContainer {
     height: 200px; /* Proporcional en desktop */
   }

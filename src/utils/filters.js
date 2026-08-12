@@ -16,6 +16,9 @@
  * ✅ IMPORTAR desde constants para mantener consistencia
  */
 import { FILTER_DEFAULTS } from "../constants/filterOptions";
+import { createLogger } from "../lib/logger";
+
+const log = createLogger("filters");
 
 /** Completa año / precio / km cuando faltan en la URL (valores = FILTER_DEFAULTS). */
 export function mergeDefaultRanges(filters = {}) {
@@ -197,7 +200,7 @@ export const parseFilters = (searchParams) => {
       }
     } catch (error) {
       // Si falla, crear URLSearchParams vacío
-      console.warn("[parseFilters] Error parsing searchParams:", error);
+      log.warn("parseFilters: error parseando searchParams:", error);
       params = new URLSearchParams();
     }
   } else {

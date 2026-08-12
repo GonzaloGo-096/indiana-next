@@ -11,9 +11,9 @@
 import Image from "next/image";
 import contact from "../ui/ContactButtons.module.css";
 import styles from "./PostventaServiceCard.module.css";
-import { staticImages } from "../../config/cloudinaryStaticImages";
+import { staticImages } from "@/config/cloudinaryStaticImages";
 import WhatsAppLink from "../analytics/WhatsAppLink";
-import { SOURCES, LOCATIONS, VERTICALS } from "../../lib/analytics/events";
+import { SOURCES, LOCATIONS, VERTICALS } from "@/lib/analytics/events";
 
 // Mapa de imágenes de servicios
 const serviceImagesMap = {

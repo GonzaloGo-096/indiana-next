@@ -92,6 +92,10 @@
     overflow: hidden;
     border-radius: inherit;
     background: var(--color-white);
+    /* Permite que el bloque de precio reaccione al ancho real de la card.
+       Va acá y no en .card porque .card está en overflow: visible para que no
+       se corte la sombra, y no conviene meterle contención. */
+    container-type: inline-size;
 }
 
 /* ===== BADGE DE DESCUENTO ===== */
@@ -506,11 +510,12 @@
     border-radius: var(--price-radius);
 }
 
-/* Contenedor izquierda: "desde:" */
+/* Contenedor izquierda: "desde:"
+   Ocupa lo que mide y le cede el resto al precio. Con el 30% fijo anterior,
+   sumado al gap y al padding, el reparto pasaba del 100% del ancho. */
 .price_label_container {
-    --label-width: 30%;
-    
-    flex: 0 0 var(--label-width);
+    flex: 0 1 auto;
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -529,13 +534,15 @@
     text-transform: lowercase;
     letter-spacing: 0.4px;
     opacity: 0.95;
+    white-space: nowrap;
 }
 
-/* Contenedor derecha: Precio */
+/* Contenedor derecha: Precio.
+   Toma todo el ancho sobrante. El padding lateral ya lo pone .container4;
+   el padding-right de acá le descontaba 12px más al espacio del precio. */
 .price_display {
-    --price-width: 70%;
-    
-    flex: 0 0 var(--price-width);
+    flex: 1 1 auto;
+    min-width: 0;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -543,7 +550,6 @@
     justify-content: flex-end;
     gap: var(--spacing-2);
     padding: 0;
-    padding-right: var(--spacing-3);
 }
 
 /* Precio original tachado (al lado del precio oferta) */
@@ -556,8 +562,12 @@
     text-decoration: line-through;
     text-decoration-thickness: 1px;
     letter-spacing: -0.2px;
-    flex-shrink: 0;
+    /* Red de seguridad: ante un precio desmedido cede el tachado, nunca el final */
+    flex: 0 1 auto;
+    min-width: 0;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Precio: compacto, blanco, tech */
@@ -574,6 +584,25 @@
     line-height: var(--price-line-height);
     letter-spacing: var(--price-letter-spacing);
     text-align: right;
+    /* El precio final no se recorta ni se parte en dos líneas */
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+/* Con oferta conviven 2 precios en la misma fila: el final baja un escalón */
+.price_original + .price_value {
+    --price-font-size: clamp(1.25rem, 3.4vw, 1.625rem);
+}
+
+/* Card angosta: los 2 precios no entran en una línea sin recortar el tachado,
+   y un precio cortado se lee como otro número. Se apilan. */
+@container (max-width: 310px) {
+    .price_display {
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 0;
+    }
 }
 
 .price_value::first-letter {

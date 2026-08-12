@@ -4,7 +4,10 @@
  * Qué verifica (no la lógica de Sharp ni del backend, sino el contrato del handler):
  *   - El handler responde con el status y body que devuelve el backend (proxy correcto).
  *   - El header Authorization se reenvía al backend.
- *   - Si NO hay Authorization, se emite un `console.warn` (siempre, no gateado).
+ *   - Si NO hay Authorization, responde 401 y NO llama al backend ni procesa el
+ *     body. Es la vulnerabilidad crítica que detectó el relevamiento: antes se
+ *     corría Sharp sobre el archivo entrante y recién después se miraba el
+ *     header, así que un anónimo podía hacer trabajar al servidor.
  *   - En producción sin API_DEBUG, los `console.log` (debug/info) quedan silenciados.
  *   - En producción con API_DEBUG=true, los `console.log` vuelven a aparecer.
  *   - En desarrollo, los `console.log` siempre se emiten.
@@ -23,7 +26,7 @@ const originalNodeEnv = process.env.NODE_ENV;
 const originalApiDebug = process.env.API_DEBUG;
 const originalApiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-function buildRequest({ withAuth = true, fields = {} } = {}) {
+function buildRequest({ withAuth = true, authHeader = null, fields = {} } = {}) {
   const formData = new FormData();
   // Campos de texto solamente, así evitamos pasar por Sharp.
   formData.append("marca", "Peugeot");
@@ -35,7 +38,8 @@ function buildRequest({ withAuth = true, fields = {} } = {}) {
   for (const [k, v] of Object.entries(fields)) formData.append(k, v);
 
   const headers = new Headers();
-  if (withAuth) headers.set("Authorization", "Bearer test-token-123");
+  if (authHeader) headers.set("Authorization", authHeader);
+  else if (withAuth) headers.set("Authorization", "Bearer test-token-123");
 
   return new Request("http://localhost/api/photos/create", {
     method: "POST",
@@ -165,21 +169,80 @@ describe("POST /api/photos/create — integración", () => {
     });
   });
 
-  describe("warnings que siempre deben aparecer", () => {
+  describe("portero: rechaza antes de gastar servidor", () => {
     beforeEach(() => {
       process.env.NODE_ENV = "production";
       delete process.env.API_DEBUG;
     });
 
-    it("loggea warn si falta el header Authorization", async () => {
+    it("sin Authorization responde 401", async () => {
       vi.stubGlobal("fetch", mockBackend());
+
+      const res = await POST(buildRequest({ withAuth: false }));
+
+      expect(res.status).toBe(401);
+    });
+
+    it("sin Authorization NO llama al backend (no se gasta trabajo)", async () => {
+      const fetchMock = mockBackend();
+      vi.stubGlobal("fetch", fetchMock);
 
       await POST(buildRequest({ withAuth: false }));
 
-      const warned = warnSpy.mock.calls.some((call) =>
-        call.some((arg) => typeof arg === "string" && arg.includes("Authorization"))
-      );
-      expect(warned).toBe(true);
+      // El punto del arreglo: el rechazo ocurre antes de leer el body y antes
+      // de reenviar nada. Si esto falla, volvió la vulnerabilidad.
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("con un Authorization que no es Bearer responde 401", async () => {
+      const fetchMock = mockBackend();
+      vi.stubGlobal("fetch", fetchMock);
+
+      const res = await POST(buildRequest({ authHeader: "Basic dXNlcjpwYXNz" }));
+
+      expect(res.status).toBe(401);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("con un Bearer vacío responde 401", async () => {
+      const fetchMock = mockBackend();
+      vi.stubGlobal("fetch", fetchMock);
+
+      const res = await POST(buildRequest({ authHeader: "Bearer    " }));
+
+      expect(res.status).toBe(401);
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("deja pasar un Bearer válido", async () => {
+      const fetchMock = mockBackend();
+      vi.stubGlobal("fetch", fetchMock);
+
+      const res = await POST(buildRequest({ withAuth: true }));
+
+      expect(res.status).toBe(200);
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+
+    it("rechaza con 413 un payload que supera el máximo declarado", async () => {
+      const fetchMock = mockBackend();
+      vi.stubGlobal("fetch", fetchMock);
+
+      const { MAX_UPLOAD_BYTES } = await import("@/lib/photos/uploadPipeline");
+      const req = buildRequest({ withAuth: true });
+      // Se fuerza el content-length declarado: interesa el corte por cabecera,
+      // no mover de verdad 100 MB en un test.
+      Object.defineProperty(req.headers, "get", {
+        value: (name) =>
+          name.toLowerCase() === "content-length"
+            ? String(MAX_UPLOAD_BYTES + 1)
+            : Headers.prototype.get.call(req.headers, name),
+      });
+
+      const res = await POST(req);
+
+      expect(res.status).toBe(413);
+      expect(fetchMock).not.toHaveBeenCalled();
     });
   });
 });

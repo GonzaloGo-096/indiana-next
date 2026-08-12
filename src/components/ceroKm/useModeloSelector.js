@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { getModelo, COLORES } from "../../data/modelos";
+import { getModelo, COLORES } from "@/data/modelos";
 
 /**
  * Hook para manejar selección de versión y color de un modelo

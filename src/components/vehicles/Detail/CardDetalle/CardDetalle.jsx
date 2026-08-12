@@ -25,13 +25,14 @@ import {
   formatKilometraje,
   formatCilindradaDisplay,
   formatHPDisplay,
-} from "../../../../utils/formatters";
-import { getVehicleOfferDisplay } from "../../../../utils/vehicleOffer";
-import { getBrandLogo } from "../../../../utils/getBrandLogo";
-import { getCarouselImages } from "../../../../utils/carouselImages";
-import { ImageCarousel } from "../../ImageCarousel/ImageCarousel";
-import { GalleryModal } from "../../GalleryModal/GalleryModal";
-import contact from "../../../ui/ContactButtons.module.css";
+} from "@/utils/formatters";
+import { getVehicleOfferDisplay } from "@/utils/vehicleOffer";
+import { getBrandLogo } from "@/utils/getBrandLogo";
+import { getCarouselImages } from "@/utils/carouselImages";
+import { ImageCarousel } from "@/components/vehicles/ImageCarousel/ImageCarousel";
+import { GalleryModal } from "@/components/vehicles/GalleryModal/GalleryModal";
+import { VehiclePrice } from "@/components/vehicles/VehiclePrice/VehiclePrice";
+import contact from "@/components/ui/ContactButtons.module.css";
 import WhatsAppLink from "@/components/analytics/WhatsAppLink";
 import { SOURCES, LOCATIONS, LEAD_TYPES, VERTICALS } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
@@ -268,22 +269,11 @@ export const CardDetalle = memo(({ auto, contactInfo }) => {
           {/* Precio + WhatsApp: mismo ancho (desktop cap), botón centrado bajo precio */}
           <div className={styles.priceColumn}>
             <div className={styles.priceSection}>
-              <div className={styles.price_label_container}>
-                <span className={styles.price_label}>desde:</span>
-              </div>
-
-              <div className={styles.price_display}>
-                {offer.hasOffer ? (
-                  <>
-                    <span className={styles.price_original}>{offer.priceOriginal}</span>
-                    <span className={styles.price_value}>{offer.priceOffer}</span>
-                  </>
-                ) : (
-                  <span className={styles.price_value}>
-                    {formatPrice(vehicleData.precio)}
-                  </span>
-                )}
-              </div>
+              <VehiclePrice
+                styles={styles}
+                offer={offer}
+                fallbackPrice={formatPrice(vehicleData.precio)}
+              />
             </div>
 
             <div className={styles.whatsappSection}>

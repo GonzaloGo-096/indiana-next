@@ -17,10 +17,10 @@ import cta from "@/components/home/HomeSectionCtas.module.css";
 import styles from "./vehiculos.module.css";
 
 import dynamic from "next/dynamic";
-import AutosGrid from "../../../../components/vehicles/List/ListAutos";
-import FilterFormSimple from "../../../../components/vehicles/Filters/FilterFormSimple";
-import ActiveFilterChips from "../../../../components/vehicles/Filters/ActiveFilterChips";
-import ActionButtons from "../../../../components/vehicles/ActionButtons/ActionButtons";
+import AutosGrid from "@/components/vehicles/List/ListAutos";
+import FilterFormSimple from "@/components/vehicles/Filters/FilterFormSimple";
+import ActiveFilterChips from "@/components/vehicles/Filters/ActiveFilterChips";
+import ActionButtons from "@/components/vehicles/ActionButtons/ActionButtons";
 import ItemListViewTracker from "@/components/analytics/ItemListViewTracker";
 import { SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 
@@ -49,7 +49,7 @@ function BrandStripNudge({ direction }) {
 }
 
 const BrandsCarousel = dynamic(
-  () => import("../../../../components/vehicles/BrandsCarousel"),
+  () => import("@/components/vehicles/BrandsCarousel"),
   {
     loading: () => <div style={{ minHeight: "80px" }} />,
     ssr: false,

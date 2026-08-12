@@ -1,4 +1,4 @@
-import styles from "../../../loading.module.css";
+import styles from "@/app/loading.module.css";
 
 /**
  * Loading state para /usados/vehiculos

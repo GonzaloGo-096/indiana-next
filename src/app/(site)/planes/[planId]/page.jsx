@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getAllPlanes, getPlanPorId, extraerModeloBase } from "../../../../data/planes";
-import { getModelo, COLORES } from "../../../../data/modelos";
-import { absoluteUrl } from "../../../../lib/site-url";
-import { formatPrice } from "../../../../utils/formatters";
+import { getAllPlanes, getPlanPorId, extraerModeloBase } from "@/data/planes";
+import { getModelo, COLORES } from "@/data/modelos";
+import { absoluteUrl } from "@/lib/site-url";
+import { formatPrice } from "@/utils/formatters";
 import { PlanImageDesktop } from "./PlanImageDesktop";
 import cta from "@/components/home/HomeSectionCtas.module.css";
 import contact from "@/components/ui/ContactButtons.module.css";
@@ -11,7 +11,10 @@ import WhatsAppLink from "@/components/analytics/WhatsAppLink";
 import ItemViewTracker from "@/components/analytics/ItemViewTracker";
 import { SOURCES, LOCATIONS, LEAD_TYPES, VERTICALS } from "@/lib/analytics/events";
 import { buildItemParamsFromPlan } from "@/lib/analytics/params";
+import { createLogger } from "@/lib/logger";
 import styles from "./plan-detalle.module.css";
+
+const log = createLogger("planes:detalle");
 
 const WHATSAPP_PHONE_PLAN = "543816295959";
 
@@ -205,16 +208,20 @@ export async function generateStaticParams() {
     const planes = getAllPlanes();
 
     if (!Array.isArray(planes) || planes.length === 0) {
-      console.warn("No se encontraron planes para generar rutas estáticas");
-      return [];
+      // Los planes son data local (src/data/planes), no la API: si están
+      // vacíos es un bug del código. Fallar acá es preferible a desplegar
+      // el sitio sin las páginas de detalle de planes.
+      throw new Error(
+        "getAllPlanes() no devolvió planes. Revisar src/data/planes."
+      );
     }
 
     return planes.map((plan) => ({
       planId: plan.id,
     }));
   } catch (error) {
-    console.error("Error generating static params for plans:", error);
-    return [];
+    log.error("generateStaticParams falló:", error);
+    throw error;
   }
 }
 
@@ -276,7 +283,7 @@ export async function generateMetadata({ params }) {
       },
     };
   } catch (error) {
-    console.error("Error generating metadata for plan:", error);
+    log.error("generateMetadata falló, usando fallback:", error);
     return {
       title: "Plan no disponible",
       description: "Error al cargar la información del plan.",

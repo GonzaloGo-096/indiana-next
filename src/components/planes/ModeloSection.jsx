@@ -3,13 +3,13 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getModelo, COLORES } from "../../data/modelos";
+import { getModelo, COLORES } from "@/data/modelos";
 import { PlanCard } from "./PlanCard";
 import { CarouselDots } from "../ui/CarouselDots/CarouselDots";
 import { PeugeotIcon } from "../ui/icons/PeugeotIcon";
-import { getClosestChildIndex, scrollToChildIndex } from "../../utils/carouselActiveIndex";
+import { getClosestChildIndex, scrollToChildIndex } from "@/utils/carouselActiveIndex";
 import cta from "../home/HomeSectionCtas.module.css";
-import kmStyles from "../../app/(site)/0km/0km.module.css";
+import kmStyles from "@/app/(site)/0km/0km.module.css";
 import styles from "./ModeloSection.module.css";
 
 /**
