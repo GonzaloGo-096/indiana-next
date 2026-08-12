@@ -60,7 +60,12 @@ function createEmptyPrincipalSlot() {
   }
 }
 
-function createInitialImageState() {
+/**
+ * Exportada solo para los tests: es el estado del que parten todas las
+ * transiciones, y compararlo contra un objeto escrito a mano en el test
+ * duplicaría esta forma en dos lugares que se desincronizan.
+ */
+export function createInitialImageState() {
   const state = {
     existingExtras: [],
     fotosExtra: [],
@@ -113,7 +118,14 @@ export function isImagePipelineBlocked(state) {
   return false
 }
 
-function imageReducer(state, action) {
+/**
+ * Núcleo del estado de imágenes del panel: función pura, sin React.
+ *
+ * Exportada para poder testearla sin montar el hook. Es lo más delicado del
+ * admin —de acá sale lo que se sube y lo que se borra en Cloudinary— y no
+ * tenía ninguna prueba.
+ */
+export function imageReducer(state, action) {
   switch (action.type) {
     case IMAGE_ACTIONS.INIT_CREATE:
       return createInitialImageState()

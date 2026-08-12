@@ -10,7 +10,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "smoke": "node scripts/smoke.mjs",
+    "smoke:update": "node scripts/smoke.mjs --update"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
