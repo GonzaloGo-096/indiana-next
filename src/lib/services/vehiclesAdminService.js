@@ -158,7 +158,9 @@ const vehiclesAdminService = {
    * @returns {Promise<Object>} Respuesta del backend
    */
   async deleteVehicle(id) {
-    const response = await authAxiosInstance.delete(`/photos/deletephoto/${id}`)
+    // Va a NUESTRO servidor (/api/admin), que reenvía al backend con la
+    // credencial. Ver src/app/api/admin/vehicles/[id]/route.js.
+    const response = await authAxiosInstance.delete(`/vehicles/${id}`)
     return response.data
   }
 }

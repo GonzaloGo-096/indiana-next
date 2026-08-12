@@ -9,7 +9,10 @@
 
 import { AUTH_CONFIG } from '@/config/auth'
 import { authAxiosInstance } from '@/lib/http/client'
-import { getApiBaseUrl, getApiTimeout } from '@/lib/config/api'
+import { getApiTimeout } from '@/lib/config/api'
+import { createLogger } from '@/lib/logger'
+
+const log = createLogger('auth')
 
 /**
  * Función helper para limpiar localStorage (solo en cliente)
@@ -35,17 +38,11 @@ export const authService = {
     };
 
     try {
-      const baseURL = getApiBaseUrl();
-      const timeout = getApiTimeout();
-
-      // Log solo en desarrollo
-      if (process.env.NODE_ENV === "development") {
-        console.log("[Auth] Iniciando login", {
-          endpoint: AUTH_CONFIG.api.endpoints.login,
-          baseURL,
-          username: credentials.username
-        });
-      }
+      // Nunca la contraseña. El logger ya calla esto fuera de desarrollo.
+      log.debug("Iniciando login", {
+        endpoint: AUTH_CONFIG.api.endpoints.login,
+        username: credentials.username
+      });
 
       const response = await authAxiosInstance.post(
         AUTH_CONFIG.api.endpoints.login,
@@ -67,18 +64,19 @@ export const authService = {
         }
       };
     } catch (error) {
-      // Manejo de errores
+      // Los mensajes hablan del sitio, no del backend: desde que el login pasa
+      // por /api/admin, lo que el navegador no alcanza es NUESTRO servidor.
       if (error.code === "ECONNABORTED") {
         return {
           success: false,
-          message: `Timeout: El backend no respondió en ${getApiTimeout()}ms. Verifica que esté ejecutándose.`
+          message: `El servidor no respondió en ${getApiTimeout()}ms. Probá de nuevo.`
         };
       }
 
       if (!error.response) {
         return {
           success: false,
-          message: `Error de conexión: No se pudo conectar con ${getApiBaseUrl()}. Verifica que el backend esté ejecutándose.`
+          message: "No se pudo conectar con el servidor. Revisá tu conexión."
         };
       }
 
