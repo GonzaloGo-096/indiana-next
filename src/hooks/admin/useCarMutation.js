@@ -200,8 +200,11 @@ export const useCarMutation = () => {
       if (!token) {
         throw new Error('❌ No se encontró token de autorización')
       }
+      // response ya es el JSON parseado (no tiene .data), igual que en crear y
+      // actualizar. Antes acá se devolvía `response.data`, o sea `undefined`:
+      // el borrado funcionaba pero quien mirara el resultado no recibía nada.
       const response = await vehiclesAdminService.deleteVehicle(id)
-      return response.data
+      return response
     },
     onSuccess: (data, id) => {
       if (process.env.NODE_ENV === 'development') {
