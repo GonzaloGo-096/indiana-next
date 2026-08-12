@@ -136,6 +136,8 @@ componentes y 0 para 13 hooks.
 
 ## Estado
 
-Propuestas por Claude el 2026-08-12 como parte 0 del plan de limpieza. Pendientes de que
-Gonzalo acepte o descarte cada una. Las que se descarten se sacan de este archivo: no
-queda ninguna regla que no se vaya a aplicar.
+Propuestas como parte 0 del plan de limpieza y **aceptadas por Gonzalo el 2026-08-12**, las
+ocho. Desde acá son el criterio con el que se audita cada parte del proyecto.
+
+Si alguna resulta impracticable en la práctica, se discute y se cambia el documento. Lo que
+no se hace es ignorarla en silencio: una regla que no se cumple es peor que no tenerla.
