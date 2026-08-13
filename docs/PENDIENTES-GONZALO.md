@@ -197,3 +197,19 @@ puede pasar, y el backend puede rechazar cualquier otro valor.
 
 **Qué hacemos de este lado cuando exista:** casilla en el panel, el listado
 público filtra los pausados, y las fichas vendidas salen con cartel y efecto.
+
+---
+
+## Pedido de Gonzalo: el desplazamiento suave, en toda la página
+
+El 2026-08-13 dijo: *"me encantó la suavidad del scroll, quiero así en demás
+lugares de la página"*. Se refiere al carrusel de usados, que usa desplazamiento
+suave con puntos de anclaje.
+
+**Dónde replicarlo:** los otros carruseles del sitio (0km, promociones, marcas,
+galería de fotos), y el desplazamiento general de las páginas largas.
+
+**Cuidado al hacerlo:** el desplazamiento suave puede molestar a quien tiene
+activada la opción del sistema "reducir movimiento". La hoja del carrusel de
+usados ya lo contempla con `@media (prefers-reduced-motion: reduce)`; hay que
+respetar lo mismo en cada lugar donde se replique.
