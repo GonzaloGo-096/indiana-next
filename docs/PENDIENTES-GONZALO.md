@@ -169,3 +169,31 @@ nuevos.
 **Bloquea algo?** No.
 
 **Mi recomendación.** Dejarlos por ahora y encararlos en el Bloque 7.
+
+---
+
+## Pedido al backend: campo `estado` por auto
+
+**Para qué:** marcar un auto como vendido desde el panel y que en el listado
+público aparezca con un cartel de VENDIDO. También poder pausarlo sin borrarlo.
+
+**Por qué no se puede hacer sin ellos:** verificado el 2026-08-13, el backend no
+devuelve ni guarda ningún campo de estado. Los que hay por auto son marca,
+modelo, anio, precio, precioOferta, oferta, descuento, caja, kilometraje y las
+fotos. Si el dato no se guarda en algún lado compartido, el cartel solo lo vería
+quien lo marcó, en su propio navegador: no llega al visitante.
+
+**Qué pedir, textual:**
+
+> Agregar al modelo de autos un campo `estado`, de texto, con solo tres valores
+> permitidos: `activo`, `pausado`, `vendido`. Por defecto `activo`, para que los
+> autos que ya están cargados no cambien. Que se pueda enviar al crear y al
+> editar, y que venga incluido en la respuesta del listado y del detalle.
+
+**Por qué un campo de estado y no un booleano `vendido`:** un booleano no
+alcanza para "pausado", y agregar un segundo booleano permite combinaciones sin
+sentido (vendido y pausado a la vez). Con un solo campo de tres valores eso no
+puede pasar, y el backend puede rechazar cualquier otro valor.
+
+**Qué hacemos de este lado cuando exista:** casilla en el panel, el listado
+público filtra los pausados, y las fichas vendidas salen con cartel y efecto.
