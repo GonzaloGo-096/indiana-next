@@ -2,10 +2,10 @@
 
 /**
  * UsadosCarousel - Carrusel horizontal de vehículos usados para la página principal
- * 
+ *
  * Muestra 8 vehículos en un carrusel horizontal.
  * Diseñado mobile-first para excelente UX en dispositivos móviles.
- * 
+ *
  * Características:
  * - Scroll horizontal suave con snap points
  * - Cards usando CardSimilar
@@ -13,12 +13,18 @@
  * - Skeleton loading states
  * - Manejo de estados vacíos
  * - Desktop: flechas absolutas a los lados, trazo fino (sin caja alrededor del carrusel)
- * 
+ *
  * @author Indiana Peugeot
  * @version 1.0.0
  */
 
-import React, { useMemo, useRef, useCallback, useState, useEffect } from "react";
+import React, {
+  useMemo,
+  useRef,
+  useCallback,
+  useState,
+  useEffect,
+} from "react";
 import { CardSimilar } from "../vehicles/Card/CardSimilar/CardSimilar";
 import styles from "./UsadosCarousel.module.css";
 
@@ -83,8 +89,6 @@ const SkeletonCard = () => (
 
 /**
  * Componente principal del carrusel
- * @param {boolean} compact - Cards más pequeñas (para home mobile / usados mobile)
- * @param {boolean} viewportClip - Clipping en borde del viewport (solo mobile en inicio y en /usados)
  * @param {boolean} homeDesktopFourColumns - Solo inicio desktop: cards un poco más angostas para mostrar 4 a la vez
  * @param {boolean} flushLeadingEdge - Alinea el inicio del scroll con el borde del contenedor (p. ej. /usados con título arriba)
  * @param {string} trackingLocation - LOCATIONS enum inyectado por el padre para select_item
@@ -92,8 +96,7 @@ const SkeletonCard = () => (
  */
 export const UsadosCarousel = ({
   vehicles = [],
-  compact = false,
-  viewportClip = false,
+
   homeDesktopFourColumns = false,
   flushLeadingEdge = false,
   trackingLocation,
@@ -112,7 +115,7 @@ export const UsadosCarousel = ({
     if (!carousel || !isMountedRef.current) return;
 
     const { scrollLeft, scrollWidth, clientWidth } = carousel;
-    
+
     // ✅ Flecha izquierda: SOLO si el usuario ha interactuado explícitamente Y hay scroll
     // Desaparece cuando vuelve al inicio (incluyendo padding, umbral de 30px)
     setCanScrollLeft(hasUserScrolled.current && scrollLeft > 30);
@@ -128,7 +131,11 @@ export const UsadosCarousel = ({
     const card = cards[index];
     if (!(card instanceof HTMLElement)) return;
     hasUserScrolled.current = true;
-    card.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+    card.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+      inline: "center",
+    });
   }, []);
 
   // Índice activo de los dots: card cuyo centro está más cerca del centro del viewport.
@@ -283,16 +290,17 @@ export const UsadosCarousel = ({
     if (carouselRef.current) {
       // ✅ Marcar que el usuario ha scrolleado INMEDIATAMENTE
       hasUserScrolled.current = true;
-      
+
       // ✅ Desplazamiento fijo: 1400px hacia la derecha
       const currentScroll = carouselRef.current.scrollLeft;
-      const maxScroll = carouselRef.current.scrollWidth - carouselRef.current.clientWidth;
+      const maxScroll =
+        carouselRef.current.scrollWidth - carouselRef.current.clientWidth;
       const newScroll = Math.min(maxScroll, currentScroll + 1400);
       carouselRef.current.scrollTo({
         left: newScroll,
         behavior: "smooth",
       });
-      
+
       // ✅ Actualizar visibilidad inmediatamente después de marcar
       requestAnimationFrame(() => {
         updateArrowVisibility();
@@ -310,41 +318,27 @@ export const UsadosCarousel = ({
   }
 
   const carouselContent = (
-    <div ref={carouselRef} className={styles.carouselContainer} onScroll={onScrollThrottled}>
-      {vehicles.length === 0 ? (
-        <div className={styles.emptyState}>
-          <p>No hay vehículos disponibles</p>
-        </div>
-      ) : (
-        <>
-          {viewportClip && (
-            <div
-              className={styles.carouselLeadSpacer}
-              aria-hidden
-              style={{ flexShrink: 0, minWidth: "2rem" }}
+    <div
+      ref={carouselRef}
+      className={styles.carouselContainer}
+      onScroll={onScrollThrottled}
+    >
+      <>
+        <div className={styles.carouselLeadSpacer} aria-hidden />
+        {vehicles.map((vehicle, index) => (
+          <div key={vehicle.id || vehicle._id} className={styles.cardWrapper}>
+            <CardSimilar
+              auto={vehicle}
+              isPriority={index < 2}
+              usadosCarousel
+              trackingLocation={trackingLocation}
+              trackingListName={trackingListName}
+              index={index}
             />
-          )}
-          {vehicles.map((vehicle, index) => (
-            <div key={vehicle.id || vehicle._id} className={styles.cardWrapper}>
-              <CardSimilar
-                auto={vehicle}
-                isPriority={index < 2}
-                usadosCarousel
-                trackingLocation={trackingLocation}
-                trackingListName={trackingListName}
-                index={index}
-              />
-            </div>
-          ))}
-          {viewportClip && (
-            <div
-              className={styles.carouselLeadSpacer}
-              aria-hidden
-              style={{ flexShrink: 0, minWidth: "2rem" }}
-            />
-          )}
-        </>
-      )}
+          </div>
+        ))}
+        <div className={styles.carouselLeadSpacer} aria-hidden />
+      </>
     </div>
   );
 
@@ -376,7 +370,11 @@ export const UsadosCarousel = ({
   // Indicador de posición (dots). Visible en mobile, donde no hay flechas.
   const dots =
     vehicles.length > 1 ? (
-      <div className={styles.dots} role="tablist" aria-label="Indicador del carrusel de usados">
+      <div
+        className={styles.dots}
+        role="tablist"
+        aria-label="Indicador del carrusel de usados"
+      >
         {vehicles.map((vehicle, i) => {
           const isActive = i === activeIndex;
           return (
@@ -405,22 +403,23 @@ export const UsadosCarousel = ({
 
   const wrapperClassName = [
     styles.carouselWrapper,
-    compact ? styles.carouselCompact : "",
-    viewportClip ? styles.carouselViewportClip : "",
+    styles.carouselCompact,
+    styles.carouselViewportClip,
     homeDesktopFourColumns ? styles.carouselHomeDesktopFour : "",
     flushLeadingEdge ? styles.carouselFlushLeading : "",
   ]
     .filter(Boolean)
     .join(" ");
 
-  return viewportClip ? (
+  // El envoltorio y las clases van siempre: de 768px para arriba el CSS las
+  // deja sin efecto. Antes esto lo decidía el JavaScript preguntando el ancho
+  // de pantalla, y como el servidor no puede medirla, el primer render salía
+  // con el diseño de escritorio y en celular se veía saltar.
+  return (
     <div className={styles.viewportClip}>
       <div className={wrapperClassName}>{carouselWithDots}</div>
     </div>
-  ) : (
-    <div className={wrapperClassName}>{carouselWithDots}</div>
   );
 };
 
 export default UsadosCarousel;
-
