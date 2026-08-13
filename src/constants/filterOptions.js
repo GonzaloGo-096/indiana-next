@@ -10,9 +10,16 @@
 /**
  * Límites del slider (rango buscable completo). No confundir con el rango inicial por defecto.
  */
+/**
+ * Topes de las barras deslizantes.
+ *
+ * Definidos por Gonzalo el 2026-08-13. Antes iban de 1990 a 2026 en año y hasta
+ * 150 millones en precio, y la mayor parte de cada barra quedaba vacía: no hay
+ * autos anteriores a 2011 ni de más de 44 millones.
+ */
 export const FILTER_BOUNDS = {
-  AÑO: { min: 1990, max: 2026 },
-  PRECIO: { min: 5000000, max: 150000000 },
+  AÑO: { min: 2010, max: 2026 },
+  PRECIO: { min: 5000000, max: 120000000 },
   KILOMETRAJE: { min: 0, max: 250000 },
 };
 
