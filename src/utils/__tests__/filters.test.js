@@ -338,3 +338,63 @@ describe("mergeDefaultRanges", () => {
     expect(mergeDefaultRanges()).toHaveProperty("precio");
   });
 });
+
+/**
+ * El caso que reportó Gonzalo: mover SOLO el año y quedarse sin autos.
+ *
+ * El formulario guarda los tres rangos aunque el visitante no los toque. Si esos
+ * rangos "sin tocar" viajan al backend, se aplica un filtro que nadie pidió, y
+ * como los topes no coinciden con el inventario real, borran autos válidos.
+ */
+describe("mover un solo filtro no debe arrastrar los otros", () => {
+  /** Lo que el formulario tiene en memoria cuando solo se movió el año. */
+  const soloMoviElAnio = {
+    marca: [],
+    caja: [],
+    combustible: [],
+    año: [2022, 2026],
+    precio: [FILTER_DEFAULTS.PRECIO.min, FILTER_DEFAULTS.PRECIO.max],
+    kilometraje: [FILTER_DEFAULTS.KILOMETRAJE.min, FILTER_DEFAULTS.KILOMETRAJE.max],
+  };
+
+  it("manda el año y NADA más", () => {
+    const p = buildSearchParams(soloMoviElAnio, { mergeDefaults: false });
+
+    expect(p.get("anio")).toBe("2022,2026");
+    // Estos dos son los que rompían: filtros invisibles que el visitante no pidió.
+    expect(p.get("precio")).toBeNull();
+    expect(p.get("km")).toBeNull();
+  });
+
+  it("con todo en su lugar inicial, no manda ningún filtro", () => {
+    const sinTocarNada = {
+      marca: [],
+      caja: [],
+      combustible: [],
+      año: [FILTER_DEFAULTS.AÑO.min, FILTER_DEFAULTS.AÑO.max],
+      precio: [FILTER_DEFAULTS.PRECIO.min, FILTER_DEFAULTS.PRECIO.max],
+      kilometraje: [FILTER_DEFAULTS.KILOMETRAJE.min, FILTER_DEFAULTS.KILOMETRAJE.max],
+    };
+
+    expect(buildSearchParams(sinTocarNada, { mergeDefaults: false }).toString()).toBe("");
+  });
+
+  it("si sí movió el precio, ese sí viaja", () => {
+    const moviAmbos = { ...soloMoviElAnio, precio: [8000000, 20000000] };
+    const p = buildSearchParams(moviAmbos, { mergeDefaults: false });
+
+    expect(p.get("anio")).toBe("2022,2026");
+    expect(p.get("precio")).toBe("8000000,20000000");
+    expect(p.get("km")).toBeNull();
+  });
+
+  it("un filtro de lista tampoco arrastra los rangos", () => {
+    const soloCaja = { ...soloMoviElAnio, año: [FILTER_DEFAULTS.AÑO.min, FILTER_DEFAULTS.AÑO.max], caja: ["Manual"] };
+    const p = buildSearchParams(soloCaja, { mergeDefaults: false });
+
+    expect(p.get("caja")).toBe("Manual");
+    expect(p.get("anio")).toBeNull();
+    expect(p.get("precio")).toBeNull();
+    expect(p.get("km")).toBeNull();
+  });
+});
