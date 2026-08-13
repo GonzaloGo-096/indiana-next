@@ -38,9 +38,24 @@ const formatKilometers = (val) => {
 }
 
 // ✅ COMPONENTE CON forwardRef
+/**
+ * Valor por defecto de currentFilters, definido UNA sola vez.
+ *
+ * Antes el valor por defecto se escribía inline (`currentFilters = {}`), y eso
+ * crea un objeto nuevo en cada dibujo. El efecto que sincroniza los filtros
+ * depende de esa referencia, así que se disparaba siempre: cambiaba el estado,
+ * volvía a dibujar, creaba otro objeto nuevo, y así sin fin. Un ciclo infinito
+ * que cuelga la pestaña.
+ *
+ * Hoy no explota porque VehiculosClient siempre pasa la prop, pero cualquier
+ * uso nuevo sin ella colgaba la página. Lo encontró una prueba al montar el
+ * componente sin filtros.
+ */
+const SIN_FILTROS = Object.freeze({});
+
 const FilterFormSimpleComponent = forwardRef(({
   onApplyFilters,
-  currentFilters = {}, // ✅ NUEVO: Filtros actuales desde el padre (evita useSearchParams)
+  currentFilters = SIN_FILTROS, // Filtros actuales desde el padre (evita useSearchParams)
   isLoading = false,
   isError = false,
   error = null,
