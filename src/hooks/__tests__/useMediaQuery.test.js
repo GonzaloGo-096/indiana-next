@@ -143,23 +143,19 @@ describe("useDevice", () => {
     expect(result.current.isMobile).toBe(!result.current.isDesktop);
   });
 
-  it("VERRUGA: pregunta lo mismo dos veces y abre dos suscripciones", () => {
-    // useDevice llama a useMediaQuery('(min-width: 768px)') DOS veces para
-    // obtener un valor y su negación: dos estados y dos oyentes para un solo
-    // dato. Con llamarlo una vez y negar alcanza.
+  it("consulta al navegador una sola vez, no dos", () => {
+    // Antes llamaba a useMediaQuery('(min-width: 768px)') DOS veces —una para
+    // isMobile y otra para isDesktop— y eso eran dos estados y dos oyentes
+    // para un solo dato. Corregido: se consulta una vez y se niega.
     //
-    // Y hay una segunda capa que esta prueba destapó: useMediaQuery consulta
-    // al navegador dos veces por llamada (una al inicializar el estado y otra
-    // dentro del efecto). Por eso son 4 consultas y no 2. Es barato, pero es
-    // real y quedó documentado acá.
-    //
-    // Cuando se corrija, esta prueba va a fallar. Ese fallo es la señal de que
-    // el cambio se hizo, no un problema: hay que bajar los números a la mitad.
+    // Quedan 2 consultas y no 1 porque useMediaQuery pregunta al navegador dos
+    // veces por llamada: una al inicializar el estado y otra dentro del efecto.
+    // Eso sigue igual y es barato; se anota acá para que se note si cambia.
     const reg = instalarMatchMedia();
     renderHook(() => useDevice());
 
-    expect(reg.creados.filter((q) => q === "(min-width: 768px)")).toHaveLength(4);
-    expect(reg.oyentes).toHaveLength(2);
+    expect(reg.creados.filter((q) => q === "(min-width: 768px)")).toHaveLength(2);
+    expect(reg.oyentes).toHaveLength(1);
   });
 });
 
