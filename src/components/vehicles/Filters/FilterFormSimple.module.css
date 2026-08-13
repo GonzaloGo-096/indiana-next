@@ -55,20 +55,6 @@
 .filterButtonMobile:hover { background-color: var(--color-brand-600, #0052a3); transform: translateY(-1px); }
 .filterButtonMobile:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
-.badge {
-  background: #ef4444;
-  color: #ffffff;
-  border-radius: 50%;
-  width: 1.125rem;
-  height: 1.125rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 700;
-  margin-left: 0.25rem;
-}
-
 .errorMessage {
   background: color-mix(in srgb, #fef2f2 92%, #ffffff);
   border: 1px solid color-mix(in srgb, #f87171 35%, transparent);
@@ -461,30 +447,6 @@
   margin-bottom: 0.45rem;
   text-transform: uppercase;
   letter-spacing: 0.16em;
-}
-
-.buttonBase {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.55rem 1.1rem;
-  border-radius: 9999px;
-  font-size: 0.8125rem;
-  font-weight: var(--font-weight-semibold, 600);
-  font-family: var(--font-condensed, "Barlow Condensed", sans-serif);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease,
-    border-color 0.2s ease,
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
-  border: 1.5px solid transparent;
-  text-decoration: none;
-  min-height: 42px;
-  white-space: nowrap;
 }
 
 .applyButton {

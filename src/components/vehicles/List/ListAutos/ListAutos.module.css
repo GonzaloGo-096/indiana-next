@@ -20,47 +20,10 @@
 }
 
 /* ===== CONTENEDOR DE LISTA CON TÍTULO ===== */
-.listContainer {
-    position: relative;
-    max-width: 1610px; /* ✅ AUMENTADO 15%: De 1400px a 1610px para cards más anchas */
-    margin: 0 auto;
-    padding: 0 42px; /* ✅ OPTIMIZADO: Padding uniforme en desktop */
-    margin-top: 64px; /* ✅ MANTENER: Separación del Nav */
-}
 
 /* Línea vertical sutil izquierda */
-.verticalLine {
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: linear-gradient(
-        to bottom,
-        #e5e7eb 0%,
-        #9ca3af 50%,
-        #e5e7eb 100%
-    );
-    border-radius: 2px;
-    opacity: 0.6;
-}
 
 /* Línea vertical sutil derecha */
-.verticalLineRight {
-    position: absolute;
-    right: -24px;
-    top: 0;
-    bottom: 0;
-    width: 3px;
-    background: linear-gradient(
-        to bottom,
-        #e5e7eb 0%,
-        #9ca3af 50%,
-        #e5e7eb 100%
-    );
-    border-radius: 2px;
-    opacity: 0.6;
-}
 
 /* Sección del título */
 .titleSection {
@@ -87,10 +50,7 @@
 }
 
 @media (max-width: 768px) {
-    .listContainer {
-        padding: 0 1rem; /* ✅ Padding del contenedor en mobile */
-        margin-top: 48px; /* ✅ MANTENER: Separación del Nav */
-    }
+    
     
     .content {
         padding-left: 0; /* ✅ Sin padding adicional - el contenedor ya maneja el espaciado */
@@ -107,14 +67,9 @@
         text-align: left;
     }
     
-    .verticalLine {
-        width: 2px;
-    }
     
-    .verticalLineRight {
-        width: 2px;
-        right: -16px;
-    }
+    
+    
 }
 
 /* ===== CONTENEDOR DEL GRID - ULTRA OPTIMIZADO ===== */
@@ -705,16 +660,6 @@
 }
 
 /* ===== MENSAJE DE FIN DE LISTA ===== */
-.endMessage {
-    text-align: center;
-    padding: 32px 0;
-    color: #6b7280;
-}
-
-.endMessage p {
-    margin-bottom: 16px;
-    font-size: 18px;
-}
 
 /* ===== ESTADOS DE ERROR Y VACÍO ===== */
 .error,
@@ -790,23 +735,6 @@
 }
 
 /* ===== SCROLL INFINITO - OPTIMIZADO ===== */
-.scrollTrigger {
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 32px;
-}
-
-.loadingMore {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    margin-top: 24px;
-    padding: 16px;
-    color: #6b7280;
-}
 
 .spinner {
     width: 20px;
@@ -820,21 +748,6 @@
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-}
-
-.noMoreResults {
-    margin-top: 24px;
-    padding: 16px;
-    color: #9ca3af;
-    font-style: italic;
-}
-
-.noResults {
-    text-align: center;
-    padding: 2rem;
-    color: #0a0d14;
-    font-size: 1.125rem;
-    font-weight: 500;
 }
 
 /* ===== RESPONSIVE ADJUSTMENTS ===== */
