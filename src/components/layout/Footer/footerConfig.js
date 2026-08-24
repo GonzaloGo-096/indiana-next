@@ -44,7 +44,11 @@ const createModuleItems = (whatsappNumber, message = '', instagramUser = '', pho
   // Crear item de teléfono personalizado
   // Convertir el formato (0381) 421-2000 a tel:+543814212000
   const phoneText = phone || '(011) 1234-5678';
-  const phoneNumber = phoneText.replace(/[^\d]/g, ''); // Remover todo excepto dígitos
+  // El 0 inicial es el prefijo de discado nacional y no va en un número
+  // internacional: sin sacarlo sale tel:+540381..., que no es válido. Además
+  // el phone_number_hash que TelLink manda a analytics se calcula sobre este
+  // número, así que con el 0 de más identificaba un teléfono inexistente.
+  const phoneNumber = phoneText.replace(/[^\d]/g, '').replace(/^0/, '');
   const phoneItem = {
     icon: 'phone',
     text: phoneText,
