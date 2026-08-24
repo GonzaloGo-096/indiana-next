@@ -8,10 +8,14 @@
  */
 
 export const AUTH_CONFIG = {
-  // Configuración de API (solo endpoints, baseURL y timeout vienen de variables de entorno)
+  // Rutas de NUESTRO servidor, no del backend.
+  //
+  // El panel ya no le habla directo al backend: pasa por /api/admin, que
+  // reenvía desde el servidor. La ruta real del backend vive en
+  // src/app/api/admin/login/route.js, que es el único lugar que la conoce.
   api: {
     endpoints: {
-      login: '/user/loginuser'
+      login: '/login'
     }
   },
   

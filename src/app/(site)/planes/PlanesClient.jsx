@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useRef } from "react";
-import { ModeloSection } from "../../../components/planes/ModeloSection";
-import cta from "../../../components/home/HomeSectionCtas.module.css";
+import { ModeloSection } from "@/components/planes/ModeloSection";
+import cta from "@/components/home/HomeSectionCtas.module.css";
 import contact from "@/components/ui/ContactButtons.module.css";
 import ItemListViewTracker from "@/components/analytics/ItemListViewTracker";
 import TrackedButton from "@/components/analytics/TrackedButton";

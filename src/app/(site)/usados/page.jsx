@@ -10,13 +10,16 @@
  */
 
 import Link from "next/link";
-import { tryAbsoluteUrl } from "../../../lib/site-url";
-import { vehiclesService } from "../../../lib/services/vehiclesApi.server";
-import { mapVehiclesPage } from "../../../lib/mappers/vehicleMapper";
+import { tryAbsoluteUrl } from "@/lib/site-url";
+import { vehiclesService } from "@/lib/services/vehiclesApi.server";
+import { mapVehiclesPage } from "@/lib/mappers/vehicleMapper";
 import UsadosPageCarousel from "./UsadosPageCarousel";
 import PromocionesCarousel from "./PromocionesCarousel";
 import cta from "@/components/home/HomeSectionCtas.module.css";
+import { createLogger } from "@/lib/logger";
 import styles from "./usados.module.css";
+
+const log = createLogger("usados:promos");
 
 /**
  * Metadata para SEO
@@ -65,7 +68,7 @@ export async function generateMetadata() {
       },
     };
   } catch (err) {
-    console.error("[usados] generateMetadata:", err?.message || err);
+    log.error("generateMetadata falló, usando fallback:", err?.message || err);
     return {
       title,
       description,
@@ -78,7 +81,19 @@ export async function generateMetadata() {
  * ISR ligero: evita ejecutar el Server Component en cada visita (mejor TTFB que force-dynamic).
  * Los datos del carrusel pueden tardar hasta este intervalo en reflejar cambios del API.
  */
-export const revalidate = 120;
+// Sin `export const revalidate`: la frescura la gobiernan los tags.
+//
+// Antes habia `revalidate = 120`, que hacia re-renderizar la pagina cada 2
+// minutos sobre datos que el Data Cache retiene 6 horas (vehiclesApi.server
+// fetchea con revalidate 21600 + tags). O sea ~30 ejecuciones por hora para
+// producir exactamente el mismo HTML.
+//
+// Lo que realmente actualiza esto es revalidateTag('vehicles-list'), que
+// dispara el admin al guardar un vehiculo. Eso invalida datos y pagina juntos.
+//
+// Condicion para que esto sea seguro: que se sepa cuando esa revalidacion
+// falla. Antes fallaba en silencio; desde el Bloque 1 queda registrada en
+// revalidatePublicCache.
 
 /**
  * Página principal de usados
@@ -112,7 +127,11 @@ export default async function UsadosPage() {
     }
     vehicles = list;
   } catch (error) {
-    console.error("[UsadosPage] Error fetching vehicles:", error?.message || error);
+    // Misma clase de falla que tenía la home: si esto se traga en silencio,
+    // la página renderiza sin vehículos y nadie se entera. El fallback a lista
+    // vacía se mantiene (la página tiene más contenido que el carrusel), pero
+    // ahora el error queda registrado y llega a telemetría.
+    log.error("Error trayendo vehículos, la sección queda vacía:", error?.message || error);
     vehicles = [];
   }
 

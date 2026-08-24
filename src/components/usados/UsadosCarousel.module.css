@@ -9,12 +9,23 @@
  * @version 1.0.0
  */
 
-/* ===== VIEWPORT CLIP - Recorte en borde del viewport (solo home) ===== */
-.viewportClip {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  overflow-x: hidden;
-  box-sizing: border-box;
+/* ===== VIEWPORT CLIP - Recorte de borde a borde, solo en celular =====
+ *
+ * Antes esto se decidía en JavaScript: el componente preguntaba el ancho de
+ * pantalla y recién ahí aplicaba el recorte. Como el servidor no tiene forma de
+ * medir la pantalla, el primer render salía siempre con el diseño de escritorio
+ * y en celular se veía saltar.
+ *
+ * Ahora el envoltorio se renderiza siempre y es el CSS el que decide, que se
+ * aplica antes de que corra una sola línea de JavaScript. Arriba de 768px estas
+ * reglas no existen y el envoltorio no hace nada. */
+@media (max-width: 767.98px) {
+  .viewportClip {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
 }
 
 /* ===== CARRUSEL WRAPPER ===== */
@@ -148,40 +159,37 @@
   overscroll-behavior-x: contain;
 }
 
-/* viewportClip: wrapper sin padding lateral */
-.carouselViewportClip {
-  padding-left: 0;
-  padding-right: 0;
-}
+@media (max-width: 767.98px) {
+  /* Wrapper sin padding lateral: lo reemplaza el separador */
+  .carouselViewportClip {
+    padding-left: 0;
+    padding-right: 0;
+  }
 
-/* viewportClip: sin padding-left en el container (el spacer lo reemplaza) */
-.viewportClip .carouselContainer {
-  padding-left: 0 !important;
-}
+  .viewportClip .carouselContainer {
+    padding-left: 0 !important;
+  }
 
-/* viewportClip: componente vacío transparente - ocupa espacio, cards arrancan más a la derecha */
-.carouselLeadSpacer {
-  flex: 0 0 clamp(1.5rem, 8vw, 2.5rem);
-  width: clamp(1.5rem, 8vw, 2.5rem);
-  min-width: clamp(1.5rem, 8vw, 2.5rem);
-  height: 1px;
-  scroll-snap-align: none;
-  pointer-events: none;
-}
-
-@media (min-width: 768px) {
+  /* Separador transparente en los bordes: ocupa lugar para que la primera
+   * ficha no quede pegada al borde de la pantalla. */
   .carouselLeadSpacer {
-    flex: 0 0 clamp(2rem, 6vw, 3rem);
-    width: clamp(2rem, 6vw, 3rem);
-    min-width: clamp(2rem, 6vw, 3rem);
+    flex: 0 0 clamp(1.5rem, 8vw, 2.5rem);
+    width: clamp(1.5rem, 8vw, 2.5rem);
+    min-width: clamp(1.5rem, 8vw, 2.5rem);
+    height: 1px;
+    scroll-snap-align: none;
+    pointer-events: none;
   }
 }
 
-@media (min-width: 992px) {
+/* De 768px para arriba el separador se renderiza pero no ocupa nada.
+ *
+ * Antes acá había dos bloques que le daban MÁS ancho en 768px y en 992px, y
+ * nunca se aplicaron: el separador solo existía en celular, porque el
+ * JavaScript no lo renderizaba en pantallas grandes. Eran reglas muertas. */
+@media (min-width: 768px) {
   .carouselLeadSpacer {
-    flex: 0 0 clamp(2.5rem, 5vw, 4rem);
-    width: clamp(2.5rem, 5vw, 4rem);
-    min-width: clamp(2.5rem, 5vw, 4rem);
+    display: none;
   }
 }
 
@@ -219,28 +227,37 @@
   min-width: 240px;
 }
 
-/* Compact: cards más pequeñas (home mobile), más aire entre tarjetas */
-.carouselCompact .carouselContainer {
-  gap: clamp(1.1rem, 3.2vw, 1.45rem);
+/* Compact: fichas más chicas y más aire entre ellas. Solo en celular.
+ *
+ * Iba encendido por JavaScript junto con viewportClip. Ahora la clase está
+ * siempre y el corte lo hace el CSS, igual que arriba. El nombre
+ * "HomeDesktopFour" viene de antes y hoy aplica en celular: se deja como está
+ * para no mezclar un renombre con este cambio. */
+@media (max-width: 767.98px) {
+  .carouselCompact .carouselContainer {
+    gap: clamp(1.1rem, 3.2vw, 1.45rem);
+  }
+
+  .carouselCompact .cardWrapper {
+    min-width: 200px;
+    max-width: 260px;
+  }
+
+  /* Inicio usados: algo más de ancho por ficha */
+  .carouselHomeDesktopFour.carouselCompact .cardWrapper {
+    min-width: 212px;
+    max-width: 268px;
+  }
 }
 
-.carouselCompact .cardWrapper {
-  min-width: 200px;
-  max-width: 260px;
-}
+@media (max-width: 767.98px) {
+  .carouselCompact .cardWrapper :global(.card) {
+    min-width: 200px;
+  }
 
-/* Inicio usados (móvil): algo más de ancho por card */
-.carouselHomeDesktopFour.carouselCompact .cardWrapper {
-  min-width: 212px;
-  max-width: 268px;
-}
-
-.carouselCompact .cardWrapper :global(.card) {
-  min-width: 200px;
-}
-
-.carouselHomeDesktopFour.carouselCompact .cardWrapper :global(.card) {
-  min-width: 212px;
+  .carouselHomeDesktopFour.carouselCompact .cardWrapper :global(.card) {
+    min-width: 212px;
+  }
 }
 
 /* ===== SKELETON LOADING ===== */
@@ -498,18 +515,10 @@
     max-width: 320px;
   }
 
-  .carouselCompact .cardWrapper {
-    min-width: 220px;
-    max-width: 260px;
-  }
-
-  .carouselCompact .cardWrapper :global(.card) {
-    min-width: 220px;
-  }
-
-  .carouselCompact .carouselContainer {
-    gap: clamp(1.25rem, 2.4vw, 1.55rem);
-  }
+  /* Acá había tres reglas de .carouselCompact que NUNCA se aplicaron: compact
+   * solo se encendía por JavaScript en celular, así que dentro de un
+   * min-width: 768px no podían activarse. Se sacan para que el cambio a CSS no
+   * las despierte y termine alterando el escritorio. */
 
   /* Inicio usados (tablet): cards un poco más anchas que el compact genérico */
   .carouselHomeDesktopFour .cardWrapper {
@@ -549,11 +558,13 @@
     padding: var(--spacing-4) var(--spacing-4) var(--spacing-6) var(--spacing-4);
   }
 
+  /* 320px = ancho propio de CardSimilar. A 294px el precio tachado de una oferta
+     no entraba entero y salía cortado con "…", que se lee como otro número. */
   .carouselHomeDesktopFour .cardWrapper {
-    min-width: 294px;
-    max-width: 294px;
-    width: 294px;
-    flex: 0 0 294px;
+    min-width: 320px;
+    max-width: 320px;
+    width: 320px;
+    flex: 0 0 320px;
   }
 
   /* CardSimilar: el root fija 320px; forzamos al ancho del wrapper y sin márgenes laterales */
@@ -580,20 +591,8 @@
     flex: 0 0 320px;
   }
 
-  .carouselCompact .cardWrapper {
-    min-width: 240px;
-    max-width: 260px;
-    width: 260px;
-    flex: 0 0 260px;
-  }
-
-  .carouselCompact .cardWrapper :global(.card) {
-    min-width: 240px;
-  }
-
-  .carouselCompact .carouselContainer {
-    gap: clamp(1.25rem, 2.4vw, 1.55rem);
-  }
+  /* Mismo caso que en 768px: tres reglas de .carouselCompact que nunca se
+   * aplicaron, porque compact solo existía en celular. Se sacan. */
 
   .skeletonCard {
     width: 320px;

@@ -10,9 +10,25 @@
 /**
  * Límites del slider (rango buscable completo). No confundir con el rango inicial por defecto.
  */
+/**
+ * Topes de las barras deslizantes.
+ *
+ * Definidos por Gonzalo el 2026-08-13. Antes iban de 1990 a 2026 en año y hasta
+ * 150 millones en precio, y la mayor parte de cada barra quedaba vacía: no hay
+ * autos anteriores a 2011 ni de más de 44 millones.
+ *
+ * El piso de precio pasa a 0 el 2026-08-24, también por decisión de Gonzalo.
+ * Estaba en 5.000.000 y en producción hay un auto de 3.600.000: quedaba por
+ * debajo del piso, así que apenas alguien tocaba la barra de precio ese auto
+ * desaparecía y no había forma de volver a encontrarlo. Un piso no puede
+ * esconder inventario. Con 0 eso no puede volver a pasar, y el recorrido que
+ * se pierde es despreciable: los autos ya ocupaban un tercio de la barra.
+ *
+ * Mismo criterio que KILOMETRAJE, que arranca en 0 por la misma razón.
+ */
 export const FILTER_BOUNDS = {
-  AÑO: { min: 1990, max: 2026 },
-  PRECIO: { min: 5000000, max: 150000000 },
+  AÑO: { min: 2010, max: 2026 },
+  PRECIO: { min: 0, max: 120000000 },
   KILOMETRAJE: { min: 0, max: 250000 },
 };
 

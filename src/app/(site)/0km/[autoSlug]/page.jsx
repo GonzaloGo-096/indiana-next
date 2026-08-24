@@ -1,7 +1,8 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { getModelo, getModelosSlugs } from "../../../../data/modelos";
+import { getModelo, getModelosSlugs } from "@/data/modelos";
+import { serializeJsonLd } from "@/lib/seo/jsonLd";
 
 /** Normaliza el segmento dinámico (Turbopack / encoding / tipos raros) */
 function normalizeAutoSlug(raw) {
@@ -18,19 +19,22 @@ function normalizeAutoSlug(raw) {
 
 /** Permite /0km/[slug] aunque no esté en el último build de SSG (dev / nuevos modelos) */
 export const dynamicParams = true;
-import { getPlanesPorModelo } from "../../../../data/planes";
-import { absoluteUrl } from "../../../../lib/site-url";
+import { getPlanesPorModelo } from "@/data/planes";
+import { absoluteUrl } from "@/lib/site-url";
 import { ModeloDetalleClient } from "./ModeloDetalleClient";
 import { HeroImageDesktop } from "./HeroImageDesktop";
-import { ModeloSelectorProvider } from "../../../../components/ceroKm/ModeloSelectorContext";
-import { VersionItemsImageDesktop } from "../../../../components/ceroKm/VersionItemsImageDesktop";
+import { ModeloSelectorProvider } from "@/components/ceroKm/ModeloSelectorContext";
+import { VersionItemsImageDesktop } from "@/components/ceroKm/VersionItemsImageDesktop";
 import contact from "@/components/ui/ContactButtons.module.css";
 import cta from "@/components/home/HomeSectionCtas.module.css";
 import WhatsAppLink from "@/components/analytics/WhatsAppLink";
 import ItemViewTracker from "@/components/analytics/ItemViewTracker";
 import { SOURCES, LOCATIONS, LEAD_TYPES, VERTICALS } from "@/lib/analytics/events";
 import { buildItemParamsFromAuto } from "@/lib/analytics/params";
+import { createLogger } from "@/lib/logger";
 import styles from "./0km-detalle.module.css";
+
+const log = createLogger("0km:detalle");
 
 const WHATSAPP_PHONE_0KM = "543816295959";
 
@@ -45,7 +49,7 @@ const WHATSAPP_PHONE_0KM = "543816295959";
 // ModeloPlanes - Solo para modelos con planes (208, 2008, partner, expert)
 // Exporta como default, usar import directo
 const ModeloPlanes = dynamic(
-  () => import("../../../../components/ceroKm/ModeloPlanes/ModeloPlanes"),
+  () => import("@/components/ceroKm/ModeloPlanes/ModeloPlanes"),
   {
     loading: () => (
       <div
@@ -67,7 +71,7 @@ const ModeloPlanes = dynamic(
 // FeatureSection - Solo para modelos con features
 // Usar ruta directa al componente (evitar index.js que puede causar problemas)
 const FeatureSection = dynamic(
-  () => import("../../../../components/ceroKm/FeatureSection/FeatureSection"),
+  () => import("@/components/ceroKm/FeatureSection/FeatureSection"),
   {
     loading: () => (
       <div
@@ -103,7 +107,7 @@ const FeatureSection = dynamic(
 // ModelGallery - Solo para modelos con galería
 // Ahora tiene default export, usar import directo
 const ModelGallery = dynamic(
-  () => import("../../../../components/ceroKm/ModelGallery"),
+  () => import("@/components/ceroKm/ModelGallery"),
   {
     loading: () => (
       <div
@@ -229,17 +233,20 @@ export async function generateStaticParams() {
     const slugs = getModelosSlugs();
 
     if (!Array.isArray(slugs) || slugs.length === 0) {
-      console.warn("No se encontraron slugs de modelos para generar rutas estáticas");
-      return [];
+      // Los modelos son data local (src/data/modelos), no la API: si están
+      // vacíos es un bug del código, no una caída del backend. Fallar acá es
+      // preferible a desplegar el sitio sin las páginas de detalle de 0km.
+      throw new Error(
+        "getModelosSlugs() no devolvió modelos. Revisar src/data/modelos."
+      );
     }
 
     return slugs.map((slug) => ({
       autoSlug: slug,
     }));
   } catch (error) {
-    console.error("Error generating static params:", error);
-    // Retornar array vacío en caso de error para evitar fallo del build
-    return [];
+    log.error("generateStaticParams falló:", error);
+    throw error;
   }
 }
 
@@ -308,7 +315,7 @@ export async function generateMetadata({ params }) {
       },
     };
   } catch (error) {
-    console.error("Error generating metadata:", error);
+    log.error("generateMetadata falló, usando fallback:", error);
     return {
       title: "Modelo no disponible",
       description: "Error al cargar la información del modelo.",
@@ -339,7 +346,7 @@ export default async function CeroKilometroDetallePage({ params }) {
     let jsonLdHtml = null;
     if (jsonLd) {
       try {
-        jsonLdHtml = JSON.stringify(jsonLd);
+        jsonLdHtml = serializeJsonLd(jsonLd);
       } catch (stringifyErr) {
         if (process.env.NODE_ENV === "development") {
           console.warn("[0km detalle] JSON-LD omitido:", stringifyErr);

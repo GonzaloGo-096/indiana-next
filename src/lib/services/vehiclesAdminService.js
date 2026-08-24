@@ -7,7 +7,7 @@
  * @version 1.1.0 - Usa API Route de Next.js para optimización de imágenes
  */
 
-import { authAxiosInstance } from '@/lib/api/axiosInstance'
+import { authAxiosInstance } from '@/lib/http/client'
 import { AUTH_CONFIG } from '@/config/auth'
 
 const vehiclesAdminService = {
@@ -158,7 +158,9 @@ const vehiclesAdminService = {
    * @returns {Promise<Object>} Respuesta del backend
    */
   async deleteVehicle(id) {
-    const response = await authAxiosInstance.delete(`/photos/deletephoto/${id}`)
+    // Va a NUESTRO servidor (/api/admin), que reenvía al backend con la
+    // credencial. Ver src/app/api/admin/vehicles/[id]/route.js.
+    const response = await authAxiosInstance.delete(`/vehicles/${id}`)
     return response.data
   }
 }

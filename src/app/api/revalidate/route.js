@@ -15,6 +15,7 @@ import { revalidateTag } from 'next/cache'
 import { NextResponse } from 'next/server'
 import { getSiteUrl } from '@/lib/site-url'
 import { verifyAdminBearerToken } from '@/lib/auth/verifyAdminBearerServer'
+import { crearRateLimit, getClientIp } from '@/lib/http/rateLimit'
 import { createLogger } from '@/lib/logger'
 
 const log = createLogger('revalidate')
@@ -25,6 +26,17 @@ const log = createLogger('revalidate')
 const REVALIDATE_SECRET = (process.env.REVALIDATE_SECRET || '').trim()
 const MAX_WARMUP_IDS = 15
 const WARMUP_BATCH_SIZE = 5
+
+// ── Rate limit por IP ────────────────────────────────────────────────────────
+//
+// Sin esto, cada intento fallido dispara verifyAdminBearerToken, que consulta
+// al backend. O sea que un anónimo podía usar este endpoint para martillar el
+// login del backend; y con un token válido, cada llamada lanza hasta 15
+// pedidos de warmup.
+//
+// La implementación vive en lib/http/rateLimit.js desde que /api/admin/login
+// necesitó lo mismo. Comportamiento idéntico al que estaba escrito acá.
+const checkRateLimit = crearRateLimit({ ventanaMs: 60_000, maxIntentos: 10 })
 
 /**
  * Función helper para hacer warmup de una URL
@@ -101,6 +113,20 @@ async function warmupUrls(urls) {
  */
 export async function POST(request) {
   const startTime = Date.now()
+
+  // Freno antes de cualquier trabajo: sin esto, cada intento fallido consulta
+  // al backend para validar el token.
+  const limite = checkRateLimit(request)
+  if (!limite.ok) {
+    log.warn(`Rate limit alcanzado para ${getClientIp(request)}`)
+    return NextResponse.json(
+      {
+        error: 'Demasiados pedidos',
+        message: `Reintentá en ${limite.retryAfter} segundos.`,
+      },
+      { status: 429, headers: { 'Retry-After': String(limite.retryAfter) } },
+    )
+  }
 
   try {
     // ✅ Autorización: secret (automatización) O JWT de admin validado en backend
@@ -181,10 +207,22 @@ export async function POST(request) {
         urlsToWarmup.push(`${baseUrl}/usados/vehiculos`)
       }
 
-      // Agregar URLs de detalle (solo si hay IDs)
-      for (const id of vehicleIds) {
-        urlsToWarmup.push(`${baseUrl}/usados/${id}`)
-      }
+      // NO se calientan las fichas de detalle.
+      //
+      // Antes se armaba `${baseUrl}/usados/${id}`, pero la ruta publica es
+      // /usados/[slug] con el formato marca-modelo-anio-id. Verificado: pedir
+      // la URL con el id pelado devuelve 200 con Cache-Control no-cache y sin
+      // la ficha (es la pantalla de redireccion), asi que ese warmup nunca
+      // calento nada; solo gastaba tiempo y reportaba exito.
+      //
+      // Armar el slug correcto necesita marca/modelo/anio, datos que este
+      // endpoint no recibe: solo llegan los IDs. Pasarlos implicaria cambiar
+      // el contrato y tres capas del admin, para ahorrar ~430ms en la primera
+      // visita a una ficha recien editada. No compensa hoy.
+      //
+      // Importante: esto NO afecta la frescura. revalidateTag('vehicle-detail')
+      // y `vehicle:${id}` ya invalidan la cache mas arriba; lo unico que se
+      // pierde es el pre-renderizado, y la ficha se genera en la primera visita.
 
       // Hacer warmup si hay URLs (lista o detalles)
       if (urlsToWarmup.length > 0) {

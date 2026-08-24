@@ -69,7 +69,11 @@ export function ScrollToTopOnMount() {
           return; // No scrollear al top
         }
       }
-    } catch {}
+    } catch {
+      // Silencio deliberado: sessionStorage puede no existir (modo privado) o
+      // traer JSON corrupto. En ambos casos el comportamiento correcto es el
+      // fallback de abajo (ir al top), y loguear spamearia en cada navegacion.
+    }
 
     // ✅ Scroll inmediato al top cuando cambia la ruta
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });

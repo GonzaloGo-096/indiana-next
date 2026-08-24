@@ -12,6 +12,9 @@
 
 import { extractAllImageUrls } from "./imageExtractors";
 import { VEHICLE_PLACEHOLDER } from "../config/cloudinaryStaticImages";
+import { createLogger } from "../lib/logger";
+
+const log = createLogger("carousel:images");
 
 const DEFAULT_CAR_IMAGE = VEHICLE_PLACEHOLDER;
 
@@ -43,7 +46,7 @@ export const getCarouselImages = (vehicle) => {
     // Fallback a imagen por defecto
     return [DEFAULT_CAR_IMAGE];
   } catch (error) {
-    console.error("[CarouselImages] Error al procesar imágenes:", error.message);
+    log.error("Error al procesar imágenes:", error.message);
     return [DEFAULT_CAR_IMAGE];
   }
 };

@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronIcon } from "../../ui/icons/ChevronIcon";
-import { PhoneIcon } from "../../ui/icons/PhoneIcon";
+import { ChevronIcon } from "@/components/ui/icons/ChevronIcon";
+import { PhoneIcon } from "@/components/ui/icons/PhoneIcon";
 import { contactoModules, sitioModule, vehiculosModule, footerIcons } from "./footerConfig";
 import WhatsAppLink from "@/components/analytics/WhatsAppLink";
 import TelLink from "@/components/analytics/TelLink";

@@ -15,9 +15,9 @@
 
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import Image from "next/image";
-import { ChevronIcon } from "../../ui/icons/ChevronIcon";
+import { ChevronIcon } from "@/components/ui/icons/ChevronIcon";
 import styles from "./ImageCarousel.module.css";
-import { VEHICLE_PLACEHOLDER } from "../../../config/cloudinaryStaticImages";
+import { VEHICLE_PLACEHOLDER } from "@/config/cloudinaryStaticImages";
 
 const DEFAULT_CAR_IMAGE = VEHICLE_PLACEHOLDER;
 

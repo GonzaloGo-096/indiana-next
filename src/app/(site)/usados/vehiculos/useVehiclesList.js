@@ -9,14 +9,14 @@ import {
   hasAnyFilter,
   getActiveFilterChips,
   isValidSortOption,
-} from "../../../../utils/filters";
-import { vehiclesService } from "../../../../lib/services/vehiclesApi";
-import { mapVehiclesPage } from "../../../../lib/mappers/vehicleMapper";
+} from "@/utils/filters";
+import { vehiclesService } from "@/lib/services/vehiclesApi";
+import { mapVehiclesPage } from "@/lib/mappers/vehicleMapper";
 import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import { pushDataLayer } from "@/lib/analytics/dataLayer";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
-import { STORAGE_KEYS } from "../../../../constants/storageKeys";
-import { VEHICLE_CONSTANTS } from "../../../../constants/vehicles";
+import { STORAGE_KEYS } from "@/constants/storageKeys";
+import { VEHICLE_CONSTANTS } from "@/constants/vehicles";
 import { useScrollRestore } from "./useScrollRestore";
 
 /**

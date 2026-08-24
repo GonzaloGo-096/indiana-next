@@ -14,7 +14,7 @@
  */
 
 import { memo, useMemo, useCallback } from "react";
-import { CardAuto } from "../../Card/CardAuto";
+import { CardAuto } from "@/components/vehicles/Card/CardAuto";
 import { pushDataLayer } from "@/lib/analytics/dataLayer";
 import { EVENTS, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import styles from "./ListAutos.module.css";
@@ -194,8 +194,14 @@ const AutosGrid = memo(
       return <ListAutosSkeleton />;
     }
 
-    // Estado de error
-    if (isError) {
+    // Estado de error SIN nada que mostrar: acá sí, la pantalla de error
+    // reemplaza al listado porque no hay alternativa.
+    //
+    // Si ya hay vehículos en pantalla NO se entra acá: antes cualquier fallo
+    // (un microcorte de conexión al aplicar un filtro) borraba los autos que
+    // el usuario ya estaba viendo y los cambiaba por un cartel de error.
+    // Ahora se mantienen y el aviso va arriba, sin tapar nada.
+    if (isError && loadedCount === 0) {
       return (
         <ErrorMessage
           message={error?.message || "Error al cargar los vehículos"}
@@ -220,6 +226,21 @@ const AutosGrid = memo(
 
     return (
       <div className={styles.gridContainer}>
+        {/* Falló la actualización pero hay resultados previos: se avisa sin
+            quitarlos de pantalla. Reusa .errorBanner, que ya estaba definido
+            en este módulo (aviso ámbar) y no lo usaba nadie. */}
+        {isError && (
+          <div className={styles.errorBanner} role="status">
+            <h3>No se pudo actualizar la búsqueda</h3>
+            <p>Estos son los resultados anteriores.</p>
+            {onRetry && (
+              <button type="button" onClick={onRetry} className={styles.retryButton}>
+                Reintentar
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Overlay semitransparente durante refetch por cambio de filtros */}
         {isRefetching && (
           <div className={styles.refetchOverlay} role="status" aria-label="Actualizando resultados">

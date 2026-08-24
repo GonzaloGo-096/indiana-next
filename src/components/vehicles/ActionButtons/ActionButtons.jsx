@@ -11,8 +11,8 @@
  */
 
 import { memo } from "react";
-import { FilterIcon } from "../../ui/icons/FilterIcon";
-import { SortIcon } from "../../ui/icons/SortIcon";
+import { FilterIcon } from "@/components/ui/icons/FilterIcon";
+import { SortIcon } from "@/components/ui/icons/SortIcon";
 import SortDropdown from "../Filters/SortDropdown";
 import styles from "./ActionButtons.module.css";
 

@@ -1,7 +1,7 @@
 "use client";
 
-import { useModeloSelectorContext } from "../../../../components/ceroKm/ModeloSelectorContext";
-import { VersionContent } from "../../../../components/ceroKm/VersionContent";
+import { useModeloSelectorContext } from "@/components/ceroKm/ModeloSelectorContext";
+import { VersionContent } from "@/components/ceroKm/VersionContent";
 
 /**
  * Client Component wrapper para manejar estado de versión/color.

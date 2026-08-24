@@ -13,12 +13,16 @@
 
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { vehiclesService } from "../../../../lib/services/vehiclesApi.server";
-import { mapVehiclesPage } from "../../../../lib/mappers/vehicleMapper";
-import { parseFilters } from "../../../../utils/filters";
-import { getSiteUrl, tryAbsoluteUrl } from "../../../../lib/site-url";
+import { vehiclesService } from "@/lib/services/vehiclesApi.server";
+import { mapVehiclesPage } from "@/lib/mappers/vehicleMapper";
+import { parseFilters } from "@/utils/filters";
+import { getSiteUrl, tryAbsoluteUrl } from "@/lib/site-url";
 import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
+import { createLogger } from "@/lib/logger";
 import VehiculosClient from "./VehiculosClient";
+import { serializeJsonLd } from "@/lib/seo/jsonLd";
+
+const log = createLogger("usados:listado");
 
 /**
  * Metadata dinámica para SEO
@@ -158,7 +162,10 @@ function getVehiclesListJsonLd(vehicles) {
   let siteBase;
   try {
     siteBase = getSiteUrl();
-  } catch {
+  } catch (error) {
+    // Sin base no se puede armar el JSON-LD. Degradar es correcto, pero en
+    // silencio significaba perder structured data en produccion sin senal.
+    log.warn("Sin site URL: se omite el JSON-LD del listado.", error?.message || error);
     return null;
   }
 
@@ -264,7 +271,7 @@ export async function generateMetadata({ searchParams }) {
     ) {
       throw err;
     }
-    console.error("[usados/vehiculos] generateMetadata:", msg);
+    log.error("generateMetadata falló, usando fallback:", msg);
     return {
       title: "Vehículos Usados Multimarca",
       description:
@@ -316,10 +323,10 @@ export default async function VehiculosPage({ searchParams }) {
     try {
       const jsonLd = getVehiclesListJsonLd(mappedData.vehicles || []);
       if (jsonLd) {
-        jsonLdHtml = JSON.stringify(jsonLd);
+        jsonLdHtml = serializeJsonLd(jsonLd);
       }
     } catch (jsonErr) {
-      console.error("[VehiculosPage] JSON-LD omitido:", jsonErr?.message || jsonErr);
+      log.error("JSON-LD omitido:", jsonErr?.message || jsonErr);
     }
 
     return (
@@ -345,7 +352,7 @@ export default async function VehiculosPage({ searchParams }) {
       </>
     );
   } catch (error) {
-    console.error("[VehiculosPage] Error:", error?.message || error);
+    log.error("Error renderizando el listado:", error?.message || error);
 
     // Si es error 404, usar notFound()
     if (error.message?.includes("not found") || error.message?.includes("404")) {

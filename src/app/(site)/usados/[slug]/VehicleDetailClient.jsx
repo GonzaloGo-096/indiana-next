@@ -13,9 +13,9 @@
 
 import { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { CardDetalle } from "../../../../components/vehicles/Detail/CardDetalle/CardDetalle";
-import SimilarVehiclesCarousel from "../../../../components/vehicles/SimilarVehiclesCarousel/SimilarVehiclesCarousel";
-import PriceRangeCarousel from "../../../../components/vehicles/PriceRangeCarousel/PriceRangeCarousel";
+import { CardDetalle } from "@/components/vehicles/Detail/CardDetalle/CardDetalle";
+import SimilarVehiclesCarousel from "@/components/vehicles/SimilarVehiclesCarousel/SimilarVehiclesCarousel";
+import PriceRangeCarousel from "@/components/vehicles/PriceRangeCarousel/PriceRangeCarousel";
 import cta from "@/components/home/HomeSectionCtas.module.css";
 import styles from "./vehicle-detail.module.css";
 

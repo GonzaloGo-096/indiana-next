@@ -16,14 +16,17 @@
  */
 
 import { useState, useEffect, useCallback, useRef, forwardRef, memo, useImperativeHandle, useMemo } from 'react'
-import RangeSlider from '../../ui/RangeSlider/RangeSlider'
-import { CloseIcon } from '../../ui/icons/CloseIcon'
-import { combustibles, cajas, FILTER_BOUNDS, FILTER_DEFAULTS } from '../../../constants/filterOptions'
-import { useDevice } from '../../../hooks/useDevice'
+import RangeSlider from '@/components/ui/RangeSlider/RangeSlider'
+import { CloseIcon } from '@/components/ui/icons/CloseIcon'
+import { combustibles, cajas, FILTER_BOUNDS, FILTER_DEFAULTS } from '@/constants/filterOptions'
+import { useDevice } from '@/hooks/useDevice'
+import { createLogger } from '@/lib/logger'
 import styles from './FilterFormSimple.module.css'
 
 // ✅ FIX HIDRATACIÓN: Función de formateo consistente entre servidor y cliente
 // Usa formato manual para evitar diferencias de configuración regional
+const log = createLogger('filtros')
+
 const formatNumber = (val) => {
   // Formato manual con comas como separador de miles (consistente en servidor y cliente)
   return val.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
@@ -38,9 +41,24 @@ const formatKilometers = (val) => {
 }
 
 // ✅ COMPONENTE CON forwardRef
+/**
+ * Valor por defecto de currentFilters, definido UNA sola vez.
+ *
+ * Antes el valor por defecto se escribía inline (`currentFilters = {}`), y eso
+ * crea un objeto nuevo en cada dibujo. El efecto que sincroniza los filtros
+ * depende de esa referencia, así que se disparaba siempre: cambiaba el estado,
+ * volvía a dibujar, creaba otro objeto nuevo, y así sin fin. Un ciclo infinito
+ * que cuelga la pestaña.
+ *
+ * Hoy no explota porque VehiculosClient siempre pasa la prop, pero cualquier
+ * uso nuevo sin ella colgaba la página. Lo encontró una prueba al montar el
+ * componente sin filtros.
+ */
+const SIN_FILTROS = Object.freeze({});
+
 const FilterFormSimpleComponent = forwardRef(({
   onApplyFilters,
-  currentFilters = {}, // ✅ NUEVO: Filtros actuales desde el padre (evita useSearchParams)
+  currentFilters = SIN_FILTROS, // Filtros actuales desde el padre (evita useSearchParams)
   isLoading = false,
   isError = false,
   error = null,
@@ -52,11 +70,15 @@ const FilterFormSimpleComponent = forwardRef(({
 }, ref) => {
   const { isMobile } = useDevice()
 
-  // ✅ ESTADOS SIMPLES
-  // Estado para visibilidad en desktop
-  const [isVisibleDesktop, setIsVisibleDesktop] = useState(false)
-  // Estado para drawer en mobile
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
+  // Un solo estado para una sola pregunta: ¿el panel está abierto?
+  //
+  // Antes eran dos —isVisibleDesktop e isDrawerOpen— y cada lugar que
+  // necesitaba saberlo repetía el mismo selector de tres vías:
+  //   stripLayout ? isVisibleDesktop : isMobile ? isDrawerOpen : isVisibleDesktop
+  // Estaba escrito cuatro veces. Nunca podían estar los dos activos a la vez,
+  // así que uno alcanza. Qué aspecto tiene el panel (cajón abajo en celular,
+  // panel desplegable en escritorio) lo decide el CSS, no este archivo.
+  const [isPanelOpen, setIsPanelOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const timeoutRef = useRef(null)
   
@@ -71,22 +93,22 @@ const FilterFormSimpleComponent = forwardRef(({
 
   /* Strip: al abrir, bajar la vista al pie del formulario (Aplicar); delay breve por título Marca en el padre */
   useEffect(() => {
-    if (!stripLayout || !isVisibleDesktop) return
+    if (!stripLayout || !isPanelOpen) return
     const el = stripPanelEndRef.current
     if (!el) return
     const t = window.setTimeout(() => {
       el.scrollIntoView({ block: 'end', behavior: 'smooth' })
     }, 140)
     return () => window.clearTimeout(t)
-  }, [stripLayout, isVisibleDesktop])
+  }, [stripLayout, isPanelOpen])
 
   useEffect(() => {
     if (!stripLayout || !onStripFiltersOpenChange) return
-    onStripFiltersOpenChange(isVisibleDesktop)
+    onStripFiltersOpenChange(isPanelOpen)
     return () => {
       onStripFiltersOpenChange(false)
     }
-  }, [stripLayout, isVisibleDesktop, onStripFiltersOpenChange])
+  }, [stripLayout, isPanelOpen, onStripFiltersOpenChange])
 
   // ✅ FILTROS - ESTADO SIMPLE
   const [filters, setFilters] = useState({
@@ -98,20 +120,12 @@ const FilterFormSimpleComponent = forwardRef(({
     kilometraje: [FILTER_DEFAULTS.KILOMETRAJE.min, FILTER_DEFAULTS.KILOMETRAJE.max]
   })
 
-  // ✅ SINCRONIZACIÓN DE ESTADOS AL CAMBIAR DISPOSITIVO
-  useEffect(() => {
-    if (isMobile) {
-      // En mobile, cerrar visibilidad desktop
-      setIsVisibleDesktop(false)
-    } else {
-      // En desktop, cerrar drawer mobile
-      setIsDrawerOpen(false)
-    }
-  }, [isMobile])
 
   // ✅ BLOQUEAR SCROLL DEL BODY CUANDO EL DRAWER ESTÁ ABIERTO
   useEffect(() => {
-    if (!isDrawerOpen) return
+    // Solo el cajón de celular bloquea el fondo. En escritorio el panel se
+    // despliega dentro de la página y congelarla sería un error.
+    if (!isPanelOpen || !isMobile || stripLayout) return
     
     // Guardar posición actual del scroll
     const scrollY = window.scrollY
@@ -134,7 +148,7 @@ const FilterFormSimpleComponent = forwardRef(({
       // Restaurar posición del scroll
       window.scrollTo(0, scrollY)
     }
-  }, [isDrawerOpen])
+  }, [isPanelOpen, isMobile, stripLayout])
 
   // ✅ SINCRONIZACIÓN CON FILTROS DEL PADRE (elimina necesidad de useSearchParams)
   // ✅ FIX SUSPENSE: Usar prop en lugar de useSearchParams para evitar conflictos de boundaries
@@ -153,32 +167,16 @@ const FilterFormSimpleComponent = forwardRef(({
 
   // ✅ HANDLERS UNIFICADOS (funcionan en ambos contextos)
   const toggleVisibility = useCallback(() => {
-    if (stripLayout) {
-      setIsVisibleDesktop((prev) => !prev)
-      return
-    }
-    if (isMobile) {
-      setIsDrawerOpen((prev) => !prev)
-    } else {
-      setIsVisibleDesktop((prev) => !prev)
-    }
-  }, [isMobile, stripLayout])
+    setIsPanelOpen((prev) => !prev)
+  }, [])
 
   const closeVisibility = useCallback(() => {
-    if (stripLayout) {
-      setIsVisibleDesktop(false)
-      return
-    }
-    if (isMobile) {
-      setIsDrawerOpen(false)
-    } else {
-      setIsVisibleDesktop(false)
-    }
-  }, [isMobile, stripLayout])
+    setIsPanelOpen(false)
+  }, [])
 
   // ✅ HANDLERS SIMPLES (mantener para compatibilidad)
-  const toggleDrawer = useCallback(() => setIsDrawerOpen(prev => !prev), [])
-  const closeDrawer = useCallback(() => setIsDrawerOpen(false), [])
+  const toggleDrawer = useCallback(() => setIsPanelOpen(prev => !prev), [])
+  const closeDrawer = useCallback(() => setIsPanelOpen(false), [])
 
   // ✅ HANDLERS DE FILTROS
   const handleFilterChange = useCallback((key, value) => {
@@ -218,22 +216,14 @@ const FilterFormSimpleComponent = forwardRef(({
 
   // Cerrar con Escape (drawer móvil clásico o panel strip móvil/desktop)
   useEffect(() => {
-    const panelOpen = stripLayout
-      ? isVisibleDesktop
-      : isMobile
-        ? isDrawerOpen
-        : isVisibleDesktop
+    const panelOpen = isPanelOpen
     if (!panelOpen) return
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        if (stripLayout) setIsVisibleDesktop(false)
-        else if (isMobile) setIsDrawerOpen(false)
-        else setIsVisibleDesktop(false)
-      }
+      if (e.key === 'Escape') setIsPanelOpen(false)
     }
     document.addEventListener('keydown', handleKeyDown)
     return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [stripLayout, isMobile, isDrawerOpen, isVisibleDesktop])
+  }, [stripLayout, isMobile, isPanelOpen])
 
 
   // ✅ SUBMIT
@@ -246,9 +236,7 @@ const FilterFormSimpleComponent = forwardRef(({
       closeVisibility()
       await onApplyFilters(filters)
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('[FilterFormSimple] Error applying filters:', error);
-      }
+      log.error('No se pudieron aplicar los filtros:', error?.message || error)
     } finally {
       setIsSubmitting(false)
     }
@@ -269,21 +257,13 @@ const FilterFormSimpleComponent = forwardRef(({
     // Métodos originales (para mobile - compatibilidad)
     toggleDrawer,
     closeDrawer,
-    isDrawerOpen: stripLayout
-      ? isVisibleDesktop
-      : isMobile
-        ? isDrawerOpen
-        : isVisibleDesktop,
+    isDrawerOpen: isPanelOpen,
 
     // Métodos de LazyFilterFormSimple (para desktop - compatibilidad)
     toggleFilters: toggleVisibility,
-    showFilters: () => setIsVisibleDesktop(true),
-    hideFilters: () => setIsVisibleDesktop(false),
-    isFiltersVisible: stripLayout
-      ? isVisibleDesktop
-      : isMobile
-        ? isDrawerOpen
-        : isVisibleDesktop,
+    showFilters: () => setIsPanelOpen(true),
+    hideFilters: () => setIsPanelOpen(false),
+    isFiltersVisible: isPanelOpen,
     
     // ✅ NUEVO: Método para actualizar marca desde afuera (carrusel cuando panel está abierto)
     updateMarcaFilter: (marcaArray) => {
@@ -293,10 +273,7 @@ const FilterFormSimpleComponent = forwardRef(({
     // ✅ NUEVO: Método para obtener estado local actual (para carrusel cuando panel está abierto)
     getCurrentFilters: () => filters,
   }), [
-    isMobile,
-    stripLayout,
-    isDrawerOpen,
-    isVisibleDesktop,
+    isPanelOpen,
     toggleDrawer,
     closeDrawer,
     toggleVisibility,
@@ -318,7 +295,7 @@ const FilterFormSimpleComponent = forwardRef(({
   // ✅ CONTENIDO DEL FORMULARIO (reutilizable)
   const formContent = (
     <div
-      className={`${styles.filterContainer} ${stripLayout ? styles.filterContainerStrip : ''} ${!stripLayout && isDrawerOpen ? styles.open : ''}`}
+      className={`${styles.filterContainer} ${stripLayout ? styles.filterContainerStrip : ''} ${!stripLayout && isPanelOpen ? styles.open : ''}`}
     >
       {/* Error Messages */}
       {isError && error && (
@@ -333,7 +310,7 @@ const FilterFormSimpleComponent = forwardRef(({
       )}
 
       {/* Filter Form */}
-      {!stripLayout && isDrawerOpen && (
+      {!stripLayout && isPanelOpen && (
         <div className={styles.overlay} onClick={closeVisibility} />
       )}
       
@@ -483,7 +460,7 @@ const FilterFormSimpleComponent = forwardRef(({
   // ✅ Desktop, o strip en móvil: panel con show/hide (mismo patrón que desktop)
   if (!isMobile || stripLayout) {
     return (
-      <div className={isVisibleDesktop ? styles.desktopVisible : styles.desktopHidden}>
+      <div className={isPanelOpen ? styles.desktopVisible : styles.desktopHidden}>
         {formContent}
       </div>
     )

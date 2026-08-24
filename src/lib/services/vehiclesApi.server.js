@@ -16,6 +16,9 @@
 import { getApiBaseUrl } from "@/lib/config/api";
 import { fetchWithTimeout } from "@/lib/http/server";
 import { buildSearchParams } from "@/utils/filters";
+import { createLogger } from "@/lib/logger";
+
+const log = createLogger("api:server");
 
 /**
  * Servicio de vehículos para Server Components
@@ -43,8 +46,17 @@ export const vehiclesService = {
 
       // Construir URL: buildSearchParams (filtros) + limit/cursor (paginación backend)
       const baseURL = getApiBaseUrl();
+      // Los rangos que están en su posición inicial NO se mandan.
+      //
+      // Antes iba `includeDefaultRanges: true`, que los mandaba siempre. El
+      // formulario guarda los tres rangos aunque el visitante no los toque,
+      // así que al filtrar por año también viajaba "precio desde 5.000.000":
+      // un filtro que nadie pidió. Y como ese mínimo no coincide con el
+      // inventario real, borraba autos válidos y podía dejar la lista vacía.
+      //
+      // "Rango completo" y "sin filtrar" son lo mismo, así que omitirlo no
+      // cambia el resultado: solo deja de esconder autos.
       const searchParams = buildSearchParams(filters, {
-        includeDefaultRanges: true,
         mergeDefaults,
       });
       searchParams.set("limit", String(safeLimit));
@@ -97,7 +109,7 @@ export const vehiclesService = {
       }
 
       if (!response.ok) {
-        console.error("[API Server] getVehicles HTTP error:", {
+        log.error("getVehicles HTTP error:", {
           status: response.status,
           statusText: response.statusText,
           endpoint,
@@ -112,7 +124,7 @@ export const vehiclesService = {
         const text = await response.text();
         data = text ? JSON.parse(text) : null;
       } catch (parseErr) {
-        console.error("[API Server] getVehicles respuesta no JSON:", {
+        log.error("getVehicles respuesta no JSON:", {
           endpoint,
           message: parseErr?.message,
         });
@@ -220,7 +232,7 @@ export const vehiclesService = {
       });
 
       if (!response.ok) {
-        console.error("[API Server] getVehicleById HTTP error:", {
+        log.error("getVehicleById HTTP error:", {
           id: cleanId,
           status: response.status,
           statusText: response.statusText,
@@ -239,7 +251,7 @@ export const vehiclesService = {
         const text = await response.text();
         data = text ? JSON.parse(text) : null;
       } catch (parseErr) {
-        console.error("[API Server] getVehicleById respuesta no JSON:", {
+        log.error("getVehicleById respuesta no JSON:", {
           id: cleanId,
           endpoint,
           message: parseErr?.message,
@@ -255,7 +267,7 @@ export const vehiclesService = {
 
       return vehicle;
     } catch (error) {
-      console.error("[API Server] Error fetching vehicle by ID:", {
+      log.error("Error fetching vehicle by ID:", {
         id: cleanId,
         message: error.message,
       });

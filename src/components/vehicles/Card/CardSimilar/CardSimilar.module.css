@@ -48,6 +48,9 @@
     /* Comportamiento */
     overflow: hidden;
     position: relative;
+    /* Permite que el precio reaccione al ancho REAL de la card (no al del viewport):
+       la misma card mide 320px en /usados y hasta 212px en el carrusel del inicio. */
+    container-type: inline-size;
     margin: 0 10px; /* 10px left y right en todas las cards simplificadas */
     cursor: pointer;
     z-index: 10;
@@ -387,10 +390,11 @@
     border-radius: var(--price-radius);
 }
 
+/* "desde:" ocupa lo que mide; el resto del ancho queda para el precio.
+   Con un 30% fijo, en el home (card de 294px) el precio se salía 47px. */
 .price_label_container {
-    --label-width: 30%;
-    
-    flex: 0 0 var(--label-width);
+    flex: 0 1 auto;
+    min-width: 0;
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -408,12 +412,14 @@
     text-transform: lowercase;
     letter-spacing: 0.4px;
     opacity: 0.95;
+    white-space: nowrap;
 }
 
+/* Toma todo el ancho sobrante. El padding lateral ya lo pone .container4,
+   el padding-right de acá descontaba 12px más al espacio del precio. */
 .price_display {
-    --price-width: 70%;
-    
-    flex: 0 0 var(--price-width);
+    flex: 1 1 auto;
+    min-width: 0;
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -421,7 +427,6 @@
     justify-content: flex-end;
     gap: var(--spacing-2);
     padding: 0;
-    padding-right: var(--spacing-3);
 }
 
 .price_original {
@@ -433,8 +438,12 @@
     text-decoration: line-through;
     text-decoration-thickness: 1px;
     letter-spacing: -0.2px;
-    flex-shrink: 0;
+    /* Red de seguridad: ante un precio desmedido cede el tachado, nunca el final */
+    flex: 0 1 auto;
+    min-width: 0;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .price_value {
@@ -450,6 +459,27 @@
     line-height: var(--price-line-height);
     letter-spacing: var(--price-letter-spacing);
     text-align: right;
+    /* El precio final no se recorta ni se parte en dos líneas */
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+/* Con oferta conviven 2 precios en la misma fila: el final baja un escalón.
+   Sin esto, a 294px un par tipo $145.500.000 / $129.900.000 pisa el "desde:". */
+.price_original + .price_value {
+    --price-font-size: clamp(1.25rem, 3.4vw, 1.625rem);
+}
+
+/* Card angosta (carrusel del inicio): los 2 precios no entran en una línea sin
+   recortar el tachado, y un precio cortado se lee como otro número.
+   Se apilan: tachado arriba, precio final abajo. Ambos enteros. */
+@container (max-width: 310px) {
+    .price_display {
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        gap: 0;
+    }
 }
 
 .price_value::first-letter {

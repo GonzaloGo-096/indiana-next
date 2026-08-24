@@ -17,10 +17,10 @@ import cta from "@/components/home/HomeSectionCtas.module.css";
 import styles from "./vehiculos.module.css";
 
 import dynamic from "next/dynamic";
-import AutosGrid from "../../../../components/vehicles/List/ListAutos";
-import FilterFormSimple from "../../../../components/vehicles/Filters/FilterFormSimple";
-import ActiveFilterChips from "../../../../components/vehicles/Filters/ActiveFilterChips";
-import ActionButtons from "../../../../components/vehicles/ActionButtons/ActionButtons";
+import AutosGrid from "@/components/vehicles/List/ListAutos";
+import FilterFormSimple from "@/components/vehicles/Filters/FilterFormSimple";
+import ActiveFilterChips from "@/components/vehicles/Filters/ActiveFilterChips";
+import ActionButtons from "@/components/vehicles/ActionButtons/ActionButtons";
 import ItemListViewTracker from "@/components/analytics/ItemListViewTracker";
 import { SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 
@@ -49,7 +49,7 @@ function BrandStripNudge({ direction }) {
 }
 
 const BrandsCarousel = dynamic(
-  () => import("../../../../components/vehicles/BrandsCarousel"),
+  () => import("@/components/vehicles/BrandsCarousel"),
   {
     loading: () => <div style={{ minHeight: "80px" }} />,
     ssr: false,
@@ -97,7 +97,6 @@ export default function VehiculosClient({
 
   const filterFormRef = useRef(null);
   const sortButtonRef = useRef(null);
-  const sortButtonRefDesktop = useRef(null);
   const brandsCarouselRef = useRef(null);
   const brandsCarouselScrollRestoreRef = useRef(null);
 
@@ -276,19 +275,6 @@ export default function VehiculosClient({
             />
           </div>
 
-          <ActionButtons
-            onFilterClick={handleFilterClick}
-            onSortClick={handleSortClick}
-            onSortChange={handleSortChange}
-            onCloseSortDropdown={handleCloseSortDropdown}
-            selectedSort={currentSort}
-            isSortDisabled={isSortDisabled}
-            isSortDropdownOpen={isSortDropdownOpen}
-            sortButtonRef={sortButtonRef}
-            filtersPanelOpen={stripFiltersOpen}
-            className={styles.actionButtons}
-            actionButtonClassName={styles.actionButton}
-          />
         </div>
 
         <ActionButtons
@@ -299,9 +285,9 @@ export default function VehiculosClient({
           selectedSort={currentSort}
           isSortDisabled={isSortDisabled}
           isSortDropdownOpen={isSortDropdownOpen}
-          sortButtonRef={sortButtonRefDesktop}
+          sortButtonRef={sortButtonRef}
           filtersPanelOpen={stripFiltersOpen}
-          className={styles.actionButtonsDesktop}
+          className={styles.actionButtons}
           actionButtonClassName={styles.actionButton}
         />
       </div>

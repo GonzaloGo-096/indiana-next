@@ -1,7 +1,11 @@
-import { getAllPlanes, extraerModeloBase } from "../../../data/planes";
-import { absoluteUrl } from "../../../lib/site-url";
+import { getAllPlanes, extraerModeloBase } from "@/data/planes";
+import { absoluteUrl } from "@/lib/site-url";
 import { PlanesClient } from "./PlanesClient";
+import { createLogger } from "@/lib/logger";
 import styles from "./planes.module.css";
+import { serializeJsonLd } from "@/lib/seo/jsonLd";
+
+const log = createLogger("planes");
 
 /**
  * Helper para generar Structured Data (JSON-LD) del listado de planes
@@ -68,7 +72,7 @@ export async function generateMetadata() {
       },
     };
   } catch (error) {
-    console.error("Error generating metadata for planes page:", error);
+    log.error("generateMetadata falló, usando fallback:", error);
     return {
       title: "Planes de Ahorro Peugeot",
       description: "Planes de ahorro Peugeot en Tucumán.",
@@ -109,7 +113,7 @@ export default function PlanesPage() {
       {jsonLd && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
         />
       )}
       <PlanesClient planesPorModelo={planesPorModelo} />

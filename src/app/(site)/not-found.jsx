@@ -1,4 +1,4 @@
-import SiteNotFoundBody from "../../components/errors/SiteNotFoundBody";
+import SiteNotFoundBody from "@/components/errors/SiteNotFoundBody";
 
 export const metadata = {
   title: "Página no encontrada",

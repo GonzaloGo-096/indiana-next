@@ -7,7 +7,7 @@
  * @version 2.0.0 - Next.js compatible
  */
 
-import axiosInstance from '@/lib/api/axiosInstance'
+import axiosInstance from '@/lib/http/client'
 import { buildSearchParams } from '@/utils/filters'
 
 const vehiclesService = {
@@ -23,8 +23,17 @@ const vehiclesService = {
    */
   async getVehicles({ filters = {}, limit = 8, cursor = 1, signal, mergeDefaults = false }) {
     // ✅ Construir parámetros usando la misma función que en producción
+    // Los rangos que están en su posición inicial NO se mandan.
+    //
+    // Antes iba `includeDefaultRanges: true`, que los mandaba siempre. El
+    // formulario guarda los tres rangos aunque el visitante no los toque,
+    // así que al filtrar por año también viajaba "precio desde 5.000.000":
+    // un filtro que nadie pidió. Y como ese mínimo no coincide con el
+    // inventario real, borraba autos válidos y podía dejar la lista vacía.
+    //
+    // "Rango completo" y "sin filtrar" son lo mismo, así que omitirlo no
+    // cambia el resultado: solo deja de esconder autos.
     const urlParams = buildSearchParams(filters, {
-      includeDefaultRanges: true,
       mergeDefaults,
     })
     

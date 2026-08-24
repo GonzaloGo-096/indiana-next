@@ -1,8 +1,8 @@
 "use client";
 
 import { memo, useCallback } from "react";
-import { formatPrice } from "../../utils/formatters";
-import { getModelo } from "../../data/modelos";
+import { formatPrice } from "@/utils/formatters";
+import { getModelo } from "@/data/modelos";
 import TrackedLink from "@/components/analytics/TrackedLink";
 import {
   EVENTS,
