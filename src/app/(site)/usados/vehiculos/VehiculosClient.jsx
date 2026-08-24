@@ -97,7 +97,6 @@ export default function VehiculosClient({
 
   const filterFormRef = useRef(null);
   const sortButtonRef = useRef(null);
-  const sortButtonRefDesktop = useRef(null);
   const brandsCarouselRef = useRef(null);
   const brandsCarouselScrollRestoreRef = useRef(null);
 
@@ -276,19 +275,6 @@ export default function VehiculosClient({
             />
           </div>
 
-          <ActionButtons
-            onFilterClick={handleFilterClick}
-            onSortClick={handleSortClick}
-            onSortChange={handleSortChange}
-            onCloseSortDropdown={handleCloseSortDropdown}
-            selectedSort={currentSort}
-            isSortDisabled={isSortDisabled}
-            isSortDropdownOpen={isSortDropdownOpen}
-            sortButtonRef={sortButtonRef}
-            filtersPanelOpen={stripFiltersOpen}
-            className={styles.actionButtons}
-            actionButtonClassName={styles.actionButton}
-          />
         </div>
 
         <ActionButtons
@@ -299,9 +285,9 @@ export default function VehiculosClient({
           selectedSort={currentSort}
           isSortDisabled={isSortDisabled}
           isSortDropdownOpen={isSortDropdownOpen}
-          sortButtonRef={sortButtonRefDesktop}
+          sortButtonRef={sortButtonRef}
           filtersPanelOpen={stripFiltersOpen}
-          className={styles.actionButtonsDesktop}
+          className={styles.actionButtons}
           actionButtonClassName={styles.actionButton}
         />
       </div>
