@@ -1,17 +1,6 @@
-/**
- * Footer.module.css - Diseño mobile-first profesional
- * 
- * Características:
- * - Mobile-first responsive design
- * - Fondo oscuro profesional
- * - Variables del design system
- * - Layout profesional en desktop: logo + módulos redistribuidos
- * 
- * @author Indiana Usados
- * @version 5.0.0 - Redistribución profesional desktop
- */
+/* El marco del footer: fondo, logo, grilla de columnas y copyright.
+   Mobile primero; en escritorio las tres columnas van en grilla. */
 
-/* ===== FOOTER PRINCIPAL (MOBILE-FIRST) ===== */
 .footer {
   background-color: var(--color-surface-dark);
   color: var(--color-white);
@@ -20,14 +9,15 @@
   position: relative;
 }
 
-/* ===== CONTENEDOR - nombre único para evitar conflictos con .container global ===== */
+/* Nombre propio para no chocar con la clase .container global. */
 .footerContainer {
   max-width: var(--container-max-width);
   margin: 0 auto;
   padding: 0 var(--spacing-4);
 }
 
-/* ===== LOGO ENCABEZADO ===== */
+/* ===== LOGO ===== */
+
 .header {
   display: flex;
   justify-content: center;
@@ -49,7 +39,23 @@
   opacity: 1;
 }
 
+/* ===== GRILLA DE COLUMNAS ===== */
+
+.modulesWrapper {
+  width: 100%;
+  margin-bottom: var(--spacing-6);
+  padding-top: 2rem;
+}
+
+.modulesGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+
 /* ===== COPYRIGHT ===== */
+
 .bottom {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: var(--spacing-5);
@@ -67,28 +73,18 @@
   opacity: 0.7;
 }
 
-/* ===== RESPONSIVE - TABLET ===== */
 @media (min-width: 640px) {
   .footer {
     padding: 1.5rem 0 2rem 0;
   }
-  
+
   .footerContainer {
     padding: 0 var(--spacing-6);
   }
-  
-  .header {
-    margin-bottom: var(--spacing-6);
-    padding-bottom: var(--spacing-6);
-  }
-  
+
+  /* Desde tablet el logo del footer se oculta: ya está el del encabezado. */
   .logo {
     display: none;
-  }
-  
-  .bottom {
-    padding-top: var(--spacing-5);
-    margin-top: var(--spacing-6);
   }
 
   .copyright {
@@ -96,7 +92,14 @@
   }
 }
 
-/* ===== RESPONSIVE - DESKTOP (≥992px) - Redistribución profesional ===== */
+@media (min-width: 768px) {
+  .modulesGrid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 0.9fr;
+    gap: 2rem 1.5rem;
+  }
+}
+
 @media (min-width: 992px) {
   .footer {
     padding: 2.5rem 0 2rem 0;
@@ -110,8 +113,15 @@
     display: none;
   }
 
+  .modulesWrapper {
+    padding-top: 0;
+  }
+
+  .modulesGrid {
+    gap: 2rem 2rem;
+  }
+
   .bottom {
-    grid-area: bottom;
     padding-top: var(--spacing-6);
     margin-top: var(--spacing-4);
   }
@@ -120,4 +130,3 @@
     font-size: 1rem;
   }
 }
-
