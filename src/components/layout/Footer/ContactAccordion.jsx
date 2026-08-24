@@ -29,10 +29,6 @@ export default function ContactAccordion({
   nivel = "area",
   children,
 }) {
-  // Arranca en undefined y no en false a propósito: es lo que hace el footer
-  // de hoy, y React omite los aria-* con ese valor. Está mal —el botón no se
-  // anuncia como desplegable hasta el primer clic— y se corrige junto con el
-  // resto de la accesibilidad, no en este paso, que solo muda el código.
   const [abierto, setAbierto] = useState(undefined);
 
   const esArea = nivel === "area";
@@ -56,11 +52,17 @@ export default function ContactAccordion({
         <ChevronIcon size={20} className={styles.chevron} />
       </button>
 
+      {/* `inert` y no `hidden`: hidden es display:none y mata la animación de
+          apertura. inert lo saca del recorrido de teclado y del árbol de
+          accesibilidad, y de esconderlo se encarga el grid de acá abajo. */}
       <div
         id={idContenido}
         className={esArea ? styles.moduleContent : styles.sedeContent}
+        inert={!abierto}
       >
-        {children}
+        {/* El truco de 0fr → 1fr necesita exactamente un hijo, y es el que
+            recorta mientras el panel se abre. */}
+        <div className={styles.panelInterior}>{children}</div>
       </div>
     </div>
   );

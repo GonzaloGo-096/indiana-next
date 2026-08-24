@@ -7,16 +7,14 @@
  * sin que se note. El acordeón se mantiene también en escritorio: eso es a
  * propósito y está dicho en la regla de 992px del CSS.
  *
- * Los dos últimos casos son distintos: describen cómo DEBERÍA comportarse el
- * acordeón y hoy fallan. Están marcados con `it.fails` para no romper la puerta
- * de calidad. Uno es el hallazgo B1 —el panel cerrado sigue siendo enfocable—;
- * el otro apareció escribiendo estas pruebas: el `aria-expanded` no existe
- * hasta el primer clic, porque el estado arranca en undefined y React omite los
- * aria-* con ese valor.
+ * Queda un caso marcado con `it.fails`: describe cómo debería comportarse el
+ * acordeón y todavía no es así. El `aria-expanded` no existe hasta el primer
+ * clic, porque el estado arranca en undefined y React omite los aria-* con ese
+ * valor.
  *
- * `it.fails` es a propósito y no `it.todo`: cuando se arreglen, estos casos van
- * a empezar a fallar y obligan a convertirlos en `it` normales. Un pendiente
- * que se cobra solo.
+ * `it.fails` es a propósito y no `it.todo`: cuando se arregle, el caso va a
+ * empezar a fallar y obliga a convertirlo en un `it` normal. Un pendiente que
+ * se cobra solo — ya pasó con el del recorrido de teclado.
  */
 
 import { describe, it, expect, vi, afterEach } from "vitest";
@@ -56,10 +54,9 @@ describe("acordeón del footer", () => {
   it("arranca sin declarar aria-expanded, hasta el primer clic", () => {
     const { getByRole } = render(<Footer />);
 
-    // El estado inicial es `openModules[id]`, o sea undefined, y React omite
-    // los aria-* con valor undefined. Resultado: el boton no se anuncia como
-    // desplegable hasta que alguien lo toca. Se arregla junto con B2; mientras
-    // tanto queda fijado para que el rewrite no lo empeore sin querer.
+    // El estado arranca en undefined y React omite los aria-* con ese valor.
+    // Resultado: el boton no se anuncia como desplegable hasta que alguien lo
+    // toca. Queda fijado hasta que se corrija, para que no empeore sin querer.
     for (const nombre of MODULOS) {
       const boton = getByRole("button", { name: nombre });
       expect(boton.hasAttribute("aria-expanded")).toBe(false);
@@ -126,8 +123,32 @@ describe("acordeón del footer", () => {
     expect(sede.hasAttribute("aria-expanded")).toBe(false);
   });
 
+  it("no deja los enlaces del panel cerrado en el recorrido de teclado", () => {
+    const { container } = render(<Footer />);
+
+    // Todo cerrado: ningún enlace de contacto puede recibir el foco. Antes el
+    // panel se cerraba solo con `max-height: 0`, así que los 16 enlaces
+    // seguían siendo enfocables y el foco desaparecía de la pantalla.
+    const enlacesOcultos = [...container.querySelectorAll("a[href]")].filter(
+      (a) => {
+        const href = a.getAttribute("href");
+        return (
+          href.startsWith("tel:") ||
+          href.startsWith("https://api.whatsapp.com") ||
+          href.startsWith("https://maps.google.com") ||
+          href.startsWith("https://instagram.com")
+        );
+      },
+    );
+
+    expect(enlacesOcultos).toHaveLength(16);
+    for (const enlace of enlacesOcultos) {
+      expect(enlace.closest("[inert]")).not.toBeNull();
+    }
+  });
+
   // ---------------------------------------------------------------------
-  // Pendientes: se arreglan en el rewrite y ahi estos pasan a `it` normal
+  // Pendiente: se arregla mas adelante y ahi pasa a `it` normal
   // ---------------------------------------------------------------------
 
   it.fails("declara aria-expanded=false desde el arranque", () => {
@@ -139,30 +160,4 @@ describe("acordeón del footer", () => {
     }
   });
 
-  it.fails(
-    "no deja los enlaces del panel cerrado en el recorrido de teclado",
-    () => {
-      const { container } = render(<Footer />);
-
-      // Todo cerrado: ningún enlace de contacto debería poder recibir el foco.
-      // Hoy el panel se cierra solo con `max-height: 0`, así que los 16 enlaces
-      // siguen siendo enfocables y el foco desaparece de la pantalla al tabular.
-      const enlacesOcultos = [...container.querySelectorAll("a[href]")].filter(
-        (a) => {
-          const href = a.getAttribute("href");
-          return (
-            href.startsWith("tel:") ||
-            href.startsWith("https://api.whatsapp.com") ||
-            href.startsWith("https://maps.google.com") ||
-            href.startsWith("https://instagram.com")
-          );
-        },
-      );
-
-      for (const enlace of enlacesOcultos) {
-        const panel = enlace.closest("[hidden], [inert]");
-        expect(panel).not.toBeNull();
-      }
-    },
-  );
 });

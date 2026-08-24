@@ -45,14 +45,14 @@
 }
 
 .moduleContent {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease-out;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease-out;
 }
 
 .moduleOpen .moduleContent {
-  max-height: 800px;
-  transition: max-height 0.35s ease-in;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.35s ease-in;
 }
 
 /* ===== NIVEL SEDE ===== */
@@ -97,14 +97,21 @@
 }
 
 .sedeContent {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease-out;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease-out;
 }
 
 .sedeOpen .sedeContent {
-  max-height: 400px;
-  transition: max-height 0.35s ease-in;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.35s ease-in;
+}
+
+/* El hijo unico de cualquiera de los dos paneles: es el que recorta mientras
+   la fila crece de 0fr a 1fr. min-height 0 es lo que deja que llegue a cero. */
+.panelInterior {
+  overflow: hidden;
+  min-height: 0;
 }
 
 /* ===== FLECHA ===== */
@@ -138,10 +145,6 @@
 
   .chevron {
     display: block;
-  }
-
-  .moduleOpen .moduleContent {
-    overflow: visible;
   }
 }
 
