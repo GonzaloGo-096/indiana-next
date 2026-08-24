@@ -35,7 +35,7 @@ const Footer = () => {
 
             {NAVEGACION_FOOTER.map((columna) => (
               <FooterColumn key={columna.id} titulo={columna.titulo}>
-                <FooterNav enlaces={columna.enlaces} />
+                <FooterNav titulo={columna.titulo} enlaces={columna.enlaces} />
               </FooterColumn>
             ))}
           </div>

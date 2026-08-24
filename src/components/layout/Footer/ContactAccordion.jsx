@@ -29,7 +29,7 @@ export default function ContactAccordion({
   nivel = "area",
   children,
 }) {
-  const [abierto, setAbierto] = useState(undefined);
+  const [abierto, setAbierto] = useState(false);
 
   const esArea = nivel === "area";
   const idContenido = `${esArea ? "module" : "sede"}-content-${id}`;
@@ -39,18 +39,23 @@ export default function ContactAccordion({
 
   return (
     <div className={clasesRaiz.join(" ")}>
-      <button
-        type="button"
-        className={esArea ? styles.moduleHeader : styles.sedeHeader}
-        onClick={() => setAbierto((previo) => !previo)}
-        aria-expanded={abierto}
-        aria-controls={idContenido}
-      >
-        <h4 className={esArea ? styles.moduleTitle : styles.sedeTitle}>
-          {titulo}
-        </h4>
-        <ChevronIcon size={20} className={styles.chevron} />
-      </button>
+      {/* El encabezado envuelve al boton y no al reves. Asi el titulo sigue
+          apareciendo en la lista de encabezados del lector de pantalla y el
+          boton queda como lo que es: el control que abre y cierra. */}
+      <h4 className={styles.encabezado}>
+        <button
+          type="button"
+          className={esArea ? styles.moduleHeader : styles.sedeHeader}
+          onClick={() => setAbierto((previo) => !previo)}
+          aria-expanded={abierto}
+          aria-controls={idContenido}
+        >
+          <span className={esArea ? styles.moduleTitle : styles.sedeTitle}>
+            {titulo}
+          </span>
+          <ChevronIcon size={20} className={styles.chevron} />
+        </button>
+      </h4>
 
       {/* `inert` y no `hidden`: hidden es display:none y mata la animación de
           apertura. inert lo saca del recorrido de teclado y del árbol de

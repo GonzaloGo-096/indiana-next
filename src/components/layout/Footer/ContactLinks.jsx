@@ -22,8 +22,14 @@ const IMAGENES = {
   maps: "/assets/redes/Google-Maps-logo-1.webp",
 };
 
-/** El teléfono es el único que se dibuja con un SVG y no con una imagen. */
-function Icono({ nombre, alt }) {
+/**
+ * El teléfono es el único que se dibuja con un SVG y no con una imagen.
+ *
+ * El ícono va sin texto alternativo a propósito: es decorativo, y el nombre
+ * accesible ya lo pone el enlace que lo envuelve. Con los dos, el lector de
+ * pantalla anunciaba "WhatsApp, se abre en nueva ventana, WhatsApp".
+ */
+function Icono({ nombre }) {
   if (nombre === "telefono") {
     return <PhoneIcon size={42} className={styles.iconSvg} />;
   }
@@ -32,9 +38,7 @@ function Icono({ nombre, alt }) {
   if (nombre === "maps") clases.push(styles.iconImageMaps);
   if (nombre === "instagram") clases.push(styles.iconImageInstagram);
 
-  return (
-    <img src={IMAGENES[nombre]} alt={alt} className={clases.join(" ")} />
-  );
+  return <img src={IMAGENES[nombre]} alt="" className={clases.join(" ")} />;
 }
 
 /** Enlace que sale del sitio: no se trackea como lead. */
@@ -48,7 +52,7 @@ function EnlaceExterno({ href, texto, icono }) {
         rel="noopener noreferrer"
         aria-label={`${texto} (se abre en nueva ventana)`}
       >
-        <Icono nombre={icono} alt={texto} />
+        <Icono nombre={icono} />
       </a>
     </li>
   );
@@ -70,7 +74,7 @@ export default function ContactLinks({ sede }) {
           className={styles.iconLink}
           ariaLabel="WhatsApp (se abre en nueva ventana)"
         >
-          <Icono nombre="whatsapp" alt="WhatsApp" />
+          <Icono nombre="whatsapp" />
         </FooterLeadLink>
       </li>
 
@@ -88,7 +92,7 @@ export default function ContactLinks({ sede }) {
           className={styles.iconLink}
           ariaLabel={sede.telefono.texto}
         >
-          <Icono nombre="telefono" alt={sede.telefono.texto} />
+          <Icono nombre="telefono" />
         </FooterLeadLink>
       </li>
 

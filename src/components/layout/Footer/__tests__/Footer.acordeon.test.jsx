@@ -7,14 +7,10 @@
  * sin que se note. El acordeón se mantiene también en escritorio: eso es a
  * propósito y está dicho en la regla de 992px del CSS.
  *
- * Queda un caso marcado con `it.fails`: describe cómo debería comportarse el
- * acordeón y todavía no es así. El `aria-expanded` no existe hasta el primer
- * clic, porque el estado arranca en undefined y React omite los aria-* con ese
- * valor.
- *
- * `it.fails` es a propósito y no `it.todo`: cuando se arregle, el caso va a
- * empezar a fallar y obliga a convertirlo en un `it` normal. Un pendiente que
- * se cobra solo — ya pasó con el del recorrido de teclado.
+ * Los dos pendientes que este archivo llevaba marcados con `it.fails` ya se
+ * cobraron solos: el panel cerrado salió del recorrido de teclado y el
+ * aria-expanded se declara desde el arranque. Los dos casos quedaron como
+ * pruebas normales.
  */
 
 import { describe, it, expect, vi, afterEach } from "vitest";
@@ -51,15 +47,15 @@ const MODULOS = [
 ];
 
 describe("acordeón del footer", () => {
-  it("arranca sin declarar aria-expanded, hasta el primer clic", () => {
+  it("declara aria-expanded=false desde el arranque", () => {
     const { getByRole } = render(<Footer />);
 
-    // El estado arranca en undefined y React omite los aria-* con ese valor.
-    // Resultado: el boton no se anuncia como desplegable hasta que alguien lo
-    // toca. Queda fijado hasta que se corrija, para que no empeore sin querer.
+    // Sin esto el botón no se anuncia como desplegable hasta que alguien lo
+    // toca: el estado arrancaba en undefined y React omite los aria-* con ese
+    // valor.
     for (const nombre of MODULOS) {
       const boton = getByRole("button", { name: nombre });
-      expect(boton.hasAttribute("aria-expanded")).toBe(false);
+      expect(boton.getAttribute("aria-expanded")).toBe("false");
     }
   });
 
@@ -108,7 +104,7 @@ describe("acordeón del footer", () => {
     expect(queryByRole("button", { name: "Sede Yerba Buena - Tucumán" })).toBeTruthy();
 
     const sede = getByRole("button", { name: "Sede San Miguel de Tucumán" });
-    expect(sede.hasAttribute("aria-expanded")).toBe(false);
+    expect(sede.getAttribute("aria-expanded")).toBe("false");
 
     fireEvent.click(sede);
     expect(sede.getAttribute("aria-expanded")).toBe("true");
@@ -120,7 +116,7 @@ describe("acordeón del footer", () => {
     fireEvent.click(getByRole("button", { name: "Peugeot oficial | 0 km" }));
 
     const sede = getByRole("button", { name: "Sede San Miguel de Tucumán" });
-    expect(sede.hasAttribute("aria-expanded")).toBe(false);
+    expect(sede.getAttribute("aria-expanded")).toBe("false");
   });
 
   it("no deja los enlaces del panel cerrado en el recorrido de teclado", () => {
@@ -144,19 +140,6 @@ describe("acordeón del footer", () => {
     expect(enlacesOcultos).toHaveLength(16);
     for (const enlace of enlacesOcultos) {
       expect(enlace.closest("[inert]")).not.toBeNull();
-    }
-  });
-
-  // ---------------------------------------------------------------------
-  // Pendiente: se arregla mas adelante y ahi pasa a `it` normal
-  // ---------------------------------------------------------------------
-
-  it.fails("declara aria-expanded=false desde el arranque", () => {
-    const { getByRole } = render(<Footer />);
-
-    for (const nombre of MODULOS) {
-      const boton = getByRole("button", { name: nombre });
-      expect(boton.getAttribute("aria-expanded")).toBe("false");
     }
   });
 

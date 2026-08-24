@@ -7,6 +7,14 @@
   width: 100%;
 }
 
+/* El h4 solo existe para que el título cuente como encabezado: todo el
+   aspecto lo pone el botón que lleva adentro. */
+.encabezado {
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
 .moduleHeader {
   display: flex;
   align-items: center;
