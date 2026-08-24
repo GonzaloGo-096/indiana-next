@@ -123,7 +123,22 @@ function revisar(r, esperado, esDinamica) {
   if (r.bytes < MIN_BYTES) motivos.push(`solo ${r.bytes} bytes`);
 
   // Señal 1: rastro de error de renderizado.
-  if (/\bdigest\b/.test(r.html)) motivos.push("hay un error de renderizado en el HTML");
+  //
+   // OJO: no alcanza con buscar "digest". Next lo inyecta también en dos
+   // situaciones NORMALES que no son fallas:
+   //   · "Bail out to client-side rendering": un componente cargado con
+   //     dynamic({ ssr: false }), que es una decisión, no un error.
+   //   · "NEXT_REDIRECT": una redirección deliberada de la página.
+   //
+   // Con la versión anterior, una ficha de auto perfectamente sana daba FALLA.
+   // Se descuentan esos dos casos y se marca solo lo que sobra.
+  const rastros = (r.html.match(/digest/g) || []).length;
+  const benignos =
+    (r.html.match(/Bail out to client-side rendering/g) || []).length +
+    (r.html.match(/NEXT_REDIRECT/g) || []).length;
+  if (rastros > 0 && benignos === 0) {
+    motivos.push("hay un error de renderizado en el HTML");
+  }
 
   // Señal 2: el título.
   const t = titulo(r.html);
