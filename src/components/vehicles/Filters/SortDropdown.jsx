@@ -77,26 +77,37 @@ const SortDropdown = memo(
     const dropdownRef = useRef(null);
     const [coords, setCoords] = useState(null);
 
-    // ── Visibility guard ──────────────────────────────────────────────────
-    // Si el trigger está dentro de un contenedor display:none (ej. la instancia
-    // mobile cuando está activo el layout desktop), offsetParent === null.
-    // En ese caso no renderizamos nada ni registramos listeners.
-    const triggerVisible =
-      triggerRef?.current != null &&
-      triggerRef.current.offsetParent !== null;
+    // Antes acá había un guardia que averiguaba si el botón estaba dentro de un
+    // contenedor oculto. Existía porque la botonera se dibujaba dos veces —una
+    // para celular y otra para escritorio— y este desplegable tenía que saber
+    // cuál de las dos era la visible. Para averiguarlo leía una referencia
+    // durante el dibujado, que es justo lo que React no permite: de ahí salían
+    // los 8 errores que arrastraba este archivo.
+    //
+    // La botonera ahora es una sola, así que el botón siempre está visible.
 
     // ── Posición inicial (sincrónica, antes del primer paint) ─────────────
+    //
+    // Guardar la posición en un estado dentro de un efecto es lo que la regla
+    // react-hooks/set-state-in-effect desaconseja, y con razón: puede encadenar
+    // dibujados. Acá no hay alternativa: para saber dónde poner el desplegable
+    // hay que medir el botón, y medir exige que el navegador ya lo haya
+    // dibujado. useLayoutEffect corre antes de que la pantalla se pinte, así
+    // que el usuario no ve ningún salto.
+    //
+    // Solo ocurre al abrir el menú, no en cada dibujado.
     useLayoutEffect(() => {
-      if (!isOpen || !triggerVisible) {
+      if (!isOpen) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setCoords(null);
         return;
       }
       setCoords(computeCoords(triggerRef.current));
-    }, [isOpen, triggerVisible]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [isOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // ── Cerrar en scroll / resize ─────────────────────────────────────────
     useEffect(() => {
-      if (!isOpen || !triggerVisible) return;
+      if (!isOpen) return;
       const handleScroll = () => onClose();
       const handleResize = () => {
         if (triggerRef?.current) {
@@ -109,11 +120,11 @@ const SortDropdown = memo(
         window.removeEventListener("scroll", handleScroll);
         window.removeEventListener("resize", handleResize);
       };
-    }, [isOpen, triggerVisible, onClose, triggerRef]);
+    }, [isOpen, onClose, triggerRef]);
 
     // ── ESC → cerrar y devolver foco ──────────────────────────────────────
     useEffect(() => {
-      if (!isOpen || !triggerVisible) return;
+      if (!isOpen) return;
       const handleEscape = (e) => {
         if (e.key === "Escape") {
           onClose();
@@ -122,11 +133,11 @@ const SortDropdown = memo(
       };
       document.addEventListener("keydown", handleEscape);
       return () => document.removeEventListener("keydown", handleEscape);
-    }, [isOpen, triggerVisible, onClose, triggerRef]);
+    }, [isOpen, onClose, triggerRef]);
 
     // ── Click fuera → cerrar ──────────────────────────────────────────────
     useEffect(() => {
-      if (!isOpen || !triggerVisible) return;
+      if (!isOpen) return;
       const handleMouseDown = (e) => {
         const onDropdown = dropdownRef.current?.contains(e.target);
         const onTrigger = triggerRef?.current?.contains(e.target);
@@ -134,7 +145,7 @@ const SortDropdown = memo(
       };
       document.addEventListener("mousedown", handleMouseDown);
       return () => document.removeEventListener("mousedown", handleMouseDown);
-    }, [isOpen, triggerVisible, onClose, triggerRef]);
+    }, [isOpen, onClose, triggerRef]);
 
     // ── Handlers de selección ─────────────────────────────────────────────
     const handleSelect = (value) => {
@@ -150,7 +161,7 @@ const SortDropdown = memo(
     };
 
     // ── Guard de renderizado ──────────────────────────────────────────────
-    if (!isOpen || !triggerVisible || !coords) return null;
+    if (!isOpen || !coords) return null;
 
     // ── Portal ────────────────────────────────────────────────────────────
     return createPortal(
