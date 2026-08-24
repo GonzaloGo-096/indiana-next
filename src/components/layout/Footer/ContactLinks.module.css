@@ -120,3 +120,12 @@
     gap: var(--spacing-3);
   }
 }
+
+/* Quien pidió menos movimiento al sistema no quiere que esto se anime. */
+@media (prefers-reduced-motion: reduce) {
+  .iconLink,
+  .iconImage,
+  .iconSvg {
+    transition: none;
+  }
+}

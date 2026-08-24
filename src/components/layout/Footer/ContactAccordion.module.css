@@ -166,3 +166,14 @@
     letter-spacing: 0.4px;
   }
 }
+
+/* Quien pidió menos movimiento al sistema no quiere que esto se anime. */
+@media (prefers-reduced-motion: reduce) {
+  .moduleContent,
+  .moduleOpen .moduleContent,
+  .sedeContent,
+  .sedeOpen .sedeContent,
+  .chevron {
+    transition: none;
+  }
+}

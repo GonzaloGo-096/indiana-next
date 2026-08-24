@@ -130,3 +130,10 @@
     font-size: 1rem;
   }
 }
+
+/* Quien pidió menos movimiento al sistema no quiere que esto se anime. */
+@media (prefers-reduced-motion: reduce) {
+  .logo {
+    transition: none;
+  }
+}

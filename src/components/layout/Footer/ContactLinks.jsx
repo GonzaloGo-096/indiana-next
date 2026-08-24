@@ -16,10 +16,27 @@ import styles from "./ContactLinks.module.css";
  * aspecto, pero es una decisión de diseño que conviene revisar.
  */
 
+/**
+ * Las medidas son las del archivo, no las que se ven: el CSS encaja cada una en
+ * una caja cuadrada con object-fit. Van igual porque son lo que el navegador
+ * necesita para reservar el espacio si la hoja de estilos todavía no llegó.
+ */
 const IMAGENES = {
-  whatsapp: "/assets/redes/Whatsapp_logo_PNG8.webp",
-  instagram: "/assets/redes/Instagram_logo_PNG8.webp",
-  maps: "/assets/redes/Google-Maps-logo-1.webp",
+  whatsapp: {
+    src: "/assets/redes/Whatsapp_logo_PNG8.webp",
+    ancho: 256,
+    alto: 182,
+  },
+  instagram: {
+    src: "/assets/redes/Instagram_logo_PNG8.webp",
+    ancho: 256,
+    alto: 256,
+  },
+  maps: {
+    src: "/assets/redes/Google-Maps-logo-1.webp",
+    ancho: 256,
+    alto: 144,
+  },
 };
 
 /**
@@ -38,7 +55,20 @@ function Icono({ nombre }) {
   if (nombre === "maps") clases.push(styles.iconImageMaps);
   if (nombre === "instagram") clases.push(styles.iconImageInstagram);
 
-  return <img src={IMAGENES[nombre]} alt="" className={clases.join(" ")} />;
+  const imagen = IMAGENES[nombre];
+
+  return (
+    <img
+      src={imagen.src}
+      alt=""
+      width={imagen.ancho}
+      height={imagen.alto}
+      // Los dieciséis íconos están debajo del pliegue y dentro de paneles
+      // cerrados: no hay motivo para bajarlos con el resto de la página.
+      loading="lazy"
+      className={clases.join(" ")}
+    />
+  );
 }
 
 /** Enlace que sale del sitio: no se trackea como lead. */
