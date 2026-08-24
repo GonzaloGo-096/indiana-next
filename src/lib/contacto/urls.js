@@ -38,15 +38,3 @@ export function urlInstagram(usuario) {
 export function urlMapa(direccion) {
   return `https://maps.google.com/maps?q=${encodeURIComponent(direccion)}`;
 }
-
-/**
- * El href de un teléfono es su E.164 y nada más: no se calcula, se declara en
- * `config/contacto`. Esta función existe para que el llamador no tenga que
- * acordarse de concatenar el esquema.
- *
- * @param {{e164: string}} telefono
- * @returns {string}
- */
-export function hrefTelefono({ e164 }) {
-  return `tel:${e164}`;
-}

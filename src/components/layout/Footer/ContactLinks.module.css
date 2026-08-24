@@ -1,0 +1,122 @@
+/* La fila horizontal de íconos de una sede. */
+
+.iconsList {
+  list-style: none;
+  margin: 0;
+  /* Sin sangría izquierda: es la primera columna y arranca contra el borde. */
+  padding: var(--spacing-1) var(--spacing-2) var(--spacing-3) 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: var(--spacing-2);
+  align-items: center;
+  justify-content: center;
+}
+
+.moduleItem {
+  margin: 0;
+}
+
+.iconLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: var(--border-radius-sm);
+  transition: background-color var(--transition-fast);
+  cursor: pointer;
+  min-height: 24px;
+  min-width: 24px;
+}
+
+.iconLink:hover,
+.iconLink:focus {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.iconLink:focus {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+}
+
+/* ===== ÍCONOS ===== */
+
+.iconImage {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  /* Estado inicial explicito del filtro que anima en hover. */
+  filter: brightness(1);
+  transition:
+    transform var(--transition-fast),
+    filter var(--transition-fast);
+  display: block;
+}
+
+/* Las dos clases juntas ganan por especificidad. Antes esto se resolvía con
+   !important contra .iconImage, que tiene el mismo peso. */
+.iconImage.iconImageInstagram {
+  width: 42px;
+  height: 42px;
+}
+
+.iconImageMaps {
+  width: 62.5px;
+  height: 62.5px;
+}
+
+.iconSvg {
+  width: 42px;
+  height: 42px;
+  /* Verdes de la marca Google, no de Indiana: por eso no salen de un token. */
+  color: #34a853;
+  transition:
+    transform var(--transition-fast),
+    color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.iconLink:hover .iconImage,
+.iconLink:focus .iconImage {
+  transform: scale(1.1);
+  filter: brightness(1.1);
+}
+
+.iconLink:hover .iconSvg,
+.iconLink:focus .iconSvg {
+  transform: scale(1.1);
+  color: #2e7d32;
+}
+
+@media (min-width: 768px) {
+  .iconsList {
+    justify-content: flex-start;
+  }
+
+  .iconImage {
+    width: 44px;
+    height: 44px;
+  }
+
+  .iconImage.iconImageInstagram {
+    width: 38px;
+    height: 38px;
+  }
+
+  .iconImageMaps {
+    width: 56px;
+    height: 56px;
+  }
+
+  .iconSvg {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (min-width: 992px) {
+  .iconsList {
+    padding: var(--spacing-1) 0 0;
+    gap: var(--spacing-3);
+  }
+}

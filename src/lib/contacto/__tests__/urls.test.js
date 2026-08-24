@@ -10,12 +10,7 @@
 
 import { describe, it, expect } from "vitest";
 import { SEDES } from "@/config/contacto";
-import {
-  urlWhatsApp,
-  urlInstagram,
-  urlMapa,
-  hrefTelefono,
-} from "@/lib/contacto/urls";
+import { urlWhatsApp, urlInstagram, urlMapa } from "@/lib/contacto/urls";
 
 describe("urlWhatsApp", () => {
   it("arma las cuatro que publica el footer", () => {
@@ -49,25 +44,6 @@ describe("urlWhatsApp", () => {
     expect(urlWhatsApp({ phone: "543816295959", mensaje: "   " })).toBe(
       "https://api.whatsapp.com/send?phone=543816295959",
     );
-  });
-});
-
-describe("hrefTelefono", () => {
-  it("usa el E.164 declarado, sin el 0 del prefijo nacional", () => {
-    expect(hrefTelefono(SEDES.peugeotSanMiguel.telefono)).toBe(
-      "tel:+543814212000",
-    );
-    expect(hrefTelefono(SEDES.usados.telefono)).toBe("tel:+543812313107");
-    expect(hrefTelefono(SEDES.posventa.telefono)).toBe("tel:+543814347700");
-  });
-
-  it("no deriva el número del texto que se muestra", () => {
-    // Este es el error que se está evitando: sacar los dígitos de
-    // "(0381) 421-2000" y anteponerle +54 da un número que no existe.
-    const derivadoAMano = `tel:+54${SEDES.usados.telefono.texto.replace(/[^\d]/g, "")}`;
-
-    expect(derivadoAMano).toBe("tel:+5403812313107");
-    expect(hrefTelefono(SEDES.usados.telefono)).not.toBe(derivadoAMano);
   });
 });
 

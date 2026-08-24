@@ -1,0 +1,157 @@
+/* Acordeón de contacto, en sus dos niveles: área y sede.
+   El acordeón se mantiene también en escritorio, a propósito. */
+
+/* ===== NIVEL ÁREA ===== */
+
+.module {
+  width: 100%;
+}
+
+.moduleHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* La flecha va al lado del texto y el grupo entero queda centrado. */
+  gap: var(--spacing-2);
+  width: 100%;
+  /* Sin sangría izquierda: es la primera columna y arranca contra el borde. */
+  padding: var(--spacing-3) var(--spacing-2) var(--spacing-3) 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.moduleHeader:focus {
+  outline: none;
+}
+
+.moduleHeader:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: -2px;
+  border-radius: var(--border-radius-sm);
+}
+
+.moduleTitle {
+  font-family: var(--font-condensed);
+  font-size: 1.125rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-white);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  line-height: 1.3;
+}
+
+.moduleContent {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.moduleOpen .moduleContent {
+  max-height: 800px;
+  transition: max-height 0.35s ease-in;
+}
+
+/* ===== NIVEL SEDE ===== */
+
+.sede {
+  width: 100%;
+}
+
+.sedeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  width: 100%;
+  padding: var(--spacing-2) var(--spacing-2) var(--spacing-2) 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sedeHeader:focus {
+  outline: none;
+}
+
+.sedeHeader:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: -2px;
+  border-radius: var(--border-radius-sm);
+}
+
+.sedeTitle {
+  font-family: var(--font-condensed);
+  font-size: 1rem;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-neutral-100);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+}
+
+.sedeContent {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out;
+}
+
+.sedeOpen .sedeContent {
+  max-height: 400px;
+  transition: max-height 0.35s ease-in;
+}
+
+/* ===== FLECHA ===== */
+
+.chevron {
+  color: var(--color-neutral-400);
+  transition: transform 0.25s ease;
+  flex-shrink: 0;
+}
+
+.moduleOpen .moduleHeader .chevron,
+.sedeOpen .sedeHeader .chevron {
+  transform: rotate(180deg);
+}
+
+@media (min-width: 768px) {
+  .module {
+    align-self: start;
+  }
+
+  .moduleHeader {
+    justify-content: flex-start;
+    text-align: left;
+    padding: var(--spacing-2) var(--spacing-2) var(--spacing-2) 0;
+  }
+
+  .sedeHeader {
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .chevron {
+    display: block;
+  }
+
+  .moduleOpen .moduleContent {
+    overflow: visible;
+  }
+}
+
+@media (min-width: 992px) {
+  .sedeHeader {
+    padding: var(--spacing-2) var(--spacing-2) var(--spacing-1) 0;
+  }
+
+  .sedeTitle {
+    font-size: 0.9375rem;
+    letter-spacing: 0.4px;
+  }
+}
