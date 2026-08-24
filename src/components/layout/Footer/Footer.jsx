@@ -1,29 +1,23 @@
-﻿/**
- * Footer - Componente de pie de página simplificado
- * 
- * Características:
- * - Logo de marca en encabezado
- * - Tres módulos informativos data-driven
- * - Grid responsive 3→1
- * - Íconos SVG optimizados
- * - Accesibilidad completa
- * - Integrado con design tokens
- * 
- * @author Indiana Usados
- * @version 3.1.0 - Agregado logo en encabezado
- */
-
 import Image from "next/image";
-import FooterModules from "./FooterModules";
+import { NAVEGACION_FOOTER } from "./footerNav";
+import FooterColumn from "./FooterColumn";
+import FooterNav from "./FooterNav";
+import ContactColumn from "./ContactColumn";
 import styles from "./Footer.module.css";
 
+/**
+ * Pie de página del sitio: logo, tres columnas y copyright.
+ *
+ * La columna de contacto sale de `config/contacto`; las otras dos, de
+ * `footerNav`. Lo único que corre en el navegador es abrir y cerrar los
+ * acordeones.
+ */
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  const anio = new Date().getFullYear();
 
   return (
     <footer className={styles.footer} id="contacto" tabIndex={-1}>
       <div className={styles.footerContainer}>
-        {/* ✅ LOGO ENCABEZADO */}
         <div className={styles.header}>
           <Image
             src="/assets/logos/logos-indiana/mobile/logo-chico-solid-fallback-transparente.webp"
@@ -35,13 +29,21 @@ const Footer = () => {
           />
         </div>
 
-        {/* ✅ MÓDULOS INFORMATIVOS */}
-        <FooterModules />
+        <div className={styles.modulesWrapper}>
+          <div className={styles.modulesGrid}>
+            <ContactColumn />
 
-        {/* ✅ LÍNEA DE COPYRIGHT */}
+            {NAVEGACION_FOOTER.map((columna) => (
+              <FooterColumn key={columna.id} titulo={columna.titulo}>
+                <FooterNav enlaces={columna.enlaces} />
+              </FooterColumn>
+            ))}
+          </div>
+        </div>
+
         <div className={styles.bottom}>
           <p className={styles.copyright}>
-            © {currentYear} Indiana Usados. Derechos reservados.
+            © {anio} Indiana Usados. Derechos reservados.
           </p>
         </div>
       </div>
@@ -50,6 +52,3 @@ const Footer = () => {
 };
 
 export default Footer;
-
-
-
