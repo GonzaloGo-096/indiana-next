@@ -1,0 +1,60 @@
+/* Las columnas Sitio y Vehículos: enlaces de texto, uno debajo del otro. */
+
+.textLinksList {
+  list-style: none;
+  margin: 0;
+  padding: var(--spacing-1) var(--spacing-2) var(--spacing-3) var(--spacing-2);
+  /* Mismo padding derecho que el título de la columna, para que el bloque
+     entero quede alineado. Los 24px son el ancho del chevron de contacto. */
+  padding-right: calc(var(--spacing-2) + 24px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  align-items: center;
+}
+
+.textLinkItem {
+  margin: 0;
+}
+
+.textLink {
+  display: block;
+  color: var(--color-neutral-200);
+  text-decoration: none;
+  font-family: var(--font-condensed);
+  font-size: clamp(1rem, 3vw, 1.125rem);
+  font-weight: var(--font-weight-normal);
+  padding: var(--spacing-1) 0;
+  transition: color var(--transition-fast);
+  line-height: 1.6;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
+}
+
+.textLink:hover,
+.textLink:focus {
+  color: var(--color-white);
+}
+
+.textLink:focus {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+  border-radius: var(--border-radius-sm);
+}
+
+@media (min-width: 768px) {
+  .textLinksList {
+    align-items: flex-start;
+  }
+}
+
+@media (min-width: 992px) {
+  .textLinksList {
+    padding: var(--spacing-1) 0 0;
+    gap: var(--spacing-1);
+  }
+
+  .textLink {
+    font-size: 1rem;
+  }
+}
