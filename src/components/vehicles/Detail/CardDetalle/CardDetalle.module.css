@@ -1201,3 +1201,40 @@
   }
 }
 
+
+/* ===== AUTO VENDIDO =====
+   Mismo criterio que la ficha del listado: el auto se muestra entero, pero no
+   puede leerse como disponible. Aca es un sello y no una cinta diagonal como en
+   la card: el carrusel tiene flechas en las esquinas y una cinta rotada se les
+   monta encima.
+
+   Va al final del archivo porque .priceSection_vendido pisa variables que
+   define .priceSection, y con especificidad pareja gana la ultima regla. */
+
+.soldBadge {
+  position: absolute;
+  top: var(--spacing-2);
+  left: var(--spacing-2);
+  z-index: 3;
+  font-size: clamp(1rem, 2.9vw, 1.25rem);
+  font-weight: 700;
+  font-family: var(--font-condensed);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  background: #e63732;
+  color: var(--color-white);
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+.priceSection_vendido {
+  --price-bg: var(--color-neutral-500);
+  --price-border: var(--color-neutral-600);
+}
+
+.priceSection_vendido .price_value {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
