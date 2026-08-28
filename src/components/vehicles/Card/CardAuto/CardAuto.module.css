@@ -707,3 +707,51 @@
     }
 }
 
+
+/* ===== AUTO VENDIDO =====
+   Un auto vendido se sigue mostrando a proposito: funciona de vidriera. Lo que
+   no puede es leerse como disponible, porque genera consultas por algo que ya
+   no esta. De ahi las tres marcas: cinta sobre la foto, foto atenuada y la
+   barra de precio en gris con el importe tachado.
+
+   Va al final del archivo a proposito: .card__image--vendido pisa a
+   .card__image--loaded, que tiene la misma especificidad, y en CSS con
+   especificidad pareja gana la ultima. Si estas reglas suben, la foto vuelve a
+   verse a todo color. */
+
+.sold_ribbon {
+  position: absolute;
+  top: 20px;
+  left: -46px;
+  z-index: 3;
+  width: 180px;
+  padding: 6px 0;
+  transform: rotate(-45deg);
+  background: #e63732;
+  color: var(--color-white);
+  text-align: center;
+  font-family: var(--font-condensed);
+  font-size: clamp(0.875rem, 2.4vw, 1rem);
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  /* La card entera es un link: la cinta no debe robarle el click */
+  pointer-events: none;
+}
+
+.card__image--vendido {
+  opacity: 0.55;
+  filter: grayscale(45%);
+}
+
+/* La barra de precio deja de ser el azul de "comprame" y pasa a gris */
+.container4_vendido {
+  --price-bg: var(--color-neutral-500);
+  --price-border: var(--color-neutral-600);
+}
+
+.container4_vendido .price_value {
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}

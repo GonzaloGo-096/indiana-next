@@ -32,6 +32,7 @@ import { getBrandLogo } from "@/utils/getBrandLogo";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
 import { getVehicleOfferDisplay } from "@/utils/vehicleOffer";
+import { getEstado, ESTADOS } from "@/utils/vehicleEstado";
 import { VehiclePrice } from "@/components/vehicles/VehiclePrice/VehiclePrice";
 import { pushEcommerceEvent } from "@/lib/analytics/dataLayer";
 import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
@@ -97,6 +98,12 @@ export const CardAuto = memo(({ auto, imagePriority = "auto", index = 0 }) => {
   }, [auto]);
 
   const offerData = useMemo(() => getVehicleOfferDisplay(auto), [auto]);
+
+  // Un auto vendido se sigue mostrando a proposito: es vidriera. Lo que cambia
+  // es que no pueda leerse como disponible (foto atenuada, precio tachado, sin
+  // el badge de oferta, que en un auto vendido seria una promesa falsa).
+  const estado = useMemo(() => getEstado(auto), [auto]);
+  const vendido = estado === ESTADOS.VENDIDO;
 
   // ✅ MEMOIZAR DATOS FORMATEADOS
   const formattedData = useMemo(() => {
@@ -188,13 +195,24 @@ export const CardAuto = memo(({ auto, imagePriority = "auto", index = 0 }) => {
       className={styles.card}
       data-testid="vehicle-card"
       data-vehicle-id={vehicleId}
+      data-estado={estado}
       onClick={handleCardClick}
-      aria-label={`Ver detalles de ${formattedData.brandModel}`}
+      aria-label={
+        vendido
+          ? `Ver detalles de ${formattedData.brandModel} (vendido)`
+          : `Ver detalles de ${formattedData.brandModel}`
+      }
     >
       <div className={styles.cardInner}>
       {/* ===== IMAGEN PRINCIPAL ===== */}
       <div className={`${styles["card__image-container"]} ${!isImageLoaded ? styles["card__image-container--loading"] : ""}`}>
-        {offerData.hasOffer && (
+        {vendido && (
+          <span className={styles.sold_ribbon} data-testid="sold-ribbon">
+            Vendido
+          </span>
+        )}
+
+        {offerData.hasOffer && !vendido && (
           <span
             className={styles.discount_badge}
             aria-label="Oportunidad de oferta"
@@ -206,7 +224,7 @@ export const CardAuto = memo(({ auto, imagePriority = "auto", index = 0 }) => {
           src={primaryImage}
           alt={altText}
           fill
-          className={`${styles["card__image"]} ${isImageLoaded ? styles["card__image--loaded"] : ""}`}
+          className={`${styles["card__image"]} ${isImageLoaded ? styles["card__image--loaded"] : ""} ${vendido ? styles["card__image--vendido"] : ""}`}
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority={imagePriority === "high"}
           loading={imagePriority === "high" ? "eager" : "lazy"}
@@ -290,7 +308,7 @@ export const CardAuto = memo(({ auto, imagePriority = "auto", index = 0 }) => {
         </div>
 
         {/* CONTENEDOR 4: Precio */}
-        <div className={styles.container4}>
+        <div className={`${styles.container4} ${vendido ? styles.container4_vendido : ""}`}>
           <VehiclePrice
             styles={styles}
             offer={offerData}
