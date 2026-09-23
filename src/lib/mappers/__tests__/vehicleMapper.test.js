@@ -102,18 +102,25 @@ describe("mapVehiclesPage — paginación", () => {
 });
 
 describe("mapVehiclesPage — respuestas rotas del backend", () => {
-  it("una respuesta vacía o nula no explota: devuelve una página vacía", () => {
-    for (const entrada of [null, undefined, {}, { allPhotos: null }]) {
-      const r = mapVehiclesPage(entrada);
-      expect(Array.isArray(r.vehicles)).toBe(true);
-      expect(r.vehicles).toHaveLength(0);
-    }
+  // Antes devolvían una página vacía: una falla del backend se mostraba como
+  // "No se encontraron vehículos". Una respuesta rota tiene que ser un error.
+  it.each([
+    ["null", null],
+    ["undefined", undefined],
+    ["cuerpo vacío parseado", ""],
+    ["sin allPhotos", { error: null }],
+    ["allPhotos null", { allPhotos: null }],
+    ["sin docs", { allPhotos: { totalDocs: 0 } }],
+    ["docs que no es lista", { allPhotos: { docs: "x" } }],
+  ])("lanza ante una respuesta rota (%s)", (_caso, entrada) => {
+    expect(() => mapVehiclesPage(entrada)).toThrow("Página de vehículos inválida");
   });
 
-  it("sin docs devuelve lista vacía y total 0", () => {
-    const r = mapVehiclesPage({ allPhotos: { totalDocs: 0 } });
+  it("una lista vacía de verdad es un resultado válido, no un error", () => {
+    const r = mapVehiclesPage({ allPhotos: { docs: [], totalDocs: 0 } });
     expect(r.vehicles).toEqual([]);
     expect(r.total).toBe(0);
+    expect(r.hasNextPage).toBe(false);
   });
 });
 

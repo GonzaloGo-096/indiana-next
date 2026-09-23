@@ -16,8 +16,11 @@ import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import { pushDataLayer } from "@/lib/analytics/dataLayer";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
-import { VEHICLE_CONSTANTS } from "@/constants/vehicles";
+import { VEHICLE_CONSTANTS, LIST_ERROR_MESSAGE } from "@/constants/vehicles";
+import { createLogger } from "@/lib/logger";
 import { useScrollRestore } from "./useScrollRestore";
+
+const log = createLogger("usados:listado");
 
 /**
  * Convierte el objeto de filtros (formato parseFilters) a params planos
@@ -270,11 +273,9 @@ export function useVehiclesList({ initialData, initialError = null }) {
         }
       } catch (err) {
         if (err.name === "AbortError" || err.name === "CanceledError") return;
-        if (process.env.NODE_ENV === "development") {
-          console.error("[useVehiclesList] Error fetching vehicles:", err);
-        }
+        log.error("No se pudo cargar el listado:", err?.message || err);
         sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_SCROLL_POSITION);
-        setError(err.message || "Error al cargar vehículos");
+        setError(LIST_ERROR_MESSAGE);
       } finally {
         if (!ac.signal.aborted) setIsLoading(false);
       }
@@ -336,11 +337,9 @@ export function useVehiclesList({ initialData, initialError = null }) {
         };
       });
     } catch (err) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("[useVehiclesList] Error fetching more vehicles:", err);
-      }
+      log.error("No se pudieron cargar más vehículos:", err?.message || err);
       sessionStorage.removeItem(STORAGE_KEYS.VEHICLES_SCROLL_POSITION);
-      setError(err.message || "Error al cargar más vehículos");
+      setError(LIST_ERROR_MESSAGE);
     } finally {
       loadMoreLockRef.current = false;
       setIsLoadingMore(false);

@@ -41,3 +41,11 @@ export const VEHICLE_CONSTANTS = {
  */
 export const getVehicleConstant = (key) => VEHICLE_CONSTANTS[key];
 
+/**
+ * Lo único que ve el visitante cuando el listado no se pudo cargar, sea cual
+ * sea la falla (backend, red, timeout, respuesta inválida). El detalle técnico
+ * va al log, nunca a la pantalla.
+ */
+export const LIST_ERROR_MESSAGE =
+  "No pudimos cargar los vehículos. Probá de nuevo en unos minutos.";
+

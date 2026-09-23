@@ -38,102 +38,79 @@ const log = createLogger("mapper:vehicle");
  *   }
  * }
  * 
+ * Si la respuesta no tiene esa forma, lanza. Antes devolvía una página vacía,
+ * y una falla del backend (cuerpo vacío, JSON sin allPhotos) se mostraba como
+ * "No se encontraron vehículos". Una lista vacía de verdad llega como
+ * { allPhotos: { docs: [] } } y sí es un resultado válido.
+ *
  * @param {Object} backendPage - Página cruda del backend
  * @param {number} currentCursor - Cursor actual (opcional)
  * @returns {Object} Página transformada: { vehicles, total, hasNextPage, nextPage }
  */
 export const mapVehiclesPage = (backendPage, currentCursor = null) => {
-  try {
-    // ✅ Extraer estructura de paginación del backend (conocemos el formato)
-    const {
-      docs = [],
-      totalDocs = 0,
-      hasNextPage = false,
-      nextPage: backendNextPage,
-    } = backendPage?.allPhotos || {};
-
-    // ✅ Mapear cada vehículo a formato frontend
-    const vehicles = docs
-      .map((v) => {
-        if (!v || typeof v !== "object") return null;
-
-        // ✅ OPTIMIZADO: Lista solo tiene fotoPrincipal y fotoHover (backend no envía fotosExtra)
-        // Extracción simple y directa - solo busca donde realmente está
-        const { principal, hover } = extractVehicleImageUrls(v);
-        const allImages = extractAllImageUrls(v, { includeExtras: false }); // No buscar extras en lista
-
-        return {
-          // ✅ Passthrough completo de todos los campos del backend
-          ...v,
-
-          // Identificación
-          id: v._id || v.id || 0,
-
-          // ✅ Imágenes como strings (compatibilidad con componentes existentes)
-          fotoPrincipal: principal || "",
-          fotoHover: hover || "",
-          imagen: principal || "", // Alias para compatibilidad
-          imágenes: allImages,
-
-          // Título compuesto (mantener por compatibilidad si se usa)
-          title:
-            v.marca && v.modelo
-              ? `${String(v.marca).trim()} ${String(v.modelo).trim()}`
-              : String(v.marca || v.modelo || "").trim(),
-        };
-      })
-      .filter(Boolean);
-
-    // ✅ CRÍTICO: Validar y corregir nextPage del backend
-    // Si el backend devuelve un nextPage inválido (igual al currentCursor o menor),
-    // calcularlo manualmente como currentCursor + 1
-    let finalNextPage = null;
-    if (hasNextPage) {
-      if (backendNextPage && backendNextPage > (currentCursor || 0)) {
-        // El backend devolvió un nextPage válido
-        finalNextPage = backendNextPage;
-      } else if (currentCursor !== null && currentCursor !== undefined) {
-        // El backend no devolvió un nextPage válido, calcularlo manualmente
-        finalNextPage = currentCursor + 1;
-        if (process.env.NODE_ENV === 'development') {
-          console.warn("[Mapper] Backend devolvió nextPage inválido, calculando manualmente", {
-            backendNextPage,
-            currentCursor,
-            calculatedNextPage: finalNextPage
-          });
-        }
-      } else {
-        // No hay currentCursor, usar el del backend aunque sea inválido
-        finalNextPage = backendNextPage || null;
-      }
-    }
-
-    return {
-      vehicles,
-      totalDocs: totalDocs || 0,
-      total: totalDocs || 0, // Alias para compatibilidad
-      hasNextPage: Boolean(hasNextPage),
-      nextPage: finalNextPage, // ✅ nextPage validado y corregido si es necesario
-      currentCursor: currentCursor || undefined,
-      totalPages: Math.ceil((totalDocs || 0) / VEHICLE_CONSTANTS.LIST_PAGE_SIZE),
-    };
-  } catch (error) {
-    log.error(
-      "Error transformando página de vehículos:",
-      error.message,
-      { page: backendPage }
-    );
-
-    // ✅ Fallback seguro en caso de error
-    return {
-      vehicles: [],
-      total: 0,
-      hasNextPage: false,
-      nextPage: null,
-      currentCursor: currentCursor || undefined,
-      totalPages: 0,
-    };
+  const allPhotos = backendPage?.allPhotos;
+  if (!allPhotos || typeof allPhotos !== "object" || !Array.isArray(allPhotos.docs)) {
+    throw new Error("Página de vehículos inválida: falta allPhotos.docs");
   }
+
+  const {
+    docs,
+    totalDocs = 0,
+    hasNextPage = false,
+    nextPage: backendNextPage,
+  } = allPhotos;
+
+  const vehicles = docs
+    .map((v) => {
+      if (!v || typeof v !== "object") return null;
+
+      // La lista solo trae fotoPrincipal y fotoHover (el backend no manda fotosExtra).
+      const { principal, hover } = extractVehicleImageUrls(v);
+      const allImages = extractAllImageUrls(v, { includeExtras: false });
+
+      return {
+        // Passthrough: se conservan todas las claves del backend.
+        ...v,
+        id: v._id || v.id || 0,
+        // Imágenes como strings, que es lo que esperan los componentes.
+        fotoPrincipal: principal || "",
+        fotoHover: hover || "",
+        imagen: principal || "",
+        imágenes: allImages,
+        title:
+          v.marca && v.modelo
+            ? `${String(v.marca).trim()} ${String(v.modelo).trim()}`
+            : String(v.marca || v.modelo || "").trim(),
+      };
+    })
+    .filter(Boolean);
+
+  // Si el backend devuelve un nextPage inválido (igual o menor al cursor
+  // actual), se calcula como currentCursor + 1.
+  let finalNextPage = null;
+  if (hasNextPage) {
+    if (backendNextPage && backendNextPage > (currentCursor || 0)) {
+      finalNextPage = backendNextPage;
+    } else if (currentCursor !== null && currentCursor !== undefined) {
+      finalNextPage = currentCursor + 1;
+      log.debug("El backend devolvió un nextPage inválido; se calcula a mano.", {
+        backendNextPage,
+        currentCursor,
+      });
+    } else {
+      finalNextPage = backendNextPage || null;
+    }
+  }
+
+  return {
+    vehicles,
+    totalDocs: totalDocs || 0,
+    total: totalDocs || 0,
+    hasNextPage: Boolean(hasNextPage),
+    nextPage: finalNextPage,
+    currentCursor: currentCursor || undefined,
+    totalPages: Math.ceil((totalDocs || 0) / VEHICLE_CONSTANTS.LIST_PAGE_SIZE),
+  };
 };
 
 /**

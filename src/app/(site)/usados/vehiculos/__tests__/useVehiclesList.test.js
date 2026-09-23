@@ -48,6 +48,7 @@ vi.mock("@/lib/mappers/vehicleMapper", () => ({
 vi.mock("../useScrollRestore", () => ({ useScrollRestore: () => {} }));
 
 const { useVehiclesList } = await import("@/app/(site)/usados/vehiculos/useVehiclesList");
+const { LIST_ERROR_MESSAGE } = await import("@/constants/vehicles");
 
 /** Una página de resultados con la forma que devuelve el mapeo. */
 function pagina(ids, { hasNextPage = false, nextPage = null, total = ids.length } = {}) {
@@ -160,7 +161,7 @@ describe("cargar más", () => {
       await result.current.loadMore();
     });
 
-    expect(result.current.error).toBe("Network Error");
+    expect(result.current.error).toBe(LIST_ERROR_MESSAGE);
     expect(result.current.data.vehicles).toHaveLength(2);
   });
 
@@ -197,15 +198,16 @@ describe("aplicar filtros", () => {
     expect(result.current.data.vehicles.map((v) => v.id)).toEqual([7]);
   });
 
-  it("un fallo real deja el mensaje de error", async () => {
-    m.getVehicles.mockRejectedValue(new Error("Network Error"));
+  it("un fallo real muestra el mensaje fijo, nunca el técnico", async () => {
+    m.getVehicles.mockRejectedValue(new Error("Request failed with status code 502"));
     const { result } = montar();
 
     await act(async () => {
       await result.current.applyFilters({ marca: ["Toyota"] });
     });
 
-    expect(result.current.error).toBe("Network Error");
+    expect(result.current.error).toBe(LIST_ERROR_MESSAGE);
+    expect(result.current.error).not.toMatch(/502|Request failed/);
     expect(result.current.isLoading).toBe(false);
   });
 
@@ -270,7 +272,7 @@ describe("aplicar filtros", () => {
     await act(async () => {
       await result.current.applyFilters({ marca: ["Toyota"] });
     });
-    expect(result.current.error).toBe("Network Error");
+    expect(result.current.error).toBe(LIST_ERROR_MESSAGE);
 
     m.getVehicles.mockResolvedValue(pagina([1]));
     await act(async () => {
