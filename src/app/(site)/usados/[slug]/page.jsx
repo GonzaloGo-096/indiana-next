@@ -23,27 +23,10 @@ import {
   buildVehicleDetailUrl,
   parseVehicleSlugParam,
 } from "@/utils/vehicleSlug";
-import { serializeVehicleForClient } from "@/utils/serializeVehicleForClient";
 import VehicleDetailClient from "./VehicleDetailClient";
 import ItemViewTracker from "@/components/analytics/ItemViewTracker";
 import { LOCATIONS, SOURCES } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
-import { createLogger } from "@/lib/logger";
-
-const log = createLogger("usados:detalle");
-
-/** Script JSON-LD listo para inyectar, o null si no se pudo armar. */
-function buildJsonLdHtml(vehicle, canonicalUrl) {
-  const jsonLd = getVehicleJsonLd({ vehicle, canonicalUrl });
-  if (!jsonLd) return null;
-  try {
-    return serializeJsonLd(jsonLd);
-  } catch (error) {
-    // Sin JSON-LD la ficha sigue sirviendo; solo se pierde el dato para Google.
-    log.warn("JSON-LD omitido:", error?.message || error);
-    return null;
-  }
-}
 
 function formatPrecioForMeta(precio) {
   if (precio == null || precio === "") return "";
@@ -58,63 +41,36 @@ function formatPrecioForMeta(precio) {
   return "";
 }
 
-function fotoPrincipalString(vehicle) {
-  const fp = vehicle?.fotoPrincipal;
-  return typeof fp === "string" && fp.trim() !== "" ? fp.trim() : "";
+/** URL absoluta de la foto principal (la usan og:image y el JSON-LD), o null. */
+function mainImageUrl(vehicle) {
+  const foto = typeof vehicle.fotoPrincipal === "string" ? vehicle.fotoPrincipal.trim() : "";
+  if (!foto) return null;
+  if (foto.startsWith("http") || foto.startsWith("//")) return foto;
+  return absoluteUrl(foto.startsWith("/") ? foto : `/${foto}`);
 }
 
 /**
- * Helper para generar Structured Data (JSON-LD) del vehículo
- * Usa Schema.org Product (con category Automotive)
+ * Structured data (schema.org Product) de la ficha, listo para el <script>.
+ * Sin offers/price a propósito: los planes de financiación no son un precio
+ * único.
  */
-function getVehicleJsonLd({ vehicle, canonicalUrl }) {
-  if (!vehicle) return null;
-
-  const productName =
+function buildJsonLdHtml(vehicle, canonicalUrl) {
+  const name =
     vehicle.marca && vehicle.modelo
       ? `${vehicle.marca} ${vehicle.modelo}`
       : vehicle.marca || vehicle.modelo || "Vehículo usado";
-  const productDescription = vehicle.anio
-    ? `Vehículo usado ${productName} ${vehicle.anio}`
-    : `Vehículo usado ${productName}`;
+  const image = mainImageUrl(vehicle);
 
-  const principal = fotoPrincipalString(vehicle);
-  const images = principal
-    ? [
-        principal.startsWith("http") || principal.startsWith("//")
-          ? principal
-          : principal.startsWith("/")
-            ? absoluteUrl(principal)
-            : absoluteUrl(`/${principal}`),
-      ]
-    : [];
-
-  const jsonLd = {
+  return serializeJsonLd({
     "@context": "https://schema.org",
     "@type": "Product",
-    name: productName,
-    description: productDescription,
+    name,
+    description: vehicle.anio ? `Vehículo usado ${name} ${vehicle.anio}` : `Vehículo usado ${name}`,
     category: "Automotive",
-    image: images.length > 0 ? images : undefined,
+    ...(image ? { image: [image] } : {}),
     url: canonicalUrl,
-  };
-
-  // Agregar año si existe
-  if (vehicle.anio) {
-    jsonLd.model = String(vehicle.anio);
-  }
-
-  // NO incluir offers/price si no hay precio real disponible
-  // (los planes de financiación no son "price" único)
-
-  // Limpiar undefined
-  Object.keys(jsonLd).forEach((key) => {
-    if (jsonLd[key] === undefined) {
-      delete jsonLd[key];
-    }
+    ...(vehicle.anio ? { model: String(vehicle.anio) } : {}),
   });
-
-  return jsonLd;
 }
 
 const NOT_AVAILABLE_METADATA = {
@@ -145,14 +101,7 @@ export async function generateMetadata({ params }) {
   const precioMeta = formatPrecioForMeta(vehicle.precio);
   const description = `${vehicle.marca} ${vehicle.modelo}${vehicle.anio ? ` ${vehicle.anio}` : ""} usado en Tucumán. Consultá disponibilidad y precio con Peugeot Indiana.${precioMeta ? ` Precio: ${precioMeta}.` : ""}`;
 
-  const fp = fotoPrincipalString(vehicle);
-  const ogImageUrl = fp
-    ? fp.startsWith("http") || fp.startsWith("//")
-      ? fp
-      : fp.startsWith("/")
-        ? absoluteUrl(fp)
-        : absoluteUrl(`/${fp}`)
-    : null;
+  const ogImageUrl = mainImageUrl(vehicle);
 
   return {
     title,
@@ -210,10 +159,6 @@ export default async function VehicleDetailPage({ params }) {
     permanentRedirect(canonicalPath);
   }
 
-  const clientVehicle = serializeVehicleForClient(vehicle);
-  if (!clientVehicle) {
-    throw new Error(`No se pudo preparar la ficha del vehículo ${id}`);
-  }
   const jsonLdHtml = buildJsonLdHtml(vehicle, absoluteUrl(canonicalPath));
 
   return (
@@ -225,12 +170,14 @@ export default async function VehicleDetailPage({ params }) {
         />
       ) : null}
       <ItemViewTracker
-        item={buildItemParamsFromUsado(clientVehicle)}
+        item={buildItemParamsFromUsado(vehicle)}
         location={LOCATIONS.USADOS_DETAIL}
         source={SOURCES.INLINE}
         componentId="detail_page"
       />
-      <VehicleDetailClient vehicle={clientVehicle} />
+      {/* vehicle es JSON plano (sale de JSON.parse en el servicio): se puede
+          pasar al cliente tal cual, sin clonarlo. */}
+      <VehicleDetailClient vehicle={vehicle} />
     </>
   );
 }

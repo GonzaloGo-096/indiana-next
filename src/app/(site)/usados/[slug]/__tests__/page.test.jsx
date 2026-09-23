@@ -55,6 +55,13 @@ async function errorDe(fn) {
 
 const esNotFound = (error) => error?.digest === "NEXT_HTTP_ERROR_FALLBACK;404";
 
+/** Objeto JSON-LD que la página inyecta en su <script>. */
+function jsonLdDe(elemento) {
+  const hijos = [].concat(elemento.props.children);
+  const script = hijos.find((h) => h?.type === "script");
+  return JSON.parse(script.props.dangerouslySetInnerHTML.__html);
+}
+
 beforeEach(() => {
   process.env.NEXT_PUBLIC_SITE_URL = SITE;
   m.getVehicleById.mockReset();
@@ -125,6 +132,29 @@ describe("ficha: auto existente", () => {
 
     const error = await errorDe(() => VehicleDetailPage(props(ID)));
     expect(error?.digest).toBe(`NEXT_REDIRECT;replace;/usados/${CANONICA};308;`);
+  });
+
+  it.each([
+    ["URL completa", "https://res.cloudinary.com/x/a.jpg", "https://res.cloudinary.com/x/a.jpg"],
+    ["ruta relativa", "fotos/a.jpg", `${SITE}/fotos/a.jpg`],
+  ])("og:image y el JSON-LD usan la misma imagen absoluta (%s)", async (_caso, foto, esperada) => {
+    m.getVehicleById.mockResolvedValue({ ...AUTO, fotoPrincipal: foto });
+
+    const meta = await generateMetadata(props(CANONICA));
+    expect(meta.openGraph.images[0].url).toBe(esperada);
+
+    const jsonLd = jsonLdDe(await VehicleDetailPage(props(CANONICA)));
+    expect(jsonLd.image).toEqual([esperada]);
+    expect(jsonLd.url).toBe(`${SITE}/usados/${CANONICA}`);
+    expect(jsonLd.model).toBe("2021");
+  });
+
+  it("sin foto, ni og:image ni image en el JSON-LD", async () => {
+    m.getVehicleById.mockResolvedValue(AUTO);
+
+    const meta = await generateMetadata(props(CANONICA));
+    expect(meta.openGraph.images).toEqual([]);
+    expect(jsonLdDe(await VehicleDetailPage(props(CANONICA)))).not.toHaveProperty("image");
   });
 
   it("la metadata usa la URL canónica", async () => {
