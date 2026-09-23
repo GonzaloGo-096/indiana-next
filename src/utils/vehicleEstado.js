@@ -14,8 +14,8 @@
  *
  * 1. El backend de preview lo manda en MAYÚSCULAS ("ACTIVO"), verificado el
  *    2026-08-28 en GET /photos/getallphotos.
- * 2. El backend de producción todavía no tiene el campo, así que sus 44 autos
- *    llegan SIN `estado`.
+ * 2. El backend de producción todavía no tiene el campo, así que sus autos
+ *    llegan SIN `estado` (verificado el 2026-09-23: 28 autos, ninguno con estado).
  *
  * Por eso un auto sin estado es ACTIVO: es el default del backend y es lo que
  * hace que el sitio en producción se siga viendo igual que hoy hasta que

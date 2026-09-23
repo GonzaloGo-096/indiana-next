@@ -98,7 +98,6 @@ export function useVehiclesList({ initialData, initialError = null }) {
     const sparse = parseFilters(searchParams);
     return {
       filters: sparse,
-      page: Number(searchParams.get("page")) || 1,
       sort: isValidSortOption(searchParams.get("sort"))
         ? searchParams.get("sort")
         : null,
@@ -106,7 +105,6 @@ export function useVehiclesList({ initialData, initialError = null }) {
   }, [searchParams]);
 
   const currentFilters = searchParamsData.filters;
-  const currentPage = searchParamsData.page;
   const currentSort = searchParamsData.sort;
 
   // --- sessionStorage: guardar + restaurar scroll/datos -----------------------
@@ -382,7 +380,6 @@ export function useVehiclesList({ initialData, initialError = null }) {
     setError,
 
     currentFilters,
-    currentPage,
     currentSort,
 
     isFiltered,
