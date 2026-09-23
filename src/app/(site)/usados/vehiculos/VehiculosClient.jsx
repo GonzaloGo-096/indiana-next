@@ -70,7 +70,6 @@ export default function VehiculosClient({
     data,
     sortedVehicles,
     isLoading,
-    isLoadingMore,
     error,
     setError,
     currentFilters,
@@ -311,7 +310,6 @@ export default function VehiculosClient({
             totalVehicles={data?.total || 0}
             isLoading={isLoading}
             hasNextPage={data?.hasNextPage ?? false}
-            isLoadingMore={isLoadingMore}
             onLoadMore={loadMore}
             isError={!!error}
             error={error ? { message: error } : null}

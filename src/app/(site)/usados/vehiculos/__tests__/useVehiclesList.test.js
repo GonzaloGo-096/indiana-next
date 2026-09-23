@@ -3,10 +3,9 @@
  *
  * Tests del listado de usados.
  *
- * 495 líneas con cuatro estados, seis referencias vivas entre renders y tres
- * efectos. Es la pieza con más decisiones del proyecto y donde vive el tipo de
- * error que no se ve: pedidos que se cruzan, un botón que dispara dos veces,
- * la lista que se vacía sola.
+ * Es la pieza con más decisiones del listado y donde vive el tipo de error que
+ * no se ve: pedidos que se cruzan, la lista que se vacía sola, el orden que se
+ * rompe al cargar más.
  *
  * El bug que originó toda esta línea de trabajo —el listado que desaparecía al
  * filtrar— era exactamente de esta familia. Nada de esto lo detecta el smoke:
@@ -48,7 +47,7 @@ vi.mock("@/lib/mappers/vehicleMapper", () => ({
 vi.mock("../useScrollRestore", () => ({ useScrollRestore: () => {} }));
 
 const { useVehiclesList } = await import("@/app/(site)/usados/vehiculos/useVehiclesList");
-const { LIST_ERROR_MESSAGE } = await import("@/constants/vehicles");
+const { LIST_ERROR_MESSAGE, VEHICLE_CONSTANTS } = await import("@/constants/vehicles");
 
 /** Una página de resultados con la forma que devuelve el mapeo. */
 function pagina(ids, { hasNextPage = false, nextPage = null, total = ids.length } = {}) {
@@ -95,96 +94,60 @@ describe("arranque", () => {
   });
 });
 
+// El listado llega completo y se pagina en pantalla: así los vendidos pueden
+// quedar al final de TODO el listado (el backend no ordena por estado).
 describe("cargar más", () => {
-  it("agrega los autos nuevos a los que ya estaban", async () => {
-    m.getVehicles.mockResolvedValue(pagina([3, 4]));
-    const { result } = montar(pagina([1, 2], { hasNextPage: true, nextPage: 2, total: 4 }));
+  const muchos = (n) => pagina(Array.from({ length: n }, (_, i) => i + 1));
+  const visibles = (result) => result.current.sortedVehicles.map((v) => v.id);
 
-    await act(async () => {
-      await result.current.loadMore();
-    });
+  it("muestra de a 8 y cargar más suma 8, sin pedirle nada al backend", () => {
+    const { result } = montar(muchos(20));
+    expect(visibles(result)).toHaveLength(8);
+    expect(result.current.data.hasNextPage).toBe(true);
 
-    expect(result.current.data.vehicles.map((v) => v.id)).toEqual([1, 2, 3, 4]);
-  });
+    act(() => result.current.loadMore());
 
-  it("no duplica un auto que ya estaba en pantalla", async () => {
-    // Pasa cuando el backend reordena entre una página y la siguiente.
-    m.getVehicles.mockResolvedValue(pagina([2, 3]));
-    const { result } = montar(pagina([1, 2], { hasNextPage: true, nextPage: 2 }));
-
-    await act(async () => {
-      await result.current.loadMore();
-    });
-
-    expect(result.current.data.vehicles.map((v) => v.id)).toEqual([1, 2, 3]);
-  });
-
-  it("dos toques seguidos hacen UN solo pedido", async () => {
-    // El candado existe justo para esto: sin él se cargaba dos veces la misma
-    // página y aparecían autos repetidos.
-    let resolver;
-    m.getVehicles.mockReturnValue(new Promise((r) => { resolver = r; }));
-
-    const { result } = montar(pagina([1], { hasNextPage: true, nextPage: 2 }));
-
-    await act(async () => {
-      result.current.loadMore();
-      result.current.loadMore();
-      result.current.loadMore();
-      resolver(pagina([2]));
-    });
-
-    expect(m.getVehicles).toHaveBeenCalledTimes(1);
-  });
-
-  it("no pide nada si no hay página siguiente", async () => {
-    const { result } = montar(pagina([1, 2], { hasNextPage: false }));
-    await act(async () => {
-      await result.current.loadMore();
-    });
+    expect(visibles(result)).toEqual(Array.from({ length: 16 }, (_, i) => i + 1));
     expect(m.getVehicles).not.toHaveBeenCalled();
   });
 
-  it("no pide nada si dice que hay siguiente pero no dice cuál", async () => {
-    const { result } = montar(pagina([1], { hasNextPage: true, nextPage: null }));
-    await act(async () => {
-      await result.current.loadMore();
-    });
-    expect(m.getVehicles).not.toHaveBeenCalled();
+  it("al llegar al final no hay más para cargar y cargar más no hace nada", () => {
+    const { result } = montar(muchos(10));
+
+    act(() => result.current.loadMore());
+    expect(visibles(result)).toHaveLength(10);
+    expect(result.current.data.hasNextPage).toBe(false);
+
+    act(() => result.current.loadMore());
+    expect(visibles(result)).toHaveLength(10);
   });
 
-  it("si falla, NO borra los autos que ya se veían", async () => {
-    m.getVehicles.mockRejectedValue(new Error("Network Error"));
-    const { result } = montar(pagina([1, 2], { hasNextPage: true, nextPage: 2 }));
-
-    await act(async () => {
-      await result.current.loadMore();
-    });
-
-    expect(result.current.error).toBe(LIST_ERROR_MESSAGE);
-    expect(result.current.data.vehicles).toHaveLength(2);
+  it("con 8 autos o menos no ofrece cargar más", () => {
+    const { result } = montar(muchos(5));
+    expect(result.current.data.hasNextPage).toBe(false);
   });
 
-  it("después de fallar se puede reintentar: el candado se libera", async () => {
-    m.getVehicles.mockRejectedValueOnce(new Error("Network Error"));
-    const { result } = montar(pagina([1], { hasNextPage: true, nextPage: 2 }));
+  it("al filtrar vuelve a mostrar de a 8", async () => {
+    const { result } = montar(muchos(20));
+    act(() => result.current.loadMore());
+    m.getVehicles.mockResolvedValue(muchos(12));
 
     await act(async () => {
-      await result.current.loadMore();
+      await result.current.applyFilters({ marca: ["Peugeot"] });
     });
 
-    m.getVehicles.mockResolvedValue(pagina([2]));
-    await act(async () => {
-      await result.current.loadMore();
-    });
+    expect(visibles(result)).toHaveLength(8);
+    expect(result.current.data.hasNextPage).toBe(true);
+  });
 
-    expect(m.getVehicles).toHaveBeenCalledTimes(2);
-    expect(result.current.data.vehicles.map((v) => v.id)).toEqual([1, 2]);
+  it("respeta cuántos se veían si la lista vuelve restaurada (volver de una ficha)", () => {
+    const { result } = montar({ ...muchos(20), visibleCount: 16 });
+    expect(visibles(result)).toHaveLength(16);
   });
 });
 
 describe("aplicar filtros", () => {
-  it("pide los resultados desde la primera página y reemplaza la lista", async () => {
+  it("pide TODOS los resultados del filtro en un pedido y reemplaza la lista", async () => {
     m.getVehicles.mockResolvedValue(pagina([7], { total: 1 }));
     const { result } = montar(pagina([1, 2, 3]));
 
@@ -193,7 +156,11 @@ describe("aplicar filtros", () => {
     });
 
     expect(m.getVehicles).toHaveBeenCalledWith(
-      expect.objectContaining({ cursor: 1, filters: { marca: ["Toyota"] } }),
+      expect.objectContaining({
+        cursor: 1,
+        limit: VEHICLE_CONSTANTS.LIST_FETCH_LIMIT,
+        filters: { marca: ["Toyota"] },
+      }),
     );
     expect(result.current.data.vehicles.map((v) => v.id)).toEqual([7]);
   });
@@ -357,17 +324,17 @@ describe("vendidos al final", () => {
     expect(orden(result)).toEqual([3, 1, 2]);
   });
 
-  it("al cargar más, los disponibles nuevos quedan arriba de los vendidos", async () => {
-    const { result } = montar(
-      conAutos([auto(1), auto(2, { estado: "VENDIDO" })], { hasNextPage: true, nextPage: 2 }),
-    );
-    m.getVehicles.mockResolvedValue(conAutos([auto(3)]));
+  it("un vendido que el backend trae entre los primeros aparece al final de TODO el listado", () => {
+    // 10 autos; el 1 (el más nuevo) está vendido. En la primera tanda de 8 no
+    // aparece: se ve recién cuando se cargó todo, en el último lugar.
+    const autos = [auto(1, { estado: "VENDIDO" }), ...[2, 3, 4, 5, 6, 7, 8, 9, 10].map((id) => auto(id))];
+    const { result } = montar(conAutos(autos));
 
-    await act(async () => {
-      await result.current.loadMore();
-    });
+    expect(orden(result)).toEqual([2, 3, 4, 5, 6, 7, 8, 9]);
 
-    expect(orden(result)).toEqual([1, 3, 2]);
+    act(() => result.current.loadMore());
+
+    expect(orden(result)).toEqual([2, 3, 4, 5, 6, 7, 8, 9, 10, 1]);
   });
 
   it("al filtrar, el resultado también deja los vendidos al final", async () => {

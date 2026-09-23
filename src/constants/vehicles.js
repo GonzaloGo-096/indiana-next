@@ -24,6 +24,16 @@ export const VEHICLE_CONSTANTS = {
   
   /** Tamaño de página para listado principal */
   LIST_PAGE_SIZE: 8,
+
+  /**
+   * Tope del pedido completo del listado. El listado trae todos los autos que
+   * cumplen el filtro en un solo pedido y pagina en pantalla (de a
+   * LIST_PAGE_SIZE): es la única forma de dejar los vendidos al final de todo
+   * el inventario, porque el backend no ordena ni filtra por estado. Con el
+   * inventario actual (~30 autos) sobra; si algún día lo supera, se registra
+   * un aviso y los vendidos quedan al final de lo recibido.
+   */
+  LIST_FETCH_LIMIT: 200,
   
   /** Rango de precio para vehículos similares (±1 millón) */
   PRICE_RANGE: 1000000,

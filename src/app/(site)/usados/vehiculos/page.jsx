@@ -19,7 +19,8 @@ import { parseFilters } from "@/utils/filters";
 import { getSiteUrl, tryAbsoluteUrl } from "@/lib/site-url";
 import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
 import { createLogger } from "@/lib/logger";
-import { LIST_ERROR_MESSAGE } from "@/constants/vehicles";
+import { LIST_ERROR_MESSAGE, VEHICLE_CONSTANTS } from "@/constants/vehicles";
+import { vendidosAlFinal } from "@/utils/vehicleEstado";
 import VehiculosClient from "./VehiculosClient";
 import { serializeJsonLd } from "@/lib/seo/jsonLd";
 
@@ -301,22 +302,25 @@ export default async function VehiculosPage({ searchParams }) {
     // que el servicio (mergeDefaults:false por default) no los inyecte.
     const filters = parseFilters(resolvedSearchParams || {});
 
-    // Extraer página desde searchParams (default: 1)
-    const page = Number(resolvedSearchParams?.page) || 1;
-    const cursor = page; // Backend usa cursor = página
-
+    // Todos los autos que cumplen el filtro en un solo pedido: la paginación
+    // es en pantalla (useVehiclesList), para que los vendidos queden al final
+    // de todo el listado. Ver LIST_FETCH_LIMIT.
     const backendData = await vehiclesService.getVehicles({
       filters,
-      limit: 8,
-      cursor,
+      limit: VEHICLE_CONSTANTS.LIST_FETCH_LIMIT,
+      cursor: 1,
     });
-
-    // Mapear datos del backend al formato frontend
-    const mappedData = mapVehiclesPage(backendData, cursor);
+    const mappedData = mapVehiclesPage(backendData, 1);
+    if (mappedData.hasNextPage) {
+      log.warn(
+        `El inventario filtrado supera ${VEHICLE_CONSTANTS.LIST_FETCH_LIMIT} autos: ` +
+          "los vendidos quedan al final solo de lo recibido.",
+      );
+    }
 
     let jsonLdHtml = null;
     try {
-      const jsonLd = getVehiclesListJsonLd(mappedData.vehicles || []);
+      const jsonLd = getVehiclesListJsonLd(vendidosAlFinal(mappedData.vehicles || []));
       if (jsonLd) {
         jsonLdHtml = serializeJsonLd(jsonLd);
       }
