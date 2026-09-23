@@ -14,6 +14,7 @@ import { unstable_rethrow } from "next/navigation";
 import { tryAbsoluteUrl } from "@/lib/site-url";
 import { vehiclesService } from "@/lib/services/vehiclesApi.server";
 import { mapVehiclesPage } from "@/lib/mappers/vehicleMapper";
+import { sinVendidos } from "@/utils/vehicleEstado";
 import UsadosPageCarousel from "./UsadosPageCarousel";
 import PromocionesCarousel from "./PromocionesCarousel";
 import cta from "@/components/home/HomeSectionCtas.module.css";
@@ -86,18 +87,19 @@ export async function generateMetadata() {
  * Página principal de usados
  */
 export default async function UsadosPage() {
-  // Obtener los primeros 8 vehículos para el carrusel
+  // Los primeros 8 autos disponibles para el carrusel. Se pide el doble porque
+  // los vendidos no se muestran en carruseles y no deben achicarlo.
   let vehicles = [];
 
   try {
     const backendData = await vehiclesService.getVehicles({
       filters: {},
-      limit: 8,
+      limit: 16,
       cursor: 1,
     });
 
     const mappedData = mapVehiclesPage(backendData, 1);
-    vehicles = mappedData.vehicles || [];
+    vehicles = sinVendidos(mappedData.vehicles || []).slice(0, 8);
 
     // Reordenar: Ford ↔ Renault, Nissan ↔ Volkswagen (por posición en el carrusel)
     const norm = (m) => (m || "").trim().toLowerCase();

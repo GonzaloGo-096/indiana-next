@@ -4,7 +4,9 @@
  *
  * Significado acordado con el backend (2026-08-28):
  *   ACTIVO   → se muestra normal
- *   VENDIDO  → se muestra con cartel, sirve de vidriera
+ *   VENDIDO  → se muestra con cartel, sirve de vidriera. Solo en el listado de
+ *              usados y siempre al final (decisión de Gonzalo, 2026-09-23);
+ *              nunca en los carruseles.
  *   PAUSADO  → no se le muestra al visitante
  *
  * Se normaliza acá y no en cada componente porque el dato llega de dos fuentes
@@ -48,3 +50,33 @@ export function getEstado(auto) {
 export const isVendido = (auto) => getEstado(auto) === ESTADOS.VENDIDO;
 
 export const isPausado = (auto) => getEstado(auto) === ESTADOS.PAUSADO;
+
+/**
+ * Los vendidos al final; todos los demás conservan su orden (el del backend o
+ * el que eligió el visitante).
+ *
+ * Ordena solo lo que ya está cargado: el listado viene paginado y el backend
+ * no ordena por estado, así que al cargar la página siguiente sus activos
+ * quedan arriba de los vendidos de antes. Para que los vendidos queden al
+ * final de todo el inventario desde la primera página, el backend tendría que
+ * ordenar por estado.
+ *
+ * @param {Object[]} autos
+ * @returns {Object[]} Lista nueva; no modifica la original
+ */
+export function vendidosAlFinal(autos = []) {
+  const disponibles = [];
+  const vendidos = [];
+  for (const auto of autos) {
+    (isVendido(auto) ? vendidos : disponibles).push(auto);
+  }
+  return [...disponibles, ...vendidos];
+}
+
+/**
+ * La lista sin los vendidos. Para los carruseles: ahí no se muestran.
+ *
+ * @param {Object[]} autos
+ * @returns {Object[]}
+ */
+export const sinVendidos = (autos = []) => autos.filter((auto) => !isVendido(auto));

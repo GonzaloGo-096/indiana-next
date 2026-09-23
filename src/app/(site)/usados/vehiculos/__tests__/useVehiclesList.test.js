@@ -320,3 +320,64 @@ describe("medición", () => {
     expect(busqueda).toBeUndefined();
   });
 });
+
+// Decisión de producto (2026-09-23): los vendidos se ven solo en el listado y
+// siempre al final, también con filtros y con cualquier orden elegido.
+describe("vendidos al final", () => {
+  const auto = (id, { estado, precio = 1000 } = {}) => ({
+    id,
+    marca: "Peugeot",
+    modelo: String(id),
+    precio,
+    ...(estado ? { estado } : {}),
+  });
+  const conAutos = (vehicles, extra = {}) => ({ ...pagina([]), vehicles, total: vehicles.length, ...extra });
+  const orden = (result) => result.current.sortedVehicles.map((v) => v.id);
+
+  afterEach(() => {
+    m.searchParams = new URLSearchParams("");
+  });
+
+  it("sin orden elegido, los vendidos quedan después de los disponibles", () => {
+    const { result } = montar(conAutos([auto(1, { estado: "VENDIDO" }), auto(2), auto(3)]));
+
+    expect(orden(result)).toEqual([2, 3, 1]);
+  });
+
+  it("con un orden elegido, el vendido sigue al final aunque sea el más barato", () => {
+    m.searchParams = new URLSearchParams("sort=precio_asc");
+    const { result } = montar(
+      conAutos([
+        auto(1, { precio: 3000 }),
+        auto(2, { estado: "VENDIDO", precio: 100 }),
+        auto(3, { precio: 2000 }),
+      ]),
+    );
+
+    expect(orden(result)).toEqual([3, 1, 2]);
+  });
+
+  it("al cargar más, los disponibles nuevos quedan arriba de los vendidos", async () => {
+    const { result } = montar(
+      conAutos([auto(1), auto(2, { estado: "VENDIDO" })], { hasNextPage: true, nextPage: 2 }),
+    );
+    m.getVehicles.mockResolvedValue(conAutos([auto(3)]));
+
+    await act(async () => {
+      await result.current.loadMore();
+    });
+
+    expect(orden(result)).toEqual([1, 3, 2]);
+  });
+
+  it("al filtrar, el resultado también deja los vendidos al final", async () => {
+    const { result } = montar(conAutos([auto(1)]));
+    m.getVehicles.mockResolvedValue(conAutos([auto(7, { estado: "VENDIDO" }), auto(8)]));
+
+    await act(async () => {
+      await result.current.applyFilters({ marca: ["Peugeot"] });
+    });
+
+    expect(orden(result)).toEqual([8, 7]);
+  });
+});

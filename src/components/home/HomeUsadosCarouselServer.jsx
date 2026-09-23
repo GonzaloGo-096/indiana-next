@@ -21,6 +21,7 @@
 import { unstable_rethrow } from "next/navigation";
 import { vehiclesService } from "@/lib/services/vehiclesApi.server";
 import { mapVehiclesPage } from "@/lib/mappers/vehicleMapper";
+import { sinVendidos } from "@/utils/vehicleEstado";
 import { createLogger } from "@/lib/logger";
 import { HomeUsadosCarousel } from "./HomeUsadosCarousel";
 
@@ -33,12 +34,17 @@ export async function HomeUsadosCarouselServer() {
   let vehicles = [];
 
   try {
+    // Se pide el doble porque los vendidos no se muestran en carruseles: así
+    // el carrusel sigue lleno aunque haya vendidos entre los más nuevos.
     const backendData = await vehiclesService.getVehicles({
       filters: {},
-      limit: HOME_USADOS_LIMIT,
+      limit: HOME_USADOS_LIMIT * 2,
       cursor: 1,
     });
-    vehicles = mapVehiclesPage(backendData, 1).vehicles || [];
+    vehicles = sinVendidos(mapVehiclesPage(backendData, 1).vehicles || []).slice(
+      0,
+      HOME_USADOS_LIMIT,
+    );
   } catch (error) {
     // La señal de "ruta dinámica" que lanza Next por el fetch 'no-store' sí
     // se relanza: no es una falla, y tragarla deja el carrusel vacío.
@@ -54,7 +60,7 @@ export async function HomeUsadosCarouselServer() {
   }
 
   if (vehicles.length === 0) {
-    log.warn("El backend devolvió 0 usados para el inicio.");
+    log.warn("No hay usados disponibles (no vendidos) para el inicio.");
     return null;
   }
 

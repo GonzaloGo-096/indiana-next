@@ -17,6 +17,7 @@ import { pushDataLayer } from "@/lib/analytics/dataLayer";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { VEHICLE_CONSTANTS, LIST_ERROR_MESSAGE } from "@/constants/vehicles";
+import { vendidosAlFinal } from "@/utils/vehicleEstado";
 import { createLogger } from "@/lib/logger";
 import { useScrollRestore } from "./useScrollRestore";
 
@@ -152,9 +153,10 @@ export function useVehiclesList({ initialData, initialError = null }) {
     [currentFilters.marca],
   );
 
+  // Los vendidos siempre al final, con o sin orden elegido y con o sin filtros.
   const sortedVehicles = useMemo(() => {
-    if (!currentSort) return data.vehicles || [];
-    return sortVehicles(data.vehicles || [], currentSort);
+    const vehicles = data.vehicles || [];
+    return vendidosAlFinal(currentSort ? sortVehicles(vehicles, currentSort) : vehicles);
   }, [data.vehicles, currentSort]);
 
   const activeFilterChips = useMemo(

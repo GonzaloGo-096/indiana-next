@@ -7,7 +7,14 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { getEstado, isVendido, isPausado, ESTADOS } from "../vehicleEstado";
+import {
+  getEstado,
+  isVendido,
+  isPausado,
+  ESTADOS,
+  vendidosAlFinal,
+  sinVendidos,
+} from "../vehicleEstado";
 
 describe("getEstado — el default protege a producción", () => {
   it("un auto sin el campo es ACTIVO", () => {
@@ -58,5 +65,49 @@ describe("isVendido / isPausado", () => {
   it("un auto sin estado no es ni vendido ni pausado", () => {
     expect(isVendido({})).toBe(false);
     expect(isPausado({})).toBe(false);
+  });
+});
+
+// Decisión de producto (2026-09-23): los vendidos solo en el listado de
+// usados, siempre al final; nunca en carruseles.
+const auto = (id, estado) => (estado ? { id, estado } : { id });
+const ids = (autos) => autos.map((a) => a.id);
+
+describe("vendidosAlFinal", () => {
+  it("manda los vendidos al final sin alterar el orden de cada grupo", () => {
+    const lista = [
+      auto(1, "VENDIDO"),
+      auto(2, "ACTIVO"),
+      auto(3, "VENDIDO"),
+      auto(4),
+      auto(5, "ACTIVO"),
+    ];
+    expect(ids(vendidosAlFinal(lista))).toEqual([2, 4, 5, 1, 3]);
+  });
+
+  it("reconoce el estado aunque venga en minúsculas", () => {
+    expect(ids(vendidosAlFinal([auto(1, "vendido"), auto(2)]))).toEqual([2, 1]);
+  });
+
+  it("sin vendidos deja la lista igual", () => {
+    expect(ids(vendidosAlFinal([auto(1), auto(2, "ACTIVO")]))).toEqual([1, 2]);
+  });
+
+  it("no modifica la lista original", () => {
+    const lista = [auto(1, "VENDIDO"), auto(2)];
+    vendidosAlFinal(lista);
+    expect(ids(lista)).toEqual([1, 2]);
+  });
+
+  it("tolera una lista vacía o ausente", () => {
+    expect(vendidosAlFinal([])).toEqual([]);
+    expect(vendidosAlFinal()).toEqual([]);
+  });
+});
+
+describe("sinVendidos", () => {
+  it("saca solo los vendidos; los sin estado quedan (son activos)", () => {
+    const lista = [auto(1, "VENDIDO"), auto(2, "ACTIVO"), auto(3), auto(4, "vendido")];
+    expect(ids(sinVendidos(lista))).toEqual([2, 3]);
   });
 });

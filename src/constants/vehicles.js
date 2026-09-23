@@ -12,8 +12,12 @@
  * Configuración de paginación y límites
  */
 export const VEHICLE_CONSTANTS = {
-  /** Límite de vehículos similares a pedir (para asegurar 5 después de excluir actual) */
-  SIMILAR_FETCH_LIMIT: 6,
+  /**
+   * Cuántos pedir para los carruseles de la ficha. Es el doble de lo que se
+   * muestra porque después se excluyen el auto actual y los vendidos (que no
+   * van en carruseles), y el carrusel no debe achicarse por eso.
+   */
+  SIMILAR_FETCH_LIMIT: 10,
   
   /** Máximo de vehículos similares a mostrar */
   SIMILAR_MAX_RESULTS: 5,
