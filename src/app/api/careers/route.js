@@ -2,21 +2,27 @@
  * API Route: POST /api/careers
  *
  * Recibe FormData con: puesto, nombreApellido, email, telefono?, mensaje?, cv (archivo)
- * Valida server-side. Por ahora responde { ok: true } y loguea de forma segura.
+ * y la valida server-side (el tipo del CV, por su contenido: ver cvFile.js).
  *
- * TODO: Integrar envío de email aquí. Estructurar el payload para que el backend real
- * envíe el CV y los datos al responsable de RRHH. Evitar hardcodear cuenta de email.
- *
- * @author Indiana Peugeot
+ * El envío por email todavía no existe (ni acá ni en el backend). Hasta que
+ * exista, la API responde 503: decir "enviada" sin enviar nada hacía que las
+ * postulaciones se perdieran sin que nadie se enterara. Cada intento queda en
+ * los logs (sin datos personales) para saber cuántos se pierden.
  */
 
 import { NextResponse } from "next/server";
 import { createLogger } from "@/lib/logger";
+import {
+  ACCEPTED_CV_TYPES,
+  MAX_CV_BYTES,
+  MAX_CV_LABEL,
+  detectCvType,
+} from "@/lib/careers/cvFile";
 
 const log = createLogger("careers");
 
-const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/jpg"];
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const NOT_AVAILABLE_MESSAGE =
+  "Por el momento no podemos recibir postulaciones desde la web. Intentá de nuevo más adelante.";
 
 export async function POST(request) {
   try {
@@ -62,39 +68,42 @@ export async function POST(request) {
         { status: 400 }
       );
     }
-    if (!ALLOWED_TYPES.includes(cvFile.type)) {
+    if (!ACCEPTED_CV_TYPES.includes(cvFile.type)) {
       return NextResponse.json(
         { ok: false, error: "Solo se aceptan archivos PDF o JPG" },
         { status: 400 }
       );
     }
-    if (cvFile.size > MAX_FILE_SIZE) {
+    if (cvFile.size > MAX_CV_BYTES) {
       return NextResponse.json(
-        { ok: false, error: "El archivo no debe superar 5 MB" },
+        { ok: false, error: `El archivo no debe superar ${MAX_CV_LABEL}` },
+        { status: 400 }
+      );
+    }
+    const inicio = new Uint8Array(await cvFile.slice(0, 8).arrayBuffer());
+    if (!detectCvType(inicio)) {
+      return NextResponse.json(
+        { ok: false, error: "El archivo no es un PDF o JPG válido" },
         { status: 400 }
       );
     }
 
-    // Log seguro (sin volcar el archivo completo)
-    log.debug("Postulación recibida:", {
-      puesto,
-      nombreApellido,
-      email,
-      telefono: telefono || "(no indicado)",
-      mensaje: mensaje ? `${mensaje.substring(0, 50)}...` : "(vacío)",
-      cvName: cvFile.name,
-      cvSize: cvFile.size,
-    });
-
     // TODO: Enviar email con los datos de la postulación.
-    // Estructura sugerida para el backend:
     // - Destinatario: variable de entorno (ej. CAREERS_EMAIL) para no hardcodear
     // - Asunto: "Postulación: [puesto] - [nombreApellido]"
     // - Cuerpo: texto con nombre, email, teléfono, mensaje
     // - Adjunto: cvFile (buffer o stream según proveedor)
-    // Ejemplo: await sendCareersEmail({ puesto, nombreApellido, email, telefono, mensaje, cvBuffer })
+    // Cuando exista: await sendCareersEmail({ puesto, nombreApellido, email, telefono, mensaje, cvFile })
+    // y recién ahí responder { ok: true }.
+    log.error("Postulación válida NO enviada: el envío por email no está configurado", {
+      puesto,
+      cvSize: cvFile.size,
+    });
 
-    return NextResponse.json({ ok: true });
+    return NextResponse.json(
+      { ok: false, error: NOT_AVAILABLE_MESSAGE },
+      { status: 503 }
+    );
   } catch (error) {
     log.error("Error:", error);
     return NextResponse.json(

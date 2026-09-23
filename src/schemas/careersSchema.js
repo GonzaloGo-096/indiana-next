@@ -5,9 +5,7 @@
  */
 
 import { z } from "zod";
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const ACCEPTED_TYPES = ["application/pdf", "image/jpeg", "image/jpg"];
+import { ACCEPTED_CV_TYPES, MAX_CV_BYTES, MAX_CV_LABEL } from "@/lib/careers/cvFile";
 
 export const careersSchema = z.object({
   puesto: z
@@ -40,11 +38,11 @@ export const careersSchema = z.object({
     .any()
     .refine((files) => files?.length > 0, "Adjuntá tu CV (PDF o JPG)")
     .refine(
-      (files) => files?.[0]?.size <= MAX_FILE_SIZE,
-      "El archivo no debe superar 5 MB"
+      (files) => files?.[0]?.size <= MAX_CV_BYTES,
+      `El archivo no debe superar ${MAX_CV_LABEL}`
     )
     .refine(
-      (files) => ACCEPTED_TYPES.includes(files?.[0]?.type),
+      (files) => ACCEPTED_CV_TYPES.includes(files?.[0]?.type),
       "Solo se aceptan archivos PDF o JPG"
     ),
 });

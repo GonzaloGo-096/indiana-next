@@ -12,6 +12,7 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { careersSchema } from "@/schemas/careersSchema";
+import { MAX_CV_LABEL } from "@/lib/careers/cvFile";
 import { jobPositions } from "@/lib/careers.data";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { LOCATIONS, SOURCES, LEAD_SOURCES } from "@/lib/analytics/events";
@@ -76,10 +77,16 @@ const CareersForm = () => {
         body: formData,
       });
 
-      const json = await res.json();
+      // Un 413 de Vercel (archivo demasiado grande) o una página de error no
+      // son JSON: sin este catch el visitante vería un error de parseo.
+      const json = await res.json().catch(() => null);
 
-      if (!res.ok) {
-        throw new Error(json.error || "Error al enviar. Intentá de nuevo.");
+      if (!res.ok || json?.ok !== true) {
+        throw new Error(
+          res.status === 413
+            ? `El archivo es demasiado grande. El máximo es ${MAX_CV_LABEL}.`
+            : json?.error || "Error al enviar. Intentá de nuevo."
+        );
       }
 
       // Tracking: solo metadatos no PII (puesto + flags booleanos).
@@ -255,7 +262,7 @@ const CareersForm = () => {
               disabled={formState === FORM_STATE.sending}
               aria-invalid={!!errors.cv}
             />
-            <span className={styles.hint}>PDF o JPG, máximo 5 MB</span>
+            <span className={styles.hint}>PDF o JPG, máximo {MAX_CV_LABEL}</span>
             {errors.cv && (
               <span className={styles.error}>{errors.cv.message}</span>
             )}
