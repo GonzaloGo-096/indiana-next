@@ -7,13 +7,15 @@
  * error acá no se ve en pantalla, se descubre después mirando el catálogo.
  *
  * Lo que se cubre no es "llama al backend" sino lo que pasa alrededor: que no
- * se envíe nada sin credencial, que se refresque el sitio público después de
- * guardar, y que si ese refresco falla el auto quede anotado como pendiente en
- * vez de perderse en silencio.
+ * se envíe nada sin credencial, que los errores del backend lleguen a quien
+ * guardó, y que el listado del panel se entere de los cambios.
+ *
+ * El sitio público no se "publica" después de guardar: no cachea vehículos,
+ * el caché es del backend (ver vehiclesApi.server).
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { renderHook, act } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createElement } from "react";
 
@@ -21,9 +23,6 @@ const m = vi.hoisted(() => ({
   createVehicle: vi.fn(),
   updateVehicle: vi.fn(),
   deleteVehicle: vi.fn(),
-  revalidatePublicCache: vi.fn(),
-  addDirtyVehicleId: vi.fn(),
-  removeDirtyVehicleId: vi.fn(),
 }));
 
 vi.mock("@/lib/services/vehiclesAdminService", () => ({
@@ -32,15 +31,6 @@ vi.mock("@/lib/services/vehiclesAdminService", () => ({
     updateVehicle: (...a) => m.updateVehicle(...a),
     deleteVehicle: (...a) => m.deleteVehicle(...a),
   },
-}));
-
-vi.mock("@/lib/admin/revalidatePublicCache", () => ({
-  revalidatePublicCache: (...a) => m.revalidatePublicCache(...a),
-}));
-
-vi.mock("@/utils/dirtyVehicleIds", () => ({
-  addDirtyVehicleId: (...a) => m.addDirtyVehicleId(...a),
-  removeDirtyVehicleId: (...a) => m.removeDirtyVehicleId(...a),
 }));
 
 const { useCarMutation } = await import("@/hooks/admin/useCarMutation");
@@ -65,7 +55,6 @@ function formData() {
 beforeEach(() => {
   localStorage.clear();
   Object.values(m).forEach((fn) => fn.mockReset());
-  m.revalidatePublicCache.mockResolvedValue(true);
   vi.spyOn(console, "warn").mockImplementation(() => {});
   vi.spyOn(console, "error").mockImplementation(() => {});
   vi.spyOn(console, "info").mockImplementation(() => {});
@@ -150,46 +139,7 @@ describe("alta de un auto", () => {
     expect(salida).toEqual({ _id: ID, marca: "Peugeot" });
   });
 
-  it("refresca el sitio público con el id del auto nuevo", async () => {
-    conCredencial();
-    m.createVehicle.mockResolvedValue({ _id: ID });
-
-    const { result } = montar();
-    await act(async () => {
-      await result.current.createMutation.mutateAsync(formData());
-    });
-
-    await waitFor(() =>
-      expect(m.revalidatePublicCache).toHaveBeenCalledWith({
-        vehicleIds: [ID],
-        revalidateList: true,
-        warmup: true,
-      }),
-    );
-  });
-
-  it("si el backend no devuelve el id, igual refresca el listado", async () => {
-    conCredencial();
-    // Pasa de verdad: el backend puede responder 200 con la cadena "true".
-    m.createVehicle.mockResolvedValue("true");
-
-    const { result } = montar();
-    await act(async () => {
-      await result.current.createMutation.mutateAsync(formData());
-    });
-
-    await waitFor(() =>
-      expect(m.revalidatePublicCache).toHaveBeenCalledWith({
-        vehicleIds: [],
-        revalidateList: true,
-        warmup: true,
-      }),
-    );
-    // Sin id no hay nada que anotar como pendiente.
-    expect(m.addDirtyVehicleId).not.toHaveBeenCalled();
-  });
-
-  it("un fallo del backend se propaga y no refresca nada", async () => {
+  it("un fallo del backend se propaga", async () => {
     conCredencial();
     m.createVehicle.mockRejectedValue(new Error("Error de validación"));
 
@@ -199,7 +149,6 @@ describe("alta de un auto", () => {
         "Error de validación",
       );
     });
-    expect(m.revalidatePublicCache).not.toHaveBeenCalled();
   });
 });
 
@@ -217,24 +166,6 @@ describe("edición de un auto", () => {
     expect(m.updateVehicle).toHaveBeenCalledWith(ID, fd);
   });
 
-  it("refresca usando el id que se editó, no el que devuelva el backend", async () => {
-    conCredencial();
-    // El backend podría contestar otra cosa; manda el id que se pidió editar.
-    m.updateVehicle.mockResolvedValue({ _id: "otro-id-distinto" });
-
-    const { result } = montar();
-    await act(async () => {
-      await result.current.updateMutation.mutateAsync({ id: ID, formData: formData() });
-    });
-
-    await waitFor(() =>
-      expect(m.revalidatePublicCache).toHaveBeenCalledWith({
-        vehicleIds: [ID],
-        revalidateList: true,
-        warmup: true,
-      }),
-    );
-  });
 });
 
 describe("baja de un auto", () => {
@@ -253,63 +184,6 @@ describe("baja de un auto", () => {
     expect(salida).toEqual({ error: null, msg: "Auto eliminado" });
   });
 
-  it("refresca el sitio público después de borrar", async () => {
-    conCredencial();
-    m.deleteVehicle.mockResolvedValue({ error: null });
-
-    const { result } = montar();
-    await act(async () => {
-      await result.current.deleteMutation.mutateAsync(ID);
-    });
-
-    await waitFor(() => expect(m.revalidatePublicCache).toHaveBeenCalled());
-  });
-});
-
-describe("cuando el refresco del sitio público falla", () => {
-  it("el auto queda anotado como pendiente, no se pierde", async () => {
-    conCredencial();
-    m.createVehicle.mockResolvedValue({ _id: ID });
-    m.revalidatePublicCache.mockResolvedValue(false);
-
-    const { result } = montar();
-    await act(async () => {
-      await result.current.createMutation.mutateAsync(formData());
-    });
-
-    await waitFor(() => expect(m.addDirtyVehicleId).toHaveBeenCalledWith(ID));
-    expect(m.removeDirtyVehicleId).not.toHaveBeenCalled();
-  });
-
-  it("si sale bien, se saca de pendientes", async () => {
-    conCredencial();
-    m.createVehicle.mockResolvedValue({ _id: ID });
-    m.revalidatePublicCache.mockResolvedValue(true);
-
-    const { result } = montar();
-    await act(async () => {
-      await result.current.createMutation.mutateAsync(formData());
-    });
-
-    await waitFor(() => expect(m.removeDirtyVehicleId).toHaveBeenCalledWith(ID));
-    expect(m.addDirtyVehicleId).not.toHaveBeenCalled();
-  });
-
-  it("que falle el refresco NO hace fallar el guardado", async () => {
-    conCredencial();
-    m.updateVehicle.mockResolvedValue({ _id: ID });
-    m.revalidatePublicCache.mockResolvedValue(false);
-
-    const { result } = montar();
-    let salida;
-    await act(async () => {
-      salida = await result.current.updateMutation.mutateAsync({ id: ID, formData: formData() });
-    });
-
-    // El auto se guardó: lo que falló es solo el refresco de la caché.
-    expect(salida).toEqual({ _id: ID });
-    expect(result.current.updateMutation.isError).toBe(false);
-  });
 });
 
 describe("el listado del panel se entera de los cambios", () => {

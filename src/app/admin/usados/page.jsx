@@ -11,7 +11,6 @@ import AdminInventorySection from '@/components/admin/AdminInventorySection/Admi
 import { Alert } from '@/components/ui/Alert/Alert'
 import AdminFilters from '@/components/admin/AdminFilters/AdminFilters'
 import AdminCarModal from '@/components/admin/AdminCarModal/AdminCarModal'
-import RevalidateSection from '@/components/admin/RevalidateSection/RevalidateSection'
 import { FILTER_BOUNDS } from '@/constants/filterOptions'
 import styles from '../dashboard.module.css'
 
@@ -243,8 +242,6 @@ export default function AdminUsadosPage() {
               hasActiveFilters={hasActiveFilters}
               onResetFilters={handleResetFilters}
             />
-
-            <RevalidateSection />
           </div>
         ) : (
           <UsadosMetricasPlaceholder
