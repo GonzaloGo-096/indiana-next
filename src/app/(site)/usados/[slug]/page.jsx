@@ -117,87 +117,74 @@ function getVehicleJsonLd({ vehicle, canonicalUrl }) {
   return jsonLd;
 }
 
+const NOT_AVAILABLE_METADATA = {
+  title: "Vehículo no disponible",
+  description: "El vehículo solicitado no está disponible.",
+};
+
 /**
- * Metadata dinámica para SEO
+ * Metadata dinámica para SEO.
+ *
+ * Sin try/catch, igual que la página: un error del backend tiene que ser un
+ * error (app/error.jsx), no un título de "Vehículo no disponible" sobre una
+ * página que en realidad falló.
  */
 export async function generateMetadata({ params }) {
-  try {
-    const { slug } = await params;
-    const { id } = parseVehicleSlugParam(slug);
+  const { slug } = await params;
+  const { id } = parseVehicleSlugParam(slug);
+  if (!id) return NOT_AVAILABLE_METADATA;
 
-    if (!id) {
-      return {
-        title: "Vehículo no disponible",
-        description: "El vehículo solicitado no está disponible.",
-      };
-    }
+  const backendVehicle = await vehiclesService.getVehicleById(id);
+  if (!backendVehicle) return NOT_AVAILABLE_METADATA;
+  const vehicle = mapVehicle(backendVehicle);
 
-    const backendVehicle = await vehiclesService.getVehicleById(id);
-    const vehicle = mapVehicle(backendVehicle);
+  const canonicalUrl = absoluteUrl(buildVehicleDetailUrl(vehicle));
+  const title = vehicle.anio
+    ? `${vehicle.marca} ${vehicle.modelo} ${vehicle.anio} Usado`
+    : `${vehicle.marca} ${vehicle.modelo} Usado`;
+  const precioMeta = formatPrecioForMeta(vehicle.precio);
+  const description = `${vehicle.marca} ${vehicle.modelo}${vehicle.anio ? ` ${vehicle.anio}` : ""} usado en Tucumán. Consultá disponibilidad y precio con Peugeot Indiana.${precioMeta ? ` Precio: ${precioMeta}.` : ""}`;
 
-    if (!vehicle) {
-      return {
-        title: "Vehículo no disponible",
-        description: "El vehículo solicitado no está disponible.",
-      };
-    }
+  const fp = fotoPrincipalString(vehicle);
+  const ogImageUrl = fp
+    ? fp.startsWith("http") || fp.startsWith("//")
+      ? fp
+      : fp.startsWith("/")
+        ? absoluteUrl(fp)
+        : absoluteUrl(`/${fp}`)
+    : null;
 
-    const canonicalPath = buildVehicleDetailUrl(vehicle);
-    const canonicalUrl = absoluteUrl(canonicalPath);
-    const title = vehicle.anio
-      ? `${vehicle.marca} ${vehicle.modelo} ${vehicle.anio} Usado`
-      : `${vehicle.marca} ${vehicle.modelo} Usado`;
-    const precioMeta = formatPrecioForMeta(vehicle.precio);
-    const description = `${vehicle.marca} ${vehicle.modelo}${vehicle.anio ? ` ${vehicle.anio}` : ""} usado en Tucumán. Consultá disponibilidad y precio con Peugeot Indiana.${precioMeta ? ` Precio: ${precioMeta}.` : ""}`;
-
-    const fp = fotoPrincipalString(vehicle);
-    const ogImageUrl = fp
-      ? fp.startsWith("http") || fp.startsWith("//")
-        ? fp
-        : fp.startsWith("/")
-          ? absoluteUrl(fp)
-          : absoluteUrl(`/${fp}`)
-      : null;
-
-    return {
-      title,
+  return {
+    title,
+    description,
+    openGraph: {
+      title: `${title} | Peugeot Indiana`,
       description,
-      openGraph: {
-        title: `${title} | Peugeot Indiana`,
-        description,
-        url: canonicalUrl,
-        siteName: "Indiana Peugeot",
-        images: ogImageUrl
-          ? [
-              {
-                url: ogImageUrl,
-                alt: `${title} | Peugeot Indiana`,
-                width: 1200,
-                height: 630,
-              },
-            ]
-          : [],
-        locale: "es_AR",
-        type: "website",
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: `${title} | Peugeot Indiana`,
-        description,
-        images: ogImageUrl ? [ogImageUrl] : [],
-      },
-      alternates: {
-        canonical: canonicalUrl,
-      },
-    };
-  } catch {
-    // No se registra acá: la página hace el mismo pedido (compartido por
-    // cache() en el servicio), lanza el error y ese sí queda registrado.
-    return {
-      title: "Vehículo no disponible",
-      description: "Error al cargar la información del vehículo.",
-    };
-  }
+      url: canonicalUrl,
+      siteName: "Indiana Peugeot",
+      images: ogImageUrl
+        ? [
+            {
+              url: ogImageUrl,
+              alt: `${title} | Peugeot Indiana`,
+              width: 1200,
+              height: 630,
+            },
+          ]
+        : [],
+      locale: "es_AR",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${title} | Peugeot Indiana`,
+      description,
+      images: ogImageUrl ? [ogImageUrl] : [],
+    },
+    alternates: {
+      canonical: canonicalUrl,
+    },
+  };
 }
 
 // Sin generateStaticParams a propósito. Devolver [] activaba ISR: cada ficha
@@ -211,9 +198,11 @@ export default async function VehicleDetailPage({ params }) {
   if (!id) notFound();
 
   // Sin try/catch: notFound() y permanentRedirect() los resuelve Next, y una
-  // falla real del backend la muestra app/error.jsx.
-  const vehicle = mapVehicle(await vehiclesService.getVehicleById(id));
-  if (!vehicle) notFound();
+  // falla real (backend, red, timeout, respuesta inválida o mapeo) la muestra
+  // app/error.jsx. Si el auto existe lo decide solo el servicio.
+  const backendVehicle = await vehiclesService.getVehicleById(id);
+  if (!backendVehicle) notFound();
+  const vehicle = mapVehicle(backendVehicle);
 
   const canonicalPath = buildVehicleDetailUrl(vehicle);
   const canonicalSegment = canonicalPath.replace(/^\/usados\/?/, "");

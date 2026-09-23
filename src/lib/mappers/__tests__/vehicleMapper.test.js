@@ -134,4 +134,15 @@ describe("mapVehicle — detalle", () => {
     expect(v.fotoPrincipal).toBe(FOTO.url);
     expect(Array.isArray(v["imágenes"])).toBe(true);
   });
+
+  it("si el mapeo falla, lanza: no devuelve null", () => {
+    // null significaba "no existe" para la ficha: un bug terminaba en 404.
+    const roto = {
+      _id: "a",
+      get fotoPrincipal() {
+        throw new Error("dato roto");
+      },
+    };
+    expect(() => mapVehicle(roto)).toThrow("dato roto");
+  });
 });

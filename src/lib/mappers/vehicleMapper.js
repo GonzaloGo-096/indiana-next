@@ -148,31 +148,21 @@ export const mapVehicle = (backendVehicle) => {
     return null;
   }
 
-  try {
-    // ✅ OPTIMIZADO: Detalle incluye fotoPrincipal, fotoHover y fotosExtra
-    // Extracción específica - solo busca en campos que el backend realmente usa
-    const { principal, hover } = extractVehicleImageUrls(backendVehicle);
-    const allImages = extractAllImageUrls(backendVehicle, { includeExtras: true }); // Incluir extras en detalle
+  // Sin try/catch a propósito: si el mapeo falla, que falle. Antes devolvía
+  // null y la ficha lo tomaba como "el auto no existe": un bug terminaba en
+  // un 404 con noindex sobre un auto real.
+  const { principal, hover } = extractVehicleImageUrls(backendVehicle);
+  const allImages = extractAllImageUrls(backendVehicle, { includeExtras: true });
 
-    return {
-      // ✅ Passthrough completo: conservar todas las claves del backend
-      ...backendVehicle,
-
-      // Identificación
-      id: backendVehicle._id || backendVehicle.id || 0,
-
-      // ✅ Imágenes como strings (compatibilidad con componentes existentes)
-      fotoPrincipal: principal || "",
-      fotoHover: hover || "",
-      imagen: principal || "", // Alias para compatibilidad
-      imágenes: allImages,
-    };
-  } catch (error) {
-    log.error(
-      "Error transformando vehículo:",
-      error.message
-    );
-    return null;
-  }
+  return {
+    // Passthrough: se conservan todas las claves del backend.
+    ...backendVehicle,
+    id: backendVehicle._id || backendVehicle.id || 0,
+    // Imágenes como strings, que es lo que esperan los componentes.
+    fotoPrincipal: principal || "",
+    fotoHover: hover || "",
+    imagen: principal || "",
+    imágenes: allImages,
+  };
 };
 

@@ -46,16 +46,17 @@ function assertOk(response, endpoint) {
   throw new Error(`API error: ${response.status} ${response.statusText}`);
 }
 
+function invalidResponse(endpoint, reason) {
+  log.error("El backend devolvió una respuesta inválida:", { endpoint, reason });
+  return new Error("El servidor devolvió una respuesta inválida.");
+}
+
 async function readJson(response, endpoint) {
   const text = await response.text();
   try {
     return text ? JSON.parse(text) : null;
   } catch (parseErr) {
-    log.error("El backend devolvió algo que no es JSON:", {
-      endpoint,
-      message: parseErr.message,
-    });
-    throw new Error("El servidor devolvió una respuesta inválida.");
+    throw invalidResponse(endpoint, parseErr.message);
   }
 }
 
@@ -98,6 +99,10 @@ export const vehiclesService = {
   /**
    * Un vehículo por ID, o null si no existe.
    *
+   * Es el único lugar que decide que un auto no existe: 404 del backend, o
+   * { getOnePhoto: null }. Cualquier otra respuesta que no sea un auto es un
+   * error, nunca null: si no, la ficha mostraría un 404 falso con noindex.
+   *
    * Envuelto en cache() de React: la ficha lo pide desde generateMetadata y
    * desde la página. fetchWithTimeout pasa un `signal`, y con signal Next no
    * deduplica el fetch; sin esto cada visita le pegaba dos veces al backend.
@@ -114,15 +119,20 @@ export const vehiclesService = {
       `/photos/getonephoto/${cleanId}`,
     );
 
-    // Auto borrado o inexistente: null, no error. El backend deployado
-    // responde 404 "Auto no encontrado" (verificado el 2026-09-23); el del
-    // repo respondía 200 con getOnePhoto null. Los dos terminan en null, y
-    // con null la ficha llama a notFound().
+    // El backend deployado responde 404 "Auto no encontrado"; el del repo y
+    // el de preview, 200 con { getOnePhoto: null } (verificado el 2026-09-23).
     if (response.status === 404) return null;
 
     assertOk(response, endpoint);
     const data = await readJson(response, endpoint);
-    // El backend responde { getOnePhoto: {...} }; se acepta también el objeto pelado.
-    return data && "getOnePhoto" in data ? data.getOnePhoto : data;
+    if (!data || typeof data !== "object" || !("getOnePhoto" in data)) {
+      throw invalidResponse(endpoint, "falta getOnePhoto");
+    }
+    const vehicle = data.getOnePhoto;
+    if (vehicle === null) return null;
+    if (typeof vehicle !== "object") {
+      throw invalidResponse(endpoint, "getOnePhoto no es un objeto");
+    }
+    return vehicle;
   }),
 };

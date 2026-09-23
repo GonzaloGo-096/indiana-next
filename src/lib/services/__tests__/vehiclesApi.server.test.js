@@ -72,6 +72,25 @@ describe("vehiclesApi.server: sin caché de datos en el frontend", () => {
     await expect(vehiclesService.getVehicleById(ID)).resolves.toBeNull();
   });
 
+  it.each([
+    ["cuerpo vacío", ""],
+    ["JSON sin getOnePhoto", JSON.stringify({ error: null })],
+    ["getOnePhoto que no es un objeto", JSON.stringify({ getOnePhoto: "texto" })],
+    ["algo que no es JSON", "<html>502 Bad Gateway</html>"],
+  ])("una respuesta inválida (%s) es un error, nunca null", async (_caso, cuerpo) => {
+    global.fetch.mockResolvedValue(new Response(cuerpo, { status: 200 }));
+
+    await expect(vehiclesService.getVehicleById(ID)).rejects.toThrow(
+      "respuesta inválida",
+    );
+  });
+
+  it("un error de red es un error, nunca null", async () => {
+    global.fetch.mockRejectedValue(new TypeError("fetch failed"));
+
+    await expect(vehiclesService.getVehicleById(ID)).rejects.toThrow("fetch failed");
+  });
+
   it("otros errores del backend siguen siendo error, no 404", async () => {
     global.fetch.mockResolvedValue(jsonResponse({ error: true }, 500));
 
