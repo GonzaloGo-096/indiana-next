@@ -20,8 +20,8 @@ export default function AdminWebPage() {
             Web
           </h2>
           <p className={styles.sectionPlaceholderText}>
-            Desde acá vas a poder administrar el contenido del sitio público. Por ahora el inventario y la
-            publicación en caché siguen en la sección <strong>Usados</strong>.
+            Desde acá vas a poder administrar el contenido del sitio público. Por ahora el inventario
+            sigue en la sección <strong>Usados</strong>.
           </p>
         </section>
       </div>
