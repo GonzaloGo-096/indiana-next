@@ -36,6 +36,13 @@ const log = createLogger("api:catalogo");
 const TIMEOUT_MS = 15000;
 
 /**
+ * Ninguna respuesta de este proxy se guarda en el navegador ni en el CDN: el
+ * caché de los autos es del backend. Se declara explícito (como lo hacen las
+ * páginas dinámicas) para no depender del default de la plataforma.
+ */
+const NO_STORE = { "Cache-Control": "no-store" };
+
+/**
  * Rutas de lectura permitidas. Cualquier otra cosa se rechaza.
  * - photos/getallphotos          → listado con filtros
  * - photos/getonephoto/<24 hex>  → una ficha
@@ -57,7 +64,7 @@ export async function GET(request, { params }) {
     log.warn(`Ruta no permitida: ${ruta}`);
     return NextResponse.json(
       { error: "Ruta no permitida" },
-      { status: 404 },
+      { status: 404, headers: NO_STORE },
     );
   }
 
@@ -82,6 +89,7 @@ export async function GET(request, { params }) {
     return new NextResponse(cuerpo, {
       status: respuesta.status,
       headers: {
+        ...NO_STORE,
         "Content-Type":
           respuesta.headers.get("content-type") || "application/json",
       },
@@ -97,7 +105,7 @@ export async function GET(request, { params }) {
           ? "El backend no respondió a tiempo."
           : "No se pudo obtener la información.",
       },
-      { status: esTimeout ? 504 : 502 },
+      { status: esTimeout ? 504 : 502, headers: NO_STORE },
     );
   }
 }
