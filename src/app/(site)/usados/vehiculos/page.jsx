@@ -283,7 +283,8 @@ export async function generateMetadata({ searchParams }) {
 
 /**
  * No usar force-dynamic: obligaba a renderizar cada request en Vercel (TTFB alto y sensación de lag).
- * Esta ruta ya es dinámica por searchParams; el fetch usa Data Cache (revalidate en vehiclesApi.server).
+ * Esta ruta ya es dinámica por searchParams. Los autos se piden sin caché de Next
+ * ('no-store' en vehiclesApi.server): el caché de esos datos es del backend.
  */
 
 /**
@@ -309,7 +310,6 @@ export default async function VehiculosPage({ searchParams }) {
     const page = Number(resolvedSearchParams?.page) || 1;
     const cursor = page; // Backend usa cursor = página
 
-    // Fetch inicial en Server Component (aprovecha caching de Next.js)
     const backendData = await vehiclesService.getVehicles({
       filters,
       limit: 8,

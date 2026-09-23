@@ -68,8 +68,8 @@ export async function GET(request, { params }) {
     const respuesta = await fetch(destino, {
       headers: { Accept: "application/json" },
       signal: AbortSignal.timeout(TIMEOUT_MS),
-      // Sin caché de Next: la frescura de este camino la maneja el cliente.
-      // El camino server (vehiclesApi.server) sí cachea con tags.
+      // Sin caché de Next, igual que vehiclesApi.server: el caché de los
+      // autos es del backend.
       cache: "no-store",
     });
 

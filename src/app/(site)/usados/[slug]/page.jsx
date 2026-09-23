@@ -2,12 +2,16 @@
  * /usados/[slug] - Detalle de vehículo usado (Server Component)
  *
  * Soporta:
- * - URL vieja: /usados/699e2aa373f578ed9ede40cf → redirect 301 a canónica
+ * - URL vieja: /usados/699e2aa373f578ed9ede40cf → redirect permanente a canónica
  * - URL nueva: /usados/peugeot-208-allure-2021-699e2aa373f578ed9ede40cf
- * - Slug incorrecto: /usados/cualquier-cosa-699e2aa3... → redirect 301 a canónica
+ * - Slug incorrecto: /usados/cualquier-cosa-699e2aa3... → redirect permanente a canónica
+ * - Auto borrado o inexistente → notFound() (página 404 con noindex)
+ * - Falla del backend → se lanza y la muestra app/error.jsx
  *
- * @author Indiana Peugeot
- * @version 2.0.0 - Slug + id
+ * Como la ruta tiene loading.jsx, la respuesta se transmite por streaming: el
+ * status HTTP sale 200 antes de saber el resultado. El 404 llega como página
+ * con noindex y el redirect como meta refresh (comportamiento documentado de
+ * Next, ver loading.md "Status Codes").
  */
 
 import { notFound, permanentRedirect } from "next/navigation";
@@ -27,6 +31,19 @@ import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import { createLogger } from "@/lib/logger";
 
 const log = createLogger("usados:detalle");
+
+/** Script JSON-LD listo para inyectar, o null si no se pudo armar. */
+function buildJsonLdHtml(vehicle, canonicalUrl) {
+  const jsonLd = getVehicleJsonLd({ vehicle, canonicalUrl });
+  if (!jsonLd) return null;
+  try {
+    return serializeJsonLd(jsonLd);
+  } catch (error) {
+    // Sin JSON-LD la ficha sigue sirviendo; solo se pierde el dato para Google.
+    log.warn("JSON-LD omitido:", error?.message || error);
+    return null;
+  }
+}
 
 function formatPrecioForMeta(precio) {
   if (precio == null || precio === "") return "";
@@ -105,9 +122,8 @@ function getVehicleJsonLd({ vehicle, canonicalUrl }) {
  */
 export async function generateMetadata({ params }) {
   try {
-    const resolvedParams = await params;
-    const param = resolvedParams.slug ?? resolvedParams.id;
-    const { id } = parseVehicleSlugParam(param);
+    const { slug } = await params;
+    const { id } = parseVehicleSlugParam(slug);
 
     if (!id) {
       return {
@@ -175,6 +191,8 @@ export async function generateMetadata({ params }) {
       },
     };
   } catch {
+    // No se registra acá: la página hace el mismo pedido (compartido por
+    // cache() en el servicio), lanza el error y ese sí queda registrado.
     return {
       title: "Vehículo no disponible",
       description: "Error al cargar la información del vehículo.",
@@ -182,147 +200,48 @@ export async function generateMetadata({ params }) {
   }
 }
 
-/**
- * Generar paths estáticos (opcional, para SSG)
- */
-export async function generateStaticParams() {
-  return [];
-}
+// Sin generateStaticParams a propósito. Devolver [] activaba ISR: cada ficha
+// quedaba guardada como HTML la primera vez que alguien la visitaba, y un auto
+// ya borrado se seguía mostrando. La ficha se arma en cada visita con los
+// datos del backend (ver vehiclesApi.server).
 
-/**
- * Página de detalle de vehículo
- */
 export default async function VehicleDetailPage({ params }) {
-  let resolvedParams;
-  try {
-    resolvedParams = await params;
-  } catch {
-    notFound();
-  }
-
-  const param = resolvedParams.slug ?? resolvedParams.id;
-  const { id, needsRedirect } = parseVehicleSlugParam(param);
-
+  const { slug } = await params;
+  const { id, needsRedirect } = parseVehicleSlugParam(slug);
   if (!id) notFound();
 
-  let payload = null;
-  let caughtError = null;
+  // Sin try/catch: notFound() y permanentRedirect() los resuelve Next, y una
+  // falla real del backend la muestra app/error.jsx.
+  const vehicle = mapVehicle(await vehiclesService.getVehicleById(id));
+  if (!vehicle) notFound();
 
-  try {
-    const backendVehicle = await vehiclesService.getVehicleById(id);
-
-    if (!backendVehicle) notFound();
-
-    const vehicle = mapVehicle(backendVehicle);
-
-    if (!vehicle) notFound();
-
-    const canonicalPath = buildVehicleDetailUrl(vehicle);
-    const expectedSegment = canonicalPath.replace(/^\/usados\/?/, "");
-    const willRedirect = needsRedirect || param !== expectedSegment;
-
-    if (process.env.NODE_ENV === "development") {
-      console.log("[slug] REDIRECT DIAGNOSTIC:", {
-        param,
-        expectedSegment,
-        canonicalPath,
-        needsRedirect,
-        willRedirect,
-        slugMatch: param === expectedSegment,
-        vehicle: {
-          id: vehicle.id ?? vehicle._id,
-          marca: vehicle.marca,
-          modelo: vehicle.modelo,
-          version: vehicle.version,
-          anio: vehicle.anio ?? vehicle.año,
-        },
-      });
-    }
-
-    if (willRedirect) {
-      permanentRedirect(canonicalPath);
-    }
-
-    const canonicalUrl = absoluteUrl(canonicalPath);
-    const jsonLd = getVehicleJsonLd({ vehicle, canonicalUrl });
-
-    const clientVehicle = serializeVehicleForClient(vehicle);
-    let jsonLdHtml = null;
-    if (jsonLd) {
-      try {
-        jsonLdHtml = serializeJsonLd(jsonLd);
-      } catch (stringifyErr) {
-        if (process.env.NODE_ENV === "development") {
-          console.warn("[VehicleDetailPage] JSON-LD omitido:", stringifyErr);
-        }
-      }
-    }
-
-    payload = { clientVehicle, jsonLdHtml };
-  } catch (error) {
-    if (error?.digest?.startsWith?.("NEXT_REDIRECT")) throw error;
-    if (error?.digest === "NEXT_NOT_FOUND") throw error;
-
-    log.error("Error renderizando el detalle:", error?.message || error);
-
-    const msg = typeof error?.message === "string" ? error.message : "";
-    if (msg.includes("not found") || msg.includes("404")) {
-      notFound();
-    }
-
-    caughtError = error;
+  const canonicalPath = buildVehicleDetailUrl(vehicle);
+  const canonicalSegment = canonicalPath.replace(/^\/usados\/?/, "");
+  if (needsRedirect || slug !== canonicalSegment) {
+    permanentRedirect(canonicalPath);
   }
 
-  if (caughtError) {
-    const msg = typeof caughtError?.message === "string" ? caughtError.message : "";
-    const isApiFailure =
-      msg.includes("API error:") ||
-      msg.includes("No se pudo conectar") ||
-      msg.includes("Request timeout") ||
-      msg.includes("respuesta inválida");
-
-    return (
-      <div style={{ padding: "2rem", textAlign: "center", maxWidth: "36rem", margin: "0 auto" }}>
-        <h1>Error al cargar vehículo</h1>
-        <p>{msg || "Error desconocido"}</p>
-        {isApiFailure ? (
-          <p style={{ marginTop: "1rem", color: "#555", fontSize: "0.95rem" }}>
-            El detalle de usados pide al backend{" "}
-            <code style={{ fontSize: "0.85em" }}>GET /photos/getonephoto/&lt;id&gt;</code> desde el
-            servidor (Vercel). Revisá que{" "}
-            <code style={{ fontSize: "0.85em" }}>NEXT_PUBLIC_API_URL</code> o{" "}
-            <code style={{ fontSize: "0.85em" }}>API_URL</code> apunten al API público en{" "}
-            <strong>https</strong> y que el backend responda bien a ese ID.
-          </p>
-        ) : null}
-      </div>
-    );
+  const clientVehicle = serializeVehicleForClient(vehicle);
+  if (!clientVehicle) {
+    throw new Error(`No se pudo preparar la ficha del vehículo ${id}`);
   }
-
-  if (!payload?.clientVehicle) {
-    return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        <h1>Error al cargar vehículo</h1>
-        <p>No se pudo preparar los datos del vehículo.</p>
-      </div>
-    );
-  }
+  const jsonLdHtml = buildJsonLdHtml(vehicle, absoluteUrl(canonicalPath));
 
   return (
     <>
-      {payload.jsonLdHtml ? (
+      {jsonLdHtml ? (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: payload.jsonLdHtml }}
+          dangerouslySetInnerHTML={{ __html: jsonLdHtml }}
         />
       ) : null}
       <ItemViewTracker
-        item={buildItemParamsFromUsado(payload.clientVehicle)}
+        item={buildItemParamsFromUsado(clientVehicle)}
         location={LOCATIONS.USADOS_DETAIL}
         source={SOURCES.INLINE}
         componentId="detail_page"
       />
-      <VehicleDetailClient vehicle={payload.clientVehicle} />
+      <VehicleDetailClient vehicle={clientVehicle} />
     </>
   );
 }

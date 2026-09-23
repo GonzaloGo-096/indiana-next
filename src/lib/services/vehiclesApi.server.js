@@ -1,18 +1,24 @@
 /**
- * vehiclesApi.server.js - Servicio de vehículos para Server Components
- * 
- * Usa fetch nativo de Next.js para aprovechar:
- * - Deduplicación automática de requests
- * - Caching automático
- * - Mejor performance en Server Components
- * 
- * ⚠️ IMPORTANTE: Este archivo solo debe usarse en Server Components
- * Para Client Components, usar vehiclesApi.js (con axios)
- * 
- * @author Indiana Peugeot
- * @version 1.0.0
+ * Servicio de vehículos para Server Components.
+ * En el navegador se usa vehiclesApi.js, que pasa por el proxy /api/catalogo.
+ *
+ * Los datos de vehículos NO se cachean en el frontend: el caché es del backend.
+ *
+ * Antes cada respuesta quedaba 6 horas en el Data Cache de Next (revalidate
+ * 21600 + tags) y las páginas se guardaban como HTML. Un auto borrado seguía
+ * en el listado y su ficha terminaba en 404. Invalidar por tag no alcanzaba:
+ * justo después de borrar, el CDN del backend todavía entrega la lista vieja
+ * (verificado el 2026-09-23: la cachea ~5 min) y Next la volvía a guardar.
+ *
+ * Por eso todo pedido pasa por fetchFromBackend con 'no-store' explícito. Sin
+ * opción de caché, Next prerenderiza en el build las páginas sin APIs
+ * dinámicas (/ y /usados) y los autos quedan congelados hasta el próximo
+ * deploy. Con 'no-store', al intentar prerenderizar Next lanza un error
+ * interno para marcar la ruta como dinámica: quien atrape errores de este
+ * servicio tiene que dejarlo pasar con unstable_rethrow.
  */
 
+import { cache } from "react";
 import { getApiBaseUrl } from "@/lib/config/api";
 import { fetchWithTimeout } from "@/lib/http/server";
 import { buildSearchParams } from "@/utils/filters";
@@ -20,262 +26,103 @@ import { createLogger } from "@/lib/logger";
 
 const log = createLogger("api:server");
 
-/**
- * Servicio de vehículos para Server Components
- */
+async function fetchFromBackend(path) {
+  const endpoint = `${getApiBaseUrl()}${path}`;
+  log.debug("GET", endpoint);
+  const response = await fetchWithTimeout(endpoint, {
+    headers: { Accept: "application/json" },
+    cache: "no-store",
+  });
+  return { endpoint, response };
+}
+
+function assertOk(response, endpoint) {
+  if (response.ok) return;
+  log.error("El backend respondió con error:", {
+    status: response.status,
+    statusText: response.statusText,
+    endpoint,
+  });
+  throw new Error(`API error: ${response.status} ${response.statusText}`);
+}
+
+async function readJson(response, endpoint) {
+  const text = await response.text();
+  try {
+    return text ? JSON.parse(text) : null;
+  } catch (parseErr) {
+    log.error("El backend devolvió algo que no es JSON:", {
+      endpoint,
+      message: parseErr.message,
+    });
+    throw new Error("El servidor devolvió una respuesta inválida.");
+  }
+}
+
 export const vehiclesService = {
   /**
-   * Obtener lista de vehículos (Server Component)
+   * Listado de vehículos.
    *
-   * Usa fetch nativo para aprovechar deduplicación y caching de Next.js
-   *
-   * @param {Object} options - Opciones de búsqueda
-   * @param {Object} options.filters - Filtros del frontend
-   * @param {number} options.limit - Cantidad de resultados (default: 12)
-   * @param {number} options.cursor - Cursor de paginación (default: 1)
-   * @param {boolean} [options.mergeDefaults=false] - Si true, rellena rangos faltantes (precio/km) con FILTER_DEFAULTS. **Por defecto false**: el listado público muestra todo el inventario y deja que el usuario filtre explícitamente.
-   * @returns {Promise<Object>} Respuesta del backend
+   * @param {Object} options
+   * @param {Object} [options.filters] - Filtros del frontend
+   * @param {number} [options.limit=12]
+   * @param {number} [options.cursor=1] - Página (el backend la llama cursor)
+   * @param {boolean} [options.mergeDefaults=false] - Si true, rellena rangos faltantes (precio/km) con FILTER_DEFAULTS. Por defecto false: el listado público muestra todo el inventario y deja que el usuario filtre explícitamente.
+   * @returns {Promise<Object|null>} Respuesta del backend
    */
   async getVehicles({ filters = {}, limit = 12, cursor = null, mergeDefaults = false } = {}) {
-    try {
-      // Validaciones y normalizaciones
-      const safeLimit =
-        Number.isFinite(Number(limit)) && Number(limit) > 0 ? Number(limit) : 12;
-      const safeCursor =
-        Number.isFinite(Number(cursor)) && Number(cursor) > 0 ? Number(cursor) : 1;
+    const safeLimit = Number(limit) > 0 ? Number(limit) : 12;
+    const safeCursor = Number(cursor) > 0 ? Number(cursor) : 1;
 
-      // Construir URL: buildSearchParams (filtros) + limit/cursor (paginación backend)
-      const baseURL = getApiBaseUrl();
-      // Los rangos que están en su posición inicial NO se mandan.
-      //
-      // Antes iba `includeDefaultRanges: true`, que los mandaba siempre. El
-      // formulario guarda los tres rangos aunque el visitante no los toque,
-      // así que al filtrar por año también viajaba "precio desde 5.000.000":
-      // un filtro que nadie pidió. Y como ese mínimo no coincide con el
-      // inventario real, borraba autos válidos y podía dejar la lista vacía.
-      //
-      // "Rango completo" y "sin filtrar" son lo mismo, así que omitirlo no
-      // cambia el resultado: solo deja de esconder autos.
-      const searchParams = buildSearchParams(filters, {
-        mergeDefaults,
-      });
-      searchParams.set("limit", String(safeLimit));
-      searchParams.set("cursor", String(safeCursor));
+    // Los rangos que están en su posición inicial NO se mandan.
+    //
+    // Antes iba `includeDefaultRanges: true`, que los mandaba siempre. El
+    // formulario guarda los tres rangos aunque el visitante no los toque,
+    // así que al filtrar por año también viajaba "precio desde 5.000.000":
+    // un filtro que nadie pidió. Y como ese mínimo no coincide con el
+    // inventario real, borraba autos válidos y podía dejar la lista vacía.
+    //
+    // "Rango completo" y "sin filtrar" son lo mismo, así que omitirlo no
+    // cambia el resultado: solo deja de esconder autos.
+    const searchParams = buildSearchParams(filters, { mergeDefaults });
+    searchParams.set("limit", String(safeLimit));
+    searchParams.set("cursor", String(safeCursor));
 
-      const endpoint = `${baseURL}/photos/getallphotos?${searchParams.toString()}`;
-
-      // Logging detallado en desarrollo (solo si hay problemas)
-      if (process.env.NODE_ENV === "development" && process.env.DEBUG_API === "true") {
-        console.log("[API Server] ===== FETCH REQUEST =====");
-        console.log("[API Server] Base URL:", baseURL);
-        console.log("[API Server] Endpoint completo:", endpoint);
-        console.log("[API Server] Filtros:", JSON.stringify(filters, null, 2));
-        console.log("[API Server] Limit:", safeLimit, "Cursor:", safeCursor);
-        console.log("[API Server] NEXT_PUBLIC_API_URL:", process.env.NEXT_PUBLIC_API_URL);
-        console.log("[API Server] API_URL:", process.env.API_URL);
-      }
-
-      // ✅ Caching con ISR: Revalidar cada 6 horas (21600 segundos)
-      // Tags permiten revalidación manual si es necesario
-      const fetchOptions = {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        next: {
-          revalidate: 21600, // 6 horas
-          tags: ['vehicles-list'],
-        },
-      };
-
-      // Fetch con timeout y caching automático de Next.js
-      let response;
-      try {
-        response = await fetchWithTimeout(endpoint, fetchOptions);
-        
-        if (process.env.NODE_ENV === "development" && process.env.DEBUG_API === "true") {
-          console.log("[API Server] ✅ Response recibida:", response.status, response.statusText);
-        }
-      } catch (fetchError) {
-        if (process.env.NODE_ENV === "development") {
-          console.error("[API Server] ❌ Error en fetch:", fetchError);
-          console.error("[API Server] Error name:", fetchError.name);
-          console.error("[API Server] Error message:", fetchError.message);
-          console.error("[API Server] Error code:", fetchError.code);
-          console.error("[API Server] Error cause:", fetchError.cause);
-        }
-        throw fetchError;
-      }
-
-      if (!response.ok) {
-        log.error("getVehicles HTTP error:", {
-          status: response.status,
-          statusText: response.statusText,
-          endpoint,
-        });
-        throw new Error(
-          `API error: ${response.status} ${response.statusText}`
-        );
-      }
-
-      let data;
-      try {
-        const text = await response.text();
-        data = text ? JSON.parse(text) : null;
-      } catch (parseErr) {
-        log.error("getVehicles respuesta no JSON:", {
-          endpoint,
-          message: parseErr?.message,
-        });
-        throw new Error(
-          "El servidor devolvió una respuesta inválida al listar vehículos."
-        );
-      }
-      return data;
-    } catch (error) {
-      let baseURL = "";
-      try {
-        baseURL = getApiBaseUrl();
-      } catch {
-        baseURL = "(API URL no configurada)";
-      }
-      const errorDetails = {
-        message: error.message,
-        baseURL,
-        filters,
-        limit,
-        cursor,
-      };
-
-      // Logging más detallado en desarrollo
-      if (process.env.NODE_ENV === "development") {
-        console.error("[API Server] Error fetching vehicles:", errorDetails);
-        console.error("[API Server] Error completo:", error);
-        
-        // Mensaje más útil si el backend no está disponible
-        if (
-          error.message === "fetch failed" ||
-          error.message?.includes("ECONNREFUSED") ||
-          error.code === "ECONNREFUSED" ||
-          error.cause?.code === "ECONNREFUSED"
-        ) {
-          console.warn(
-            `[API Server] ⚠️  Backend no disponible en ${baseURL}. ` +
-            `Asegúrate de que el backend esté corriendo y que NEXT_PUBLIC_API_URL esté configurado correctamente.`
-          );
-          console.warn(
-            `[API Server] 💡 Verifica: ` +
-            `1) Backend corriendo en puerto 3001, ` +
-            `2) Variable NEXT_PUBLIC_API_URL=${process.env.NEXT_PUBLIC_API_URL}, ` +
-            `3) Backend acepta conexiones desde localhost`
-          );
-        }
-      }
-
-      // Re-lanzar error con mensaje más claro
-      const isConnectionError =
-        error.message === "fetch failed" ||
-        error.message?.includes("ECONNREFUSED") ||
-        error.code === "ECONNREFUSED" ||
-        error.cause?.code === "ECONNREFUSED" ||
-        error.name === "TypeError";
-
-      const enhancedError = new Error(
-        isConnectionError
-          ? `No se pudo conectar con el backend en ${baseURL}. Verifica que: 1) El backend esté corriendo, 2) NEXT_PUBLIC_API_URL esté configurado correctamente, 3) El backend acepte conexiones desde localhost.`
-          : error.message
-      );
-      enhancedError.originalError = error;
-      enhancedError.code = error.code || error.cause?.code;
-      throw enhancedError;
-    }
+    const { endpoint, response } = await fetchFromBackend(
+      `/photos/getallphotos?${searchParams}`,
+    );
+    assertOk(response, endpoint);
+    return readJson(response, endpoint);
   },
 
   /**
-   * Obtener vehículo por ID (Server Component)
-   * 
-   * @param {string|number} id - ID del vehículo
-   * @returns {Promise<Object>} Vehículo del backend
+   * Un vehículo por ID, o null si no existe.
+   *
+   * Envuelto en cache() de React: la ficha lo pide desde generateMetadata y
+   * desde la página. fetchWithTimeout pasa un `signal`, y con signal Next no
+   * deduplica el fetch; sin esto cada visita le pegaba dos veces al backend.
+   * cache() vale solo dentro de un mismo request: no guarda nada entre visitas.
+   *
+   * @param {string} id
+   * @returns {Promise<Object|null>}
    */
-  async getVehicleById(id) {
-    const cleanId =
-      id != null && id !== undefined
-        ? `${id}`.trim().split(/\s+/)[0] || `${id}`.trim()
-        : "";
+  getVehicleById: cache(async (id) => {
+    const cleanId = String(id ?? "").trim();
+    if (!cleanId) throw new Error("ID de vehículo inválido");
 
-    try {
-      if (!cleanId) {
-        throw new Error("ID de vehículo inválido");
-      }
+    const { endpoint, response } = await fetchFromBackend(
+      `/photos/getonephoto/${cleanId}`,
+    );
 
-      const baseURL = getApiBaseUrl();
-      const endpoint = `${baseURL}/photos/getonephoto/${cleanId}`;
+    // Auto borrado o inexistente: null, no error. El backend deployado
+    // responde 404 "Auto no encontrado" (verificado el 2026-09-23); el del
+    // repo respondía 200 con getOnePhoto null. Los dos terminan en null, y
+    // con null la ficha llama a notFound().
+    if (response.status === 404) return null;
 
-      // Logging solo en desarrollo
-      if (process.env.NODE_ENV === "development") {
-        console.debug("[API Server] Fetching vehicle:", endpoint);
-      }
-
-      // ✅ Caching con ISR: Revalidar cada 6 horas (21600 segundos)
-      // Tags permiten revalidación manual por vehículo específico o todos
-      const response = await fetchWithTimeout(endpoint, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        next: {
-          revalidate: 21600, // 6 horas
-          tags: ['vehicle-detail', `vehicle:${cleanId}`],
-        },
-      });
-
-      if (!response.ok) {
-        log.error("getVehicleById HTTP error:", {
-          id: cleanId,
-          status: response.status,
-          statusText: response.statusText,
-          endpoint,
-        });
-        if (response.status === 404) {
-          throw new Error("Vehículo no encontrado");
-        }
-        throw new Error(
-          `API error: ${response.status} ${response.statusText}`
-        );
-      }
-
-      let data;
-      try {
-        const text = await response.text();
-        data = text ? JSON.parse(text) : null;
-      } catch (parseErr) {
-        log.error("getVehicleById respuesta no JSON:", {
-          id: cleanId,
-          endpoint,
-          message: parseErr?.message,
-        });
-        throw new Error(
-          "El servidor devolvió una respuesta inválida al cargar el vehículo."
-        );
-      }
-
-      // El backend puede retornar { getOnePhoto: {...} } o directamente el objeto
-      const vehicle =
-        data && data.getOnePhoto ? data.getOnePhoto : data;
-
-      return vehicle;
-    } catch (error) {
-      log.error("Error fetching vehicle by ID:", {
-        id: cleanId,
-        message: error.message,
-      });
-
-      throw error;
-    }
-  },
+    assertOk(response, endpoint);
+    const data = await readJson(response, endpoint);
+    // El backend responde { getOnePhoto: {...} }; se acepta también el objeto pelado.
+    return data && "getOnePhoto" in data ? data.getOnePhoto : data;
+  }),
 };
-
-export default vehiclesService;
-

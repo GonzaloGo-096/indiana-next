@@ -10,14 +10,15 @@
  * Traerlos acá elimina la clase entera de fallas:
  *   - no depende de CORS ni de que el navegador ejecute JS
  *   - los autos entran en el HTML, así que los ve Google
- *   - aprovecha el Data Cache con el tag 'vehicles-list', el mismo que usa
- *     /usados: es la misma consulta, no una segunda
+ *   - usa el mismo servicio que /usados, sin caché propio: el caché de los
+ *     autos es del backend (ver vehiclesApi.server)
  *   - saca axios del bundle del inicio
  *
  * Es un Server Component async y se monta dentro de <Suspense>, así que si el
  * backend tarda, el resto del inicio ya se pintó.
  */
 
+import { unstable_rethrow } from "next/navigation";
 import { vehiclesService } from "@/lib/services/vehiclesApi.server";
 import { mapVehiclesPage } from "@/lib/mappers/vehicleMapper";
 import { createLogger } from "@/lib/logger";
@@ -39,8 +40,11 @@ export async function HomeUsadosCarouselServer() {
     });
     vehicles = mapVehiclesPage(backendData, 1).vehicles || [];
   } catch (error) {
-    // No se relanza: que el inicio entero falle por el carrusel sería peor que
-    // mostrarlo sin autos. Pero ahora queda registrado y llega a telemetría,
+    // La señal de "ruta dinámica" que lanza Next por el fetch 'no-store' sí
+    // se relanza: no es una falla, y tragarla deja el carrusel vacío.
+    unstable_rethrow(error);
+    // Las fallas reales no se relanzan: que el inicio entero falle por el
+    // carrusel sería peor que mostrarlo sin autos. Pero ahora queda registrado y llega a telemetría,
     // que es exactamente lo que faltaba cuando esto se rompió.
     log.error(
       "No se pudieron traer los usados del inicio, la sección queda sin carrusel:",
