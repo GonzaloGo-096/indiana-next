@@ -876,6 +876,20 @@
   color: var(--color-neutral-600);
 }
 
+.vendidoTag {
+  display: inline-block;
+  margin-left: var(--spacing-2);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  color: var(--color-white);
+  background: var(--color-error-600);
+}
+
 .metaList {
   display: flex;
   flex-wrap: wrap;

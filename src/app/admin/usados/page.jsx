@@ -77,9 +77,9 @@ export default function AdminUsadosPage() {
     setFiltersResetKey((k) => k + 1)
   }, [])
 
-  const { createMutation, updateMutation, deleteMutation } = useCarMutation()
+  const { createMutation, updateMutation, deleteMutation, statusMutation } = useCarMutation()
 
-  const modal = useAdminVehicleModal({ createMutation, updateMutation, refetch })
+  const modal = useAdminVehicleModal({ createMutation, updateMutation, statusMutation, refetch })
 
   const [deleteError, setDeleteError] = useState(null)
 

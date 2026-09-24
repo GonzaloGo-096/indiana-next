@@ -178,10 +178,19 @@ export const useCarMutation = () => {
     }
   })
   
+  const statusMutation = useMutation({
+    mutationFn: ({ id, estado }) => vehiclesAdminService.updateVehicleStatus(id, estado),
+    onSuccess: (data, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['vehicles'] })
+      queryClient.invalidateQueries({ queryKey: ['vehicle', id] })
+    },
+  })
+
   return {
     createMutation,
     updateMutation,
-    deleteMutation
+    deleteMutation,
+    statusMutation
   }
 }
 

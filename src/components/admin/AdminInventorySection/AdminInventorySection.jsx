@@ -75,6 +75,7 @@ export default function AdminInventorySection({
                 <div className={styles.vehicleCardBody}>
                   <h3 className={styles.vehicleTitle}>
                     {item.marca} <span className={styles.vehicleModel}>{item.modelo}</span>
+                    {item.vendido ? <span className={styles.vendidoTag}>Vendido</span> : null}
                   </h3>
                   <dl className={styles.metaList}>
                     <div className={styles.metaItem}>

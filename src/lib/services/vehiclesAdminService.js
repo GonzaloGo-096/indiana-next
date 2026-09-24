@@ -162,6 +162,17 @@ const vehiclesAdminService = {
     // credencial. Ver src/app/api/admin/vehicles/[id]/route.js.
     const response = await authAxiosInstance.delete(`/vehicles/${id}`)
     return response.data
+  },
+
+  /**
+   * Cambiar el estado comercial (ACTIVO / VENDIDO / PAUSADO). Es una operación
+   * aparte del backend: editar el auto no toca su estado.
+   * @param {string} id - ID del vehículo
+   * @param {string} estado - Uno de ESTADOS (utils/vehicleEstado)
+   */
+  async updateVehicleStatus(id, estado) {
+    const response = await authAxiosInstance.patch(`/vehicles/${id}`, { estado })
+    return response.data
   }
 }
 
