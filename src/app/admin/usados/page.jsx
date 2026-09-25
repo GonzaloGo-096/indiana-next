@@ -53,12 +53,9 @@ export default function AdminUsadosPage() {
 
   const backendFilters = useCallback(() => filters, [filters])
 
-  // ✅ Admin ve TODO el inventario: sin defaults invisibles de precio/km.
-  // (mergeDefaults: false ya es el default global; lo dejamos explícito por claridad).
-  const { vehicles, isLoading, error, refetch } = useAdminVehiclesList(backendFilters(), {
-    pageSize: 1000,
-    mergeDefaults: false,
-  })
+  // El panel ve TODO el inventario, pausados incluidos, y sin rangos
+  // invisibles de precio/km (ver useAdminVehiclesList y buildVehicleListQuery).
+  const { vehicles, isLoading, error, refetch } = useAdminVehiclesList(backendFilters())
 
   const hasActiveFilters = useMemo(() => {
     const [a, b] = filters.año
