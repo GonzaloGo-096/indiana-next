@@ -115,3 +115,22 @@ describe("editar con cambio de estado", () => {
     expect(refetch).toHaveBeenCalled();
   });
 });
+
+describe("pausar desde la edición", () => {
+  it("pausar funciona igual que vender: primero el estado, después los datos", async () => {
+    const { result, orden } = montar();
+    await editarYGuardar(result, "PAUSADO");
+    expect(orden).toEqual([
+      ["estado", { id: ID, estado: "PAUSADO" }],
+      ["datos", ID],
+    ]);
+  });
+
+  it("si fallan los datos después de pausar, el mensaje nombra el estado como se ve en pantalla", async () => {
+    const { result } = montar({ updateFalla: new Error("HTTP 500") });
+    await editarYGuardar(result, "PAUSADO");
+    expect(result.current.modalState.error).toBe(
+      'El auto quedó como "Pausado", pero no se pudieron guardar los demás cambios: HTTP 500',
+    );
+  });
+});

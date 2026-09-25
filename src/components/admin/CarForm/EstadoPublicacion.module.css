@@ -45,6 +45,11 @@
   background: var(--color-error-50);
 }
 
+.opcion[data-estado="PAUSADO"]:has(input:checked) {
+  border-color: var(--color-warning-500);
+  background: var(--color-warning-50);
+}
+
 .titulo {
   display: block;
   color: var(--cf-text);

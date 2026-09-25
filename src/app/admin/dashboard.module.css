@@ -876,7 +876,8 @@
   color: var(--color-neutral-600);
 }
 
-.vendidoTag {
+/* Etiqueta de estado en la tarjeta del panel (solo para los no disponibles). */
+.estadoTag {
   display: inline-block;
   margin-left: var(--spacing-2);
   padding: 2px 8px;
@@ -887,7 +888,18 @@
   text-transform: uppercase;
   vertical-align: middle;
   color: var(--color-white);
+}
+
+.estadoTag[data-estado="VENDIDO"] {
   background: var(--color-error-600);
+}
+
+.estadoTag[data-estado="PAUSADO"] {
+  background: var(--color-warning-600);
+}
+
+.estadoFilterWrap {
+  margin-bottom: var(--spacing-4);
 }
 
 .metaList {

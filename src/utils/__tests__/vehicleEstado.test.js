@@ -14,6 +14,8 @@ import {
   ESTADOS,
   vendidosAlFinal,
   sinVendidos,
+  contarPorEstado,
+  ETIQUETAS_ESTADO,
 } from "../vehicleEstado";
 
 describe("getEstado — el default protege a producción", () => {
@@ -109,5 +111,30 @@ describe("sinVendidos", () => {
   it("saca solo los vendidos; los sin estado quedan (son activos)", () => {
     const lista = [auto(1, "VENDIDO"), auto(2, "ACTIVO"), auto(3), auto(4, "vendido")];
     expect(ids(sinVendidos(lista))).toEqual([2, 3]);
+  });
+});
+
+describe("contarPorEstado", () => {
+  it("cuenta cada estado; sin estado o desconocido cuenta como ACTIVO", () => {
+    const lista = [
+      { estado: "VENDIDO" },
+      { estado: "PAUSADO" },
+      { estado: "ACTIVO" },
+      {},
+      { estado: "RESERVADO" },
+    ];
+    expect(contarPorEstado(lista)).toEqual({ ACTIVO: 3, VENDIDO: 1, PAUSADO: 1 });
+  });
+
+  it("lista vacía: todo en cero", () => {
+    expect(contarPorEstado([])).toEqual({ ACTIVO: 0, VENDIDO: 0, PAUSADO: 0 });
+  });
+});
+
+describe("ETIQUETAS_ESTADO", () => {
+  it("hay una etiqueta para cada estado", () => {
+    for (const estado of Object.values(ESTADOS)) {
+      expect(typeof ETIQUETAS_ESTADO[estado]).toBe("string");
+    }
   });
 });

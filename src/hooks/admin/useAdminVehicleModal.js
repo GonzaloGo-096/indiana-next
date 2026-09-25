@@ -11,7 +11,7 @@ import {
 } from '@/components/admin/hooks/useCarModal.reducer'
 import vehiclesService from '@/lib/services/vehiclesApi'
 import { normalizeDiscount } from '@/lib/pricing/discount'
-import { ESTADOS, getEstado } from '@/utils/vehicleEstado'
+import { ETIQUETAS_ESTADO, getEstado } from '@/utils/vehicleEstado'
 
 // Los errores de /api/admin llegan de axios con el mensaje del backend en `msg`.
 const mensajeDeError = (error) => error?.response?.data?.msg || error?.message || 'error desconocido'
@@ -89,10 +89,9 @@ export function useAdminVehicleModal({ createMutation, updateMutation, statusMut
         if (vehicleId) {
           dispatch(setLoading())
 
-          // El estado va por una operación aparte del backend y va PRIMERO: el
-          // guardado de los datos borra el caché de autos del backend, y así
-          // cubre también el cambio de estado (que hoy no lo borra por su
-          // cuenta). Si el estado falla, no se guarda nada.
+          // El estado va por una operación aparte del backend, y PRIMERO: si
+          // falla, no se guarda nada y el panel queda como estaba. (Cada
+          // operación borra el caché del backend por su cuenta.)
           const cambiaEstado = estado != null && estado !== getEstado(modalState.initialData)
           if (cambiaEstado) {
             try {
@@ -111,7 +110,7 @@ export function useAdminVehicleModal({ createMutation, updateMutation, statusMut
             dispatch(closeModalAction())
           } catch (error) {
             const prefijo = cambiaEstado
-              ? `El auto quedó como "${estado === ESTADOS.VENDIDO ? 'Vendido' : 'Disponible'}", pero no se pudieron guardar los demás cambios`
+              ? `El auto quedó como "${ETIQUETAS_ESTADO[estado]}", pero no se pudieron guardar los demás cambios`
               : 'No se pudo actualizar el vehículo'
             refetch()
             dispatch(setError(`${prefijo}: ${error.message}`))
