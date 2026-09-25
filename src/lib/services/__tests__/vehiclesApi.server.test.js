@@ -99,3 +99,39 @@ describe("vehiclesApi.server: sin caché de datos en el frontend", () => {
     );
   });
 });
+
+describe("vehiclesApi.server: getPublicVehicleById (lo que ve el público)", () => {
+  beforeEach(() => {
+    process.env.NEXT_PUBLIC_API_URL = "https://backend.test";
+    global.fetch = vi.fn();
+  });
+
+  afterEach(() => {
+    process.env.NEXT_PUBLIC_API_URL = originalApiUrl;
+    vi.restoreAllMocks();
+  });
+
+  it.each([
+    ["ACTIVO", "ACTIVO"],
+    ["VENDIDO (es vidriera: su ficha se ve)", "VENDIDO"],
+    ["sin estado (default: disponible)", undefined],
+  ])("un auto %s se devuelve", async (_caso, estado) => {
+    global.fetch.mockResolvedValue(jsonResponse({ getOnePhoto: { _id: ID, estado } }));
+    await expect(vehiclesService.getPublicVehicleById(ID)).resolves.toEqual({ _id: ID, estado });
+  });
+
+  it("un auto PAUSADO es null: para el público no existe (el backend igual lo devuelve por id)", async () => {
+    global.fetch.mockResolvedValue(jsonResponse({ getOnePhoto: { _id: ID, estado: "PAUSADO" } }));
+    await expect(vehiclesService.getPublicVehicleById(ID)).resolves.toBeNull();
+  });
+
+  it("un auto inexistente sigue siendo null", async () => {
+    global.fetch.mockResolvedValue(jsonResponse({ error: true, msg: "Auto no encontrado" }, 404));
+    await expect(vehiclesService.getPublicVehicleById(ID)).resolves.toBeNull();
+  });
+
+  it("un error del backend sigue siendo error, no un 'no encontrado' falso", async () => {
+    global.fetch.mockResolvedValue(jsonResponse({ error: true }, 500));
+    await expect(vehiclesService.getPublicVehicleById(ID)).rejects.toThrow();
+  });
+});

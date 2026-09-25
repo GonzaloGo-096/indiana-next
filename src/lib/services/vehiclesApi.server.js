@@ -23,6 +23,7 @@ import { getApiBaseUrl } from "@/lib/config/api";
 import { fetchWithTimeout } from "@/lib/http/server";
 import { buildSearchParams } from "@/utils/filters";
 import { createLogger } from "@/lib/logger";
+import { isPausado } from "@/utils/vehicleEstado";
 
 const log = createLogger("api:server");
 
@@ -135,4 +136,21 @@ export const vehiclesService = {
     }
     return vehicle;
   }),
+
+  /**
+   * Un vehículo tal como lo puede ver el público: null si no existe O si está
+   * PAUSADO. Es lo que usa la ficha (página y metadatos).
+   *
+   * El backend saca a los pausados de la lista pública, pero su ficha por id
+   * la sigue devolviendo (verificado el 2026-09-24). Sin esto, un pausado se
+   * vería como disponible entrando por un link viejo o compartido. Para la
+   * ficha, pausado y borrado son lo mismo: "no encontrado", con noindex.
+   *
+   * @param {string} id
+   * @returns {Promise<Object|null>}
+   */
+  async getPublicVehicleById(id) {
+    const vehicle = await vehiclesService.getVehicleById(id);
+    return vehicle && !isPausado(vehicle) ? vehicle : null;
+  },
 };

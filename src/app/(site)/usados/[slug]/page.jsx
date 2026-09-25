@@ -5,7 +5,7 @@
  * - URL vieja: /usados/699e2aa373f578ed9ede40cf → redirect permanente a canónica
  * - URL nueva: /usados/peugeot-208-allure-2021-699e2aa373f578ed9ede40cf
  * - Slug incorrecto: /usados/cualquier-cosa-699e2aa3... → redirect permanente a canónica
- * - Auto borrado o inexistente → notFound() (página 404 con noindex)
+ * - Auto borrado, inexistente o PAUSADO → notFound() (página 404 con noindex)
  * - Falla del backend → se lanza y la muestra app/error.jsx
  *
  * Como la ruta tiene loading.jsx, la respuesta se transmite por streaming: el
@@ -90,7 +90,7 @@ export async function generateMetadata({ params }) {
   const { id } = parseVehicleSlugParam(slug);
   if (!id) return NOT_AVAILABLE_METADATA;
 
-  const backendVehicle = await vehiclesService.getVehicleById(id);
+  const backendVehicle = await vehiclesService.getPublicVehicleById(id);
   if (!backendVehicle) return NOT_AVAILABLE_METADATA;
   const vehicle = mapVehicle(backendVehicle);
 
@@ -149,7 +149,7 @@ export default async function VehicleDetailPage({ params }) {
   // Sin try/catch: notFound() y permanentRedirect() los resuelve Next, y una
   // falla real (backend, red, timeout, respuesta inválida o mapeo) la muestra
   // app/error.jsx. Si el auto existe lo decide solo el servicio.
-  const backendVehicle = await vehiclesService.getVehicleById(id);
+  const backendVehicle = await vehiclesService.getPublicVehicleById(id);
   if (!backendVehicle) notFound();
   const vehicle = mapVehicle(backendVehicle);
 

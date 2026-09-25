@@ -19,7 +19,9 @@ const m = vi.hoisted(() => ({
 }));
 
 vi.mock("@/lib/services/vehiclesApi.server", () => ({
-  vehiclesService: { getVehicleById: (...a) => m.getVehicleById(...a) },
+  // La página usa getPublicVehicleById (null = no existe o pausado); acá se
+  // simula su respuesta. La regla "pausado = null" se prueba en el servicio.
+  vehiclesService: { getPublicVehicleById: (...a) => m.getVehicleById(...a) },
 }));
 
 // Passthrough al mapper real; un test lo reemplaza para simular un bug.
