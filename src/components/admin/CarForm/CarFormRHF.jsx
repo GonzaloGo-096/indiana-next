@@ -99,11 +99,10 @@ const CarFormRHF = ({
   const marcaDropdownRef = useRef(null)
   const marcaSearchInputRef = useRef(null)
 
+  // El buscador se limpia al ABRIR (en el onClick del botón), no al cerrar:
+  // así el efecto solo enfoca y no cambia estado por su cuenta.
   useEffect(() => {
-    if (!marcaDropdownOpen) {
-      setMarcaSearchQuery('')
-      return
-    }
+    if (!marcaDropdownOpen) return
     const id = requestAnimationFrame(() => {
       marcaSearchInputRef.current?.focus()
     })
@@ -639,7 +638,9 @@ const CarFormRHF = ({
                       aria-controls="car-form-marca-listbox"
                       disabled={isLoading}
                       onClick={() => {
-                        if (!isLoading) setMarcaDropdownOpen((o) => !o)
+                        if (isLoading) return
+                        if (!marcaDropdownOpen) setMarcaSearchQuery('')
+                        setMarcaDropdownOpen(!marcaDropdownOpen)
                       }}
                     >
                       <span

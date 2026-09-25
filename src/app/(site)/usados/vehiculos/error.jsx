@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 /**
  * Error boundary para /usados/vehiculos
  *
@@ -105,7 +107,7 @@ export default function VehiculosError({ error, reset }) {
           Reintentar
         </button>
 
-        <a
+        <Link
           href="/usados"
           style={{
             padding: "0.55rem 1.25rem",
@@ -122,7 +124,7 @@ export default function VehiculosError({ error, reset }) {
           }}
         >
           Volver a usados
-        </a>
+        </Link>
       </div>
     </div>
   );

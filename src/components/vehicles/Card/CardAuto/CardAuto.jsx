@@ -95,7 +95,7 @@ export const CardAuto = memo(({ auto, imagePriority = "auto", index = 0 }) => {
       };
       sessionStorage.setItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL, JSON.stringify(scrollData));
     }
-  }, [auto]);
+  }, [auto, index]);
 
   const offerData = useMemo(() => getVehicleOfferDisplay(auto), [auto]);
 
