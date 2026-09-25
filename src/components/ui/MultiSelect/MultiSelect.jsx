@@ -59,12 +59,10 @@ const MultiSelect = memo(({
     return validOptions.filter((opt) => normalizeForSearch(opt).includes(q))
   }, [searchable, validOptions, searchQuery])
 
+  // El buscador se limpia al ABRIR (en handleToggleDropdown), no al cerrar:
+  // así el efecto solo enfoca y no cambia estado por su cuenta.
   useEffect(() => {
-    if (!isOpen) {
-      setSearchQuery('')
-      return
-    }
-    if (!searchable) return
+    if (!isOpen || !searchable) return
     const id = requestAnimationFrame(() => {
       searchInputRef.current?.focus()
     })
@@ -99,6 +97,7 @@ const MultiSelect = memo(({
   // Toggle dropdown - Lógica simple
   const handleToggleDropdown = () => {
     if (disabled) return
+    if (!isOpen) setSearchQuery('')
     setIsOpen(!isOpen)
   }
 
