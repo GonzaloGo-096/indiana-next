@@ -164,6 +164,30 @@ export const buildSearchParams = (filters = {}, options = {}) => {
 };
 
 /**
+ * Query de una lista de autos para el backend: filtros + `limit` + `cursor`.
+ *
+ * La usan la lista pública y la del panel, que le hablan a endpoints
+ * distintos pero con el mismo contrato. Así las dos arman el pedido igual.
+ *
+ * Los rangos en su posición inicial NO se mandan (`buildSearchParams` sin
+ * `includeDefaultRanges`): "rango completo" y "sin filtrar" son lo mismo, y
+ * mandarlos agregaba filtros que nadie pidió y escondía autos válidos.
+ *
+ * @param {Object} [opciones]
+ * @param {Object} [opciones.filters]
+ * @param {number} [opciones.limit=8]
+ * @param {number} [opciones.cursor=1] - El backend pagina con `cursor`, no `page`.
+ * @param {boolean} [opciones.mergeDefaults=false]
+ * @returns {URLSearchParams}
+ */
+export const buildVehicleListQuery = ({ filters = {}, limit = 8, cursor = 1, mergeDefaults = false } = {}) => {
+  const params = buildSearchParams(filters, { mergeDefaults });
+  params.set("limit", String(limit));
+  params.set("cursor", String(cursor));
+  return params;
+};
+
+/**
  * Parsea URLSearchParams a objeto de filtros del frontend
  * 
  * ✅ ÚNICA FUNCIÓN para parsear searchParams a filtros

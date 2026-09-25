@@ -51,22 +51,27 @@ export const ImageCarousel = ({
     }).filter(Boolean);
   }, [images]);
 
-  // Estado de carga para la imagen principal
-  const [isMainLoaded, setIsMainLoaded] = useState(false);
-  const handleMainLoad = useCallback(() => setIsMainLoaded(true), []);
+  // Estado de carga para la imagen principal: se guarda QUÉ índice terminó de
+  // cargar, y "cargada" se deriva comparándolo con el actual. Así, al cambiar
+  // de imagen, el shimmer vuelve solo, sin un efecto que resetee estado.
+  const [loadedIndex, setLoadedIndex] = useState(null);
+  const isMainLoaded = loadedIndex === currentIndex;
+  const handleMainLoad = useCallback(() => setLoadedIndex(currentIndex), [currentIndex]);
 
-  // Al cambiar de imagen: arrancar en estado "cargando" (shimmer + fade-in).
-  // PERO si la imagen ya está cacheada y completa, el evento onLoad puede no
+  // Si la imagen ya está cacheada y completa, el evento onLoad puede no
   // dispararse nunca (la carga terminó antes de que React enganche el listener),
   // y la foto quedaría en opacity:0 = blanca. Lo cubrimos chequeando
-  // img.complete y marcándola como cargada a mano. Esto pasa típicamente con
-  // la primera foto (priority/eager) y al volver a una imagen ya vista.
+  // img.complete en el frame siguiente y marcándola como cargada a mano. Esto
+  // pasa típicamente con la primera foto (priority/eager) y al volver a una
+  // imagen ya vista.
   useEffect(() => {
-    setIsMainLoaded(false);
-    const img = mainImageContainerRef.current?.querySelector("img");
-    if (img && img.complete && img.naturalWidth > 0) {
-      setIsMainLoaded(true);
-    }
+    const id = requestAnimationFrame(() => {
+      const img = mainImageContainerRef.current?.querySelector("img");
+      if (img && img.complete && img.naturalWidth > 0) {
+        setLoadedIndex(currentIndex);
+      }
+    });
+    return () => cancelAnimationFrame(id);
   }, [currentIndex]);
 
   // ===== Navegación =====

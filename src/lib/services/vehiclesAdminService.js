@@ -8,6 +8,7 @@
  */
 
 import { authAxiosInstance } from '@/lib/http/client'
+import { buildVehicleListQuery } from '@/utils/filters'
 import { AUTH_CONFIG } from '@/config/auth'
 
 const vehiclesAdminService = {
@@ -161,6 +162,29 @@ const vehiclesAdminService = {
     // Va a NUESTRO servidor (/api/admin), que reenvía al backend con la
     // credencial. Ver src/app/api/admin/vehicles/[id]/route.js.
     const response = await authAxiosInstance.delete(`/vehicles/${id}`)
+    return response.data
+  },
+
+  /**
+   * Lista de autos del panel, INCLUIDOS los pausados (la pública no los trae).
+   * Va por /api/admin, con la credencial y sin caché.
+   * @param {Object} [opciones] - { filters, limit, cursor, signal }
+   * @returns {Promise<Object>} Respuesta del backend ({ allPhotos: { docs, ... } })
+   */
+  async getVehicles({ filters = {}, limit = 1000, cursor = 1, signal } = {}) {
+    const query = buildVehicleListQuery({ filters, limit, cursor })
+    const response = await authAxiosInstance.get(`/vehicles?${query}`, { signal })
+    return response.data
+  },
+
+  /**
+   * Cambiar el estado comercial (ACTIVO / VENDIDO / PAUSADO). Es una operación
+   * aparte del backend: editar el auto no toca su estado.
+   * @param {string} id - ID del vehículo
+   * @param {string} estado - Uno de ESTADOS (utils/vehicleEstado)
+   */
+  async updateVehicleStatus(id, estado) {
+    const response = await authAxiosInstance.patch(`/vehicles/${id}`, { estado })
     return response.data
   }
 }

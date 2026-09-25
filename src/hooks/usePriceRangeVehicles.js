@@ -12,6 +12,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { vehiclesService } from "../lib/services/vehiclesApi";
 import { mapVehiclesPage } from "../lib/mappers/vehicleMapper";
+import { sinVendidos } from "@/utils/vehicleEstado";
 import { VEHICLE_CONSTANTS } from "../constants/vehicles";
 
 /**
@@ -96,8 +97,8 @@ export const usePriceRangeVehicles = (currentVehicle) => {
 
         if (!isMounted) return;
 
-        // Excluir el vehículo actual y limitar al máximo permitido
-        const filtered = mappedData.vehicles
+        // Excluir el vehículo actual y los vendidos (no van en carruseles)
+        const filtered = sinVendidos(mappedData.vehicles)
           .filter((vehicle) => {
             const vehicleId = vehicle.id || vehicle._id;
             return vehicleId !== currentId;

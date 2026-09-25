@@ -1,71 +1,40 @@
 /**
- * useAdminVehiclesList - Hook para listas de vehículos en el panel admin
+ * useAdminVehiclesList - Lista de autos del panel admin.
  *
- * @author Indiana Usados
- * @version 4.0.0 - Next.js compatible
+ * Usa la lista PRIVADA del backend (vía /api/admin): trae también los autos
+ * pausados, que la lista pública no devuelve. Sin eso, un auto pausado
+ * desaparecería del panel y no habría cómo reactivarlo.
+ *
+ * El panel pide todo el inventario de una vez (no pagina) y filtra en
+ * pantalla; por eso es un pedido simple y no una lista infinita.
  */
 
 'use client'
 
-import { useInfiniteQuery } from '@tanstack/react-query'
-import vehiclesService from '@/lib/services/vehiclesApi'
+import { useQuery } from '@tanstack/react-query'
+import vehiclesAdminService from '@/lib/services/vehiclesAdminService'
 import { mapVehiclesPage } from '@/lib/mappers/vehicleMapper'
 
-export const useAdminVehiclesList = (filters = {}, options = {}) => {
-  // PAGE SIZE CONFIGURABLE (default: 8 para página pública)
-  const PAGE_SIZE = options.pageSize ?? 8
-  // MERGE DEFAULTS: false por defecto. Nadie aplica filtros invisibles a menos
-  // que lo pida explícito. Si en el futuro algún consumidor quiere acotar el
-  // listado al rango "comercial" de FILTER_DEFAULTS, debe pasar mergeDefaults: true.
-  const mergeDefaults = options.mergeDefaults ?? false
+// Tope de seguridad, muy por encima del inventario real (≈30 autos).
+const LIMITE = 1000
 
-  // QUERY INFINITA - con paginación
-  // Nota: incluimos mergeDefaults en la queryKey para que admin (false) y
-  // sitio público (true) tengan caches independientes aunque compartan filtros.
-  // El prefix ['vehicles', ...] sigue invalidándose junto desde useCarMutation.
-  const query = useInfiniteQuery({
-    queryKey: ['vehicles', JSON.stringify({ filters, limit: PAGE_SIZE, mergeDefaults })],
-    queryFn: async ({ pageParam, signal }) => {
-      const result = await vehiclesService.getVehicles({
-        filters,
-        limit: PAGE_SIZE,
-        cursor: pageParam,
-        signal,
-        mergeDefaults,
-      })
-      return result
-    },
-    initialPageParam: 1,
-
-    // Extrae hasNextPage directo del backend
-    getNextPageParam: (lastPage) => {
-      const hasNext = lastPage?.allPhotos?.hasNextPage
-      const next = lastPage?.allPhotos?.nextPage
-      return hasNext ? next : undefined
-    },
-
-    // Usa mapper único
-    select: (data) => {
-      const pages = data.pages.map(mapVehiclesPage)
-      return {
-        vehicles: pages.flatMap(p => p.vehicles),
-        total: pages[0]?.total ?? 0
-      }
-    },
+export const useAdminVehiclesList = (filters = {}) => {
+  // El prefijo ['vehicles'] es el que invalida useCarMutation después de
+  // crear, editar, borrar o cambiar un estado.
+  const query = useQuery({
+    queryKey: ['vehicles', 'admin', JSON.stringify(filters)],
+    queryFn: ({ signal }) => vehiclesAdminService.getVehicles({ filters, limit: LIMITE, signal }),
+    select: mapVehiclesPage,
     placeholderData: (prev) => prev,
-    retry: 2 // 2 reintentos para listas
+    retry: 2,
   })
 
-  // RETORNAR DATOS MAPEADOS
   return {
     vehicles: query.data?.vehicles ?? [],
     total: query.data?.total ?? 0,
-    hasNextPage: query.hasNextPage,
-    loadMore: query.fetchNextPage,
-    isLoadingMore: query.isFetchingNextPage,
     isLoading: query.isLoading,
     isError: query.isError,
     error: query.error,
-    refetch: query.refetch
+    refetch: query.refetch,
   }
 }

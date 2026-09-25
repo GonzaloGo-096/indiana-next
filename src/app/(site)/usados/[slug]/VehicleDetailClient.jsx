@@ -22,7 +22,7 @@ import styles from "./vehicle-detail.module.css";
 export default function VehicleDetailClient({ vehicle }) {
   const router = useRouter();
 
-  const vehicleKey = vehicle?.id || vehicle?._id;
+  const vehicleKey = vehicle.id || vehicle._id;
 
   // ✅ Scroll hacia arriba al cargar la página o cambiar de vehículo
   useEffect(() => {
@@ -35,21 +35,15 @@ export default function VehicleDetailClient({ vehicle }) {
   // directo (WhatsApp, Google, pestaña nueva) no hay historial propio y back()
   // lo sacaría del sitio o no haría nada: en ese caso vamos al listado.
   const handleBack = useCallback(() => {
-    if (typeof window !== "undefined" && window.history.length > 1) {
+    if (window.history.length > 1) {
       router.back();
     } else {
       router.push("/usados");
     }
   }, [router]);
 
-  if (!vehicle) {
-    return (
-      <div className={styles.container}>
-        <p>Vehículo no encontrado</p>
-      </div>
-    );
-  }
-
+  // Sin rama de "vehículo no encontrado": la página ya resolvió notFound()
+  // antes de montar este componente, así que vehicle siempre llega.
   return (
     <div className={styles.container}>
       <div className={styles.backRow}>

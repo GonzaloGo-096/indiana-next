@@ -2,8 +2,8 @@
  * Tests de vehicleSlug.
  *
  * Arma y lee las URLs de las fichas (/usados/marca-modelo-anio-id). Si esto se
- * rompe, se rompen los links del listado, el canonical del SEO y el warmup de
- * caché a la vez.
+ * rompe, se rompen a la vez los links del listado, el canonical del SEO y el
+ * redirect de las URLs viejas.
  */
 
 import { describe, it, expect } from "vitest";

@@ -100,7 +100,7 @@ export const CardSimilar = memo(({
       };
       sessionStorage.setItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL, JSON.stringify(scrollData));
     }
-  }, [auto, vehicleId, trackingLocation, trackingListName]);
+  }, [auto, vehicleId, index, trackingLocation, trackingListName]);
 
   // ✅ MEMOIZAR DATOS FORMATEADOS
   const formattedData = useMemo(() => {

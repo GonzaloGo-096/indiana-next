@@ -11,11 +11,15 @@ import {
 } from '@/components/admin/hooks/useCarModal.reducer'
 import vehiclesService from '@/lib/services/vehiclesApi'
 import { normalizeDiscount } from '@/lib/pricing/discount'
+import { ETIQUETAS_ESTADO, getEstado } from '@/utils/vehicleEstado'
+
+// Los errores de /api/admin llegan de axios con el mensaje del backend en `msg`.
+const mensajeDeError = (error) => error?.response?.data?.msg || error?.message || 'error desconocido'
 
 /**
  * Estado y acciones del modal crear/editar vehículo en el panel admin.
  */
-export function useAdminVehicleModal({ createMutation, updateMutation, refetch }) {
+export function useAdminVehicleModal({ createMutation, updateMutation, statusMutation, refetch }) {
   const [modalState, dispatch] = useReducer(carModalReducer, initialCarModalState)
 
   const openCreate = useCallback(() => {
@@ -59,7 +63,7 @@ export function useAdminVehicleModal({ createMutation, updateMutation, refetch }
   }, [])
 
   const submitFormData = useCallback(
-    async (formData) => {
+    async (formData, { estado } = {}) => {
       if (modalState.mode === 'create') {
         try {
           dispatch(setLoading())
@@ -83,23 +87,40 @@ export function useAdminVehicleModal({ createMutation, updateMutation, refetch }
           })
         }
         if (vehicleId) {
-          try {
-            dispatch(setLoading())
+          dispatch(setLoading())
 
+          // El estado va por una operación aparte del backend, y PRIMERO: si
+          // falla, no se guarda nada y el panel queda como estaba. (Cada
+          // operación borra el caché del backend por su cuenta.)
+          const cambiaEstado = estado != null && estado !== getEstado(modalState.initialData)
+          if (cambiaEstado) {
+            try {
+              await statusMutation.mutateAsync({ id: vehicleId, estado })
+            } catch (error) {
+              dispatch(setError(`No se pudo cambiar el estado. No se guardó ningún cambio: ${mensajeDeError(error)}`))
+              return
+            }
+          }
+
+          try {
             await updateMutation.mutateAsync({ id: vehicleId, formData })
 
             // Refrescar lista y cerrar modal
             refetch()
             dispatch(closeModalAction())
           } catch (error) {
-            dispatch(setError(`No se pudo actualizar el vehículo: ${error.message}`))
+            const prefijo = cambiaEstado
+              ? `El auto quedó como "${ETIQUETAS_ESTADO[estado]}", pero no se pudieron guardar los demás cambios`
+              : 'No se pudo actualizar el vehículo'
+            refetch()
+            dispatch(setError(`${prefijo}: ${error.message}`))
           }
         } else {
           dispatch(setError('No se pudo obtener el ID del vehículo para actualizar'))
         }
       }
     },
-    [modalState.mode, modalState.initialData, createMutation, updateMutation, refetch]
+    [modalState.mode, modalState.initialData, createMutation, updateMutation, statusMutation, refetch]
   )
 
   return {

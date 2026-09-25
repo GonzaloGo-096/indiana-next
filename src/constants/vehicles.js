@@ -12,14 +12,28 @@
  * Configuración de paginación y límites
  */
 export const VEHICLE_CONSTANTS = {
-  /** Límite de vehículos similares a pedir (para asegurar 5 después de excluir actual) */
-  SIMILAR_FETCH_LIMIT: 6,
+  /**
+   * Cuántos pedir para los carruseles de la ficha. Es el doble de lo que se
+   * muestra porque después se excluyen el auto actual y los vendidos (que no
+   * van en carruseles), y el carrusel no debe achicarse por eso.
+   */
+  SIMILAR_FETCH_LIMIT: 10,
   
   /** Máximo de vehículos similares a mostrar */
   SIMILAR_MAX_RESULTS: 5,
   
   /** Tamaño de página para listado principal */
   LIST_PAGE_SIZE: 8,
+
+  /**
+   * Tope del pedido completo del listado. El listado trae todos los autos que
+   * cumplen el filtro en un solo pedido y pagina en pantalla (de a
+   * LIST_PAGE_SIZE): es la única forma de dejar los vendidos al final de todo
+   * el inventario, porque el backend no ordena ni filtra por estado. Con el
+   * inventario actual (~30 autos) sobra; si algún día lo supera, se registra
+   * un aviso y los vendidos quedan al final de lo recibido.
+   */
+  LIST_FETCH_LIMIT: 200,
   
   /** Rango de precio para vehículos similares (±1 millón) */
   PRICE_RANGE: 1000000,
@@ -40,4 +54,12 @@ export const VEHICLE_CONSTANTS = {
  * @returns {number} Valor de la constante
  */
 export const getVehicleConstant = (key) => VEHICLE_CONSTANTS[key];
+
+/**
+ * Lo único que ve el visitante cuando el listado no se pudo cargar, sea cual
+ * sea la falla (backend, red, timeout, respuesta inválida). El detalle técnico
+ * va al log, nunca a la pantalla.
+ */
+export const LIST_ERROR_MESSAGE =
+  "No pudimos cargar los vehículos. Probá de nuevo en unos minutos.";
 

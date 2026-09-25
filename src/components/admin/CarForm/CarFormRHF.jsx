@@ -15,6 +15,7 @@ import {
   isImagePipelineBlocked,
 } from '@/components/admin/hooks/useImageReducer'
 import styles from './CarFormRHF.module.css'
+import EstadoPublicacion from './EstadoPublicacion'
 import { FORM_RULES } from '@/constants/forms'
 import { marcas as MARCAS_LIST } from '@/constants/filterOptions'
 import { isValidImage, filterValidFiles } from '@/utils/files'
@@ -33,7 +34,8 @@ const MODE = {
 const NUMERIC_FIELDS = ['precio', 'anio', 'kilometraje']
 
 // ✅ CAMPOS QUE NO SE ENVÍAN AL BACKEND
-const EXCLUDED_FROM_FORMDATA = ['urls', 'precioOferta']
+// `estado` se guarda con una operación aparte del backend (ver EstadoPublicacion).
+const EXCLUDED_FROM_FORMDATA = ['urls', 'precioOferta', 'estado']
 
 // ✅ PROPS DEL COMPONENTE
 const CarFormRHF = ({ 
@@ -97,11 +99,10 @@ const CarFormRHF = ({
   const marcaDropdownRef = useRef(null)
   const marcaSearchInputRef = useRef(null)
 
+  // El buscador se limpia al ABRIR (en el onClick del botón), no al cerrar:
+  // así el efecto solo enfoca y no cambia estado por su cuenta.
   useEffect(() => {
-    if (!marcaDropdownOpen) {
-      setMarcaSearchQuery('')
-      return
-    }
+    if (!marcaDropdownOpen) return
     const id = requestAnimationFrame(() => {
       marcaSearchInputRef.current?.focus()
     })
@@ -313,7 +314,7 @@ const CarFormRHF = ({
       }
 
       // ✅ DELEGAR SUBMIT AL PADRE
-      await onSubmitFormData(formData)
+      await onSubmitFormData(formData, mode === MODE.EDIT ? { estado: data.estado } : undefined)
     } catch (error) {
       if (process.env.NODE_ENV === 'development') {
         console.error('[form:car] submit error', error)
@@ -336,6 +337,8 @@ const CarFormRHF = ({
           <p>Complete los campos requeridos</p>
         </div>
       ) : null}
+
+      {mode === MODE.EDIT ? <EstadoPublicacion register={register} disabled={isLoading} /> : null}
 
       {/* ✅ SECCIÓN DE IMÁGENES PRINCIPALES */}
       <div className={styles.requiredFieldsSection}>
@@ -635,7 +638,9 @@ const CarFormRHF = ({
                       aria-controls="car-form-marca-listbox"
                       disabled={isLoading}
                       onClick={() => {
-                        if (!isLoading) setMarcaDropdownOpen((o) => !o)
+                        if (isLoading) return
+                        if (!marcaDropdownOpen) setMarcaSearchQuery('')
+                        setMarcaDropdownOpen(!marcaDropdownOpen)
                       }}
                     >
                       <span

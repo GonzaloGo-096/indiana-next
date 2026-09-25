@@ -11,7 +11,7 @@
  * @version 1.0.0 - Migración desde React
  */
 
-import { notFound } from "next/navigation";
+import { unstable_rethrow } from "next/navigation";
 import { Suspense } from "react";
 import { vehiclesService } from "@/lib/services/vehiclesApi.server";
 import { mapVehiclesPage } from "@/lib/mappers/vehicleMapper";
@@ -19,6 +19,8 @@ import { parseFilters } from "@/utils/filters";
 import { getSiteUrl, tryAbsoluteUrl } from "@/lib/site-url";
 import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
 import { createLogger } from "@/lib/logger";
+import { LIST_ERROR_MESSAGE, VEHICLE_CONSTANTS } from "@/constants/vehicles";
+import { vendidosAlFinal } from "@/utils/vehicleEstado";
 import VehiculosClient from "./VehiculosClient";
 import { serializeJsonLd } from "@/lib/seo/jsonLd";
 
@@ -264,14 +266,8 @@ export async function generateMetadata({ searchParams }) {
       },
     };
   } catch (err) {
-    const msg = err?.message || String(err);
-    if (
-      msg.includes("Dynamic server usage") ||
-      msg.includes("couldn't be rendered statically")
-    ) {
-      throw err;
-    }
-    log.error("generateMetadata falló, usando fallback:", msg);
+    unstable_rethrow(err);
+    log.error("generateMetadata falló, usando fallback:", err?.message || err);
     return {
       title: "Vehículos Usados Multimarca",
       description:
@@ -283,7 +279,8 @@ export async function generateMetadata({ searchParams }) {
 
 /**
  * No usar force-dynamic: obligaba a renderizar cada request en Vercel (TTFB alto y sensación de lag).
- * Esta ruta ya es dinámica por searchParams; el fetch usa Data Cache (revalidate en vehiclesApi.server).
+ * Esta ruta ya es dinámica por searchParams. Los autos se piden sin caché de Next
+ * ('no-store' en vehiclesApi.server): el caché de esos datos es del backend.
  */
 
 /**
@@ -305,23 +302,25 @@ export default async function VehiculosPage({ searchParams }) {
     // que el servicio (mergeDefaults:false por default) no los inyecte.
     const filters = parseFilters(resolvedSearchParams || {});
 
-    // Extraer página desde searchParams (default: 1)
-    const page = Number(resolvedSearchParams?.page) || 1;
-    const cursor = page; // Backend usa cursor = página
-
-    // Fetch inicial en Server Component (aprovecha caching de Next.js)
+    // Todos los autos que cumplen el filtro en un solo pedido: la paginación
+    // es en pantalla (useVehiclesList), para que los vendidos queden al final
+    // de todo el listado. Ver LIST_FETCH_LIMIT.
     const backendData = await vehiclesService.getVehicles({
       filters,
-      limit: 8,
-      cursor,
+      limit: VEHICLE_CONSTANTS.LIST_FETCH_LIMIT,
+      cursor: 1,
     });
-
-    // Mapear datos del backend al formato frontend
-    const mappedData = mapVehiclesPage(backendData, cursor);
+    const mappedData = mapVehiclesPage(backendData, 1);
+    if (mappedData.hasNextPage) {
+      log.warn(
+        `El inventario filtrado supera ${VEHICLE_CONSTANTS.LIST_FETCH_LIMIT} autos: ` +
+          "los vendidos quedan al final solo de lo recibido.",
+      );
+    }
 
     let jsonLdHtml = null;
     try {
-      const jsonLd = getVehiclesListJsonLd(mappedData.vehicles || []);
+      const jsonLd = getVehiclesListJsonLd(vendidosAlFinal(mappedData.vehicles || []));
       if (jsonLd) {
         jsonLdHtml = serializeJsonLd(jsonLd);
       }
@@ -352,23 +351,12 @@ export default async function VehiculosPage({ searchParams }) {
       </>
     );
   } catch (error) {
+    unstable_rethrow(error);
+    // Cualquier falla (backend, red, timeout, respuesta inválida) se muestra
+    // igual: el listado con su pantalla de error y "Reintentar". Nunca
+    // notFound(): la ruta /usados/vehiculos existe aunque el backend falle, y
+    // un 404 con noindex la sacaría de Google. El detalle queda en el log.
     log.error("Error renderizando el listado:", error?.message || error);
-
-    // Si es error 404, usar notFound()
-    if (error.message?.includes("not found") || error.message?.includes("404")) {
-      notFound();
-    }
-
-    // Mensaje de error más amigable
-    let errorMessage = "Error al cargar vehículos";
-    if (error.message?.includes("No se pudo conectar") || error.message?.includes("fetch failed")) {
-      errorMessage = "No se pudo conectar con el backend. Por favor, verifica que el servidor esté corriendo y que la variable NEXT_PUBLIC_API_URL esté configurada correctamente.";
-    } else if (error.message) {
-      errorMessage = error.message;
-    }
-
-    // Para otros errores, pasar error a Client Component para manejo
-    // ✅ IMPORTANTE: Envolver en Suspense también en caso de error
     return (
       <Suspense
         fallback={
@@ -384,7 +372,7 @@ export default async function VehiculosPage({ searchParams }) {
             hasNextPage: false,
             nextPage: null,
           }}
-          error={errorMessage}
+          error={LIST_ERROR_MESSAGE}
         />
       </Suspense>
     );

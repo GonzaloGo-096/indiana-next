@@ -10,8 +10,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { AUTH_CONFIG } from '@/config/auth'
 import vehiclesAdminService from '@/lib/services/vehiclesAdminService'
-import { revalidatePublicCache } from '@/lib/admin/revalidatePublicCache'
-import { addDirtyVehicleId, removeDirtyVehicleId } from '@/utils/dirtyVehicleIds'
 
 // ✅ HELPER: Obtener token de autorización
 const getAuthToken = () => {
@@ -65,25 +63,9 @@ const handleMutationError = (error, operation) => {
   return errorMessage
 }
 
-/**
- * Tras guardar en el backend: revalida caché del sitio público.
- * Si falla (red, token, etc.), deja el ID como pendiente para el botón manual.
- */
-async function afterVehicleWrite(vehicleId) {
-  const ids = vehicleId != null && `${vehicleId}`.trim() !== '' ? [`${vehicleId}`.trim()] : []
-  const ok = await revalidatePublicCache({
-    vehicleIds: ids,
-    revalidateList: true,
-    warmup: true,
-  })
-  const idStr = ids[0]
-  if (ok && idStr) {
-    removeDirtyVehicleId(idStr)
-  } else if (idStr) {
-    addDirtyVehicleId(idStr)
-  }
-}
-
+// Después de guardar no se "publica" nada en el sitio público: el frontend no
+// cachea vehículos (ver vehiclesApi.server) y el caché es del backend. Solo se
+// refresca el caché de React Query del propio panel.
 export const useCarMutation = () => {
   const queryClient = useQueryClient()
   
@@ -113,30 +95,11 @@ export const useCarMutation = () => {
       // ✅ response ya es el JSON parseado (no tiene .data)
       return response
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       if (process.env.NODE_ENV === 'development') {
         console.info('[cars:mutation] Vehículo creado exitosamente')
       }
       queryClient.invalidateQueries({ queryKey: ['vehicles'] })
-
-      const vehicleId = data?._id || data?.id || data?.vehicle?._id || data?.vehicle?.id
-
-      // ✅ DEFENSIVO: el backend puede responder 200 con un shape inesperado
-      // (p. ej. la string "true"). El alta funciona, pero perdemos la
-      // capacidad de invalidar el detalle por ID. Avisamos sólo en dev.
-      if (!vehicleId && process.env.NODE_ENV === 'development') {
-        console.warn(
-          '[cars:mutation] Backend respondió 200 OK pero la respuesta no incluye _id/id del vehículo. ' +
-            'La revalidación de detalle no podrá targetear el nuevo vehículo (la lista sí se invalida).',
-          { responseShape: data }
-        )
-      }
-
-      void afterVehicleWrite(vehicleId).then(() => {
-        if (process.env.NODE_ENV === 'development' && vehicleId) {
-          console.debug('[cars:mutation] revalidación pública tras alta:', vehicleId)
-        }
-      })
     },
     onError: (error) => {
       const msg = handleMutationError(error, 'crear')
@@ -178,12 +141,6 @@ export const useCarMutation = () => {
       }
       queryClient.invalidateQueries({ queryKey: ['vehicles'] })
       queryClient.invalidateQueries({ queryKey: ['vehicle', variables.id] })
-
-      void afterVehicleWrite(variables.id).then(() => {
-        if (process.env.NODE_ENV === 'development' && variables.id) {
-          console.debug('[cars:mutation] revalidación pública tras edición:', variables.id)
-        }
-      })
     },
     onError: (error) => {
       const msg = handleMutationError(error, 'actualizar')
@@ -212,12 +169,6 @@ export const useCarMutation = () => {
       }
       queryClient.invalidateQueries({ queryKey: ['vehicles'] })
       queryClient.removeQueries({ queryKey: ['vehicle', id] })
-
-      void afterVehicleWrite(id).then(() => {
-        if (process.env.NODE_ENV === 'development' && id) {
-          console.debug('[cars:mutation] revalidación pública tras baja:', id)
-        }
-      })
     },
     onError: (error) => {
       const msg = handleMutationError(error, 'eliminar')
@@ -227,10 +178,19 @@ export const useCarMutation = () => {
     }
   })
   
+  const statusMutation = useMutation({
+    mutationFn: ({ id, estado }) => vehiclesAdminService.updateVehicleStatus(id, estado),
+    onSuccess: (data, { id }) => {
+      queryClient.invalidateQueries({ queryKey: ['vehicles'] })
+      queryClient.invalidateQueries({ queryKey: ['vehicle', id] })
+    },
+  })
+
   return {
     createMutation,
     updateMutation,
-    deleteMutation
+    deleteMutation,
+    statusMutation
   }
 }
 
