@@ -21,7 +21,7 @@ import { getApiTimeout } from "@/lib/config/api";
  * Pasando por el proxy, el problema no puede ocurrir en ningún entorno.
  *
  * Ruta relativa a propósito: estas llamadas solo corren en el navegador. El
- * camino de servidor usa vehiclesApi.server, que sí va directo (y cachea).
+ * camino de servidor usa vehiclesApi.server, que sí va directo al backend.
  */
 const axiosInstance = axios.create({
   baseURL: "/api/catalogo",

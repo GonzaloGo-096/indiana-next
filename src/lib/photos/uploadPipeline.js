@@ -13,9 +13,10 @@
  *
  * Nota sobre el alcance de la verificación: acá solo se exige que venga un
  * Bearer con forma válida. La autorización real la sigue haciendo el backend,
- * que es el dueño de la identidad. No se usa verifyAdminBearerToken a
- * propósito: hoy valida ejecutando un DELETE contra el backend, y no
- * corresponde disparar un borrado por cada foto que se sube.
+ * que es el dueño de la identidad. El token no se valida contra el backend a
+ * propósito: no hay un endpoint de verificación, y la única forma que se usó
+ * (un DELETE a un id ficticio, ya eliminada) disparaba un borrado por cada
+ * foto que se sube.
  */
 
 import { NextResponse } from 'next/server'

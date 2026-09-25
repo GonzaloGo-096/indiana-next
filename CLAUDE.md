@@ -20,15 +20,22 @@ Lo que no pude verificar, decirlo sin que me lo pregunten.
 
 ## Git
 
-Remoto GitHub, se dice PR. La rama base de trabajo es `staging`.
+Remoto GitHub. La rama base de trabajo es `staging`; `main` es producción
+(Vercel publica indiana.com.ar desde `main`).
 
-Nunca commitear directo a `staging`. Rama por cambio, con prefijo:
+Nunca commitear directo a `staging` ni a `main`. Rama por cambio, con prefijo:
 `feat/` `fix/` `refactor/` `chore/` `docs/` `test/`
 
 Commits en Conventional Commits, español, imperativo y minúscula:
 `fix(filtros): ajustar los topes de las barras a valores utiles`
 
 Claude propone el nombre de rama y el mensaje de commit, no los pide.
+
+**Sin PR** (decisión de Gonzalo, 2026-09-24). Cuando un cambio está comprobado
+(`npm run check` en verde y probado), Claude lo commitea en su rama y la sube
+a GitHub; cada rama tiene su preview en Vercel. Mezclar a `staging` y a `main`
+va en una etapa de **pre-producción**: se revisan los commits con Gonzalo y
+recién con su OK se mezcla. Publicar (`main`) se confirma aparte, siempre.
 
 ## Decisiones
 

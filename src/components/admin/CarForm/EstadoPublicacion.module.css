@@ -1,0 +1,69 @@
+.fieldset {
+  margin: 0 0 20px;
+  padding: 16px;
+  border: 1px solid var(--cf-border);
+  border-radius: var(--cf-radius-sm);
+  background: var(--cf-surface);
+}
+
+.legend {
+  padding: 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-neutral-600, #4b5563);
+}
+
+.opciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.opcion {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--cf-border);
+  border-radius: var(--cf-radius-sm);
+  cursor: pointer;
+}
+
+.opcion input {
+  margin-top: 3px;
+}
+
+.opcion:has(input:checked) {
+  border-color: var(--cf-accent);
+  background: var(--cf-accent-soft);
+}
+
+.opcion[data-estado="VENDIDO"]:has(input:checked) {
+  border-color: var(--color-error-500);
+  background: var(--color-error-50);
+}
+
+.opcion[data-estado="PAUSADO"]:has(input:checked) {
+  border-color: var(--color-warning-500);
+  background: var(--color-warning-50);
+}
+
+.titulo {
+  display: block;
+  color: var(--cf-text);
+}
+
+.detalle {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--cf-muted);
+}
+
+.fieldset:disabled .opcion {
+  cursor: default;
+  opacity: 0.6;
+}

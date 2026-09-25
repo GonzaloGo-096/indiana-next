@@ -1,106 +1,64 @@
 /**
- * API Route: DELETE /api/admin/vehicles/[id]
+ * API Route: /api/admin/vehicles/[id]
  *
- * Borra un auto. El navegador le pide a este servidor y este reenvía al
- * backend, llevando la credencial del panel.
+ *   DELETE → borra un auto                (backend: DELETE /photos/deletephoto/:id)
+ *   PATCH  → cambia su estado, { estado } (backend: PATCH /photos/updatestatus/:id)
  *
- * POR QUÉ EXISTE
- * Mismo motivo que /api/admin/login: el borrado salía directo del navegador
- * hacia otro dominio, y el navegador lo corta si ese dominio no autoriza el
- * origen. Ver el comentario largo en /api/admin/login/route.js.
- *
- * QUIÉN AUTORIZA
- * El backend, como siempre. Acá no se valida la credencial: se comprueba que
- * venga y se reenvía. Validarla de este lado significaría un viaje extra al
- * backend por cada borrado, para terminar preguntándole lo mismo que va a
- * responder igual. Lo único que sí se hace es cortar los pedidos que ni
- * siquiera traen credencial, que no tiene sentido reenviar.
- *
- * @author Indiana Peugeot
+ * Credencial, reenvío y errores: ver ../../_lib/reenviarAlBackend.js.
  */
 
-import { NextResponse } from "next/server";
-import { getApiBaseUrl } from "@/lib/config/api";
 import { createLogger } from "@/lib/logger";
+import { ESTADOS } from "@/utils/vehicleEstado";
+import { reenviarAlBackend, respuestaDeError } from "../../_lib/reenviarAlBackend";
 
 const log = createLogger("api:admin:vehicles");
-
-const TIMEOUT_MS = 15000;
 
 /** Un id de Mongo es exactamente 24 caracteres hexadecimales. */
 const RE_OBJECT_ID = /^[a-fA-F0-9]{24}$/;
 
-export async function DELETE(request, { params }) {
+const ESTADOS_VALIDOS = Object.values(ESTADOS);
+
+/**
+ * Un id con basura pegada llegaría al backend y ahí fallaría de forma menos
+ * clara. Se corta acá, que es donde se sabe qué forma tiene que tener.
+ * @returns {Promise<string|null>} el id limpio, o null si no es válido
+ */
+async function idValido(params, accion) {
   const { id } = await params;
   const idLimpio = String(id ?? "").trim();
+  if (RE_OBJECT_ID.test(idLimpio)) return idLimpio;
+  log.warn(`ID de auto inválido al ${accion}: "${idLimpio.slice(0, 40)}"`);
+  return null;
+}
 
-  const authorization = request.headers.get("authorization") || "";
-  const token = authorization.startsWith("Bearer ")
-    ? authorization.slice(7).trim()
-    : "";
+export async function DELETE(request, { params }) {
+  const accion = "borrar un auto";
+  const id = await idValido(params, accion);
+  if (!id) return respuestaDeError(400, "ID de auto inválido");
 
-  // Sin credencial no se reenvía nada: el backend respondería 401 igual, pero
-  // este viaje no hace falta hacerlo.
-  if (!token) {
-    return NextResponse.json(
-      { error: true, msg: "Falta la credencial de administrador" },
-      { status: 401 },
-    );
+  return reenviarAlBackend(request, {
+    accion,
+    method: "DELETE",
+    path: `/photos/deletephoto/${id}`,
+  });
+}
+
+export async function PATCH(request, { params }) {
+  const datos = await request.json().catch(() => null);
+  const estado = typeof datos?.estado === "string" ? datos.estado : "";
+
+  if (!ESTADOS_VALIDOS.includes(estado)) {
+    return respuestaDeError(400, `El estado debe ser uno de: ${ESTADOS_VALIDOS.join(", ")}`);
   }
 
-  // Un id con basura pegada llegaría al backend y ahí fallaría de forma menos
-  // clara. Se corta acá, que es donde se sabe qué forma tiene que tener.
-  if (!RE_OBJECT_ID.test(idLimpio)) {
-    log.warn(`ID de auto inválido en un borrado: "${idLimpio.slice(0, 40)}"`);
-    return NextResponse.json(
-      { error: true, msg: "ID de auto inválido" },
-      { status: 400 },
-    );
-  }
+  const accion = "cambiar el estado de un auto";
+  const id = await idValido(params, accion);
+  if (!id) return respuestaDeError(400, "ID de auto inválido");
 
-  try {
-    const respuesta = await fetch(
-      `${getApiBaseUrl()}/photos/deletephoto/${idLimpio}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: "application/json",
-        },
-        signal: AbortSignal.timeout(TIMEOUT_MS),
-        cache: "no-store",
-      },
-    );
-
-    const cuerpo = await respuesta.text();
-
-    if (!respuesta.ok) {
-      log.error(`El backend respondió ${respuesta.status} al borrar ${idLimpio}`);
-    } else {
-      log.info(`Auto ${idLimpio} borrado`);
-    }
-
-    return new NextResponse(cuerpo, {
-      status: respuesta.status,
-      headers: {
-        "Content-Type":
-          respuesta.headers.get("content-type") || "application/json",
-        "Cache-Control": "no-store",
-      },
-    });
-  } catch (error) {
-    const esTimeout =
-      error?.name === "TimeoutError" || error?.name === "AbortError";
-    log.error(`No se pudo borrar ${idLimpio}:`, error?.message || error);
-
-    return NextResponse.json(
-      {
-        error: true,
-        msg: esTimeout
-          ? "El backend no respondió a tiempo. El auto puede no haberse borrado."
-          : "No se pudo conectar con el backend.",
-      },
-      { status: esTimeout ? 504 : 502 },
-    );
-  }
+  return reenviarAlBackend(request, {
+    accion,
+    method: "PATCH",
+    path: `/photos/updatestatus/${id}`,
+    body: { estado },
+  });
 }

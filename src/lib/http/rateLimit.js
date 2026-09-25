@@ -11,9 +11,6 @@
  * no necesita infraestructura extra. Si algún día hiciera falta algo estricto,
  * hay que mover el conteo a un almacén compartido.
  *
- * Estaba escrito adentro de /api/revalidate. Se sacó acá cuando el proxy del
- * panel necesitó lo mismo, para no tener dos copias que se desincronicen.
- *
  * @author Indiana Peugeot
  */
 

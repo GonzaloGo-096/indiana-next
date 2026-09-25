@@ -185,9 +185,11 @@ export const UsadosCarousel = ({
   }, []);
 
   // Alinear el indicador al estado inicial y cuando llegan los vehículos (async).
+  // Va por el mismo frame estrangulado que el scroll: mide layout recién
+  // pintado y no cambia estado de forma sincrónica dentro del efecto.
   useEffect(() => {
-    updateActiveIndex();
-  }, [vehicles.length, updateActiveIndex]);
+    onScrollThrottled();
+  }, [vehicles.length, onScrollThrottled]);
 
   // ✅ Efecto para resetear scroll al inicio cuando cambian los vehículos
   useEffect(() => {

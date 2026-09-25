@@ -6,6 +6,7 @@
  */
 
 import { extractFirstImageUrl } from '@/utils/imageExtractors'
+import { getEstado } from '@/utils/vehicleEstado'
 
 export function toAdminListItem(vehicle = {}) {
   const v = vehicle || {}
@@ -49,6 +50,7 @@ export function toAdminListItem(vehicle = {}) {
     firstImageUrl,
     oferta,
     descuento,
+    estado: getEstado(v),
     // Preservar original para operaciones que requieren datos completos
     _original: v
   }

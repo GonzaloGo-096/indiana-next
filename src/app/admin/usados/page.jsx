@@ -11,7 +11,6 @@ import AdminInventorySection from '@/components/admin/AdminInventorySection/Admi
 import { Alert } from '@/components/ui/Alert/Alert'
 import AdminFilters from '@/components/admin/AdminFilters/AdminFilters'
 import AdminCarModal from '@/components/admin/AdminCarModal/AdminCarModal'
-import RevalidateSection from '@/components/admin/RevalidateSection/RevalidateSection'
 import { FILTER_BOUNDS } from '@/constants/filterOptions'
 import styles from '../dashboard.module.css'
 
@@ -54,12 +53,9 @@ export default function AdminUsadosPage() {
 
   const backendFilters = useCallback(() => filters, [filters])
 
-  // ✅ Admin ve TODO el inventario: sin defaults invisibles de precio/km.
-  // (mergeDefaults: false ya es el default global; lo dejamos explícito por claridad).
-  const { vehicles, isLoading, error, refetch } = useAdminVehiclesList(backendFilters(), {
-    pageSize: 1000,
-    mergeDefaults: false,
-  })
+  // El panel ve TODO el inventario, pausados incluidos, y sin rangos
+  // invisibles de precio/km (ver useAdminVehiclesList y buildVehicleListQuery).
+  const { vehicles, isLoading, error, refetch } = useAdminVehiclesList(backendFilters())
 
   const hasActiveFilters = useMemo(() => {
     const [a, b] = filters.año
@@ -78,9 +74,9 @@ export default function AdminUsadosPage() {
     setFiltersResetKey((k) => k + 1)
   }, [])
 
-  const { createMutation, updateMutation, deleteMutation } = useCarMutation()
+  const { createMutation, updateMutation, deleteMutation, statusMutation } = useCarMutation()
 
-  const modal = useAdminVehicleModal({ createMutation, updateMutation, refetch })
+  const modal = useAdminVehicleModal({ createMutation, updateMutation, statusMutation, refetch })
 
   const [deleteError, setDeleteError] = useState(null)
 
@@ -243,8 +239,6 @@ export default function AdminUsadosPage() {
               hasActiveFilters={hasActiveFilters}
               onResetFilters={handleResetFilters}
             />
-
-            <RevalidateSection />
           </div>
         ) : (
           <UsadosMetricasPlaceholder

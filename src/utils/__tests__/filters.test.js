@@ -17,6 +17,7 @@ import {
   isValidSortOption,
   getActiveFilterChips,
   mergeDefaultRanges,
+  buildVehicleListQuery,
 } from "../filters";
 import { FILTER_DEFAULTS } from "@/constants/filterOptions";
 
@@ -396,5 +397,26 @@ describe("mover un solo filtro no debe arrastrar los otros", () => {
     expect(p.get("anio")).toBeNull();
     expect(p.get("precio")).toBeNull();
     expect(p.get("km")).toBeNull();
+  });
+});
+
+describe("buildVehicleListQuery — pedido de una lista al backend", () => {
+  it("agrega limit y cursor a los filtros (el backend pagina con cursor, no page)", () => {
+    const q = buildVehicleListQuery({ filters: { marca: ["Peugeot"] }, limit: 20, cursor: 3 });
+    expect(q.get("marca")).toBe("Peugeot");
+    expect(q.get("limit")).toBe("20");
+    expect(q.get("cursor")).toBe("3");
+    expect(q.get("page")).toBeNull();
+  });
+
+  it("sin filtros: solo paginado, con los valores por defecto", () => {
+    expect(buildVehicleListQuery().toString()).toBe("limit=8&cursor=1");
+  });
+
+  it("no manda rangos que nadie pidió (sin rellenar con los por defecto)", () => {
+    const q = buildVehicleListQuery({ filters: { marca: ["Ford"] } });
+    expect(q.get("precio")).toBeNull();
+    expect(q.get("km")).toBeNull();
+    expect(q.get("anio")).toBeNull();
   });
 });

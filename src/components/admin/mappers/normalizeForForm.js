@@ -7,6 +7,7 @@
 
 import { extractVehicleImageUrls, extractAllImageUrls } from '@/utils/imageExtractors'
 import { normalizeDiscount } from '@/lib/pricing/discount'
+import { getEstado } from '@/utils/vehicleEstado'
 
 /**
  * Extrae el objeto detalle desde posibles envoltorios de respuesta
@@ -93,6 +94,7 @@ export const normalizeDetailToFormInitialData = (rawDetail) => {
     detalle: d.detalle || d.description || '',
     descuentoTipo: disc.tipo,
     descuentoValor: disc.valor,
+    estado: getEstado(d),
     urls
   }
 }
