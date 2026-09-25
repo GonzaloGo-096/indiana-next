@@ -59,7 +59,7 @@ describe("editar con cambio de estado", () => {
     expect(result.current.modalState.initialData.estado).toBe("VENDIDO");
   });
 
-  it("un auto sin estado (backend de producción) abre como Disponible", async () => {
+  it("un auto sin estado (dato viejo) abre como Disponible", async () => {
     const { result } = montar({ estadoActual: undefined });
     await act(() => result.current.openEdit({ _id: ID }));
     expect(result.current.modalState.initialData.estado).toBe("ACTIVO");

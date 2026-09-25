@@ -4,9 +4,9 @@
  *
  * - Sin credencial o con un id mal formado no se llama al backend.
  * - El estado se valida acá contra los tres que conoce el backend.
- * - Un 404 que no es JSON es "el backend no tiene esta operación" (501), no
- *   "auto no encontrado": pasa con el backend de producción antes de que
- *   publiquen los estados.
+ * - Un 404 de "ruta no encontrada" (JSON del backend o HTML de Express) es "el
+ *   backend no tiene esta operación" (501), no "auto no encontrado": pasa si el
+ *   backend queda desactualizado respecto del panel.
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
@@ -101,7 +101,7 @@ describe("PATCH: cambiar estado", () => {
   });
 
   it.each([
-    ["backend de producción: { msg: 'Ruta no encontrada' }", JSON.stringify({ error: true, msg: "Ruta no encontrada" }), "application/json; charset=utf-8"],
+    ["backend con manejador de 404: { msg: 'Ruta no encontrada' }", JSON.stringify({ error: true, msg: "Ruta no encontrada" }), "application/json; charset=utf-8"],
     ["Express sin manejador: página HTML", "<pre>Cannot PATCH /photos/updatestatus/x</pre>", "text/html"],
   ])("backend sin la operación (%s): 501 con mensaje claro", async (_caso, cuerpo, contentType) => {
     backendResponde(cuerpo, { status: 404, contentType });
