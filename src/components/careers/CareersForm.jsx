@@ -12,7 +12,8 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { careersSchema } from "@/schemas/careersSchema";
-import { MAX_CV_LABEL } from "@/lib/careers/cvFile";
+import { CV_ACCEPT, CV_TIPOS_LABEL, MAX_CV_LABEL } from "@/lib/careers/cvFile";
+import { CAMPO_TRAMPA } from "@/lib/careers/campoTrampa";
 import { jobPositions } from "@/lib/careers.data";
 import { useAnalytics } from "@/hooks/useAnalytics";
 import { LOCATIONS, SOURCES, LEAD_SOURCES } from "@/lib/analytics/events";
@@ -71,6 +72,7 @@ const CareersForm = () => {
       if (data.telefono) formData.append("telefono", data.telefono);
       if (data.mensaje) formData.append("mensaje", data.mensaje);
       if (data.cv?.[0]) formData.append("cv", data.cv[0]);
+      if (data[CAMPO_TRAMPA]) formData.append(CAMPO_TRAMPA, data[CAMPO_TRAMPA]);
 
       const res = await fetch("/api/careers", {
         method: "POST",
@@ -256,16 +258,28 @@ const CareersForm = () => {
             <input
               id="cv"
               type="file"
-              accept=".pdf,.jpg,.jpeg,application/pdf,image/jpeg,image/jpg"
+              accept={CV_ACCEPT}
               {...register("cv")}
               className={styles.fileInput}
               disabled={formState === FORM_STATE.sending}
               aria-invalid={!!errors.cv}
             />
-            <span className={styles.hint}>PDF o JPG, máximo {MAX_CV_LABEL}</span>
+            <span className={styles.hint}>{CV_TIPOS_LABEL}, máximo {MAX_CV_LABEL}</span>
             {errors.cv && (
               <span className={styles.error}>{errors.cv.message}</span>
             )}
+          </div>
+
+          {/* Campo trampa anti-spam: ver lib/careers/campoTrampa.js */}
+          <div className={styles.trampa} aria-hidden="true">
+            <label htmlFor={CAMPO_TRAMPA}>No completar este campo</label>
+            <input
+              id={CAMPO_TRAMPA}
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              {...register(CAMPO_TRAMPA)}
+            />
           </div>
 
           <button

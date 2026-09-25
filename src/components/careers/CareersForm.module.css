@@ -145,3 +145,13 @@
   background: var(--color-neutral-400);
   cursor: not-allowed;
 }
+
+/* Campo trampa anti-spam: fuera de pantalla, no display:none (algunos bots
+   saltean los campos ocultos con display:none). Ver lib/careers/campoTrampa.js */
+.trampa {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}

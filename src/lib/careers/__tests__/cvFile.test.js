@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { MAX_CV_BYTES, MAX_CV_LABEL, detectCvType } from "../cvFile";
+import { MAX_CV_BYTES, MAX_CV_LABEL, CV_ACCEPT, esCvAceptado } from "../cvFile";
 
 // Límite de Vercel para el cuerpo de un pedido a una función (incluye los
 // campos del formulario, no solo el archivo). Por encima responde 413.
@@ -16,17 +16,28 @@ describe("tope del CV", () => {
   });
 });
 
-describe("detectCvType", () => {
-  const bytes = (...b) => new Uint8Array(b);
+describe("esCvAceptado: espejo de la regla del backend (extensión y tipo coinciden)", () => {
+  const DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
-  it("reconoce PDF y JPG por su firma", () => {
-    expect(detectCvType(bytes(0x25, 0x50, 0x44, 0x46, 0x2d, 0x31))).toBe("pdf");
-    expect(detectCvType(bytes(0xff, 0xd8, 0xff, 0xe1))).toBe("jpg");
+  it("acepta PDF y Word (.docx), sin importar mayúsculas en la extensión", () => {
+    expect(esCvAceptado({ name: "cv.pdf", type: "application/pdf" })).toBe(true);
+    expect(esCvAceptado({ name: "Mi CV.PDF", type: "application/pdf" })).toBe(true);
+    expect(esCvAceptado({ name: "cv.docx", type: DOCX })).toBe(true);
   });
 
-  it("devuelve null para cualquier otra cosa, incluso firmas incompletas", () => {
-    expect(detectCvType(bytes(0x89, 0x50, 0x4e, 0x47))).toBeNull(); // PNG
-    expect(detectCvType(bytes(0x25, 0x50, 0x44))).toBeNull(); // "%PD"
-    expect(detectCvType(bytes())).toBeNull();
+  it("rechaza otros tipos (el backend no acepta JPG ni el Word viejo .doc)", () => {
+    expect(esCvAceptado({ name: "cv.jpg", type: "image/jpeg" })).toBe(false);
+    expect(esCvAceptado({ name: "cv.doc", type: "application/msword" })).toBe(false);
+  });
+
+  it("rechaza si la extensión y el tipo no coinciden, o faltan", () => {
+    expect(esCvAceptado({ name: "cv.pdf", type: DOCX })).toBe(false);
+    expect(esCvAceptado({ name: "cv", type: "application/pdf" })).toBe(false);
+    expect(esCvAceptado({ name: "cv.pdf", type: "" })).toBe(false);
+    expect(esCvAceptado(undefined)).toBe(false);
+  });
+
+  it("el accept del input ofrece exactamente esos tipos", () => {
+    expect(CV_ACCEPT.split(",")).toEqual([".pdf", ".docx", "application/pdf", DOCX]);
   });
 });

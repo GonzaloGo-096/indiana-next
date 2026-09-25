@@ -5,7 +5,8 @@
  */
 
 import { z } from "zod";
-import { ACCEPTED_CV_TYPES, MAX_CV_BYTES, MAX_CV_LABEL } from "@/lib/careers/cvFile";
+import { CAMPO_TRAMPA } from "@/lib/careers/campoTrampa";
+import { CV_TIPOS_LABEL, MAX_CV_BYTES, MAX_CV_LABEL, esCvAceptado } from "@/lib/careers/cvFile";
 
 export const careersSchema = z.object({
   puesto: z
@@ -36,13 +37,15 @@ export const careersSchema = z.object({
     .or(z.literal("")),
   cv: z
     .any()
-    .refine((files) => files?.length > 0, "Adjuntá tu CV (PDF o JPG)")
+    .refine((files) => files?.length > 0, `Adjuntá tu CV (${CV_TIPOS_LABEL})`)
     .refine(
       (files) => files?.[0]?.size <= MAX_CV_BYTES,
       `El archivo no debe superar ${MAX_CV_LABEL}`
     )
     .refine(
-      (files) => ACCEPTED_CV_TYPES.includes(files?.[0]?.type),
-      "Solo se aceptan archivos PDF o JPG"
+      (files) => esCvAceptado(files?.[0]),
+      `Solo se aceptan archivos ${CV_TIPOS_LABEL}`
     ),
+  // Campo trampa: se valida en la API; acá solo se deja pasar.
+  [CAMPO_TRAMPA]: z.string().optional(),
 });

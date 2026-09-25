@@ -1,114 +1,143 @@
 /**
  * API Route: POST /api/careers
  *
- * Recibe FormData con: puesto, nombreApellido, email, telefono?, mensaje?, cv (archivo)
- * y la valida server-side (el tipo del CV, por su contenido: ver cvFile.js).
+ * Recibe la postulación del formulario "Trabajá con nosotros" y se la pasa al
+ * backend (POST /jobs/apply), que manda el mail a RRHH con el CV adjunto.
+ * Contrato del backend verificado el 2026-09-24 (rama preview, da06ce2).
  *
- * El envío por email todavía no existe (ni acá ni en el backend). Hasta que
- * exista, la API responde 503: decir "enviada" sin enviar nada hacía que las
- * postulaciones se perdieran sin que nadie se enterara. Cada intento queda en
- * los logs (sin datos personales) para saber cuántos se pierden.
+ * El navegador no le habla directo al backend: pasa por acá, igual que el
+ * catálogo y el panel. Acá se hace lo barato (campos obligatorios, email,
+ * tipo y tamaño del CV, anti-spam); lo que decide si la postulación es válida
+ * (incluido el contenido real del archivo) es el backend, y su mensaje llega
+ * tal cual al postulante.
+ *
+ * Nunca se responde { ok: true } sin que el backend haya confirmado el envío.
+ * Si el backend todavía no tiene /jobs/apply (producción antes de publicarlo),
+ * la respuesta es 503 con un mensaje honesto, y queda registrado.
+ *
+ * Logs sin datos personales: puesto, tamaño del CV y estado, nunca nombre,
+ * email, teléfono ni mensaje.
  */
 
 import { NextResponse } from "next/server";
+import { getApiBaseUrl } from "@/lib/config/api";
 import { createLogger } from "@/lib/logger";
-import {
-  ACCEPTED_CV_TYPES,
-  MAX_CV_BYTES,
-  MAX_CV_LABEL,
-  detectCvType,
-} from "@/lib/careers/cvFile";
+import { esRutaInexistente } from "@/lib/http/rutaInexistente";
+import { jobPositions } from "@/lib/careers.data";
+import { CAMPO_TRAMPA } from "@/lib/careers/campoTrampa";
+import { CV_TIPOS_LABEL, MAX_CV_BYTES, MAX_CV_LABEL, esCvAceptado } from "@/lib/careers/cvFile";
 
 const log = createLogger("careers");
 
-const NOT_AVAILABLE_MESSAGE =
-  "Por el momento no podemos recibir postulaciones desde la web. Intentá de nuevo más adelante.";
+const TIMEOUT_MS = 20000; // el backend manda el mail antes de responder
+
+const MENSAJES = {
+  noDisponible:
+    "Por el momento no podemos recibir postulaciones desde la web. Intentá de nuevo más adelante.",
+  fallo: "No pudimos enviar tu postulación. Intentá de nuevo en unos minutos.",
+};
+
+const respuesta = (status, cuerpo) => NextResponse.json(cuerpo, { status });
+const error = (status, mensaje) => respuesta(status, { ok: false, error: mensaje });
+
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** El formulario manda el id del puesto; el mail tiene que decir el nombre. */
+function nombreDelPuesto(id) {
+  if (id === "otro") return "Otro";
+  return jobPositions.find((p) => p.value === id)?.label ?? id;
+}
+
+const texto = (formData, campo) => formData.get(campo)?.toString().trim() ?? "";
 
 export async function POST(request) {
-  try {
-    const contentType = request.headers.get("content-type") || "";
-    if (!contentType.includes("multipart/form-data")) {
-      return NextResponse.json(
-        { ok: false, error: "Content-Type debe ser multipart/form-data" },
-        { status: 400 }
-      );
-    }
-
-    const formData = await request.formData();
-
-    const puesto = formData.get("puesto")?.toString()?.trim();
-    const nombreApellido = formData.get("nombreApellido")?.toString()?.trim();
-    const email = formData.get("email")?.toString()?.trim();
-    const telefono = formData.get("telefono")?.toString()?.trim() || null;
-    const mensaje = formData.get("mensaje")?.toString()?.trim() || null;
-    const cvFile = formData.get("cv");
-
-    // Validación básica server-side
-    if (!puesto || puesto.length === 0) {
-      return NextResponse.json(
-        { ok: false, error: "El puesto es obligatorio" },
-        { status: 400 }
-      );
-    }
-    if (!nombreApellido || nombreApellido.length < 2) {
-      return NextResponse.json(
-        { ok: false, error: "Nombre y apellido inválido" },
-        { status: 400 }
-      );
-    }
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json(
-        { ok: false, error: "Email inválido" },
-        { status: 400 }
-      );
-    }
-    if (!cvFile || !(cvFile instanceof File)) {
-      return NextResponse.json(
-        { ok: false, error: "El CV es obligatorio" },
-        { status: 400 }
-      );
-    }
-    if (!ACCEPTED_CV_TYPES.includes(cvFile.type)) {
-      return NextResponse.json(
-        { ok: false, error: "Solo se aceptan archivos PDF o JPG" },
-        { status: 400 }
-      );
-    }
-    if (cvFile.size > MAX_CV_BYTES) {
-      return NextResponse.json(
-        { ok: false, error: `El archivo no debe superar ${MAX_CV_LABEL}` },
-        { status: 400 }
-      );
-    }
-    const inicio = new Uint8Array(await cvFile.slice(0, 8).arrayBuffer());
-    if (!detectCvType(inicio)) {
-      return NextResponse.json(
-        { ok: false, error: "El archivo no es un PDF o JPG válido" },
-        { status: 400 }
-      );
-    }
-
-    // TODO: Enviar email con los datos de la postulación.
-    // - Destinatario: variable de entorno (ej. CAREERS_EMAIL) para no hardcodear
-    // - Asunto: "Postulación: [puesto] - [nombreApellido]"
-    // - Cuerpo: texto con nombre, email, teléfono, mensaje
-    // - Adjunto: cvFile (buffer o stream según proveedor)
-    // Cuando exista: await sendCareersEmail({ puesto, nombreApellido, email, telefono, mensaje, cvFile })
-    // y recién ahí responder { ok: true }.
-    log.error("Postulación válida NO enviada: el envío por email no está configurado", {
-      puesto,
-      cvSize: cvFile.size,
-    });
-
-    return NextResponse.json(
-      { ok: false, error: NOT_AVAILABLE_MESSAGE },
-      { status: 503 }
-    );
-  } catch (error) {
-    log.error("Error:", error);
-    return NextResponse.json(
-      { ok: false, error: "Error al procesar la postulación" },
-      { status: 500 }
-    );
+  const contentType = request.headers.get("content-type") || "";
+  if (!contentType.includes("multipart/form-data")) {
+    return error(400, "Content-Type debe ser multipart/form-data");
   }
+
+  let formData;
+  try {
+    formData = await request.formData();
+  } catch {
+    return error(400, "No se pudo leer el formulario");
+  }
+
+  // Un bot que completó el campo trampa recibe un "ok" y no se envía nada:
+  // avisarle que lo detectamos solo le enseña a esquivarlo.
+  if (texto(formData, CAMPO_TRAMPA)) {
+    log.warn("Postulación descartada: completó el campo trampa");
+    return respuesta(200, { ok: true });
+  }
+
+  const puesto = texto(formData, "puesto");
+  const nombreApellido = texto(formData, "nombreApellido");
+  const email = texto(formData, "email");
+  const cv = formData.get("cv");
+
+  if (!puesto) return error(400, "El puesto es obligatorio");
+  if (nombreApellido.length < 2) return error(400, "Nombre y apellido inválido");
+  if (!EMAIL.test(email)) return error(400, "Email inválido");
+  if (!(cv instanceof File)) return error(400, "El CV es obligatorio");
+  if (!esCvAceptado(cv)) return error(400, `Solo se aceptan archivos ${CV_TIPOS_LABEL}`);
+  if (cv.size > MAX_CV_BYTES) return error(400, `El archivo no debe superar ${MAX_CV_LABEL}`);
+
+  const puestoNombre = nombreDelPuesto(puesto);
+  const aLosLogs = { puesto: puestoNombre, cvBytes: cv.size };
+
+  // Exactamente los campos que espera el backend (acepta 5 + el archivo).
+  const alBackend = new FormData();
+  alBackend.set("puesto", puestoNombre);
+  alBackend.set("nombreApellido", nombreApellido);
+  alBackend.set("email", email);
+  alBackend.set("telefono", texto(formData, "telefono"));
+  alBackend.set("mensaje", texto(formData, "mensaje"));
+  alBackend.set("cv", cv, cv.name);
+
+  let res;
+  try {
+    res = await fetch(`${getApiBaseUrl()}/jobs/apply`, {
+      method: "POST",
+      body: alBackend,
+      headers: { Accept: "application/json" },
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+      cache: "no-store",
+    });
+  } catch (e) {
+    log.error("No se pudo contactar al backend para enviar una postulación", {
+      ...aLosLogs,
+      motivo: e?.name === "TimeoutError" ? "timeout" : e?.message,
+    });
+    return error(502, MENSAJES.fallo);
+  }
+
+  const tipo = res.headers.get("content-type") || "";
+  const cuerpoTexto = await res.text();
+
+  if (res.status === 404 && esRutaInexistente(tipo, cuerpoTexto)) {
+    log.error("Postulación NO enviada: el backend no tiene /jobs/apply", aLosLogs);
+    return error(503, MENSAJES.noDisponible);
+  }
+
+  let cuerpo = null;
+  try {
+    cuerpo = JSON.parse(cuerpoTexto);
+  } catch {
+    // cuerpo queda en null: se trata como respuesta inválida abajo
+  }
+
+  if (res.ok && cuerpo && cuerpo.error === null) {
+    log.info("Postulación enviada", aLosLogs);
+    return respuesta(200, { ok: true });
+  }
+
+  // 400 (datos o archivo inválidos), 429 (demasiados intentos), 503 (no se
+  // pudo mandar el mail): el backend explica qué pasó, y se le muestra eso.
+  if ([400, 429, 503].includes(res.status) && typeof cuerpo?.msg === "string") {
+    log.warn(`El backend rechazó una postulación (${res.status})`, aLosLogs);
+    return error(res.status, cuerpo.msg);
+  }
+
+  log.error(`Respuesta inesperada del backend al enviar una postulación (${res.status})`, aLosLogs);
+  return error(502, MENSAJES.fallo);
 }
