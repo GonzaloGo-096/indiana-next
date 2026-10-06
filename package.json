@@ -14,6 +14,7 @@
     "test:watch": "vitest",
     "smoke": "node scripts/smoke.mjs",
     "smoke:update": "node scripts/smoke.mjs --update",
+    "planes": "node --no-warnings scripts/planes-oficiales.mjs",
     "check": "npm run typecheck && npm run lint && npm run test && npm run build"
   },
   "dependencies": {
