@@ -30,7 +30,7 @@ const obtenerVersionDelPlan = (plan, modeloSlug) => {
   // Mapeo específico por plan
   const mapeoVersiones = {
     "2008-t200": "Allure",
-    "2008-active-t200": "Active",
+    "2008-active-t200": "Like",
     easy: "Allure",
     "plus-at": "Allure AT",
     "plus-208": "Allure",

@@ -49,7 +49,7 @@ function obtenerVersionDelPlan(plan) {
   // Mapeo específico por plan
   const mapeoVersiones = {
     "2008-t200": "Allure",
-    "2008-active-t200": "Active",
+    "2008-active-t200": "Like",
     easy: "Allure",
     "plus-at": "Allure AT",
     "plus-208": "Allure",
@@ -104,6 +104,10 @@ function obtenerModeloSlug(plan) {
 function formatearRangoCuotas(rango, useCts = false) {
   const conEspacios = rango.replace(/_/g, " ");
   const match = conEspacios.match(/^cuotas\s+(\d+)\s+(\d+)$/);
+  // Tramo de una sola cuota (cuotas_13_13): "Cta. 13", no "Cts. 13 a 13".
+  if (match && match[1] === match[2]) {
+    return useCts ? `Cta. ${match[1]}` : `cuota ${match[1]}`;
+  }
   if (match) {
     return useCts ? `Cts. ${match[1]} a ${match[2]}` : `cuotas ${match[1]} a ${match[2]}`;
   }
