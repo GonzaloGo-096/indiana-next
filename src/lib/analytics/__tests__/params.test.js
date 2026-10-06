@@ -1,283 +1,87 @@
-/**
- * Tests unitarios para analytics/params.js
- *
- * Cobertura:
- *   - toNumberOrNull: todos los formatos de precio posibles del backend
- *   - buildItemParamsFromUsado
- *   - buildItemParamsFromAuto
- *   - buildItemParamsFromPlan
- *   - buildSearchFiltersParams
- */
-
 import { describe, it, expect } from "vitest";
 import {
-  toNumberOrNull,
-  buildItemParamsFromUsado,
   buildItemParamsFromAuto,
   buildItemParamsFromPlan,
-  buildSearchFiltersParams,
+  buildItemParamsFromUsado,
 } from "../params";
 
-// ---------------------------------------------------------------------------
-// toNumberOrNull
-// ---------------------------------------------------------------------------
-
-describe("toNumberOrNull", () => {
-  describe("null / undefined / edge cases", () => {
-    it("devuelve null para null", () => expect(toNumberOrNull(null)).toBeNull());
-    it("devuelve null para undefined", () => expect(toNumberOrNull(undefined)).toBeNull());
-    it("devuelve null para string vacío", () => expect(toNumberOrNull("")).toBeNull());
-    it("devuelve null para '-'", () => expect(toNumberOrNull("-")).toBeNull());
-    it("devuelve null para NaN", () => expect(toNumberOrNull(NaN)).toBeNull());
-    it("devuelve null para Infinity", () => expect(toNumberOrNull(Infinity)).toBeNull());
-    it("devuelve null para -Infinity", () => expect(toNumberOrNull(-Infinity)).toBeNull());
-    it("devuelve null para string no numérico", () => expect(toNumberOrNull("abc")).toBeNull());
-  });
-
-  describe("número nativo", () => {
-    it("devuelve entero sin cambios", () => expect(toNumberOrNull(22557000)).toBe(22557000));
-    it("devuelve float sin cambios", () => expect(toNumberOrNull(22557000.5)).toBe(22557000.5));
-    it("devuelve cero", () => expect(toNumberOrNull(0)).toBe(0));
-    it("devuelve negativo", () => expect(toNumberOrNull(-500)).toBe(-500));
-  });
-
-  describe("string — formato JSON/MongoDB (punto decimal — BUG anterior)", () => {
-    it("NO infla precio: '22557000.000000' → 22557000", () =>
-      expect(toNumberOrNull("22557000.000000")).toBe(22557000));
-
-    it("NO infla precio: '22557000.00' → 22557000", () =>
-      expect(toNumberOrNull("22557000.00")).toBe(22557000));
-
-    it("preserva centavos: '22557000.50' → 22557000.5", () =>
-      expect(toNumberOrNull("22557000.50")).toBe(22557000.5));
-
-    it("string entero limpio: '22557000' → 22557000", () =>
-      expect(toNumberOrNull("22557000")).toBe(22557000));
-
-    it("con símbolo de moneda: '$ 22557000.000000' → 22557000", () =>
-      expect(toNumberOrNull("$ 22557000.000000")).toBe(22557000));
-  });
-
-  describe("string — formato argentino (puntos miles)", () => {
-    it("'22.557.000' → 22557000", () =>
-      expect(toNumberOrNull("22.557.000")).toBe(22557000));
-
-    it("'22.557.000,00' → 22557000", () =>
-      expect(toNumberOrNull("22.557.000,00")).toBe(22557000));
-
-    it("'22.557.000,50' → 22557000.5", () =>
-      expect(toNumberOrNull("22.557.000,50")).toBe(22557000.5));
-
-    it("'$ 22.557.000' → 22557000", () =>
-      expect(toNumberOrNull("$ 22.557.000")).toBe(22557000));
-
-    it("'ARS 1.500.000' → 1500000", () =>
-      expect(toNumberOrNull("ARS 1.500.000")).toBe(1500000));
-
-    it("'1.000' (miles AR, precio chico) → 1000", () =>
-      expect(toNumberOrNull("1.000")).toBe(1000));
-  });
-
-  describe("string — formato US (comas miles)", () => {
-    it("'22,557,000' → 22557000", () =>
-      expect(toNumberOrNull("22,557,000")).toBe(22557000));
-
-    it("'1,500,000' → 1500000", () =>
-      expect(toNumberOrNull("1,500,000")).toBe(1500000));
-  });
-
-  describe("string — mixed (ambos separadores)", () => {
-    it("'22,557.00' (coma miles, punto decimal) → 22557", () =>
-      expect(toNumberOrNull("22,557.00")).toBe(22557));
-
-    it("'22.557,00' (punto miles, coma decimal) → 22557", () =>
-      expect(toNumberOrNull("22.557,00")).toBe(22557));
-  });
-
-  describe("string — coma decimal solitaria", () => {
-    it("'22557,50' → 22557.5", () =>
-      expect(toNumberOrNull("22557,50")).toBe(22557.5));
-  });
-});
-
-// ---------------------------------------------------------------------------
-// buildItemParamsFromUsado
-// ---------------------------------------------------------------------------
-
-describe("buildItemParamsFromUsado", () => {
-  const base = {
-    id: "auto-123",
-    marca: "Ford",
-    modelo: "Falcon",
-    version: "Rural",
-  };
-
-  it("devuelve null para input inválido", () => {
-    expect(buildItemParamsFromUsado(null)).toBeNull();
-    expect(buildItemParamsFromUsado(undefined)).toBeNull();
-    expect(buildItemParamsFromUsado("string")).toBeNull();
-  });
-
-  it("devuelve null si no hay id", () => {
-    expect(buildItemParamsFromUsado({ marca: "Ford" })).toBeNull();
-  });
-
-  it("estructura básica correcta", () => {
-    const result = buildItemParamsFromUsado(base, "usados");
-    expect(result).toMatchObject({
-      item_id: "auto-123",
-      item_name: "Ford Falcon",
-      item_brand: "Ford",
-      item_variant: "Rural",
-      item_category: "usado",
-      currency: "ARS",
-      item_list_name: "usados",
-    });
-  });
-
-  it("acepta _id como identificador", () => {
-    const result = buildItemParamsFromUsado({ _id: "abc-456", marca: "VW", modelo: "Gol" });
-    expect(result?.item_id).toBe("abc-456");
-  });
-
-  it("precio entero correcto", () => {
-    const result = buildItemParamsFromUsado({ ...base, precio: 22557000 });
-    expect(result?.price).toBe(22557000);
-  });
-
-  it("precio string JSON/MongoDB sin inflación", () => {
-    const result = buildItemParamsFromUsado({ ...base, precio: "22557000.000000" });
-    expect(result?.price).toBe(22557000);
-  });
-
-  it("precio string format argentino sin inflación", () => {
-    const result = buildItemParamsFromUsado({ ...base, precio: "22.557.000" });
-    expect(result?.price).toBe(22557000);
-  });
-
-  it("precio null omitido del resultado (pruneNulls)", () => {
-    const result = buildItemParamsFromUsado({ ...base, precio: null });
-    expect(result).not.toHaveProperty("price");
-  });
-
-  it("precio undefined omitido del resultado", () => {
-    const result = buildItemParamsFromUsado(base);
-    expect(result).not.toHaveProperty("price");
-  });
-
-  it("item_category siempre presente aunque precio sea null", () => {
-    const result = buildItemParamsFromUsado(base);
-    expect(result?.item_category).toBe("usado");
-  });
-
-  it("slug tiene prioridad sobre id como item_id", () => {
-    const result = buildItemParamsFromUsado({ ...base, slug: "ford-falcon-rural", id: "123" });
-    expect(result?.item_id).toBe("ford-falcon-rural");
-  });
-});
-
-// ---------------------------------------------------------------------------
-// buildItemParamsFromAuto
-// ---------------------------------------------------------------------------
+// Estos tres datos son los que cruzan "vistas" contra "contactos" por auto en
+// GA4 y en el tablero de Looker: si cambia la forma del nombre, se parten las
+// filas del reporte.
 
 describe("buildItemParamsFromAuto", () => {
-  const base = {
-    slug: "peugeot-208",
-    titulo: "Peugeot 208",
-    versiones: ["Active", "Allure"],
-    precio: 25000000,
-  };
-
-  it("devuelve null para input inválido", () => {
-    expect(buildItemParamsFromAuto(null)).toBeNull();
-    expect(buildItemParamsFromAuto({})).toBeNull();
-  });
-
-  it("estructura correcta", () => {
-    const result = buildItemParamsFromAuto(base, "0km");
-    expect(result).toMatchObject({
-      item_id: "peugeot-208",
-      item_name: "Peugeot 208",
-      item_brand: "Peugeot",
-      item_variant: "Active/Allure",
+  it("antepone la marca cuando el título no la trae", () => {
+    expect(buildItemParamsFromAuto({ slug: "expert", titulo: "Expert" })).toEqual({
+      item_id: "expert",
+      item_name: "Peugeot Expert",
       item_category: "0km",
-      price: 25000000,
-      currency: "ARS",
-      item_list_name: "0km",
     });
   });
 
-  it("precio string MongoDB sin inflación", () => {
-    const result = buildItemParamsFromAuto({ ...base, precio: "25000000.000000" });
-    expect(result?.price).toBe(25000000);
+  it("no duplica la marca", () => {
+    expect(buildItemParamsFromAuto({ slug: "208", titulo: "Peugeot 208" })?.item_name).toBe(
+      "Peugeot 208",
+    );
   });
 
-  it("precio string argentino sin inflación", () => {
-    const result = buildItemParamsFromAuto({ ...base, precio: "25.000.000" });
-    expect(result?.price).toBe(25000000);
-  });
-
-  it("item_category = '0km' siempre", () => {
-    expect(buildItemParamsFromAuto(base)?.item_category).toBe("0km");
+  it("sin identificador no hay item", () => {
+    expect(buildItemParamsFromAuto({ titulo: "208" })).toBeNull();
+    expect(buildItemParamsFromAuto(null)).toBeNull();
   });
 });
-
-// ---------------------------------------------------------------------------
-// buildItemParamsFromPlan
-// ---------------------------------------------------------------------------
 
 describe("buildItemParamsFromPlan", () => {
-  const base = {
-    id: "plan-208",
-    nombre: "Plan 208 Active",
-    modelo: "208",
-    cuota: "185000.500000",
-  };
-
-  it("devuelve null para input inválido", () => {
-    expect(buildItemParamsFromPlan(null)).toBeNull();
-    expect(buildItemParamsFromPlan({})).toBeNull();
+  it("arma 'Modelo · Plan' cuando el nombre no trae el modelo", () => {
+    expect(buildItemParamsFromPlan({ id: "easy", nombre: "Easy", modelo: "208" })).toEqual({
+      item_id: "easy",
+      item_name: "208 · Easy",
+      item_category: "plan",
+    });
   });
 
-  it("cuota string MongoDB parseada sin inflación", () => {
-    const result = buildItemParamsFromPlan(base);
-    expect(result?.price).toBe(185000.5);
+  it("no repite el modelo si el nombre ya lo tiene", () => {
+    const item = buildItemParamsFromPlan({ id: "x", nombre: "2008 Active T200", modelo: "2008" });
+    expect(item?.item_name).toBe("2008 Active T200");
   });
 
-  it("item_category = 'plan' siempre", () => {
-    expect(buildItemParamsFromPlan(base)?.item_category).toBe("plan");
+  it("capitaliza el modelo", () => {
+    const item = buildItemParamsFromPlan({ id: "x", nombre: "Carga", modelo: "expert" });
+    expect(item?.item_name).toBe("Expert · Carga");
   });
 
-  it("item_brand = Peugeot siempre", () => {
-    expect(buildItemParamsFromPlan(base)?.item_brand).toBe("Peugeot");
+  it("sin identificador no hay item", () => {
+    expect(buildItemParamsFromPlan({ nombre: "Easy" })).toBeNull();
   });
 });
 
-// ---------------------------------------------------------------------------
-// buildSearchFiltersParams
-// ---------------------------------------------------------------------------
-
-describe("buildSearchFiltersParams", () => {
-  it("devuelve objeto vacío para null (early return sin filters_count)", () => {
-    expect(buildSearchFiltersParams(null)).toEqual({});
-  });
-
-  it("parsea precio_min string mongolDB sin inflación", () => {
-    const result = buildSearchFiltersParams({ precioMin: "5000000.000000" });
-    expect(result.precio_min).toBe(5000000);
-  });
-
-  it("parsea precio_max string argentino", () => {
-    const result = buildSearchFiltersParams({ precioMax: "30.000.000" });
-    expect(result.precio_max).toBe(30000000);
-  });
-
-  it("filters_count refleja cantidad de filtros activos", () => {
-    const result = buildSearchFiltersParams({
-      marca: "Ford",
-      precioMin: "5000000",
-      precioMax: "20000000",
+describe("buildItemParamsFromUsado", () => {
+  it("marca + modelo + año, y prefiere el slug como id", () => {
+    expect(
+      buildItemParamsFromUsado({
+        _id: "abc",
+        slug: "peugeot-208-2023-abc",
+        marca: "Peugeot",
+        modelo: "208",
+        anio: 2023,
+        precio: 1000,
+      }),
+    ).toEqual({
+      item_id: "peugeot-208-2023-abc",
+      item_name: "Peugeot 208 2023",
+      item_category: "usado",
     });
-    expect(result.filters_count).toBe(3);
+  });
+
+  it("acepta _id cuando no hay slug ni id", () => {
+    expect(buildItemParamsFromUsado({ _id: "abc", marca: "VW" })?.item_id).toBe("abc");
+  });
+
+  it("sin nombre usa el id", () => {
+    expect(buildItemParamsFromUsado({ id: "7" })?.item_name).toBe("7");
+  });
+
+  it("sin identificador no hay item", () => {
+    expect(buildItemParamsFromUsado({ marca: "Ford" })).toBeNull();
+    expect(buildItemParamsFromUsado(undefined)).toBeNull();
   });
 });

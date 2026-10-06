@@ -9,7 +9,6 @@ import cta from "@/components/home/HomeSectionCtas.module.css";
 import contact from "@/components/ui/ContactButtons.module.css";
 import WhatsAppLink from "@/components/analytics/WhatsAppLink";
 import ItemViewTracker from "@/components/analytics/ItemViewTracker";
-import { SOURCES, LOCATIONS, LEAD_TYPES, VERTICALS } from "@/lib/analytics/events";
 import { buildItemParamsFromPlan } from "@/lib/analytics/params";
 import { createLogger } from "@/lib/logger";
 import styles from "./plan-detalle.module.css";
@@ -337,9 +336,6 @@ export default async function PlanDetallePage({ params }) {
           modelo: plan.modelos?.[0],
           cuota: plan.cuotas_desde,
         })}
-        location={LOCATIONS.PLAN_DETAIL}
-        source={SOURCES.INLINE}
-        componentId="detail_page"
       />
       <div className={`${styles.backRow} w-full`}>
         <Link
@@ -461,13 +457,7 @@ export default async function PlanDetallePage({ params }) {
                 href={`https://wa.me/${WHATSAPP_PHONE_PLAN}?text=${encodeURIComponent(
                   `Hola! Quiero solicitar cotización del Plan ${plan.plan} - financiación Peugeot 0km`
                 )}`}
-                phone={WHATSAPP_PHONE_PLAN}
-                source={SOURCES.INLINE}
-                location={LOCATIONS.PLAN_DETAIL}
                 componentId="whatsapp-detalle-plan"
-                messageTemplateId={plan.id}
-                leadType={LEAD_TYPES.PLAN_INQUIRY}
-                vertical={VERTICALS.ZERO_KM}
                 item={buildItemParamsFromPlan({
                   id: plan.id,
                   nombre: plan.plan,

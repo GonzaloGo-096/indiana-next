@@ -1,60 +1,14 @@
 /**
- * Catálogo congelado de eventos y enums para tracking GA4 vía GTM.
- *
- * Reglas:
- * - Nunca hardcodear strings en componentes; siempre importar desde acá.
- * - EVENTS estándar GA4 mantienen el nombre exacto que GA4 espera.
- * - SOURCES y LOCATIONS son enums acotados para garantizar consistencia
- *   en reportes (filtrar/agrupar sin sorpresas).
- *
- * Para agregar un evento nuevo: ver README de tracking, sección
- * "Cómo agregar un evento nuevo".
+ * Los únicos eventos que manda el sitio. Cada uno tiene su etiqueta en GTM
+ * (GTM-TPJCFTBB); un evento nuevo acá sin etiqueta allá no llega a GA4.
  */
-
 export const EVENTS = Object.freeze({
-  // Estándar GA4 (nombre EXACTO requerido)
   PAGE_VIEW: "page_view",
   VIEW_ITEM: "view_item",
-  SELECT_ITEM: "select_item",
-  VIEW_ITEM_LIST: "view_item_list",
-  VIEW_SEARCH_RESULTS: "view_search_results",
-  GENERATE_LEAD: "generate_lead",
-  FORM_START: "form_start",
-  FORM_SUBMIT: "form_submit",
-
-  // Consent (cookie banner) — para medir tasa de aceptación de tracking
-  CONSENT_GRANTED: "consent_granted",
-  CONSENT_DENIED: "consent_denied",
-
-  // Custom (snake_case GA4-style)
   WHATSAPP_CLICK: "whatsapp_click",
   PHONE_CLICK: "phone_click",
-  EMAIL_CLICK: "email_click",
-  CTA_CLICK: "cta_click",
-  GALLERY_OPEN: "gallery_open",
-  GALLERY_NAVIGATE: "gallery_navigate",
-  FILTER_APPLIED: "filter_applied",
-  SORT_APPLIED: "sort_applied",
-  LOAD_MORE_CLICK: "load_more_click",
-  CAROUSEL_INTERACT: "carousel_interact",
-  NAV_TOGGLE: "nav_toggle",
-  SCROLL_DEPTH: "scroll_depth",
-});
-
-export const SOURCES = Object.freeze({
-  FLOATING: "floating",
-  INLINE: "inline",
-  CARD: "card",
-  NAV: "nav",
-  FOOTER: "footer",
-  HERO: "hero",
-  BANNER: "banner",
-  GALLERY: "gallery",
-  FORM: "form",
-  CAROUSEL: "carousel",
-  BREADCRUMB: "breadcrumb",
-  MODAL: "modal",
-  LISTING_PAGE: "listing_page",
+  VIEW_SEARCH_RESULTS: "view_search_results",
+  FORM_SUBMIT: "form_submit",
 });
 
 export const LOCATIONS = Object.freeze({
@@ -67,40 +21,6 @@ export const LOCATIONS = Object.freeze({
   PLAN_DETAIL: "plan_detail",
   POSTVENTA: "postventa",
   CAREERS: "careers",
-  NOT_FOUND: "404",
-  MAINTENANCE: "maintenance",
-});
-
-export const ITEM_LIST = Object.freeze({
-  HOME_FEATURED: "home_featured",
-  OKM_GRID: "0km",
-  USADOS_GRID: "usados",
-  USADOS_CAROUSEL: "usados_carousel",
-  PLANES_GRID: "planes",
-  SIMILAR: "similar",
-});
-
-export const LEAD_SOURCES = Object.freeze({
-  WHATSAPP: "whatsapp",
-  FORM: "form",
-  PHONE: "phone",
-  EMAIL: "email",
-});
-
-export const LEAD_TYPES = Object.freeze({
-  SERVICE_BOOKING: "service_booking",
-  BODYWORK_QUOTE: "bodywork_quote",
-  PARTS_INQUIRY: "parts_inquiry",
-  USED_VEHICLE_INQUIRY: "used_vehicle_inquiry",
-  ZERO_KM_INQUIRY: "zero_km_inquiry",
-  PLAN_INQUIRY: "plan_inquiry",
-  GENERAL_INQUIRY: "general_inquiry",
-});
-
-export const VERTICALS = Object.freeze({
-  POSTVENTA: "postventa",
-  USADOS: "usados",
-  ZERO_KM: "0km",
 });
 
 export const ITEM_CATEGORY = Object.freeze({
@@ -108,42 +28,3 @@ export const ITEM_CATEGORY = Object.freeze({
   USADO: "usado",
   PLAN: "plan",
 });
-
-/**
- * Eventos que requieren { source, location, component_id } como params obligatorios.
- * pushDataLayer warnea en dev si alguno falta.
- */
-export const REQUIRED_CONTEXT_EVENTS = Object.freeze(
-  new Set([
-    EVENTS.WHATSAPP_CLICK,
-    EVENTS.PHONE_CLICK,
-    EVENTS.EMAIL_CLICK,
-    EVENTS.CTA_CLICK,
-    EVENTS.GALLERY_OPEN,
-    EVENTS.GALLERY_NAVIGATE,
-    EVENTS.NAV_TOGGLE,
-    EVENTS.CAROUSEL_INTERACT,
-    EVENTS.SELECT_ITEM,
-  ]),
-);
-
-/**
- * Eventos de LEAD: por regla de negocio NO deben llevar datos monetarios
- * (price/currency/value). A un contacto no se le asigna valor $.
- * dataLayer.js los limpia antes de pushear.
- */
-export const LEAD_EVENTS = Object.freeze(
-  new Set([
-    EVENTS.GENERATE_LEAD,
-    EVENTS.WHATSAPP_CLICK,
-    EVENTS.PHONE_CLICK,
-    EVENTS.EMAIL_CLICK,
-    EVENTS.FORM_SUBMIT,
-  ]),
-);
-
-/**
- * Mapeo invertido para validar enums (los wrappers UI los chequean en dev).
- */
-export const VALID_SOURCES = Object.freeze(new Set(Object.values(SOURCES)));
-export const VALID_LOCATIONS = Object.freeze(new Set(Object.values(LOCATIONS)));

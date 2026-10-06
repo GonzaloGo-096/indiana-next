@@ -34,9 +34,6 @@ import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
 import { getVehicleOfferDisplay } from "@/utils/vehicleOffer";
 import { getEstado, ESTADOS } from "@/utils/vehicleEstado";
 import { VehiclePrice } from "@/components/vehicles/VehiclePrice/VehiclePrice";
-import { pushEcommerceEvent } from "@/lib/analytics/dataLayer";
-import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
-import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import styles from "./CardAuto.module.css";
 import { VEHICLE_PLACEHOLDER } from "@/config/cloudinaryStaticImages";
 
@@ -46,7 +43,7 @@ import { VEHICLE_PLACEHOLDER } from "@/config/cloudinaryStaticImages";
  * @param {Object} props.auto - Objeto con información del vehículo
  * @param {string} props.imagePriority - Prioridad de carga de imagen: "high" | "auto" | "low"
  */
-export const CardAuto = memo(({ auto, imagePriority = "auto", index = 0 }) => {
+export const CardAuto = memo(({ auto, imagePriority = "auto" }) => {
   // ✅ VALIDAR DATOS DEL VEHÍCULO
   const isValidAuto = auto && (auto.id || auto._id);
 
@@ -71,22 +68,7 @@ export const CardAuto = memo(({ auto, imagePriority = "auto", index = 0 }) => {
       return;
     }
 
-    // Analytics: select_item con wrapper ecommerce estándar GA4
-    const itemParams = buildItemParamsFromUsado(auto, ITEM_LIST.USADOS_GRID);
-    if (itemParams) {
-      pushEcommerceEvent(EVENTS.SELECT_ITEM, {
-        source: SOURCES.CARD,
-        location: LOCATIONS.USADOS_LIST,
-        component_id: "vehicle-card-vehiculos-grid",
-        item_id: itemParams.item_id,
-        item_name: itemParams.item_name,
-        item_category: itemParams.item_category,
-        itemListName: ITEM_LIST.USADOS_GRID,
-        items: [{ ...itemParams, index }],
-      });
-    }
-    
-    // ✅ Guardar posición de scroll antes de navegar
+    // Guardar posición de scroll antes de navegar
     if (typeof window !== "undefined") {
       const scrollData = {
         position: window.scrollY,
@@ -95,7 +77,7 @@ export const CardAuto = memo(({ auto, imagePriority = "auto", index = 0 }) => {
       };
       sessionStorage.setItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL, JSON.stringify(scrollData));
     }
-  }, [auto, index]);
+  }, [auto]);
 
   const offerData = useMemo(() => getVehicleOfferDisplay(auto), [auto]);
 

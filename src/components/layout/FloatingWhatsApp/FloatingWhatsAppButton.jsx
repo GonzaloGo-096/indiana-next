@@ -6,8 +6,6 @@ import {
   resolveWhatsAppForPathname,
 } from "@/config/whatsappFloating";
 import WhatsAppLink from "@/components/analytics/WhatsAppLink";
-import { SOURCES } from "@/lib/analytics/events";
-import { locationFromPathname } from "@/lib/analytics/locationFromPath";
 import styles from "./FloatingWhatsAppButton.module.css";
 
 const WHATSAPP_ICON_PATH =
@@ -26,13 +24,7 @@ export default function FloatingWhatsAppButton() {
     <div className={styles.wrap}>
       <WhatsAppLink
         href={href}
-        phone={channel.phone}
-        source={SOURCES.FLOATING}
-        location={locationFromPathname(pathname)}
         componentId="whatsapp-floating"
-        messageTemplateId={channel.messageTemplateId}
-        leadType={channel.leadType}
-        vertical={channel.vertical}
         className={styles.button}
         aria-label={ariaLabel}
         title={ariaLabel}

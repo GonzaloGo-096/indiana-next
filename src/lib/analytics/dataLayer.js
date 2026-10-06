@@ -1,246 +1,92 @@
 /**
- * Núcleo del tracking: empuja eventos al window.dataLayer con guards y sanitización.
+ * Único punto por donde el sitio le habla a GTM.
  *
- * Garantías:
- * - SSR-safe (no toca window en server).
- * - Idempotente (compatible con GTM cargando antes/después).
- * - Nunca lanza: si algo falla, el tracking queda silencioso. La UI no se rompe.
- * - Sanitiza valores y BLOQUEA keys con apariencia de PII como segunda línea de defensa.
- *
- * La primera línea de defensa es no agregar la key de PII en quien dispara el evento.
+ * - Agrega `location` (la sección del sitio) sacándola de la URL, para que
+ *   ningún componente tenga que pasarla y no se desincronice.
+ * - Descarta claves con forma de dato personal: segunda línea de defensa,
+ *   la primera es no mandarlas.
+ * - Nunca lanza: si el tracking falla, la página sigue andando.
  */
 
-import { REQUIRED_CONTEXT_EVENTS, LEAD_EVENTS } from "./events";
+import { createLogger } from "@/lib/logger";
+import { locationFromPathname } from "./locationFromPath";
+
+const log = createLogger("analytics");
 
 const MAX_STRING_LEN = 500;
 
-const PII_KEY_BLOCKLIST = new Set([
+const PII_KEYS = new Set([
   "email",
   "mail",
-  "e_mail",
   "telefono",
   "phone",
   "celular",
   "dni",
   "password",
-  "pass",
   "nombre",
   "apellido",
-  "fullname",
-  "first_name",
-  "last_name",
   "mensaje",
   "message",
   "cv",
-  "curriculum",
-  "address",
   "direccion",
+  "address",
 ]);
 
-const REQUIRED_CONTEXT_KEYS = ["source", "location", "component_id"];
+const debug =
+  process.env.NODE_ENV !== "production" ||
+  process.env.NEXT_PUBLIC_ANALYTICS_DEBUG === "true";
 
-const isDev = process.env.NODE_ENV !== "production";
-const debugInProd = process.env.NEXT_PUBLIC_ANALYTICS_DEBUG === "true";
-
-function isPiiKey(key) {
-  return PII_KEY_BLOCKLIST.has(String(key).toLowerCase());
-}
-
-function coerceValue(value) {
-  if (value === null) return null;
-  if (value === undefined) return null;
-  const t = typeof value;
-  if (t === "string") {
-    return value.length > MAX_STRING_LEN ? value.slice(0, MAX_STRING_LEN) : value;
-  }
-  if (t === "number") {
-    return Number.isFinite(value) ? value : null;
-  }
-  if (t === "boolean") return value;
-  if (Array.isArray(value)) {
-    return value.map(coerceValue).filter((v) => v !== undefined);
-  }
-  if (t === "object") {
-    return sanitizeParams(value);
-  }
-  return null;
-}
-
-function sanitizeParams(params) {
-  if (!params || typeof params !== "object") return {};
+function cleanParams(params) {
   const out = {};
-  for (const key of Object.keys(params)) {
-    if (isPiiKey(key)) {
-      if (isDev) {
-        console.warn(
-          `[analytics] dropped param "${key}" (PII blocklist). No mandes datos personales al dataLayer.`,
-        );
-      }
+  for (const [key, value] of Object.entries(params || {})) {
+    if (PII_KEYS.has(key.toLowerCase())) {
+      log.warn(`se descartó "${key}": parece un dato personal`);
       continue;
     }
-    const value = coerceValue(params[key]);
-    if (value !== undefined) out[key] = value;
+    if (value === null || value === undefined || value === "") continue;
+    if (typeof value === "string") out[key] = value.slice(0, MAX_STRING_LEN);
+    else if (typeof value === "number") {
+      if (Number.isFinite(value)) out[key] = value;
+    } else if (typeof value === "boolean") out[key] = value;
   }
   return out;
 }
 
 /**
- * GA4 RESERVA el nombre de parámetro `source` (y medium/campaign/term/content) para la
- * atribución de tráfico/campaña: si un evento manda `source`, GA4 lo toma como la "Fuente
- * de la sesión". Nuestro `source` es la UBICACIÓN del componente (inline/card/floating/...),
- * no un canal. Para que NO ensucie la fuente de tráfico, lo renombramos a `component_source`
- * antes de empujarlo. (GTM debe leer `component_source`; ver dimensión custom en GA4.)
+ * @param {string} event - uno de EVENTS (events.js)
+ * @param {Record<string, string | number | boolean | null | undefined>} [params]
  */
-function renameReservedKeys(params) {
-  if (params && Object.prototype.hasOwnProperty.call(params, "source")) {
-    params.component_source = params.source;
-    delete params.source;
-  }
-  return params;
-}
-
-/**
- * Regla de negocio: los eventos de LEAD NO llevan datos monetarios. El item
- * (de buildItemParamsFrom*) trae price/currency para los eventos de navegación
- * (view_item/select_item, donde el precio SÍ es útil), pero a un contacto no le
- * asignamos valor $. Quitamos price/currency/value cuando el evento es un lead.
- */
-const MONETARY_KEYS = ["price", "currency", "value"];
-function stripMonetaryForLeads(event, params) {
-  if (!LEAD_EVENTS.has(event)) return params;
-  for (const k of MONETARY_KEYS) {
-    if (Object.prototype.hasOwnProperty.call(params, k)) delete params[k];
-  }
-  return params;
-}
-
-/**
- * GA4 reserva `item_name` (y demás item_*) a nivel ÍTEM: en eventos de ecommerce
- * (view_item/select_item) que llevan items[], GA4 enruta `item_name` a scope de ÍTEM
- * y la dimensión custom event-scoped queda (not set). Para tener el modelo en UNA
- * dimensión event-scoped consistente en TODOS los eventos (y poder cruzar vistas vs
- * consultas por modelo), copiamos el nombre a un parámetro propio NO reservado: `modelo`.
- */
-function addModeloAlias(params) {
-  if (params && params.item_name && !params.modelo) {
-    params.modelo = params.item_name;
-  }
-  return params;
-}
-
-function warnMissingContext(event, params) {
-  if (!isDev) return;
-  if (!REQUIRED_CONTEXT_EVENTS.has(event)) return;
-  const missing = REQUIRED_CONTEXT_KEYS.filter((k) => !params[k]);
-  if (missing.length > 0) {
-    console.warn(
-      `[analytics] event "${event}" missing required context keys: ${missing.join(", ")}. Usa <TrackedLink>/<TrackedButton>/<WhatsAppLink> o pasá los props.`,
-    );
-  }
-}
-
-/**
- * Empuja un evento al dataLayer.
- * @param {string} event - nombre del evento (usar EVENTS.* desde events.js)
- * @param {Record<string, unknown>} [params] - parámetros del evento
- */
-export function pushDataLayer(event, params = {}) {
+export function track(event, params = {}) {
   if (typeof window === "undefined") return;
   try {
-    if (typeof event !== "string" || event.length === 0) return;
-    const safe = sanitizeParams(params);
-    warnMissingContext(event, safe);
-    renameReservedKeys(safe);
-    stripMonetaryForLeads(event, safe);
-    addModeloAlias(safe);
-    window.dataLayer = window.dataLayer || [];
-    const payload = { event, ...safe };
-    window.dataLayer.push(payload);
-    if (isDev || debugInProd) {
-      console.debug(
-        `[analytics] ${new Date().toISOString()} ${payload.event}`,
-        payload,
-      );
-    }
-  } catch {
-    // Tracking nunca rompe la UI.
-  }
-}
-
-/**
- * Empuja un evento de ecommerce al dataLayer siguiendo el estándar GA4 Enhanced Ecommerce.
- *
- * Flujo:
- *   1. Push { ecommerce: null } — reset obligatorio para prevenir data bleeding entre eventos.
- *   2. Push { event, ...contextParams, ecommerce: { item_list_name?, items } }.
- *
- * Los parámetros de contexto (source, location, component_id, item_id, etc.) van al root
- * del evento para compatibilidad con reportes simples y custom dimensions de GA4.
- * Los items van dentro de ecommerce.items[] para cumplir el estándar GTM/GA4.
- *
- * @param {string} event - nombre del evento (EVENTS.*)
- * @param {object} opts
- * @param {object[]} opts.items           - array de items GA4 (de buildItemParamsFrom*)
- * @param {string}   [opts.itemListName]  - ITEM_LIST.* — aparece en ecommerce.item_list_name
- * @param {Record<string, unknown>} opts  - resto son context params (source, location, component_id, item_id, etc.)
- */
-export function pushEcommerceEvent(event, { items, itemListName, ...contextParams } = {}) {
-  if (typeof window === "undefined") return;
-  try {
-    if (typeof event !== "string" || event.length === 0) return;
-    if (!Array.isArray(items) || items.length === 0) {
-      if (isDev) {
-        console.warn(
-          `[analytics] pushEcommerceEvent("${event}") llamado sin items válidos. Verificá el builder.`,
-        );
-      }
-      return;
-    }
-    window.dataLayer = window.dataLayer || [];
-    // Reset obligatorio: previene que datos del evento anterior contaminen el siguiente.
-    window.dataLayer.push({ ecommerce: null });
-    const safeContext = sanitizeParams(contextParams);
-    warnMissingContext(event, safeContext);
-    renameReservedKeys(safeContext);
-    stripMonetaryForLeads(event, safeContext);
-    addModeloAlias(safeContext);
     const payload = {
       event,
-      ...safeContext,
-      ecommerce: {
-        ...(itemListName ? { item_list_name: String(itemListName) } : {}),
-        items,
-      },
+      location: locationFromPathname(window.location.pathname),
+      ...cleanParams(params),
     };
+    window.dataLayer = window.dataLayer || [];
     window.dataLayer.push(payload);
-    if (isDev || debugInProd) {
-      console.debug(
-        `[analytics] ${new Date().toISOString()} ${event} [ecommerce]`,
-        payload,
-      );
-    }
+    if (debug) console.debug("[analytics]", payload);
   } catch {
-    // Tracking nunca rompe la UI.
+    // A propósito: un error de medición no puede romper un clic del usuario.
   }
 }
 
 /**
- * Para uso interno (consent.js): empuja un comando de gtag al dataLayer.
- * gtag('consent', 'default'|'update', {...}) → dataLayer.push(arguments)
+ * Comando de gtag (lo usa consent.js).
+ * Tiene que empujar el objeto `arguments` literal: GTM ignora en silencio
+ * los comandos empujados como Array, y el consentimiento no se aplicaba
+ * hasta recargar la página (bug ya corregido en d4cf0a5).
  */
 export function pushGtagCommand(...args) {
   if (typeof window === "undefined") return;
   try {
     window.dataLayer = window.dataLayer || [];
-    // gtag exige empujar el objeto `arguments` literal (array-like), NUNCA un
-    // Array real: GTM ignora silenciosamente los comandos (p. ej. consent)
-    // pusheados como Array. Bug histórico: `args` (rest param) es Array y los
-    // updates de consent del banner no aplicaban hasta el siguiente pageload.
     function gtag() {
       window.dataLayer.push(arguments);
     }
     gtag(...args);
   } catch {
-    /* noop */
+    // A propósito: igual que track(), nunca rompe la UI.
   }
 }

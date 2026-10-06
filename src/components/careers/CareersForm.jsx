@@ -8,20 +8,14 @@
 
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { careersSchema } from "@/schemas/careersSchema";
 import { jobPositions } from "@/lib/careers.data";
-import { useAnalytics } from "@/hooks/useAnalytics";
-import { LOCATIONS, SOURCES, LEAD_SOURCES } from "@/lib/analytics/events";
+import { track } from "@/lib/analytics/dataLayer";
+import { EVENTS } from "@/lib/analytics/events";
 import styles from "./CareersForm.module.css";
-
-// Identificador único del formulario para reportes en GA4.
-const FORM_ID = "careers";
-
-// IMPORTANTE: nunca mandar PII al dataLayer (nombre, email, teléfono, mensaje, CV).
-// Solo metadatos no identificables. Ver src/lib/analytics/README.md.
 
 const FORM_STATE = {
   idle: "idle",
@@ -33,8 +27,6 @@ const FORM_STATE = {
 const CareersForm = () => {
   const [formState, setFormState] = useState(FORM_STATE.idle);
   const [errorMessage, setErrorMessage] = useState("");
-  const startedRef = useRef(false);
-  const { trackFormStart, trackFormSubmit, trackLead } = useAnalytics();
 
   const {
     register,
@@ -51,12 +43,6 @@ const CareersForm = () => {
       mensaje: "",
     },
   });
-
-  const handleFirstInteraction = () => {
-    if (startedRef.current) return;
-    startedRef.current = true;
-    trackFormStart(FORM_ID, { location: LOCATIONS.CAREERS });
-  };
 
   const onSubmit = async (data) => {
     setFormState(FORM_STATE.sending);
@@ -82,21 +68,9 @@ const CareersForm = () => {
         throw new Error(json.error || "Error al enviar. Intentá de nuevo.");
       }
 
-      // Tracking: solo metadatos no PII (puesto + flags booleanos).
-      trackFormSubmit(FORM_ID, {
-        location: LOCATIONS.CAREERS,
-        success: true,
-        puesto: data.puesto,
-        has_cv: !!data.cv?.[0],
-        has_phone: !!data.telefono,
-        has_message: !!data.mensaje,
-      });
-      trackLead({
-        leadSource: LEAD_SOURCES.FORM,
-        source: SOURCES.FORM,
-        location: LOCATIONS.CAREERS,
-        componentId: "form-careers",
-      });
+      // Una postulación no es un contacto comercial: se mide aparte y sin datos
+      // de la persona.
+      track(EVENTS.FORM_SUBMIT, { form_id: "careers" });
 
       setFormState(FORM_STATE.success);
       reset();
@@ -128,8 +102,6 @@ const CareersForm = () => {
         </h2>
         <form
           onSubmit={handleSubmit(onSubmit)}
-          onFocusCapture={handleFirstInteraction}
-          onChangeCapture={handleFirstInteraction}
           className={styles.form}
           noValidate
           encType="multipart/form-data"

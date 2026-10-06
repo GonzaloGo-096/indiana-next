@@ -8,16 +8,9 @@
  * @version 2.1.0 - Optimizado con React.memo para mejor performance
  */
 
-import { memo, useCallback } from "react";
+import { memo } from "react";
 import Image from "next/image";
-import TrackedLink from "@/components/analytics/TrackedLink";
-import {
-  EVENTS,
-  SOURCES,
-  LOCATIONS,
-  ITEM_LIST,
-} from "@/lib/analytics/events";
-import { buildItemParamsFromAuto } from "@/lib/analytics/params";
+import Link from "next/link";
 import styles from "./ModelCard.module.css";
 
 /**
@@ -37,10 +30,6 @@ import styles from "./ModelCard.module.css";
  * @param {boolean} props.softSurface - Sobre fondo oscuro: menos contraste (off-white, sombra suave)
  * @param {boolean} props.frameless - Sin caja de card (solo imagen + título; pensado para home sobre degradé oscuro)
  * @param {boolean} props.titleAboveImage - Mostrar logo + modelo arriba de la imagen
- * @param {string} [props.trackingLocation] - LOCATIONS.* del contexto donde se renderiza la card
- *   (ej: LOCATIONS.HOME para sección home, LOCATIONS.OKM_LIST para grilla de /0km).
- *   Si no se pasa, default a OKM_LIST.
- * @param {string} [props.trackingListName] - ITEM_LIST.* — default según trackingLocation.
  */
 function ModelCard({
   src,
@@ -55,34 +44,7 @@ function ModelCard({
   softSurface = false,
   frameless = false,
   titleAboveImage = false,
-  trackingLocation,
-  trackingListName,
 }) {
-  const location = trackingLocation || LOCATIONS.OKM_LIST;
-  const listName =
-    trackingListName ||
-    (location === LOCATIONS.HOME ? ITEM_LIST.HOME_FEATURED : ITEM_LIST.OKM_GRID);
-
-  // Callback ecommerce (no objeto) para no invalidar memo en re-renders del padre.
-  // Retorna { items, itemListName, ...rootParams } que TrackedLink pasa a pushEcommerceEvent.
-  const getEcommerceParams = useCallback(() => {
-    const itemParams = buildItemParamsFromAuto({ slug, titulo }, listName);
-    if (!itemParams) return { items: [], itemListName: listName };
-    return {
-      items: [{ ...itemParams, index: 0 }],
-      itemListName: listName,
-      // root params para custom dimensions simples
-      item_id: itemParams.item_id,
-      item_name: itemParams.item_name,
-      item_category: itemParams.item_category,
-      item_list_name: listName,
-    };
-  }, [slug, titulo, listName]);
-
-  const getPlanesParams = useCallback(
-    () => ({ label: "Ver planes", target_path: "/planes" }),
-    [],
-  );
   const classNames = [
     styles.card,
     okmShowcase && styles.okmShowcase,
@@ -151,29 +113,19 @@ function ModelCard({
       {!titleAboveImage && <div className={styles.content}>{titleBlock}</div>}
       {showActionButtons && (
         <div className={styles.actionsRow}>
-          <TrackedLink
+          <Link
             href={`/0km/${slug}`}
-            event={EVENTS.SELECT_ITEM}
-            getEcommerceParams={getEcommerceParams}
-            source={SOURCES.CARD}
-            location={location}
-            componentId="model-card-cta-ver"
             className={styles.actionButton}
           >
             Ver modelo
-          </TrackedLink>
+          </Link>
           {hasPlanes && (
-            <TrackedLink
+            <Link
               href="/planes"
-              event={EVENTS.CTA_CLICK}
-              getParams={getPlanesParams}
-              source={SOURCES.CARD}
-              location={location}
-              componentId="model-card-cta-planes"
               className={`${styles.actionButton} ${styles.actionButtonLight}`}
             >
               Ver planes
-            </TrackedLink>
+            </Link>
           )}
         </div>
       )}
@@ -189,18 +141,13 @@ function ModelCard({
   }
 
   return (
-    <TrackedLink
+    <Link
       href={`/0km/${slug}`}
-      event={EVENTS.SELECT_ITEM}
-      getEcommerceParams={getEcommerceParams}
-      source={SOURCES.CARD}
-      location={location}
-      componentId="model-card-wrapper"
       className={classNames}
       data-slug={slug}
     >
       {cardInner}
-    </TrackedLink>
+    </Link>
   );
 }
 

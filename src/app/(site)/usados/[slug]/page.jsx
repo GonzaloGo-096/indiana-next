@@ -25,7 +25,6 @@ import {
 } from "@/utils/vehicleSlug";
 import VehicleDetailClient from "./VehicleDetailClient";
 import ItemViewTracker from "@/components/analytics/ItemViewTracker";
-import { LOCATIONS, SOURCES } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 
 function formatPrecioForMeta(precio) {
@@ -171,9 +170,6 @@ export default async function VehicleDetailPage({ params }) {
       ) : null}
       <ItemViewTracker
         item={buildItemParamsFromUsado(vehicle)}
-        location={LOCATIONS.USADOS_DETAIL}
-        source={SOURCES.INLINE}
-        componentId="detail_page"
       />
       {/* vehicle es JSON plano (sale de JSON.parse en el servicio): se puede
           pasar al cliente tal cual, sin clonarlo. */}

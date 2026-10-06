@@ -1,78 +1,32 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { pushDataLayer } from "@/lib/analytics/dataLayer";
-import { EVENTS, LEAD_SOURCES } from "@/lib/analytics/events";
-import { hashPhoneNumber } from "@/lib/analytics/params";
+import { track } from "@/lib/analytics/dataLayer";
+import { EVENTS } from "@/lib/analytics/events";
 
 /**
- * Link a WhatsApp con tracking de whatsapp_click + generate_lead.
+ * Link a WhatsApp que registra `whatsapp_click`, el evento clave del sitio.
  *
- * Props mínimos: href (URL completa wa.me), source, location, componentId.
- * Opcionales: phone (para hashear y mandar phone_number_hash, sin PII),
- * item (objeto del builder buildItemParamsFromX para asociar al lead),
- * messageTemplateId, target/rel (overrides).
- *
- * El hash del teléfono se calcula en mount (async) y se manda solo si está listo
- * en el momento del click. Si no, se manda el evento sin él.
+ * @param {object} props
+ * @param {string} props.href - URL wa.me completa
+ * @param {string} props.componentId - qué botón es, estable y en kebab-case
+ *   (ej. "whatsapp-floating"); es lo que separa un botón de otro en GA4
+ * @param {{ item_id: string, item_name: string, item_category: string } | null} [props.item]
+ *   - el vehículo, si el botón es de una ficha (buildItemParamsFrom*)
  */
 export default function WhatsAppLink({
   href,
-  phone,
-  source,
-  location,
   componentId,
   item,
-  messageTemplateId,
-  leadType,
-  vertical,
   onClick,
   target = "_blank",
   rel = "noopener noreferrer",
   children,
   ...rest
 }) {
-  const [phoneHash, setPhoneHash] = useState(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    if (!phone) return undefined;
-    hashPhoneNumber(phone).then((h) => {
-      if (!cancelled) setPhoneHash(h);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [phone]);
-
-  const handleClick = useCallback(
-    (e) => {
-      try {
-        const base = {
-          source,
-          location,
-          component_id: componentId,
-          ...(phoneHash ? { phone_number_hash: phoneHash } : {}),
-          ...(messageTemplateId ? { message_template_id: messageTemplateId } : {}),
-          ...(leadType ? { lead_type: leadType } : {}),
-          ...(vertical ? { vertical } : {}),
-          ...(item || {}),
-        };
-        pushDataLayer(EVENTS.WHATSAPP_CLICK, {
-          ...base,
-          lead_source: LEAD_SOURCES.WHATSAPP,
-        });
-        pushDataLayer(EVENTS.GENERATE_LEAD, {
-          ...base,
-          lead_source: LEAD_SOURCES.WHATSAPP,
-        });
-      } catch {
-        /* noop */
-      }
-      if (typeof onClick === "function") onClick(e);
-    },
-    [source, location, componentId, phoneHash, messageTemplateId, leadType, vertical, item, onClick],
-  );
+  function handleClick(e) {
+    track(EVENTS.WHATSAPP_CLICK, { component_id: componentId, ...item });
+    onClick?.(e);
+  }
 
   return (
     <a {...rest} href={href} target={target} rel={rel} onClick={handleClick}>

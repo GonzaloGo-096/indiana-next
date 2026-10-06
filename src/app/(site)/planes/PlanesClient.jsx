@@ -1,24 +1,11 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useRef } from "react";
 import { ModeloSection } from "@/components/planes/ModeloSection";
 import cta from "@/components/home/HomeSectionCtas.module.css";
 import contact from "@/components/ui/ContactButtons.module.css";
-import ItemListViewTracker from "@/components/analytics/ItemListViewTracker";
-import TrackedButton from "@/components/analytics/TrackedButton";
 import WhatsAppLink from "@/components/analytics/WhatsAppLink";
-import {
-  EVENTS,
-  SOURCES,
-  LOCATIONS,
-  ITEM_LIST,
-  LEAD_TYPES,
-  VERTICALS,
-} from "@/lib/analytics/events";
-import { buildItemParamsFromPlan } from "@/lib/analytics/params";
 import styles from "./planes.module.css";
-
-const PLANES_WHATSAPP_PHONE = "543816295959";
 
 /**
  * Client Component para la página de planes
@@ -39,34 +26,8 @@ export function PlanesClient({ planesPorModelo }) {
   // Obtener lista de modelos disponibles
   const modelosDisponibles = Object.keys(planesPorModelo).sort();
 
-  // Items GA4 para view_item_list (aplanado de todos los planes visibles)
-  const trackingItems = useMemo(() => {
-    const out = [];
-    for (const [modelo, planes] of Object.entries(planesPorModelo || {})) {
-      for (const plan of planes || []) {
-        const item = buildItemParamsFromPlan(
-          {
-            id: plan.id,
-            nombre: plan.plan,
-            modelo,
-            cuota: plan.cuotas_desde,
-          },
-          ITEM_LIST.PLANES_GRID,
-        );
-        if (item) out.push(item);
-      }
-    }
-    return out;
-  }, [planesPorModelo]);
-
   return (
     <>
-      <ItemListViewTracker
-        items={trackingItems}
-        itemListName={ITEM_LIST.PLANES_GRID}
-        location={LOCATIONS.PLANES_LIST}
-        source={SOURCES.LISTING_PAGE}
-      />
       <header
         className={`${styles.planesHero} w-full min-w-0`}
         aria-labelledby="planes-page-titulo"
@@ -89,13 +50,7 @@ export function PlanesClient({ planesPorModelo }) {
             </p>
             <WhatsAppLink
               href="https://wa.me/543816295959?text=Hola!%20Quiero%20consultar%20sobre%20los%20planes%20de%20financiaci%C3%B3n%20Peugeot"
-              phone={PLANES_WHATSAPP_PHONE}
-              source={SOURCES.HERO}
-              location={LOCATIONS.PLANES_LIST}
               componentId="whatsapp-planes-hero"
-              messageTemplateId="planes_list"
-              leadType={LEAD_TYPES.PLAN_INQUIRY}
-              vertical={VERTICALS.ZERO_KM}
               className={`${contact.buttonWhatsapp} ${styles.planesHeroCta}`}
             >
               <svg
@@ -134,20 +89,13 @@ export function PlanesClient({ planesPorModelo }) {
                 modelo.charAt(0).toUpperCase() + modelo.slice(1);
               return (
                 <li key={modelo} className={styles.planesModeloChipItem}>
-                  <TrackedButton
-                    event={EVENTS.CTA_CLICK}
-                    getParams={() => ({
-                      label: modeloDisplay,
-                      target_modelo: modelo,
-                    })}
-                    source={SOURCES.NAV}
-                    location={LOCATIONS.PLANES_LIST}
-                    componentId={`planes-chip-${modelo}`}
+                  <button
+                    type="button"
                     className={cta.buttonChip}
                     onClick={() => scrollToModelo(modelo)}
                   >
                     {modeloDisplay}
-                  </TrackedButton>
+                  </button>
                 </li>
               );
             })}

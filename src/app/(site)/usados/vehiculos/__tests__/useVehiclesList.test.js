@@ -21,7 +21,7 @@ const m = vi.hoisted(() => {
     router,
     searchParams: new URLSearchParams(""),
     getVehicles: vi.fn(),
-    pushDataLayer: vi.fn(),
+    track: vi.fn(),
   };
 });
 
@@ -35,7 +35,7 @@ vi.mock("@/lib/services/vehiclesApi", () => ({
 }));
 
 vi.mock("@/lib/analytics/dataLayer", () => ({
-  pushDataLayer: (...a) => m.pushDataLayer(...a),
+  track: (...a) => m.track(...a),
 }));
 
 // El mapeo del backend ya tiene sus propios tests. Acá se deja pasar tal cual
@@ -71,7 +71,7 @@ beforeEach(() => {
   m.router.push.mockClear();
   m.router.replace.mockClear();
   m.getVehicles.mockReset();
-  m.pushDataLayer.mockClear();
+  m.track.mockClear();
   sessionStorage.clear();
   vi.spyOn(console, "error").mockImplementation(() => {});
 });
@@ -263,16 +263,20 @@ describe("aplicar filtros", () => {
 });
 
 describe("medición", () => {
-  it("informa cuántos resultados dio el filtro", async () => {
+  it("filtrar manda una sola búsqueda con resultados, filtros y marca", async () => {
     m.getVehicles.mockResolvedValue(pagina([1, 2], { total: 2 }));
     const { result } = montar();
 
     await act(async () => {
-      await result.current.applyFilters({ marca: ["Toyota"] });
+      await result.current.applyFilters({ marca: ["Toyota", "Ford"], caja: ["Manual"] });
     });
 
-    const evento = m.pushDataLayer.mock.calls.find(([nombre]) => /filter/i.test(nombre));
-    expect(evento?.[1]).toMatchObject({ results_count: 2 });
+    expect(m.track).toHaveBeenCalledTimes(1);
+    expect(m.track).toHaveBeenCalledWith("view_search_results", {
+      results_count: 2,
+      filters_count: 2,
+      marca: "Toyota,Ford",
+    });
   });
 
   it("limpiar todos los filtros no cuenta como una búsqueda", async () => {
@@ -283,8 +287,7 @@ describe("medición", () => {
       await result.current.applyFilters({});
     });
 
-    const busqueda = m.pushDataLayer.mock.calls.find(([n]) => /search/i.test(n));
-    expect(busqueda).toBeUndefined();
+    expect(m.track).not.toHaveBeenCalled();
   });
 });
 

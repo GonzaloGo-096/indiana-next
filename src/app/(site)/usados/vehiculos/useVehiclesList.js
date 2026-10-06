@@ -12,9 +12,8 @@ import {
 } from "@/utils/filters";
 import { vehiclesService } from "@/lib/services/vehiclesApi";
 import { mapVehiclesPage } from "@/lib/mappers/vehicleMapper";
-import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
-import { pushDataLayer } from "@/lib/analytics/dataLayer";
-import { buildItemParamsFromUsado } from "@/lib/analytics/params";
+import { EVENTS } from "@/lib/analytics/events";
+import { track } from "@/lib/analytics/dataLayer";
 import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { VEHICLE_CONSTANTS, LIST_ERROR_MESSAGE } from "@/constants/vehicles";
 import { vendidosAlFinal } from "@/utils/vehicleEstado";
@@ -24,31 +23,17 @@ import { useScrollRestore } from "./useScrollRestore";
 const log = createLogger("usados:listado");
 
 /**
- * Convierte el objeto de filtros (formato parseFilters) a params planos
- * aptos para analytics: strings y números, sin arrays anidados ni claves
- * con acentos, para que GTM pueda leerlos directamente como dimensiones.
+ * Lo que viaja en view_search_results: cuántos filtros se usaron y la marca,
+ * que es lo único que se mira en los reportes.
  */
-function buildFiltersAnalyticsParams(filters) {
-  const out = {};
-  if (filters.marca?.length) out.marca = filters.marca.join(",");
-  if (filters.caja?.length) out.caja = filters.caja.join(",");
-  if (filters.combustible?.length) out.combustible = filters.combustible.join(",");
-  if (filters.precio?.length === 2) {
-    const [min, max] = filters.precio;
-    if (Number.isFinite(min)) out.precio_min = min;
-    if (Number.isFinite(max)) out.precio_max = max;
-  }
-  if (filters.año?.length === 2) {
-    const [min, max] = filters.año;
-    if (Number.isFinite(min)) out.anio_min = min;
-    if (Number.isFinite(max)) out.anio_max = max;
-  }
-  if (filters.kilometraje?.length === 2) {
-    const [, max] = filters.kilometraje;
-    if (Number.isFinite(max)) out.km_max = max;
-  }
-  out.filters_count = Object.keys(out).length;
-  return out;
+function buildSearchEventParams(filters) {
+  const usados = ["marca", "caja", "combustible", "precio", "año", "kilometraje"].filter(
+    (k) => filters[k]?.length,
+  );
+  return {
+    filters_count: usados.length,
+    marca: filters.marca?.length ? filters.marca.join(",") : undefined,
+  };
 }
 
 /**
@@ -57,7 +42,7 @@ function buildFiltersAnalyticsParams(filters) {
  * - Fetch de TODOS los autos que cumplen el filtro y paginado en pantalla
  * - Ordenamiento client-side, con los vendidos al final de todo el listado
  * - Persistencia en sessionStorage para scroll restore
- * - Analytics (tracking items, filter/sort events)
+ * - Analytics (view_search_results al filtrar)
  *
  * Por qué se trae todo y se pagina acá: los vendidos tienen que quedar al
  * final del listado completo, y el backend no ordena ni filtra por estado.
@@ -256,24 +241,11 @@ export function useVehiclesList({ initialData, initialError = null }) {
         }
         setData({ ...mappedData, visibleCount: PAGE_SIZE });
 
-        const resultsCount = mappedData.total ?? 0;
-        const filtersAnalytics = buildFiltersAnalyticsParams(newFilters);
-
-        pushDataLayer(EVENTS.FILTER_APPLIED, {
-          location: LOCATIONS.USADOS_LIST,
-          component_id: "filter-form-vehiculos",
-          results_count: resultsCount,
-          ...filtersAnalytics,
-        });
-
-        // view_search_results solo cuando hay filtros activos — si el
-        // usuario limpió todos los filtros no es una búsqueda.
+        // Solo con filtros activos: limpiar todos los filtros no es una búsqueda.
         if (hasAnyFilter(newFilters)) {
-          pushDataLayer(EVENTS.VIEW_SEARCH_RESULTS, {
-            search_term: filtersAnalytics.marca || "usados_filtros",
-            results_count: resultsCount,
-            location: LOCATIONS.USADOS_LIST,
-            filters_count: filtersAnalytics.filters_count,
+          track(EVENTS.VIEW_SEARCH_RESULTS, {
+            results_count: mappedData.total ?? 0,
+            ...buildSearchEventParams(newFilters),
           });
         }
 
@@ -315,16 +287,12 @@ export function useVehiclesList({ initialData, initialError = null }) {
   }, []);
 
   /**
-   * Cambia sort → actualiza URL (page=1) + dispara analytics.
+   * Cambia sort → actualiza URL (page=1).
    * NO maneja UI (cerrar dropdown) — eso es responsabilidad del componente.
    */
   const changeSort = useCallback(
     (newSort) => {
       updateURL(currentFilters, 1, newSort);
-      pushDataLayer(EVENTS.SORT_APPLIED, {
-        location: LOCATIONS.USADOS_LIST,
-        sort_value: newSort ?? "none",
-      });
     },
     [currentFilters, updateURL],
   );
@@ -355,21 +323,6 @@ export function useVehiclesList({ initialData, initialError = null }) {
     [currentFilters, applyFilters],
   );
 
-  // --- Analytics computed ----------------------------------------------------
-
-  const trackingItems = useMemo(
-    () =>
-      sortedVehicles
-        .map((v) => buildItemParamsFromUsado(v, ITEM_LIST.USADOS_GRID))
-        .filter(Boolean),
-    [sortedVehicles],
-  );
-
-  const listSignature = useMemo(
-    () => `${currentSort || ""}|${searchParams?.toString?.() || ""}`,
-    [currentSort, searchParams],
-  );
-
   // --- Public API ------------------------------------------------------------
 
   return {
@@ -392,7 +345,5 @@ export function useVehiclesList({ initialData, initialError = null }) {
     clearFilters,
     selectBrand,
 
-    trackingItems,
-    listSignature,
   };
 }
