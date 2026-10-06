@@ -53,6 +53,13 @@ function cleanParams(params) {
 }
 
 /**
+ * GTM recuerda cada clave empujada y la reusa en los eventos siguientes: el
+ * WhatsApp flotante de una ficha salía con el auto del view_item anterior
+ * (medido el 2026-10-06). Estas claves se vacían en cada evento que no las trae.
+ */
+const RESET_KEYS = ["component_id", "item_id", "item_name", "item_category"];
+
+/**
  * @param {string} event - uno de EVENTS (events.js)
  * @param {Record<string, string | number | boolean | null | undefined>} [params]
  */
@@ -61,6 +68,7 @@ export function track(event, params = {}) {
   try {
     const payload = {
       event,
+      ...Object.fromEntries(RESET_KEYS.map((k) => [k, undefined])),
       location: locationFromPathname(window.location.pathname),
       ...cleanParams(params),
     };
