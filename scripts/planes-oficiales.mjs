@@ -269,6 +269,9 @@ async function comparar(oficiales) {
     }
     vinculados.add(of.id_oficial);
     const cambios = [];
+    // Sin el sufijo de año ("AM26.5"), que cambia seguido y no importa.
+    const base = (s) => s.toLowerCase().replace(/\bam\s?\d+(\.\d+)?\b/g, "").replace(/\s+/g, " ").trim();
+    if (!local.modelos.some((m) => base(m) === base(of.modelo))) cambios.push(`modelo: ${local.modelos.join(", ")} -> ${of.modelo}`);
     for (const k of ["cuotas_desde", "valor_movil_con_imp", "valor_movil_sin_imp"])
       if (of[k] != null && local[k] !== of[k]) cambios.push(`${k}: ${local[k]} -> ${of[k]}`);
     for (const [k, v] of Object.entries(of.caracteristicas))
@@ -288,10 +291,7 @@ async function comparar(oficiales) {
 
 const planes = await traerPlanesOficiales();
 imprimir(planes);
-const iJson = process.argv.indexOf("--json");
-if (iJson > 0) {
-  writeFileSync(process.argv[iJson + 1], JSON.stringify({ obtenido: new Date().toISOString(), fuente: BASE, planes }, null, 2));
-  console.log(`JSON guardado en ${process.argv[iJson + 1]}\n`);
-}
+const salida = process.argv[process.argv.indexOf("--json") + 1];
+if (process.argv.includes("--json")) writeFileSync(salida, JSON.stringify({ obtenido: new Date().toISOString(), fuente: BASE, planes }, null, 2));
 const difs = await comparar(planes);
 process.exitCode = difs ? 1 : 0;

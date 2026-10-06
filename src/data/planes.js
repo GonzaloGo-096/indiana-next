@@ -128,7 +128,8 @@ const planAplicaAModelo = (plan, modeloAuto) => {
  * Array de todos los planes disponibles
  * 
  * Cada plan contiene:
- * - id: Identificador único
+ * - id: Identificador único (es la URL /planes/[id], no cambiarlo)
+ * - id_oficial: id del plan en peugeotplan.com.ar (lo usa scripts/planes-oficiales.mjs)
  * - plan: Nombre del plan
  * - modelos: Array de nombres de modelos a los que aplica
  * - cuotas_desde: Valor de cuota inicial
@@ -139,6 +140,7 @@ const planAplicaAModelo = (plan, modeloAuto) => {
 export const PLANES = [
   {
     id: "easy",
+    id_oficial: 77,
     plan: "Easy",
     modelos: ["208 Allure MT"],
     cuotas_desde: 170465,
@@ -157,6 +159,7 @@ export const PLANES = [
   },
   {
     id: "plus-208",
+    id_oficial: 82,
     plan: "208 Allure",
     modelos: ["208 Allure MT AM26"],
     cuotas_desde: 331600,
@@ -183,6 +186,7 @@ export const PLANES = [
   },
   {
     id: "plus-at",
+    id_oficial: 422,
     plan: "Plus AT",
     modelos: ["208 Allure AT AM26"],
     cuotas_desde: 435943,
@@ -204,6 +208,7 @@ export const PLANES = [
   },
   {
     id: "2008-active-t200",
+    id_oficial: 2327,
     plan: "2008 Active T200",
     modelos: ["2008 Active T200 AM26"],
     cuotas_desde: 407652,
@@ -230,6 +235,7 @@ export const PLANES = [
   },
   {
     id: "partner-hdi",
+    id_oficial: 5311,
     plan: "Partner HDI",
     modelos: ["Partner Van L2 HDI 92 AM26"],
     cuotas_desde: 333319,
@@ -252,6 +258,7 @@ export const PLANES = [
   },
   {
     id: "expert-carga",
+    id_oficial: 5310,
     plan: "Expert",
     modelos: ["Expert L3 HDI 150 AM26"],
     cuotas_desde: 492995,
@@ -275,6 +282,7 @@ export const PLANES = [
   },
   {
     id: "2008-t200",
+    id_oficial: 5309,
     plan: "2008 T200",
     modelos: ["2008 Allure T200 AM26"],
     cuotas_desde: 552655,
