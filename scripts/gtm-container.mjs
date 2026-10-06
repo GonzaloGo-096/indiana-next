@@ -20,7 +20,7 @@ const INITIALIZATION_ALL_PAGES = "2147479573"; // activador integrado de GTM
 const EVENTOS = {
   page_view: ["location", "page_location", "page_title"],
   view_item: ["location", "item_id", "item_name", "item_category"],
-  whatsapp_click: ["location", "component_id", "item_id", "item_name", "item_category"],
+  whatsapp_click: ["location", "component_id", "lead_ref", "item_id", "item_name", "item_category"],
   phone_click: ["location", "component_id"],
   view_search_results: ["location", "results_count", "filters_count", "marca"],
   form_submit: ["location", "form_id"],

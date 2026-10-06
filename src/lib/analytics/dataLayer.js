@@ -57,7 +57,7 @@ function cleanParams(params) {
  * WhatsApp flotante de una ficha salía con el auto del view_item anterior
  * (medido el 2026-10-06). Estas claves se vacían en cada evento que no las trae.
  */
-const RESET_KEYS = ["component_id", "item_id", "item_name", "item_category", "marca"];
+const RESET_KEYS = ["component_id", "item_id", "item_name", "item_category", "marca", "lead_ref"];
 
 /**
  * @param {string} event - uno de EVENTS (events.js)

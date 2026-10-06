@@ -1,6 +1,6 @@
 {
   "exportFormatVersion": 2,
-  "exportTime": "2026-10-06 11:57:56",
+  "exportTime": "2026-10-06 14:12:49",
   "containerVersion": {
     "path": "accounts/6351586507/containers/250370263/versions/0",
     "accountId": "6351586507",
@@ -286,6 +286,21 @@
                     "type": "TEMPLATE",
                     "key": "parameterValue",
                     "value": "{{DLV - component_id}}"
+                  }
+                ]
+              },
+              {
+                "type": "MAP",
+                "map": [
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameter",
+                    "value": "lead_ref"
+                  },
+                  {
+                    "type": "TEMPLATE",
+                    "key": "parameterValue",
+                    "value": "{{DLV - lead_ref}}"
                   }
                 ]
               },
@@ -901,6 +916,30 @@
         "accountId": "6351586507",
         "containerId": "250370263",
         "variableId": "107",
+        "name": "DLV - lead_ref",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "lead_ref"
+          }
+        ]
+      },
+      {
+        "accountId": "6351586507",
+        "containerId": "250370263",
+        "variableId": "108",
         "name": "DLV - results_count",
         "type": "v",
         "parameter": [
@@ -924,7 +963,7 @@
       {
         "accountId": "6351586507",
         "containerId": "250370263",
-        "variableId": "108",
+        "variableId": "109",
         "name": "DLV - filters_count",
         "type": "v",
         "parameter": [
@@ -948,7 +987,7 @@
       {
         "accountId": "6351586507",
         "containerId": "250370263",
-        "variableId": "109",
+        "variableId": "110",
         "name": "DLV - marca",
         "type": "v",
         "parameter": [
@@ -972,7 +1011,7 @@
       {
         "accountId": "6351586507",
         "containerId": "250370263",
-        "variableId": "110",
+        "variableId": "111",
         "name": "DLV - form_id",
         "type": "v",
         "parameter": [

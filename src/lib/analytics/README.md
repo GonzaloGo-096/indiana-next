@@ -20,7 +20,7 @@ botones ("Contactar por WhatsApp", "Contactanos por WhatsApp", "Cotizá con noso
 |---|---|---|---|
 | `page_view` | Al entrar y en cada cambio de página (no al filtrar) | `page_location`, `page_title` | No |
 | `view_item` | Abrir una ficha de 0km, usado o plan | `item_id`, `item_name`, `item_category` | No |
-| `whatsapp_click` | Clic en cualquier botón de WhatsApp | `component_id` + el auto si es de una ficha | **Sí** |
+| `whatsapp_click` | Clic en cualquier botón de WhatsApp | `component_id`, `lead_ref` + el auto si es de una ficha (también el flotante) | **Sí** |
 | `phone_click` | Clic en un teléfono | `component_id` | **Sí** |
 | `view_search_results` | Aplicar filtros en usados (no al limpiarlos) | `results_count`, `filters_count`, `marca` | No |
 | `form_submit` | Postulación enviada en Trabajá con nosotros | `form_id` | No |
@@ -50,6 +50,16 @@ en GTM y anotarlo en la tabla de arriba.
 **GTM recuerda valores:** una clave que un evento manda y otro no (`item_*`,
 `component_id`, `marca`) se vacía en `track()` (`RESET_KEYS`); si se agrega una
 clave compartida, va ahí.
+
+## Código de referencia (lead_ref)
+
+Cada clic en WhatsApp genera un código de 5 caracteres (`leadRef.js`) que se suma al
+final del mensaje, "(Ref. web K7Q2M)", y viaja a GA4 como `lead_ref`. Si el vendedor
+anota la referencia del chat, en GA4 se filtra por ese `lead_ref` y aparece la visita:
+de qué auto, qué botón y qué campaña vino. Es al azar y no identifica a la persona.
+
+En una ficha, el WhatsApp flotante manda el auto de esa ficha (`pageItem.js`): lo anota
+`ItemViewTracker` y el flotante lo lee al hacer clic (`itemFromPage`).
 
 ## Datos personales
 

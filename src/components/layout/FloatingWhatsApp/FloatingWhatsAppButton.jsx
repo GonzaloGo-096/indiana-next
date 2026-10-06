@@ -25,6 +25,7 @@ export default function FloatingWhatsAppButton() {
       <WhatsAppLink
         href={href}
         componentId="whatsapp-floating"
+        itemFromPage
         className={styles.button}
         aria-label={ariaLabel}
         title={ariaLabel}
