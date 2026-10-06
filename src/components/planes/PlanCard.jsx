@@ -67,7 +67,6 @@ const PlanCardComponent = ({ plan, modelo }) => {
     caracteristicas,
   } = plan;
 
-
   const modeloDisplay = modelo.charAt(0).toUpperCase() + modelo.slice(1);
   const modeloLower = modelo.toLowerCase();
   const version = obtenerVersionDelPlan(plan, modelo);

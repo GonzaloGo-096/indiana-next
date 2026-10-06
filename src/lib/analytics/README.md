@@ -1,7 +1,7 @@
 # Medición del sitio
 
 Qué se mide, por dónde pasa y cómo comprobarlo. Simplificado el 2026-10-06:
-antes eran ~25 eventos con duplicados; ahora son 5 y cada contacto cuenta una vez.
+antes eran ~25 eventos con duplicados; ahora son 6 y cada contacto cuenta una vez.
 
 ## Quién es dueño de qué
 
@@ -42,8 +42,14 @@ si se prende, la primera visita se cuenta doble.
 `componentId` identifica el botón en GA4 (`whatsapp-floating`, `whatsapp-detalle-0km`…):
 es estable, en kebab-case, y no se cambia al refactorizar estilos.
 
-**Agregar un evento:** sumarlo a `EVENTS`, crear su etiqueta en GTM (sin etiqueta
-no llega a GA4) y anotarlo en la tabla de arriba.
+**Agregar un evento:** sumarlo a `EVENTS`, agregarlo con sus parámetros en
+`scripts/gtm-container.mjs` (la definición de GTM; sin etiqueta no llega a GA4),
+correr `node scripts/gtm-container.mjs`, importar `docs/analytics/gtm-medicion-simple.json`
+en GTM y anotarlo en la tabla de arriba.
+
+**GTM recuerda valores:** una clave que un evento manda y otro no (`item_*`,
+`component_id`, `marca`) se vacía en `track()` (`RESET_KEYS`); si se agrega una
+clave compartida, va ahí.
 
 ## Datos personales
 

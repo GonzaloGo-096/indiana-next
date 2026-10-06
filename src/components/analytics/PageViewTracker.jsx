@@ -19,6 +19,8 @@ import { EVENTS } from "@/lib/analytics/events";
  * Espera a que la ruta se asiente: las fichas de usados redirigen a su URL
  * canónica apenas cargan (las cards del listado linkean sin la versión) y,
  * sin la espera, una visita contaba como dos. De paso toma el título nuevo.
+ * Costo aceptado: el view_item de la ficha llega a GA4 antes que su page_view,
+ * y quien se va en menos de medio segundo no cuenta como visita.
  */
 export const SETTLE_MS = 500;
 

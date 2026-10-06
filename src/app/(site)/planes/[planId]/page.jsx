@@ -334,7 +334,6 @@ export default async function PlanDetallePage({ params }) {
           id: plan.id,
           nombre: plan.plan,
           modelo: plan.modelos?.[0],
-          cuota: plan.cuotas_desde,
         })}
       />
       <div className={`${styles.backRow} w-full`}>
@@ -462,7 +461,6 @@ export default async function PlanDetallePage({ params }) {
                   id: plan.id,
                   nombre: plan.plan,
                   modelo: plan.modelos?.[0],
-                  cuota: plan.cuotas_desde,
                 })}
                 className={contact.buttonWhatsapp}
                 aria-label="Solicitar cotización por WhatsApp"

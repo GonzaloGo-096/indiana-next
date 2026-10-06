@@ -35,6 +35,13 @@ describe("track", () => {
     expect(ultimo.component_id).toBe("whatsapp-floating");
   });
 
+  it("una búsqueda sin marca no hereda la marca de la anterior", () => {
+    track("view_search_results", { results_count: 3, filters_count: 1, marca: "Ford" });
+    track("view_search_results", { results_count: 9, filters_count: 1 });
+    expect(Object.prototype.hasOwnProperty.call(window.dataLayer[1], "marca")).toBe(true);
+    expect(window.dataLayer[1].marca).toBeUndefined();
+  });
+
   it("descarta claves con forma de dato personal", () => {
     track("form_submit", { form_id: "careers", email: "a@b.com", Telefono: "381" });
     expect(window.dataLayer[0]).toEqual({ event: "form_submit", location: "home", form_id: "careers" });

@@ -23,15 +23,14 @@ import { useScrollRestore } from "./useScrollRestore";
 const log = createLogger("usados:listado");
 
 /**
- * Lo que viaja en view_search_results: cuántos filtros se usaron y la marca,
- * que es lo único que se mira en los reportes.
+ * Lo que viaja en view_search_results: cuántos filtros se usaron y la marca.
+ * Cuenta lo mismo que va a la URL: los rangos en su valor por defecto no son
+ * un filtro (el formulario los manda siempre y los inflaba en +3).
  */
 function buildSearchEventParams(filters) {
-  const usados = ["marca", "caja", "combustible", "precio", "año", "kilometraje"].filter(
-    (k) => filters[k]?.length,
-  );
+  const usados = [...buildSearchParams(filters).keys()].filter((k) => k !== "page" && k !== "sort");
   return {
-    filters_count: usados.length,
+    filters_count: new Set(usados).size,
     marca: filters.marca?.length ? filters.marca.join(",") : undefined,
   };
 }
@@ -344,6 +343,5 @@ export function useVehiclesList({ initialData, initialError = null }) {
     changeSort,
     clearFilters,
     selectBrand,
-
   };
 }

@@ -1,6 +1,7 @@
 /**
  * Los únicos eventos que manda el sitio. Cada uno tiene su etiqueta en GTM
- * (GTM-TPJCFTBB); un evento nuevo acá sin etiqueta allá no llega a GA4.
+ * (GTM-TPJCFTBB), definida en scripts/gtm-container.mjs: un evento nuevo
+ * acá sin etiqueta allá no llega a GA4.
  */
 export const EVENTS = Object.freeze({
   PAGE_VIEW: "page_view",

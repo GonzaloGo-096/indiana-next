@@ -48,6 +48,7 @@ vi.mock("../useScrollRestore", () => ({ useScrollRestore: () => {} }));
 
 const { useVehiclesList } = await import("@/app/(site)/usados/vehiculos/useVehiclesList");
 const { LIST_ERROR_MESSAGE, VEHICLE_CONSTANTS } = await import("@/constants/vehicles");
+const { FILTER_DEFAULTS } = await import("@/constants/filterOptions");
 
 /** Una página de resultados con la forma que devuelve el mapeo. */
 function pagina(ids, { hasNextPage = false, nextPage = null, total = ids.length } = {}) {
@@ -277,6 +278,23 @@ describe("medición", () => {
       filters_count: 2,
       marca: "Toyota,Ford",
     });
+  });
+
+  it("los rangos en su valor por defecto no cuentan como filtro (el formulario los manda siempre)", async () => {
+    m.getVehicles.mockResolvedValue(pagina([1], { total: 1 }));
+    const { result } = montar();
+    const d = FILTER_DEFAULTS;
+
+    await act(async () => {
+      await result.current.applyFilters({
+        marca: ["Ford"],
+        año: [d.AÑO.min, d.AÑO.max],
+        precio: [d.PRECIO.min, d.PRECIO.max],
+        kilometraje: [d.KILOMETRAJE.min, d.KILOMETRAJE.max],
+      });
+    });
+
+    expect(m.track.mock.calls[0][1]).toMatchObject({ filters_count: 1, marca: "Ford" });
   });
 
   it("limpiar todos los filtros no cuenta como una búsqueda", async () => {

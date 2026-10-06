@@ -57,7 +57,7 @@ function cleanParams(params) {
  * WhatsApp flotante de una ficha salía con el auto del view_item anterior
  * (medido el 2026-10-06). Estas claves se vacían en cada evento que no las trae.
  */
-const RESET_KEYS = ["component_id", "item_id", "item_name", "item_category"];
+const RESET_KEYS = ["component_id", "item_id", "item_name", "item_category", "marca"];
 
 /**
  * @param {string} event - uno de EVENTS (events.js)
@@ -74,9 +74,12 @@ export function track(event, params = {}) {
     };
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push(payload);
+    // console.debug y no el logger: el logger se prende con API_DEBUG, que no
+    // existe en el navegador.
     if (debug) console.debug("[analytics]", payload);
-  } catch {
-    // A propósito: un error de medición no puede romper un clic del usuario.
+  } catch (err) {
+    // Se registra y se sigue: un error de medición no puede romper un clic.
+    log.warn(`no se pudo registrar "${event}":`, err?.message);
   }
 }
 
@@ -94,7 +97,7 @@ export function pushGtagCommand(...args) {
       window.dataLayer.push(arguments);
     }
     gtag(...args);
-  } catch {
-    // A propósito: igual que track(), nunca rompe la UI.
+  } catch (err) {
+    log.warn("no se pudo aplicar el comando de gtag:", err?.message);
   }
 }
