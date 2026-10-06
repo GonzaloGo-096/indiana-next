@@ -128,7 +128,8 @@ const planAplicaAModelo = (plan, modeloAuto) => {
  * Array de todos los planes disponibles
  * 
  * Cada plan contiene:
- * - id: Identificador único
+ * - id: Identificador único (es la URL /planes/[id], no cambiarlo)
+ * - id_oficial: id del plan en peugeotplan.com.ar (lo usa scripts/planes-oficiales.mjs)
  * - plan: Nombre del plan
  * - modelos: Array de nombres de modelos a los que aplica
  * - cuotas_desde: Valor de cuota inicial
@@ -139,11 +140,12 @@ const planAplicaAModelo = (plan, modeloAuto) => {
 export const PLANES = [
   {
     id: "easy",
+    id_oficial: 77,
     plan: "Easy",
     modelos: ["208 Allure MT"],
-    cuotas_desde: 170465,
-    valor_movil_con_imp: 37500000,
-    valor_movil_sin_imp: 30991736,
+    cuotas_desde: 189420,
+    valor_movil_con_imp: 41670000,
+    valor_movil_sin_imp: 34438017,
     caracteristicas: {
       cuotas_totales: 120,
       tipo_plan: "70/30",
@@ -157,11 +159,12 @@ export const PLANES = [
   },
   {
     id: "plus-208",
+    id_oficial: 82,
     plan: "208 Allure",
-    modelos: ["208 Allure MT AM26"],
-    cuotas_desde: 331600,
-    valor_movil_con_imp: 37500000,
-    valor_movil_sin_imp: 30991736,
+    modelos: ["208 Allure MT AM26.5"],
+    cuotas_desde: 368473,
+    valor_movil_con_imp: 41670000,
+    valor_movil_sin_imp: 34438017,
     caracteristicas: {
       cuotas_totales: 84,
       tipo_plan: "80/20",
@@ -183,11 +186,12 @@ export const PLANES = [
   },
   {
     id: "plus-at",
+    id_oficial: 422,
     plan: "Plus AT",
-    modelos: ["208 Allure AT AM26"],
-    cuotas_desde: 435943,
-    valor_movil_con_imp: 39440000,
-    valor_movil_sin_imp: 32595041,
+    modelos: ["208 Allure AT AM26.5"],
+    cuotas_desde: 484246,
+    valor_movil_con_imp: 43810000,
+    valor_movil_sin_imp: 36206612,
     caracteristicas: {
       cuotas_totales: 84,
       tipo_plan: "100%",
@@ -197,18 +201,19 @@ export const PLANES = [
       sellado_prorrateado: 12,
       diferimiento_comercial: {
         "cuotas_1_12": "20%",
-        "cuotas_13_18": "10%",
+        "cuotas_13_13": "10%",
       },
       recupero_diferimiento: { "cuotas_25_72": "6.3%" },
     },
   },
   {
     id: "2008-active-t200",
-    plan: "2008 Active T200",
-    modelos: ["2008 Active T200 AM26"],
-    cuotas_desde: 407652,
-    valor_movil_con_imp: 46120000,
-    valor_movil_sin_imp: 38115702,
+    id_oficial: 2327,
+    plan: "2008 Like T200",
+    modelos: ["2008 Like T200 AM27"],
+    cuotas_desde: 425330,
+    valor_movil_con_imp: 48120000,
+    valor_movil_sin_imp: 39768595,
     caracteristicas: {
       cuotas_totales: 84,
       tipo_plan: "80/20",
@@ -230,11 +235,12 @@ export const PLANES = [
   },
   {
     id: "partner-hdi",
+    id_oficial: 5311,
     plan: "Partner HDI",
     modelos: ["Partner Van L2 HDI 92 AM26"],
-    cuotas_desde: 333319,
-    valor_movil_con_imp: 38860000,
-    valor_movil_sin_imp: 35167421,
+    cuotas_desde: 369515,
+    valor_movil_con_imp: 43080000,
+    valor_movil_sin_imp: 38986425,
     caracteristicas: {
       cuotas_totales: 84,
       tipo_plan: "70/30",
@@ -252,11 +258,12 @@ export const PLANES = [
   },
   {
     id: "expert-carga",
+    id_oficial: 5310,
     plan: "Expert",
     modelos: ["Expert L3 HDI 150 AM26"],
-    cuotas_desde: 492995,
-    valor_movil_con_imp: 57500000,
-    valor_movil_sin_imp: 52036199,
+    cuotas_desde: 510914,
+    valor_movil_con_imp: 59590000,
+    valor_movil_sin_imp: 53927602,
     caracteristicas: {
       cuotas_totales: 84,
       tipo_plan: "70/30",
@@ -275,11 +282,12 @@ export const PLANES = [
   },
   {
     id: "2008-t200",
+    id_oficial: 5309,
     plan: "2008 T200",
-    modelos: ["2008 Allure T200 AM26"],
-    cuotas_desde: 552655,
-    valor_movil_con_imp: 50020000,
-    valor_movil_sin_imp: 41338843,
+    modelos: ["2008 Allure T200 AM27"],
+    cuotas_desde: 579282,
+    valor_movil_con_imp: 52430000,
+    valor_movil_sin_imp: 43330579,
     caracteristicas: {
       cuotas_totales: 84,
       tipo_plan: "100%",
