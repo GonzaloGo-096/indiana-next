@@ -38,9 +38,11 @@ export function buildItemParamsFromPlan(plan) {
   return { item_id: id, item_name: name, item_category: ITEM_CATEGORY.PLAN };
 }
 
-/** @param {{ slug?: string, id?: string, _id?: string, marca?: string, modelo?: string, anio?: string | number }} usado */
+/** @param {{ id?: string, _id?: string, marca?: string, modelo?: string, anio?: string | number }} usado */
 export function buildItemParamsFromUsado(usado) {
-  const id = clean(usado?.slug || usado?.id || usado?._id);
+  // Siempre el id del backend, nunca el slug: es la clave que une cada evento
+  // con su auto del inventario. Si el backend sumara un slug, no cambia nada.
+  const id = clean(usado?.id || usado?._id);
   if (!id) return null;
   // Con el año: hay muchos "Peugeot 208" usados y sin él colapsan en una fila.
   const name = [usado.marca, usado.modelo, usado.anio].map(clean).filter(Boolean).join(" ") || id;

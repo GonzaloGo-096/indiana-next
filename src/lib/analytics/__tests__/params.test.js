@@ -4,6 +4,7 @@ import {
   buildItemParamsFromPlan,
   buildItemParamsFromUsado,
 } from "../params";
+import { mapVehicle } from "@/lib/mappers/vehicleMapper";
 
 // Estos tres datos son los que cruzan "vistas" contra "contactos" por auto en
 // GA4 y en el tablero de Looker: si cambia la forma del nombre, se parten las
@@ -55,7 +56,7 @@ describe("buildItemParamsFromPlan", () => {
 });
 
 describe("buildItemParamsFromUsado", () => {
-  it("marca + modelo + año, y prefiere el slug como id", () => {
+  it("marca + modelo + año, y el id del backend aunque venga un slug", () => {
     expect(
       buildItemParamsFromUsado({
         _id: "abc",
@@ -66,10 +67,25 @@ describe("buildItemParamsFromUsado", () => {
         precio: 1000,
       }),
     ).toEqual({
-      item_id: "peugeot-208-2023-abc",
+      item_id: "abc",
       item_name: "Peugeot 208 2023",
       item_category: "usado",
     });
+  });
+
+  // La ficha y su botón de WhatsApp reciben el auto ya mapeado. El item_id
+  // tiene que ser el _id del inventario: es lo que une el evento con el auto.
+  it("con el auto como sale del mapeo, el item_id es el _id del backend", () => {
+    const backend = {
+      _id: "6ab26f0973c7ebf8ffbe4285",
+      marca: "Peugeot",
+      modelo: "2008",
+      anio: 2020,
+    };
+    expect(buildItemParamsFromUsado(mapVehicle(backend))?.item_id).toBe(backend._id);
+    expect(buildItemParamsFromUsado(mapVehicle({ ...backend, slug: "otro" }))?.item_id).toBe(
+      backend._id,
+    );
   });
 
   it("acepta _id cuando no hay slug ni id", () => {
