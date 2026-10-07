@@ -20,17 +20,17 @@ Hay **un solo** espacio que se publica. Confundirlos pone en producción una ver
 
 | Espacio | Qué tiene | Qué se hace |
 |---|---|---|
-| **"Default Workspace"** (espacio **10**, el que GTM abre por defecto) | 37 cambios de una importación vieja del 2026-10-06: **sin** puente `generate_lead`, **sin** `lead_ref`, **sin** `debug_mode` | **No publicar nunca.** En T13 se descartan sus 37 cambios: queda con 0 cambios, igual a la versión 9 |
-| **"medicion-simple"** (se crea en T13) | `docs/analytics/gtm-medicion-simple.json` importado con **Sobrescribir**: 8 etiquetas, entre ellas "GA4 - Event - generate_lead (puente, se borra en Fase 7)" | **El único que se publica**, en la Fase 3 |
+| ~~"Default Workspace"~~ (espacio 10) | 37 cambios de una importación vieja del 2026-10-06, sin puente, sin `lead_ref`, sin `debug_mode` | **Eliminado en T13** (2026-10-07). Si GTM vuelve a mostrar un espacio con ese contenido, no publicarlo |
+| **"medicion-simple"** (espacio **11**, creado en T13) | `docs/analytics/gtm-medicion-simple.json` importado con **Sobrescribir**: 42 cambios (15 añadidos, 27 eliminados); 8 etiquetas, entre ellas "GA4 - Event - generate_lead (puente, se borra en Fase 7)" | **El único que se publica**, en la Fase 3 |
 
-Si se publicara el espacio 10 viejo, `generate_lead` dejaría de llegar apenas salga el código
-nuevo (el código ya no lo empuja y ese espacio no tiene el puente): "Leads" caería a 0.
+Publicar una versión sin el puente haría que `generate_lead` dejara de llegar apenas salga el
+código nuevo (el código ya no lo empuja): "Leads" caería a 0.
 
 Antes de apretar **Enviar** en la Fase 3, comprobar en pantalla:
 
 1. El nombre del espacio arriba a la izquierda dice **medicion-simple**.
 2. El resumen lista 8 etiquetas e incluye **"generate_lead (puente, se borra en Fase 7)"**.
-3. "Default Workspace" muestra **0 cambios**.
+3. No hay otro espacio de trabajo con cambios pendientes.
 
 ## Antes de probar fuera de producción
 
