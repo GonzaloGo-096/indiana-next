@@ -29,10 +29,12 @@ Leído en Tag Manager el 2026-10-07 y en el respaldo.
 - Cuenta `6351586507`, contenedor `250370263`, "www.indiana.com.ar", web.
 - **Publicada: versión 9**, el 10 jun 2026 por infodigital@indiana.com.ar. Tiene 11 etiquetas,
   11 activadores y 19 variables, igual que el respaldo.
-- **Espacio de trabajo 10** (el que abre por defecto): **37 cambios pendientes sin publicar**
-  (10 agregados, 27 eliminados, 0 modificados). Los hizo infodigital "hace un día": es la
-  importación vieja de la medición simple, la que **no** tiene `lead_ref`. Publicar ese
-  espacio por error pondría en producción una versión incompleta. Se descarta en T13.
+- **Espacio de trabajo 10 = "Default Workspace"** (el que abre por defecto): **37 cambios
+  pendientes sin publicar** (10 agregados, 27 eliminados, 0 modificados). Los hizo infodigital
+  "hace un día": es la importación vieja de la medición simple, la que **no** tiene `lead_ref`
+  ni el puente. Publicar ese espacio por error pondría en producción una versión incompleta.
+  **No se publica nunca:** en T13 se descartan sus cambios, y lo que se publica es el espacio
+  "medicion-simple" (ver "GTM: qué espacio de trabajo" en `salida-a-produccion.md`).
 
 Etiquetas de la versión 9. Todas mandan a `G-9HJ64VGVLH`:
 

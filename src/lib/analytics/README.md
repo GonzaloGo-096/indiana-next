@@ -51,7 +51,7 @@ es estable, en kebab-case, y no se cambia al refactorizar estilos.
 **Agregar un evento:** sumarlo a `EVENTS`, agregarlo con sus parámetros en
 `scripts/gtm-definition.mjs` (la definición de GTM; sin etiqueta no llega a GA4),
 correr `node scripts/gtm-container.mjs`, importar `docs/analytics/gtm-medicion-simple.json`
-en GTM y anotarlo en la tabla de arriba.
+en GTM (espacio **"medicion-simple"**, nunca el "Default Workspace": ver `docs/analytics/salida-a-produccion.md`) y anotarlo en la tabla de arriba.
 
 **GTM recuerda valores:** una clave que un evento manda y otro no (`item_*`,
 `component_id`, `marca`) se vacía en `track()` (`RESET_KEYS`); si se agrega una
@@ -92,3 +92,6 @@ y el Pixel no pasan por este control.
 - `dataLayer.slice(-5)` en la consola muestra los últimos.
 - GTM → Vista previa contra el preview de Vercel de la rama.
 - GA4 → Tiempo real / DebugView.
+- Que producción no salga marcada como prueba: en Red, los envíos `collect` a `G-9HJ64VGVLH`
+  desde `www.indiana.com.ar` no llevan `_dbg`; desde una prueba con la variable, sí
+  (`docs/analytics/salida-a-produccion.md`).

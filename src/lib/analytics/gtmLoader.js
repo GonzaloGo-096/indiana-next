@@ -15,7 +15,9 @@
  * siempre desde MarketingTracking.
  */
 
-export const PRODUCTION_HOST = /(^|\.)indiana\.com\.ar$/;
+// Solo estos dos dominios: un subdominio (por ejemplo staging.indiana.com.ar)
+// apuntado a una versión de prueba mandaría datos reales sin marca de prueba.
+export const PRODUCTION_HOST = /^(www\.)?indiana\.com\.ar$/;
 
 export function isProductionHost(hostname) {
   return PRODUCTION_HOST.test(String(hostname || ""));

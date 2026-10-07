@@ -12,6 +12,15 @@ export const EVENTS = Object.freeze({
   FORM_SUBMIT: "form_submit",
 });
 
+/**
+ * form_id de cada formulario. El puente de GTM cuenta como generate_lead el
+ * form_submit con form_id = CAREERS: cambiar el valor sin cambiar GTM deja de
+ * contar postulaciones (el test de contrato lo detecta).
+ */
+export const FORM_IDS = Object.freeze({
+  CAREERS: "careers",
+});
+
 export const LOCATIONS = Object.freeze({
   HOME: "home",
   OKM_LIST: "okm_list",

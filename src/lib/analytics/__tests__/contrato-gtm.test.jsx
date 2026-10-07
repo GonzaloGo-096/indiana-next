@@ -5,54 +5,67 @@
  * mandaban desde el código y nunca llegaban a GA4 porque no tenían etiqueta.
  * Este test hace fallar el check si vuelve a pasar algo así:
  *  - un evento del código sin etiqueta en GTM (o al revés);
- *  - un parámetro que el código manda y GTM no lee;
- *  - un parámetro que GTM lee y ningún código manda;
- *  - el JSON para importar desactualizado respecto de la definición;
- *  - una etiqueta de GA4 sin debug_mode, o una marca de prueba distinta a la que
- *    empuja el cargador.
+ *  - un parámetro que el código manda y GTM no lee, o que GTM lee y nadie manda;
+ *  - el JSON para importar desactualizado, o con referencias a variables que no existen;
+ *  - una etiqueta de GA4 sin debug_mode, o la marca de prueba colándose en un evento;
+ *  - el form_id de la postulación distinto al que filtra el puente generate_lead.
+ *
+ * Cada emisor se ejerce con el código real: componentes renderizados, el hook
+ * del listado de usados y el formulario de empleo enviado de verdad.
  */
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
+import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
-import { render, fireEvent, cleanup, act } from "@testing-library/react";
+import { render, fireEvent, cleanup, act, renderHook, waitFor } from "@testing-library/react";
 import { CONTRATO, PUENTE, MARCA_PRUEBA, buildContainer } from "../../../../scripts/gtm-definition.mjs";
-import { EVENTS } from "../events";
-import { track } from "../dataLayer";
+import { EVENTS, FORM_IDS } from "../events";
 import { buildIndianaGtmSnippet } from "../gtmLoader";
 import { buildItemParamsFromAuto, buildItemParamsFromUsado, buildItemParamsFromPlan } from "../params";
 
-const nav = vi.hoisted(() => ({ pathname: "/" }));
+const m = vi.hoisted(() => ({ pathname: "/", getVehicles: vi.fn() }));
 vi.mock("next/navigation", () => ({
-  usePathname: () => nav.pathname,
+  usePathname: () => m.pathname,
   useRouter: () => ({ push: () => {}, replace: () => {} }),
   useSearchParams: () => new URLSearchParams(""),
 }));
+vi.mock("@/lib/services/vehiclesApi", () => ({ vehiclesService: { getVehicles: (...a) => m.getVehicles(...a) } }));
+vi.mock("@/lib/mappers/vehicleMapper", async (orig) => ({ ...(await orig()), mapVehiclesPage: (d) => d }));
+vi.mock("@/app/(site)/usados/vehiculos/useScrollRestore", () => ({ useScrollRestore: () => {} }));
 
 const { default: WhatsAppLink } = await import("@/components/analytics/WhatsAppLink");
 const { default: TelLink } = await import("@/components/analytics/TelLink");
 const { default: ItemViewTracker } = await import("@/components/analytics/ItemViewTracker");
 const { default: PageViewTracker, SETTLE_MS } = await import("@/components/analytics/PageViewTracker");
-const { buildSearchEventParams } = await import("@/app/(site)/usados/vehiculos/useVehiclesList");
+const { useVehiclesList } = await import("@/app/(site)/usados/vehiculos/useVehiclesList");
+const { default: CareersForm } = await import("@/components/careers/CareersForm");
+const { jobPositions } = await import("@/lib/careers.data");
 
 const RAIZ = path.resolve(__dirname, "../../../..");
 const enviadas = (e) => Object.keys(e).filter((k) => k !== "event" && e[k] !== undefined);
 
-/** Lo que el código real empuja al dataLayer, ejerciendo cada emisor. */
-function capturarTodo() {
+/** Lo que el código real empuja al dataLayer, ejerciendo cada emisor una vez. */
+let capturados = [];
+
+beforeAll(async () => {
+  vi.spyOn(console, "debug").mockImplementation(() => {});
   window.dataLayer = [];
   document.title = "Peugeot 208 0km | Peugeot Indiana"; // el sitio siempre tiene título; jsdom no
   window.history.pushState({}, "", "/0km/208");
-  nav.pathname = "/0km/208";
+  m.pathname = "/0km/208";
+
+  // page_view
   vi.useFakeTimers();
   render(<PageViewTracker />);
   act(() => vi.advanceTimersByTime(SETTLE_MS));
   vi.useRealTimers();
 
+  // view_item de los tres tipos de ficha
   const auto = buildItemParamsFromAuto({ slug: "208", titulo: "208" });
   render(<ItemViewTracker item={auto} />);
   render(<ItemViewTracker item={buildItemParamsFromUsado({ _id: "6ab26f0973c7ebf8ffbe4285", marca: "Peugeot", modelo: "2008", anio: 2020 })} />);
   render(<ItemViewTracker item={buildItemParamsFromPlan({ id: "easy", nombre: "Easy", modelo: "208" })} />);
 
+  // whatsapp_click (ficha y flotante) y phone_click
   const { getByText, getByLabelText } = render(
     <>
       <WhatsAppLink href="https://wa.me/1?text=Hola" componentId="whatsapp-detalle-0km" item={auto}>ficha</WhatsAppLink>
@@ -63,93 +76,122 @@ function capturarTodo() {
   fireEvent.click(getByText("ficha"));
   fireEvent.click(getByLabelText("flotante"));
   fireEvent.click(getByLabelText("tel"));
+  cleanup();
 
-  track(EVENTS.VIEW_SEARCH_RESULTS, { results_count: 3, ...buildSearchEventParams({ marca: ["Ford"], caja: ["Manual"] }) });
+  // view_search_results desde el hook real del listado
+  window.history.pushState({}, "", "/usados/vehiculos");
+  m.getVehicles.mockResolvedValue({ vehicles: [{ id: 1, marca: "Ford" }], total: 1, hasNextPage: false, nextPage: null, currentCursor: 1, totalPages: 1 });
+  const { result } = renderHook(() => useVehiclesList({ initialData: { vehicles: [], total: 0 }, initialError: null }));
+  await act(async () => {
+    await result.current.applyFilters({ marca: ["Ford"], caja: ["Manual"] });
+  });
+  cleanup();
 
-  return window.dataLayer.filter((e) => e && e.event);
-}
+  // form_submit: el formulario de empleo enviado de verdad (el envío al servidor se simula)
+  window.history.pushState({}, "", "/trabaja-con-nosotros");
+  const fetchOriginal = global.fetch;
+  global.fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => ({ ok: true }) });
+  const form = render(<CareersForm />);
+  fireEvent.change(form.container.querySelector("#puesto"), { target: { value: jobPositions[0].value } });
+  fireEvent.change(form.container.querySelector("#nombreApellido"), { target: { value: "Prueba Contrato" } });
+  fireEvent.change(form.container.querySelector("#email"), { target: { value: "prueba@example.com" } });
+  const cv = new File(["%PDF-1.4"], "cv.pdf", { type: "application/pdf" });
+  fireEvent.change(form.container.querySelector("#cv"), { target: { files: [cv] } });
+  fireEvent.submit(form.container.querySelector("form"));
+  await waitFor(() => expect(window.dataLayer.some((e) => e.event === "form_submit")).toBe(true));
+  global.fetch = fetchOriginal;
+  cleanup();
 
-/** El form_submit sale de CareersForm, que necesita un envío real: se lee la llamada del código. */
-function paramsDelFormulario() {
-  const src = fs.readFileSync(path.join(RAIZ, "src/components/careers/CareersForm.jsx"), "utf8");
-  const m = src.match(/track\(EVENTS\.FORM_SUBMIT,\s*\{([^}]*)\}\)/);
-  if (!m) throw new Error("CareersForm ya no llama a track(EVENTS.FORM_SUBMIT, {...}): revisar este test");
-  return ["location", ...m[1].split(",").map((p) => p.split(":")[0].trim()).filter(Boolean)];
-}
-
-beforeEach(() => {
-  vi.spyOn(console, "debug").mockImplementation(() => {});
+  capturados = window.dataLayer.filter((e) => e && e.event && !String(e.event).startsWith("gtm"));
 });
+
 afterEach(() => {
   cleanup();
-  vi.restoreAllMocks();
 });
 
 describe("contrato código ↔ GTM", () => {
+  it("se ejercieron los seis emisores", () => {
+    expect([...new Set(capturados.map((e) => e.event))].sort()).toEqual(Object.keys(CONTRATO).sort());
+  });
+
   it("los eventos del código son exactamente los que tienen etiqueta en GTM", () => {
     expect([...Object.values(EVENTS)].sort()).toEqual(Object.keys(CONTRATO).sort());
   });
 
   it("todo parámetro que el código manda lo lee GTM", () => {
-    const sobrantes = [];
-    for (const e of capturarTodo()) {
-      for (const k of enviadas(e)) if (!CONTRATO[e.event]?.includes(k)) sobrantes.push(`${e.event}.${k}`);
-    }
-    for (const k of paramsDelFormulario()) if (!CONTRATO.form_submit.includes(k)) sobrantes.push(`form_submit.${k}`);
+    const sobrantes = capturados.flatMap((e) => enviadas(e).filter((k) => !CONTRATO[e.event]?.includes(k)).map((k) => `${e.event}.${k}`));
     expect(sobrantes).toEqual([]);
   });
 
   it("todo parámetro que GTM lee lo manda algún código", () => {
     const vistos = {};
-    for (const e of capturarTodo()) (vistos[e.event] ||= new Set()) && enviadas(e).forEach((k) => vistos[e.event].add(k));
-    vistos.form_submit = new Set(paramsDelFormulario());
+    for (const e of capturados) enviadas(e).forEach((k) => (vistos[e.event] ||= new Set()).add(k));
     const muertos = Object.entries(CONTRATO).flatMap(([ev, ps]) => ps.filter((p) => !vistos[ev]?.has(p)).map((p) => `${ev}.${p}`));
     expect(muertos).toEqual([]);
+  });
+
+  it("la marca de prueba nunca viaja dentro de un evento", () => {
+    expect(capturados.filter((e) => MARCA_PRUEBA in e && e[MARCA_PRUEBA] !== undefined)).toEqual([]);
   });
 
   it("el JSON para importar está al día con la definición", () => {
     const enDisco = JSON.parse(fs.readFileSync(path.join(RAIZ, "docs/analytics/gtm-medicion-simple.json"), "utf8"));
     expect(enDisco).toEqual(buildContainer());
   });
+
+  it("toda referencia {{…}} del JSON apunta a una variable definida o integrada", () => {
+    const { variable } = buildContainer().containerVersion;
+    const definidas = new Set([...variable.map((v) => v.name), "_event"]);
+    const refs = [...JSON.stringify(buildContainer()).matchAll(/\{\{([^}]+)\}\}/g)].map((x) => x[1]);
+    expect(refs.length).toBeGreaterThan(0);
+    expect([...new Set(refs)].filter((r) => !definidas.has(r))).toEqual([]);
+  });
 });
 
 describe("GTM: debug_mode y puente", () => {
   const { tag, trigger, variable } = buildContainer().containerVersion;
   const tabla = (t) => t.parameter.find((p) => p.key === "eventSettingsTable" || p.key === "configSettingsTable").list;
-  const valor = (t, nombre) => tabla(t).map((m) => Object.fromEntries(m.map.map((x) => [x.key, x.value]))).find((o) => o.parameter === nombre)?.parameterValue;
+  const valor = (t, nombre) => tabla(t).map((x) => Object.fromEntries(x.map.map((y) => [y.key, y.value]))).find((o) => o.parameter === nombre)?.parameterValue;
 
-  it("cada etiqueta de GA4 manda debug_mode desde la marca de prueba, y nada más lo prende", () => {
+  it("cada etiqueta de GA4 manda debug_mode desde la marca de prueba, sin valor por defecto", () => {
     for (const t of tag) expect(valor(t, "debug_mode"), t.name).toBe(`{{DLV - ${MARCA_PRUEBA}}}`);
     const dlv = variable.find((v) => v.name === `DLV - ${MARCA_PRUEBA}`);
     expect(dlv.parameter.find((p) => p.key === "setDefaultValue").value).toBe("false");
   });
 
-  it("la marca que lee GTM es la que empuja el cargador fuera de producción", () => {
-    const win = { dataLayer: [] };
-    document.head.innerHTML = "<script></script>";
-    new Function("window", "document", "location", buildIndianaGtmSnippet("GTM-X", { allowNonProduction: true }))(win, document, { hostname: "localhost" });
-    expect(win.dataLayer.some((e) => e[MARCA_PRUEBA] === true)).toBe(true);
+  it("la marca que lee GTM es la que empuja el cargador fuera de producción, y en producción no se empuja", () => {
+    const correr = (hostname) => {
+      const win = { dataLayer: [] };
+      document.head.innerHTML = "<script></script>";
+      new Function("window", "document", "location", buildIndianaGtmSnippet("GTM-X", { allowNonProduction: true }))(win, document, { hostname });
+      return win.dataLayer;
+    };
+    expect(correr("localhost").some((e) => e[MARCA_PRUEBA] === true)).toBe(true);
+    expect(correr("www.indiana.com.ar").some((e) => MARCA_PRUEBA in e)).toBe(false);
   });
 
   it("la visita automática de la etiqueta de Google sigue apagada", () => {
     expect(valor(tag.find((t) => t.type === "googtag"), "send_page_view")).toBe("false");
   });
 
-  it("el puente manda generate_lead con WhatsApp, teléfono y postulación, con parámetros que existen", () => {
+  it("el puente se dispara con WhatsApp, teléfono y la postulación, usando el form_id que manda el formulario", () => {
     const puente = tag.find((t) => t.parameter.some((p) => p.key === "eventName" && p.value === "generate_lead"));
-    const nombreTrigger = (id) => trigger.find((t) => t.triggerId === id).name;
-    expect(puente.firingTriggerId.map(nombreTrigger).sort()).toEqual(
-      ["CE - whatsapp_click", "CE - phone_click", "CE - form_submit (empleo)"].sort(),
-    );
-    const empleo = trigger.find((t) => t.name === "CE - form_submit (empleo)");
-    expect(empleo.filter[0].parameter.map((p) => p.value)).toEqual(["{{DLV - form_id}}", "careers"]);
+    const nombre = (id) => trigger.find((t) => t.triggerId === id).name;
+    expect(puente.firingTriggerId.map(nombre).sort()).toEqual(["CE - form_submit (empleo)", "CE - phone_click", "CE - whatsapp_click"]);
 
-    const origen = new Set(["whatsapp_click", "phone_click", "form_submit"].flatMap((ev) => CONTRATO[ev]));
-    expect(PUENTE.parametros.filter((p) => !origen.has(p))).toEqual([]);
-    expect(Object.keys(PUENTE.leadSource).sort()).toEqual(["form_submit", "phone_click", "whatsapp_click"]);
+    const empleo = trigger.find((t) => t.name === "CE - form_submit (empleo)");
+    expect(empleo.filter[0].parameter.map((p) => p.value)).toEqual(["{{DLV - form_id}}", FORM_IDS.CAREERS]);
+    // y es el valor que el formulario real empujó
+    expect(capturados.find((e) => e.event === "form_submit").form_id).toBe(FORM_IDS.CAREERS);
   });
 
-  it("solo hay una etiqueta por evento (sin duplicados en GTM)", () => {
+  it("los parámetros del puente existen en los eventos que lo disparan", () => {
+    const origen = new Set(PUENTE.disparadores.map((d) => d.split(":")[0]).flatMap((ev) => CONTRATO[ev]));
+    expect(PUENTE.parametros.filter((p) => !origen.has(p))).toEqual([]);
+    expect(Object.keys(PUENTE.leadSource).sort()).toEqual([...new Set(PUENTE.disparadores.map((d) => d.split(":")[0]))].sort());
+  });
+
+  it("una sola etiqueta por evento (sin duplicados en GTM)", () => {
     const porEvento = {};
     for (const t of tag) {
       const ev = t.parameter.find((p) => p.key === "eventName")?.value;

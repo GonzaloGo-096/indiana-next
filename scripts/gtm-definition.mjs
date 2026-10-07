@@ -43,6 +43,8 @@ export const MARCA_PRUEBA = "analytics_test";
  */
 export const PUENTE = Object.freeze({
   evento: "generate_lead",
+  // "evento" o "evento:form_id". El form_id tiene que ser FORM_IDS.CAREERS de
+  // src/lib/analytics/events.js (el test de contrato lo compara).
   disparadores: ["whatsapp_click", "phone_click", "form_submit:careers"],
   parametros: ["location", "component_id", "lead_ref", "item_id", "item_name", "item_category", "form_id"],
   leadSource: { whatsapp_click: "whatsapp", phone_click: "phone", form_submit: "form" },
@@ -94,16 +96,27 @@ export function buildContainer({ exportTime = "2026-10-07 00:00:00" } = {}) {
       type: "CUSTOM_EVENT",
       customEventFilter: [{ type: "EQUALS", parameter: [T("arg0", "{{_event}}"), T("arg1", ev)] }],
     })),
-    {
-      ...base,
-      triggerId: "290",
-      name: "CE - form_submit (empleo)",
-      type: "CUSTOM_EVENT",
-      customEventFilter: [{ type: "EQUALS", parameter: [T("arg0", "{{_event}}"), T("arg1", "form_submit")] }],
-      filter: [{ type: "EQUALS", parameter: [T("arg0", "{{DLV - form_id}}"), T("arg1", "careers")] }],
-    },
+    // Disparadores del puente filtrados por form_id ("form_submit:careers").
+    ...PUENTE.disparadores
+      .filter((d) => d.includes(":"))
+      .map((d, i) => {
+        const [ev, formId] = d.split(":");
+        return {
+          ...base,
+          triggerId: String(290 + i),
+          name: `CE - ${ev} (${formId === "careers" ? "empleo" : formId})`,
+          type: "CUSTOM_EVENT",
+          customEventFilter: [{ type: "EQUALS", parameter: [T("arg0", "{{_event}}"), T("arg1", ev)] }],
+          filter: [{ type: "EQUALS", parameter: [T("arg0", "{{DLV - form_id}}"), T("arg1", formId)] }],
+        };
+      }),
   ];
   const triggerDe = (ev) => trigger.find((t) => t.name === `CE - ${ev}`).triggerId;
+  const triggerDelPuente = (d) => {
+    if (!d.includes(":")) return triggerDe(d);
+    const [ev, formId] = d.split(":");
+    return trigger.find((t) => t.filter && t.customEventFilter[0].parameter[1].value === ev && t.filter[0].parameter[1].value === formId).triggerId;
+  };
 
   const debug = fila("debug_mode", `{{DLV - ${MARCA_PRUEBA}}}`);
   const eventTag = (tagId, name, eventName, params, firingTriggerId, extra = []) => ({
@@ -149,7 +162,7 @@ export function buildContainer({ exportTime = "2026-10-07 00:00:00" } = {}) {
       "GA4 - Event - generate_lead (puente, se borra en Fase 7)",
       PUENTE.evento,
       PUENTE.parametros,
-      [triggerDe("whatsapp_click"), triggerDe("phone_click"), "290"],
+      PUENTE.disparadores.map(triggerDelPuente),
       [fila("lead_source", "{{Lead source (puente)}}")],
     ),
   ];

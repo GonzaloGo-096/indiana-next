@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { careersSchema } from "@/schemas/careersSchema";
 import { jobPositions } from "@/lib/careers.data";
 import { track } from "@/lib/analytics/dataLayer";
-import { EVENTS } from "@/lib/analytics/events";
+import { EVENTS, FORM_IDS } from "@/lib/analytics/events";
 import styles from "./CareersForm.module.css";
 
 const FORM_STATE = {
@@ -70,7 +70,7 @@ const CareersForm = () => {
 
       // Una postulación no es un contacto comercial: se mide aparte y sin datos
       // de la persona.
-      track(EVENTS.FORM_SUBMIT, { form_id: "careers" });
+      track(EVENTS.FORM_SUBMIT, { form_id: FORM_IDS.CAREERS });
 
       setFormState(FORM_STATE.success);
       reset();

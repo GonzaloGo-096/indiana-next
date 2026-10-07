@@ -31,6 +31,8 @@ describe("isProductionHost", () => {
     expect(isProductionHost("indiana-next-abc-gonzalos-projects.vercel.app")).toBe(false);
     expect(isProductionHost("otroindiana.com.ar")).toBe(false);
     expect(isProductionHost("indiana.com.ar.evil.com")).toBe(false);
+    // ni siquiera un subdominio propio: podría apuntar a una versión de prueba
+    expect(isProductionHost("staging.indiana.com.ar")).toBe(false);
   });
 });
 
