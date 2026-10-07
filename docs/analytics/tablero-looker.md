@@ -22,7 +22,8 @@ Reemplaza a "Indiana — Dashboard" (que usa `generate_lead`, `select_item` y
 SUM(CASE WHEN Nombre del evento IN ("whatsapp_click", "phone_click") THEN 1 ELSE 0 END)
 ```
 
-(o la métrica "Eventos clave" una vez marcados `whatsapp_click` y `phone_click`).
+(No usar "Eventos clave" para esto hasta la Fase 7: mientras exista el puente, el único evento
+clave es `generate_lead`, que además incluye las postulaciones a empleo.)
 
 **Área** (dimensión, desde el parámetro `location`):
 

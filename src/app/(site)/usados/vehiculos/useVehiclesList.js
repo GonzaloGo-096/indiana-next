@@ -27,7 +27,7 @@ const log = createLogger("usados:listado");
  * Cuenta lo mismo que va a la URL: los rangos en su valor por defecto no son
  * un filtro (el formulario los manda siempre y los inflaba en +3).
  */
-function buildSearchEventParams(filters) {
+export function buildSearchEventParams(filters) {
   const usados = [...buildSearchParams(filters).keys()].filter((k) => k !== "page" && k !== "sort");
   return {
     filters_count: new Set(usados).size,

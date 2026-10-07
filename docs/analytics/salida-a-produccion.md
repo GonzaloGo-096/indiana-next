@@ -27,7 +27,9 @@ de Ads de la agencia 158/158 iguales; Pixel con los mismos eventos; 0 errores de
 3. **GA4** (Administrar):
    - Flujos de datos → Medición mejorada: apagar "cambios de página según el historial",
      "interacciones con formularios" y "clics de salida".
-   - Eventos: marcar `whatsapp_click` y `phone_click` como eventos clave.
+   - Eventos clave: **no tocar.** `generate_lead` (que ahora manda el puente de GTM) sigue siendo
+     el único evento clave hasta la Fase 7. Marcar `whatsapp_click` o `phone_click` antes
+     contaría cada contacto dos veces.
    - Identidad para los informes: **basada en dispositivo**.
    - Conservación de datos: **14 meses**.
    - Definiciones personalizadas: dimensiones `lead_ref` y `marca` (alcance evento).
@@ -40,6 +42,9 @@ de Ads de la agencia 158/158 iguales; Pixel con los mismos eventos; 0 errores de
    GTM sin el código nuevo, se pierden las visitas hasta que salga el código. Van juntos.
 2. **Los "leads" bajan el día de la salida.** Dejan de contarse los duplicados
    (`generate_lead`) y las postulaciones a empleo. No es una caída: es la cifra real.
+   *Actualización 2026-10-07:* con el puente de GTM, `generate_lead` sigue contando WhatsApp,
+   teléfono y postulaciones como antes, así que "Leads" no baja el día de la salida. El cambio
+   de definición se hace en la Fase 7.
    Avisar antes a quien mire los números.
 3. **Reportes que se vacían.** El tablero de Looker viejo y las 7 exploraciones usan eventos
    que dejan de existir (`generate_lead`, `select_item`, `view_item_list`). Quedan vacíos

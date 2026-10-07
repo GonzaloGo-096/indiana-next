@@ -20,10 +20,16 @@ botones ("Contactar por WhatsApp", "Contactanos por WhatsApp", "Cotizá con noso
 |---|---|---|---|
 | `page_view` | Al entrar y en cada cambio de página (no al filtrar) | `page_location`, `page_title` | No |
 | `view_item` | Abrir una ficha de 0km, usado o plan | `item_id`, `item_name`, `item_category` | No |
-| `whatsapp_click` | Clic en cualquier botón de WhatsApp | `component_id`, `lead_ref` + el auto si es de una ficha (también el flotante) | **Sí** |
-| `phone_click` | Clic en un teléfono | `component_id` | **Sí** |
+| `whatsapp_click` | Clic en cualquier botón de WhatsApp | `component_id`, `lead_ref` + el auto si es de una ficha (también el flotante) | No, hasta la Fase 7 (ver puente) |
+| `phone_click` | Clic en un teléfono | `component_id` | No, hasta la Fase 7 (ver puente) |
 | `view_search_results` | Aplicar filtros en usados (no al limpiarlos) | `results_count`, `filters_count`, `marca` | No |
 | `form_submit` | Postulación enviada en Trabajá con nosotros | `form_id` | No |
+
+**Puente de transición (lo arma GTM, no el código):** en cada `whatsapp_click`, `phone_click` y
+`form_submit` de empleo, GTM manda además un `generate_lead` con `lead_source` (whatsapp, phone o
+form). Así el tablero viejo de Looker sigue funcionando y `generate_lead` sigue siendo el **único**
+evento clave. Se borra en la Fase 7, cuando el tablero nuevo esté validado; ahí se marcan
+`whatsapp_click` y `phone_click` como clave.
 
 Todos llevan además `location` (la sección: `home`, `okm_detail`, `usados_list`…),
 que `track()` saca de la URL. Ningún componente la pasa.
@@ -43,7 +49,7 @@ si se prende, la primera visita se cuenta doble.
 es estable, en kebab-case, y no se cambia al refactorizar estilos.
 
 **Agregar un evento:** sumarlo a `EVENTS`, agregarlo con sus parámetros en
-`scripts/gtm-container.mjs` (la definición de GTM; sin etiqueta no llega a GA4),
+`scripts/gtm-definition.mjs` (la definición de GTM; sin etiqueta no llega a GA4),
 correr `node scripts/gtm-container.mjs`, importar `docs/analytics/gtm-medicion-simple.json`
 en GTM y anotarlo en la tabla de arriba.
 
