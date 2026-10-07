@@ -140,11 +140,15 @@ describe("contrato código ↔ GTM", () => {
   });
 
   it("toda referencia {{…}} del JSON apunta a una variable definida o integrada", () => {
-    const { variable } = buildContainer().containerVersion;
-    const definidas = new Set([...variable.map((v) => v.name), "_event"]);
-    const refs = [...JSON.stringify(buildContainer()).matchAll(/\{\{([^}]+)\}\}/g)].map((x) => x[1]);
-    expect(refs.length).toBeGreaterThan(0);
-    expect([...new Set(refs)].filter((r) => !definidas.has(r))).toEqual([]);
+    const { variable, builtInVariable, tag, trigger } = buildContainer().containerVersion;
+    const definidas = new Set([...variable.map((v) => v.name), ...builtInVariable.map((v) => v.name)]);
+    const refs = (x) => [...JSON.stringify(x).matchAll(/\{\{([^}]+)\}\}/g)].map((m) => m[1]);
+    // {{_event}} solo lo entiende GTM en el filtro de evento de un activador: en un
+    // campo de variable queda vacío (pasó con la entrada del puente, 2026-10-07).
+    const sinFiltros = [...tag, ...variable, ...trigger.map(({ customEventFilter, ...resto }) => resto)];
+    expect(refs(sinFiltros).length).toBeGreaterThan(0);
+    expect([...new Set(refs(sinFiltros))].filter((r) => !definidas.has(r))).toEqual([]);
+    expect([...new Set(trigger.flatMap((t) => refs(t.customEventFilter)))]).toEqual(["_event"]);
   });
 });
 

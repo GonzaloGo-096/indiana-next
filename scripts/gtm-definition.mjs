@@ -78,7 +78,9 @@ export function buildContainer({ exportTime = "2026-10-07 00:00:00" } = {}) {
       type: "smm",
       parameter: [
         { type: "BOOLEAN", key: "setDefaultValue", value: "false" },
-        T("input", "{{_event}}"),
+        // En un campo de variable GTM solo reconoce la integrada por su nombre visible
+        // ({{Event}}); {{_event}} vale únicamente en los filtros de los activadores.
+        T("input", "{{Event}}"),
         {
           type: "LIST",
           key: "map",
