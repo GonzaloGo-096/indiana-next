@@ -72,6 +72,14 @@ Consent Mode v2: todo `denied` hasta que el usuario acepta en el banner
 (`consent.js`, se guarda en `localStorage` como `indiana_consent_v1`).
 Para volver a ver el banner: `localStorage.removeItem("indiana_consent_v1")` y recargar.
 
+## Pruebas y datos reales
+
+Nuestro GTM carga solo en `indiana.com.ar` (`gtmLoader.js`). En localhost o en una versión
+de prueba de Vercel no carga, salvo con `NEXT_PUBLIC_ANALYTICS_TEST=true`: ahí carga y marca la
+visita con `analytics_test`, GTM la manda a GA4 con `debug_mode` y el filtro "tráfico de
+desarrolladores" la deja fuera de los informes (se ve en DebugView). El contenedor de la agencia
+y el Pixel no pasan por este control.
+
 ## Comprobar
 
 - En desarrollo cada evento sale en la consola como `[analytics] {...}`.

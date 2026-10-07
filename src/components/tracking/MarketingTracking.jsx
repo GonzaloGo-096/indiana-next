@@ -1,6 +1,7 @@
 "use client";
 
 import Script from "next/script";
+import { buildIndianaGtmSnippet } from "@/lib/analytics/gtmLoader";
 
 function getGtmId() {
   return process.env.NEXT_PUBLIC_GTM_ID?.trim() ?? "";
@@ -73,10 +74,12 @@ export default function MarketingTracking() {
         </noscript>
       ) : null}
 
-      {/* Contenedor Indiana */}
+      {/* Contenedor Indiana: solo en producción, o en pruebas pedidas a propósito (gtmLoader.js) */}
       {gtmId ? (
         <Script id="gtm-loader" strategy="afterInteractive">
-          {gtmSnippet(gtmId)}
+          {buildIndianaGtmSnippet(gtmId, {
+            allowNonProduction: process.env.NEXT_PUBLIC_ANALYTICS_TEST === "true",
+          })}
         </Script>
       ) : null}
 
