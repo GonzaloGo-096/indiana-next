@@ -12,8 +12,8 @@ antes eran ~25 eventos con duplicados; ahora son 6 y cada contacto cuenta una ve
 
 El contenedor de la agencia dispara sus conversiones de Ads por el **texto** de los
 botones ("Contactar por WhatsApp", "Contactanos por WhatsApp", "Cotizá con nosotros",
-"Reservá tu turno", "Consultá productos", y "Solicitar cotización" de los planes, que se ve
-en mayúsculas). Cambiar esos textos les rompe la medición.
+"Reservá tu turno", "Consultá productos", y "Solicitar cotización" de los planes, que ellos buscan
+como "SOLICITAR COTIZACIÓN"). Cambiar esos textos les rompe la medición.
 
 ## Los eventos
 
