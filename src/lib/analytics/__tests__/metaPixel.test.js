@@ -56,6 +56,25 @@ describe("Pixel de Meta y consentimiento", () => {
     ]);
   });
 
+  it("si acepta antes de que baje el script de Meta, el grant se manda cuando el script carga", () => {
+    vi.useFakeTimers();
+    try {
+      correr(); // cola con revoke, init, PageView; fbevents.js todavía no cargó
+      persistConsent({ analytics: true, ads: true });
+      expect(window.fbq.queue.map((a) => [...a])).not.toContainEqual(["consent", "grant"]);
+      // carga el script: Meta reemplaza la cola por callMethod
+      const llamadas = [];
+      window.fbq.callMethod = (...a) => llamadas.push(a);
+      const fbqViejo = window.fbq;
+      window.fbq = (...a) => fbqViejo.callMethod(...a);
+      window.fbq.callMethod = fbqViejo.callMethod;
+      vi.advanceTimersByTime(400);
+      expect(llamadas).toContainEqual(["consent", "grant"]);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("sin Pixel cargado, el banner funciona igual", () => {
     expect(() => persistConsent({ analytics: true, ads: true })).not.toThrow();
   });

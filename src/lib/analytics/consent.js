@@ -65,15 +65,40 @@ export function updateConsent({ analytics, ads }) {
     functionality_storage: "granted",
     security_storage: "granted",
   });
-  // El Pixel de Meta sigue la misma elección que los anuncios de Google
-  // (metaPixel.js lo deja en pausa hasta que se acepta).
-  try {
-    if (typeof window !== "undefined" && typeof window.fbq === "function") {
-      window.fbq("consent", ads ? "grant" : "revoke");
+  aplicarAlPixel(ads ? "grant" : "revoke");
+}
+
+/**
+ * El Pixel de Meta sigue la misma elección que los anuncios de Google
+ * (metaPixel.js lo deja en pausa hasta que se acepta).
+ *
+ * Si el script de Meta todavía no terminó de bajar, el comando queda en su
+ * cola detrás del "revoke" inicial, y al cargar Meta frena en el revoke y no lo
+ * aplica (nuxt/scripts#928). Por eso se espera a que el script esté cargado
+ * (fbq.callMethod) y recién ahí se manda.
+ */
+export const PIXEL_ESPERA_MS = 15000;
+
+function aplicarAlPixel(estado) {
+  if (typeof window === "undefined" || typeof window.fbq !== "function") return;
+  const mandar = () => {
+    try {
+      window.fbq("consent", estado);
+    } catch {
+      // Si el Pixel falla, el consentimiento de Google ya quedó aplicado.
     }
-  } catch {
-    // Si el Pixel falla, el consentimiento de Google ya quedó aplicado.
-  }
+  };
+  if (window.fbq.callMethod || !Array.isArray(window.fbq.queue)) return mandar();
+  const desde = Date.now();
+  const t = setInterval(() => {
+    if (window.fbq?.callMethod) {
+      clearInterval(t);
+      mandar();
+    } else if (Date.now() - desde > PIXEL_ESPERA_MS) {
+      // No cargó (bloqueador, sin red): no hay Pixel al que avisarle.
+      clearInterval(t);
+    }
+  }, 200);
 }
 
 /**
