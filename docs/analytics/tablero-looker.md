@@ -38,7 +38,8 @@ CASE
   WHEN Location IN ("planes_list", "plan_detail") THEN "Planes"
   WHEN Location = "postventa" THEN "Postventa"
   WHEN Location = "careers" THEN "Empleo"
-  ELSE "General (inicio)"
+  WHEN Location = "home" THEN "General (inicio)"
+  ELSE "Otras páginas"
 END
 ```
 

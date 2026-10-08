@@ -11,12 +11,14 @@ import { EVENTS } from "@/lib/analytics/events";
  * @param {string} props.componentId - qué botón es (ej. "footer-tel-posventa-taller")
  */
 export default function TelLink({ phone, componentId, onClick, children, ...rest }) {
+  const href = phone ? `tel:${String(phone).replace(/[^\d+]/g, "")}` : undefined;
+
   function handleClick(e) {
-    track(EVENTS.PHONE_CLICK, { component_id: componentId });
+    // Sin número el link no llama a nadie: no es un contacto (y el puente de
+    // GTM lo convertiría en generate_lead).
+    if (href) track(EVENTS.PHONE_CLICK, { component_id: componentId });
     onClick?.(e);
   }
-
-  const href = phone ? `tel:${String(phone).replace(/[^\d+]/g, "")}` : undefined;
 
   return (
     <a {...rest} href={href} onClick={handleClick}>

@@ -12,5 +12,6 @@ export function locationFromPathname(pathname) {
   if (pathname.startsWith("/planes")) return LOCATIONS.PLANES_LIST;
   if (pathname.startsWith("/postventa")) return LOCATIONS.POSTVENTA;
   if (pathname.startsWith("/trabaja-con-nosotros")) return LOCATIONS.CAREERS;
-  return LOCATIONS.HOME;
+  // Antes caía en "home" e inflaba el inicio con los 404 y páginas sueltas.
+  return LOCATIONS.OTHER;
 }

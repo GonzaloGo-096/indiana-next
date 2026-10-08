@@ -19,6 +19,7 @@ export const EVENTS = Object.freeze({
  */
 export const FORM_IDS = Object.freeze({
   CAREERS: "careers",
+  OTHER: "other",
 });
 
 export const LOCATIONS = Object.freeze({

@@ -15,31 +15,31 @@ const log = createLogger("analytics");
 
 const MAX_STRING_LEN = 500;
 
-const PII_KEYS = new Set([
-  "email",
-  "mail",
-  "telefono",
-  "phone",
-  "celular",
-  "dni",
-  "password",
-  "nombre",
-  "apellido",
-  "mensaje",
-  "message",
-  "cv",
-  "direccion",
-  "address",
-]);
+/**
+ * Nombres de clave con forma de dato personal. Por pedazo y no exactos: antes
+ * `user_email` o `nombreApellido` pasaban.
+ */
+const PII_KEY = /mail|phone|tel[eé]fono|celular|dni|password|nombre|apellido|mensaje|message|direcci|address|^cv$/i;
 
 const debug =
   process.env.NODE_ENV !== "production" ||
   process.env.NEXT_PUBLIC_ANALYTICS_DEBUG === "true";
 
+/**
+ * Claves que arma track() o el cargador y que un componente no puede pisar.
+ * `analytics_test` es la marca de prueba: con cualquier valor (incluso false)
+ * GTM mandaría debug_mode y GA4 trataría la visita como prueba.
+ */
+const RESERVED_KEYS = new Set(["event", "location", "analytics_test"]);
+
 function cleanParams(params) {
   const out = {};
   for (const [key, value] of Object.entries(params || {})) {
-    if (PII_KEYS.has(key.toLowerCase())) {
+    if (RESERVED_KEYS.has(key)) {
+      log.warn(`se descartó "${key}": la arma track(), no el componente`);
+      continue;
+    }
+    if (PII_KEY.test(key)) {
       log.warn(`se descartó "${key}": parece un dato personal`);
       continue;
     }
@@ -56,8 +56,42 @@ function cleanParams(params) {
  * GTM recuerda cada clave empujada y la reusa en los eventos siguientes: el
  * WhatsApp flotante de una ficha salía con el auto del view_item anterior
  * (medido el 2026-10-06). Estas claves se vacían en cada evento que no las trae.
+ * Son todos los parámetros del contrato con GTM menos `location`, que va
+ * siempre (el test de contrato lo compara con scripts/gtm-definition.mjs).
  */
-const RESET_KEYS = ["component_id", "item_id", "item_name", "item_category", "marca", "lead_ref", "form_id"];
+export const RESET_KEYS = Object.freeze([
+  "component_id",
+  "item_id",
+  "item_name",
+  "item_category",
+  "marca",
+  "lead_ref",
+  "form_id",
+  "page_location",
+  "page_title",
+  "results_count",
+  "filters_count",
+]);
+
+/** Nombres de parámetros de URL que pueden traer un dato personal. */
+const PII_QUERY = /mail|phone|tel[eé]fono|celular|dni|nombre|apellido|direcci|address/i;
+
+/**
+ * La URL sin parámetros que parezcan datos personales: un link de campaña de
+ * mail puede traer ?email=... y GA4 lo guardaría en page_location. El resto
+ * (utm_*, gclid, filtros del listado) queda: GA4 lee de ahí la campaña.
+ * @param {string} href
+ */
+export function urlSinDatosPersonales(href) {
+  try {
+    const u = new URL(href);
+    for (const k of [...u.searchParams.keys()]) if (PII_QUERY.test(k)) u.searchParams.delete(k);
+    return u.toString();
+  } catch {
+    // Una URL que no se puede leer no se manda.
+    return undefined;
+  }
+}
 
 /**
  * @param {string} event - uno de EVENTS (events.js)

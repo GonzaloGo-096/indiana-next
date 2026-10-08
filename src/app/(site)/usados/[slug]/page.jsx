@@ -140,7 +140,21 @@ export async function generateMetadata({ params }) {
 // ya borrado se seguía mostrando. La ficha se arma en cada visita con los
 // datos del backend (ver vehiclesApi.server).
 
-export default async function VehicleDetailPage({ params }) {
+/**
+ * La query de la visita, para no perderla en la redirección: ahí viajan utm_*
+ * y gclid. Sin esto, una visita que llega de un anuncio a una dirección vieja
+ * quedaba como "directa" en GA4 (comprobado en producción el 2026-10-07).
+ */
+async function queryDe(searchParams) {
+  const q = new URLSearchParams();
+  for (const [k, v] of Object.entries((await searchParams) || {})) {
+    for (const x of Array.isArray(v) ? v : [v]) if (x != null) q.append(k, x);
+  }
+  const s = q.toString();
+  return s ? `?${s}` : "";
+}
+
+export default async function VehicleDetailPage({ params, searchParams }) {
   const { slug } = await params;
   const { id, needsRedirect } = parseVehicleSlugParam(slug);
   if (!id) notFound();
@@ -155,7 +169,7 @@ export default async function VehicleDetailPage({ params }) {
   const canonicalPath = buildVehicleDetailUrl(vehicle);
   const canonicalSegment = canonicalPath.replace(/^\/usados\/?/, "");
   if (needsRedirect || slug !== canonicalSegment) {
-    permanentRedirect(canonicalPath);
+    permanentRedirect(canonicalPath + (await queryDe(searchParams)));
   }
 
   const jsonLdHtml = buildJsonLdHtml(vehicle, absoluteUrl(canonicalPath));

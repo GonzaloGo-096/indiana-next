@@ -35,7 +35,7 @@ vi.mock("@/app/(site)/usados/vehiculos/useScrollRestore", () => ({ useScrollRest
 const { default: WhatsAppLink } = await import("@/components/analytics/WhatsAppLink");
 const { default: TelLink } = await import("@/components/analytics/TelLink");
 const { default: ItemViewTracker } = await import("@/components/analytics/ItemViewTracker");
-const { default: PageViewTracker, SETTLE_MS } = await import("@/components/analytics/PageViewTracker");
+const { default: PageViewTracker, FICHA_MAX_MS } = await import("@/components/analytics/PageViewTracker");
 const { useVehiclesList } = await import("@/app/(site)/usados/vehiculos/useVehiclesList");
 const { default: CareersForm } = await import("@/components/careers/CareersForm");
 const { jobPositions } = await import("@/lib/careers.data");
@@ -56,7 +56,8 @@ beforeAll(async () => {
   // page_view
   vi.useFakeTimers();
   render(<PageViewTracker />);
-  act(() => vi.advanceTimersByTime(SETTLE_MS));
+  // es una ficha: sin ItemViewTracker montado, la visita sale al tope
+  act(() => vi.advanceTimersByTime(FICHA_MAX_MS));
   vi.useRealTimers();
 
   // view_item de los tres tipos de ficha

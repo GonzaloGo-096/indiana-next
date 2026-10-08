@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { track } from "@/lib/analytics/dataLayer";
 import { EVENTS } from "@/lib/analytics/events";
 import { newLeadRef, withLeadRef } from "@/lib/analytics/leadRef";
@@ -26,23 +27,71 @@ export default function WhatsAppLink({
   item,
   itemFromPage = false,
   onClick,
+  onAuxClick,
+  onMouseDown,
   target = "_blank",
   rel = "noopener noreferrer",
   children,
   ...rest
 }) {
-  function handleClick(e) {
+  // Referencia preparada al apretar la ruedita: Chrome toma el link para la
+  // pestaña nueva antes del auxclick (probado con navegador el 2026-10-07).
+  const pendiente = useRef(null);
+
+  function prepararRef(a) {
     const ref = newLeadRef();
-    // Se cambia el href justo antes de que el navegador lo abra; el texto
-    // visible del botón no se toca (la agencia mide por ese texto).
-    e.currentTarget.href = withLeadRef(href, ref);
+    // El texto visible del botón no se toca (la agencia mide por ese texto).
+    a.href = withLeadRef(href, ref);
+    return ref;
+  }
+
+  // Se devuelve el link original apenas se abrió: si no, React no lo restaura
+  // (la prop no cambió) y el próximo "copiar enlace" o "abrir en pestaña
+  // nueva" salía con la referencia de este clic y sin evento.
+  function restaurar(a) {
+    setTimeout(() => {
+      a.href = href;
+    }, 0);
+  }
+
+  function registrar(ref) {
     const vehiculo = item || (itemFromPage ? getPageItem() : null);
     track(EVENTS.WHATSAPP_CLICK, { component_id: componentId, lead_ref: ref, ...vehiculo });
+  }
+
+  function handleClick(e) {
+    const a = e.currentTarget;
+    registrar(prepararRef(a));
+    restaurar(a);
     onClick?.(e);
   }
 
+  function handleMouseDown(e) {
+    if (e.button === 1) pendiente.current = prepararRef(e.currentTarget);
+    onMouseDown?.(e);
+  }
+
+  // Clic con la ruedita: abre el chat en otra pestaña sin pasar por onClick.
+  function handleAuxClick(e) {
+    if (e.button === 1) {
+      const a = e.currentTarget;
+      registrar(pendiente.current || prepararRef(a));
+      pendiente.current = null;
+      restaurar(a);
+    }
+    onAuxClick?.(e);
+  }
+
   return (
-    <a {...rest} href={href} target={target} rel={rel} onClick={handleClick}>
+    <a
+      {...rest}
+      href={href}
+      target={target}
+      rel={rel}
+      onClick={handleClick}
+      onMouseDown={handleMouseDown}
+      onAuxClick={handleAuxClick}
+    >
       {children}
     </a>
   );

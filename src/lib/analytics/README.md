@@ -41,6 +41,11 @@ también cuenta cada filtro del listado y el salto de la redirección de usados.
 page_view automático de la etiqueta de Google va **apagado**, y en GA4 se apaga "cambios de
 página según el historial" el día de publicar: con cualquiera prendido, se cuenta doble.
 
+En las fichas (0km, usado, plan) la visita se cuenta cuando la ficha real se armó (aviso de
+`ItemViewTracker` vía `pageItem.js`), no a tiempo fijo: así una redirección o un servidor lento
+no cuentan dos visitas. `page_location` sale sin parámetros de URL con forma de dato personal.
+Rutas fuera de las secciones conocidas (404, páginas sueltas) van con `location = other`.
+
 GA4 solo muestra en informes a quien acepta las cookies (con identidad por dispositivo no hay
 modelado): los números son de ese grupo, no del total.
 

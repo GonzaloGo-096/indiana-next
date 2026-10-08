@@ -60,8 +60,8 @@ Borradores para que Gonzalo los revise y los mande. No se envió nada. Corregido
 >    "Solicitar cotización", así que probablemente no se esté contando. Conviene comparar sin
 >    distinguir mayúsculas.
 > 3. **Fichas de usados:** si un anuncio lleva a una ficha con la dirección corta, el sitio
->    redirige y hoy se pierden `gclid` y `utm`. Lo estamos corrigiendo de nuestro lado; mientras
->    tanto conviene usar la dirección completa de la ficha.
+>    redirige y hasta ahora se perdían `gclid` y `utm`. Queda corregido con esta actualización;
+>    igual conviene usar la dirección completa de la ficha (un salto menos).
 > 4. Su etiqueta de Google manda todas las visitas (no solo la primera) también a la propiedad
 >    G-9BJB9NYSBF, y tiene prendida la recolección automática de datos del usuario. ¿Es de
 >    ustedes? ¿La usan?

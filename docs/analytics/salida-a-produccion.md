@@ -149,13 +149,17 @@ dimensiones `lead_ref`, `item_id` y `marca`, filtro de desarrolladores) se hace 
     quien rechaza las cookies **no aparece en los informes** ni en Looker, y quien bloquea GTM
     tampoco. Los números son de quienes aceptan, no el total, y una "Ref. web" de alguien que
     rechazó no se encuentra en GA4. Hay que decírselo al cliente.
-15. **Redirección de fichas de usados.** Comprobado en producción: una ficha con dirección
-    corta redirige a la completa y **pierde `utm_*` y `gclid`** (la visita de un anuncio queda
-    como directa). Y el listado linkea a la dirección corta: con el servidor lento (más de
-    medio segundo) se cuentan **dos visitas** por ficha (comprobado con navegador). Ya pasaba
-    antes; el arreglo es de código y está pendiente de OK.
-16. **WhatsApp con la ruedita o "abrir en pestaña nueva"** no cuenta el contacto ni lleva
-    referencia (comprobado). Pendiente de OK.
+15. **Redirección de fichas de usados.** Comprobado en producción (2026-10-07): una ficha con
+    dirección corta redirige a la completa y **perdía `utm_*` y `gclid`** (la visita de un
+    anuncio quedaba como directa). Y el listado linkea a la dirección corta (el backend no manda
+    la versión en la lista): con el servidor lento se contaban **dos visitas** por ficha.
+    **Arreglado en la rama:** la redirección conserva la query, y en las fichas la visita se
+    cuenta recién cuando la ficha real se armó. Que el listado linkee directo a la dirección
+    completa necesita que el backend mande `version` en la lista: pendiente del backend.
+16. **WhatsApp con la ruedita.** No contaba el contacto ni llevaba referencia, y después de un
+    clic el link quedaba con la referencia vieja. **Arreglado en la rama.** "Abrir en pestaña
+    nueva" desde el menú del botón derecho no se puede detectar: abre el chat sin referencia y
+    sin evento (es raro en WhatsApp).
 
 ## Volver atrás
 

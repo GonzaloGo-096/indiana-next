@@ -25,14 +25,15 @@ export function isProductionHost(hostname) {
 
 /**
  * @param {string} gtmId
- * @param {{ allowNonProduction?: boolean }} [opts]
+ * @param {{ allowNonProduction?: boolean }} [opts] - solo `true` habilita la carga fuera de
+ *   producción; un string como "false" no (antes sí la habilitaba)
  * @returns {string} script en línea para <Script>
  */
 export function buildIndianaGtmSnippet(gtmId, { allowNonProduction = false } = {}) {
   const id = JSON.stringify(String(gtmId));
   return `(function(){
 var prod=${PRODUCTION_HOST}.test(location.hostname);
-if(!prod&&!${allowNonProduction ? "true" : "false"})return;
+if(!prod&&!${allowNonProduction === true ? "true" : "false"})return;
 window.dataLayer=window.dataLayer||[];
 if(!prod)window.dataLayer.push({analytics_test:true});
 (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});

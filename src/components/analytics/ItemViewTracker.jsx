@@ -13,11 +13,13 @@ import { setPageItem } from "@/lib/analytics/pageItem";
  * @param {{ item: { item_id: string, item_name: string, item_category: string } | null }} props
  */
 export default function ItemViewTracker({ item }) {
-  const sent = useRef(false);
+  // El último auto mandado, no un "ya mandé": si el mismo componente recibe
+  // otra ficha sin desmontarse, esa también tiene que contar.
+  const sent = useRef(null);
   useEffect(() => {
     setPageItem(item);
-    if (sent.current || !item?.item_id) return;
-    sent.current = true;
+    if (!item?.item_id || sent.current === item.item_id) return;
+    sent.current = item.item_id;
     track(EVENTS.VIEW_ITEM, item);
   }, [item]);
   return null;

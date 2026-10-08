@@ -2,8 +2,10 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { track } from "@/lib/analytics/dataLayer";
-import { EVENTS } from "@/lib/analytics/events";
+import { track, urlSinDatosPersonales } from "@/lib/analytics/dataLayer";
+import { EVENTS, LOCATIONS } from "@/lib/analytics/events";
+import { locationFromPathname } from "@/lib/analytics/locationFromPath";
+import { forgetPageItemUnless, hasPageItemFor, onPageItem } from "@/lib/analytics/pageItem";
 
 /**
  * Registra `page_view` al entrar y en cada cambio de página.
@@ -18,27 +20,60 @@ import { EVENTS } from "@/lib/analytics/events";
  *
  * Solo mira la ruta, no la query: aplicar filtros en usados no es otra visita.
  *
- * Espera a que la ruta se asiente: las fichas de usados redirigen a su URL
- * canónica apenas cargan (las cards del listado linkean sin la versión) y,
- * sin la espera, una visita contaba como dos. De paso toma el título nuevo.
- * Costo aceptado: el view_item de la ficha llega a GA4 antes que su page_view,
- * y quien se va en menos de medio segundo no cuenta como visita.
+ * En las fichas (0km, usado, plan) espera a que la ficha real se arme, que es
+ * cuando ItemViewTracker anota el auto. Las cards de usados linkean sin la
+ * versión y la ficha redirige a su URL canónica cuando responde el servidor;
+ * con una espera fija, si el servidor tardaba más que la espera, una visita
+ * contaba como dos y la primera llevaba el título de la página anterior
+ * (reproducido con navegador el 2026-10-07). Si la ficha no llega a armarse
+ * (por ejemplo un 404), la visita se cuenta igual a los FICHA_MAX_MS.
+ *
+ * En el resto de las páginas espera SETTLE_MS para tomar el título nuevo.
+ * Costo aceptado: quien se va antes no cuenta como visita.
  */
 export const SETTLE_MS = 500;
+export const FICHA_MAX_MS = 8000;
+
+const FICHAS = new Set([LOCATIONS.OKM_DETAIL, LOCATIONS.USADOS_DETAIL, LOCATIONS.PLAN_DETAIL]);
 
 export default function PageViewTracker() {
   const pathname = usePathname();
   const last = useRef(null);
   useEffect(() => {
-    if (!pathname || last.current === pathname) return undefined;
-    const t = setTimeout(() => {
+    if (!pathname) return undefined;
+    forgetPageItemUnless(pathname);
+    if (last.current === pathname) return undefined;
+    const enviar = () => {
+      if (last.current === pathname) return;
       last.current = pathname;
       track(EVENTS.PAGE_VIEW, {
-        page_location: window.location.href,
+        page_location: urlSinDatosPersonales(window.location.href),
         page_title: document.title,
       });
-    }, SETTLE_MS);
-    return () => clearTimeout(t);
+    };
+
+    if (!FICHAS.has(locationFromPathname(pathname))) {
+      const t = setTimeout(enviar, SETTLE_MS);
+      return () => clearTimeout(t);
+    }
+
+    // El título de la ficha llega junto con su contenido: un instante después
+    // del aviso ya está puesto.
+    let t = null;
+    const listo = () => {
+      clearTimeout(t);
+      t = setTimeout(enviar, 0);
+    };
+    if (hasPageItemFor(pathname)) listo();
+    const dejar = onPageItem((ruta) => {
+      if (ruta === pathname) listo();
+    });
+    const tope = setTimeout(enviar, FICHA_MAX_MS);
+    return () => {
+      dejar();
+      clearTimeout(t);
+      clearTimeout(tope);
+    };
   }, [pathname]);
   return null;
 }

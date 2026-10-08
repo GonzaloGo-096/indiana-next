@@ -240,11 +240,14 @@ export function useVehiclesList({ initialData, initialError = null }) {
         }
         setData({ ...mappedData, visibleCount: PAGE_SIZE });
 
-        // Solo con filtros activos: limpiar todos los filtros no es una búsqueda.
-        if (hasAnyFilter(newFilters)) {
+        // Solo con filtros activos: limpiar todos los filtros no es una
+        // búsqueda, y cambiar de página tampoco (contaba como búsqueda con 0
+        // filtros). Se cuenta lo mismo que va al evento.
+        const busqueda = buildSearchEventParams(newFilters);
+        if (busqueda.filters_count > 0) {
           track(EVENTS.VIEW_SEARCH_RESULTS, {
             results_count: mappedData.total ?? 0,
-            ...buildSearchEventParams(newFilters),
+            ...busqueda,
           });
         }
 
