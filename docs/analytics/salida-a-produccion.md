@@ -2,15 +2,16 @@
 
 Rama: `refactor/medicion-simple`. Qué se mide: `src/lib/analytics/README.md`. Estado previo y
 vuelta atrás detallada: `docs/analytics/estado-previo.md`.
-Escrito el 2026-10-06; corregido el 2026-10-07 después de la revisión de la Fase 1.
+Escrito el 2026-10-06; corregido el 2026-10-07 después de la revisión de la Fase 1 y otra vez
+esa noche después de la auditoría (comprobaciones en producción y en el respaldo de la v9).
 
 ## Estado
 
 | Pieza | Estado |
 |---|---|
 | Código | En la rama, `npm run check` en verde, revisado. Sin publicar |
-| GTM (GTM-TPJCFTBB) | Publicada la **versión 9** (la de siempre). El espacio "medicion-simple" se crea en T13. Ver "GTM: qué espacio de trabajo" |
-| GA4 | Conservación de eventos ya en 14 meses (T9). El resto, pendiente de la Fase 1 |
+| GTM (GTM-TPJCFTBB) | Publicada la **versión 9** (la de siempre). El espacio "medicion-simple" ya está importado (T13), sin publicar. Ver "GTM: qué espacio de trabajo" |
+| GA4 | Fase 1 hecha: 14 meses, filtro de desarrolladores activo, 3 dimensiones, identidad por dispositivo |
 | Looker Studio | El tablero viejo ("Indiana — Dashboard") intacto. El nuevo se arma aparte |
 | Agencia (GTM-M2J2LBRD, Ads, Pixel) | Sin tocar. Ningún texto de botón cambió |
 
@@ -66,11 +67,17 @@ en la Fase 4 (en producción):
 ## Pasos de la salida, el mismo día y en este orden
 
 1. **Pre-producción:** revisar los commits con Gonzalo; mezclar a `staging`, después a `main`.
-2. **GTM:** publicar el espacio **"medicion-simple"** (ver la comprobación de arriba). La
-   versión 9 queda para volver atrás.
-3. **GA4** (Administrar):
-   - Flujos de datos → Medición mejorada: apagar "cambios de página según el historial",
-     "interacciones con formularios" y "clics de salida".
+2. **GTM y GA4, en el mismo minuto:**
+   - publicar el espacio **"medicion-simple"** (ver la comprobación de arriba); la versión 9
+     queda para volver atrás;
+   - enseguida, GA4 → Flujos de datos → Medición mejorada: apagar "cambios de página según el
+     historial", "interacciones con formularios", "clics de salida" y "búsqueda en el sitio".
+   Por qué juntos: hoy la medición mejorada ya manda una visita en cada navegación sin recargar
+   (comprobado en producción el 2026-10-07: 4 de 4). Con el GTM nuevo, el sitio manda la suya;
+   si las dos quedan prendidas, cada navegación se cuenta doble. Y sus `form_submit` y
+   `view_search_results` automáticos llevan el mismo nombre que los nuestros (los 161
+   `form_submit` para 11 postulaciones del diagnóstico salían de ahí).
+3. **GA4**, sin apuro:
    - Eventos clave: **no tocar.** `generate_lead` (que ahora manda el puente de GTM) sigue
      siendo el único evento clave hasta la Fase 7. Marcar `whatsapp_click` o `phone_click`
      antes contaría cada contacto dos veces.
@@ -84,50 +91,71 @@ dimensiones `lead_ref`, `item_id` y `marca`, filtro de desarrolladores) se hace 
 
 ## Riesgos importantes
 
-1. **Orden de la salida.** Si sale el código sin publicar GTM, la primera visita de cada
-   sesión se cuenta doble hasta publicar (el GTM viejo manda su propia visita). Si se publica
-   GTM sin el código nuevo, se pierden las visitas hasta que salga el código. Van juntos.
+1. **Orden de la salida** (comprobado contra el respaldo de la v9):
+   - **Código nuevo con GTM v9: "Leads" cae a 0.** La v9 dispara `generate_lead` solo cuando
+     el sitio lo empuja, y el código nuevo ya no lo empuja. Las visitas no se cuentan doble: la
+     v9 no tiene etiqueta para el `page_view` del sitio.
+   - **GTM nuevo con código viejo: no se pierde nada.** El código viejo también empuja
+     `page_view`, `whatsapp_click`, `phone_click` y `form_submit` (form_id `careers`), y el
+     puente arma `generate_lead` igual.
+   - Por eso, si hay que elegir, **primero GTM y después el código**, nunca al revés. Y para
+     volver atrás: si se vuelve GTM a la v9, también hay que volver el código.
 2. **Publicar el espacio equivocado.** Ver "GTM: qué espacio de trabajo". Es el error con
    peor efecto: sin puente, "Leads" cae a 0.
 3. **"Leads" no cambia el día de la salida.** Con el puente, `generate_lead` sigue contando
    WhatsApp, teléfono y postulaciones a empleo como antes, y sigue siendo el único evento
-   clave: "Leads" y "% Conversión" del tablero viejo siguen iguales. Lo que sí cambia ese
-   día son las **visitas**: suben, porque empiezan a contarse las navegaciones sin recargar.
-   El cambio de definición de contacto (sin postulaciones) se hace en la Fase 7.
-4. **Lo que se rompe del tablero viejo.** Solo la torta "Categoría de Lead": usa `Lead Type`,
-   que el `whatsapp_click` nuevo ya no manda. Se arregla en el paso 4. Las tablas de
+   clave: "Leads" y "% Conversión" del tablero viejo siguen iguales. Las **visitas** no
+   deberían subir: las navegaciones sin recargar ya se contaban. Pueden bajar un poco, porque
+   dejan de contar los cambios de filtro del listado, el salto de la redirección de usados y
+   las salidas en menos de medio segundo. **Contactos por modelo** sí sube: el WhatsApp
+   flotante (70% de los contactos) ahora dice de qué auto es. Anotarlo en GA4 y Looker ese día.
+4. **Lo que se rompe del tablero viejo.** La torta "Categoría de Lead": usa `Lead Type`,
+   que el `whatsapp_click` nuevo ya no manda. Se arregla en el paso 4. Además dejan de
+   recibir datos las dimensiones viejas `vertical`, Message Template ID, `component_source`,
+   Modelo y `success`: revisar que ningún otro gráfico las use. Las tablas de
    vistas/contactos por modelo siguen (usan `item_name` e `item_category`). Las 7
    exploraciones que usan `select_item` o `view_item_list` quedan sin datos nuevos hasta
    rehacerlas.
 5. **Pruebas que entran a los informes.** Ver "Antes de probar fuera de producción".
 6. **`debug_mode` en producción.** Ver "Comprobar que producción no sale marcada como prueba".
 7. **La agencia mide por el texto de los botones.** Cambiar "Contactar por WhatsApp",
-   "Contactanos por WhatsApp", "Cotizá con nosotros", "Reservá tu turno" o "Consultá
-   productos" les rompe sus conversiones de Ads. Cualquier cambio de diseño en esos botones
+   "Contactanos por WhatsApp", "Cotizá con nosotros", "Reservá tu turno", "Consultá
+   productos" o "Solicitar cotización" (ellos buscan "SOLICITAR COTIZACIÓN" en mayúsculas,
+   que hoy no coincide) les rompe sus conversiones de Ads. Cualquier cambio de diseño en esos botones
    pasa por ellos.
 8. **El contenedor de la agencia comparte el dataLayer** y carga en todas las páginas. Si
    ellos cambian algo, puede afectar lo nuestro sin aviso; por ejemplo, si empujaran una clave
    `analytics_test` se prendería el modo prueba. Conviene un canal de aviso mutuo.
 9. **Pixel de Meta sin consentimiento.** Se carga desde nuestro código y dispara aunque el
-   usuario rechace las cookies. Es de la agencia (ninguna cuenta nuestra tiene acceso), pero
-   el sitio es nuestro: riesgo legal. Está en las recomendaciones para la agencia.
+   usuario rechace las cookies (también la imagen `<noscript>`). El ID es de la agencia, pero
+   **el código que lo carga es nuestro** (`MarketingTracking.jsx`): el arreglo es nuestro y el
+   riesgo legal es de Indiana. Pendiente de decisión de Gonzalo, con aviso previo a la agencia.
 10. **Datos de prueba viejos en GA4.** Las pruebas del 2026-10-06 dejaron unos pocos eventos
     con hostname `localhost` en nuestra propiedad y en la de la agencia. En Looker filtrar por
-    hostname `www.indiana.com.ar`. Desde el commit `dba5993`, localhost ya no manda nada a
-    nuestra propiedad; la de la agencia sigue recibiendo desde localhost (su contenedor no
+    hostname `indiana.com.ar` **o** `www.indiana.com.ar` (las dos direcciones sirven el sitio y
+    la oficial, la del canonical, es sin www: filtrar solo www tira visitas reales). Desde el
+    commit `dba5993` (cuando llegue a main), localhost ya no manda nada a nuestra propiedad; la de la agencia sigue recibiendo desde localhost (su contenedor no
     pasa por nuestro control).
 11. **Remarketing de la agencia.** Una versión temprana de las pruebas dejó escapar pings de
     remarketing (y posiblemente 1 conversión de prueba de "Contactanos por WhatsApp", ~10:50
     del 2026-10-06) a la cuenta de Ads de la agencia, desde navegadores sin clic en anuncios.
     Impacto esperado: nulo en conversiones; se puede confirmar con ellos.
-12. **GA4 con Google Signals.** Mientras la identidad no sea "basada en dispositivo", GA4
-    oculta filas con pocos usuarios (umbrales): con el volumen de una concesionaria se
-    pierden datos en los reportes.
+12. **Identidad basada en dispositivo** (T8): evita que GA4 oculte filas con pocos usuarios.
+    Tiene que quedar así: si alguien vuelve a "Mezclada", la tabla de referencias de chat
+    (una persona por fila) empieza a perder filas.
 13. **La referencia por chat solo sirve si ventas la anota.** Es un cambio de hábito del
     equipo comercial; sin eso, queda en GA4 pero no se cruza con ventas.
-14. **Cookies rechazadas y bloqueadores.** GA4 ve menos a quien rechaza cookies (y nada a
-    quien bloquea GTM, ~15–25% del tráfico real). Afecta a todos los sitios; los números son
-    una muestra, no el total.
+14. **Cookies rechazadas y bloqueadores.** Con identidad por dispositivo no hay modelado:
+    quien rechaza las cookies **no aparece en los informes** ni en Looker, y quien bloquea GTM
+    tampoco. Los números son de quienes aceptan, no el total, y una "Ref. web" de alguien que
+    rechazó no se encuentra en GA4. Hay que decírselo al cliente.
+15. **Redirección de fichas de usados.** Comprobado en producción: una ficha con dirección
+    corta redirige a la completa y **pierde `utm_*` y `gclid`** (la visita de un anuncio queda
+    como directa). Y el listado linkea a la dirección corta: con el servidor lento (más de
+    medio segundo) se cuentan **dos visitas** por ficha (comprobado con navegador). Ya pasaba
+    antes; el arreglo es de código y está pendiente de OK.
+16. **WhatsApp con la ruedita o "abrir en pestaña nueva"** no cuenta el contacto ni lleva
+    referencia (comprobado). Pendiente de OK.
 
 ## Volver atrás
 

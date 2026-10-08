@@ -1,14 +1,15 @@
 # Medición del sitio
 
 Qué se mide, por dónde pasa y cómo comprobarlo. Simplificado el 2026-10-06:
-antes eran ~25 eventos con duplicados; ahora son 6 y cada contacto cuenta una vez.
+antes eran ~25 eventos (8 sin etiqueta en GTM, formularios inflados); ahora son 6, y cada
+contacto manda un solo evento de detalle (más el `generate_lead` del puente, hasta la Fase 7).
 
 ## Quién es dueño de qué
 
 | Pieza | Dueño | Se toca desde acá |
 |---|---|---|
 | GTM `GTM-TPJCFTBB` → GA4 `G-9HJ64VGVLH` | Nosotros | Sí |
-| GTM `GTM-M2J2LBRD` (Google Ads) y Meta Pixel `870960458928397` | Agencia | **No** |
+| GTM `GTM-M2J2LBRD` (Google Ads) y el ID del Meta Pixel `870960458928397` | Agencia | **No** (el código que carga el Pixel sí es nuestro: `MarketingTracking.jsx`) |
 
 El contenedor de la agencia dispara sus conversiones de Ads por el **texto** de los
 botones ("Contactar por WhatsApp", "Contactanos por WhatsApp", "Cotizá con nosotros",
@@ -35,9 +36,13 @@ evento clave. Se borra en la Fase 7, cuando el tablero nuevo esté validado; ah�
 Todos llevan además `location` (la sección: `home`, `okm_detail`, `usados_list`…),
 que `track()` saca de la URL. Ningún componente la pasa.
 
-`page_view` sale del código (`PageViewTracker`) porque la etiqueta de Google no
-registraba la navegación sin recarga. En GTM su page_view automático va **apagado**;
-si se prende, la primera visita se cuenta doble.
+`page_view` sale del código (`PageViewTracker`) y no de la medición mejorada de GA4, que
+también cuenta cada filtro del listado y el salto de la redirección de usados. En GTM el
+page_view automático de la etiqueta de Google va **apagado**, y en GA4 se apaga "cambios de
+página según el historial" el día de publicar: con cualquiera prendido, se cuenta doble.
+
+GA4 solo muestra en informes a quien acepta las cookies (con identidad por dispositivo no hay
+modelado): los números son de ese grupo, no del total.
 
 ## Cómo se usa
 
@@ -81,7 +86,8 @@ Para volver a ver el banner: `localStorage.removeItem("indiana_consent_v1")` y r
 
 ## Pruebas y datos reales
 
-Nuestro GTM carga solo en `indiana.com.ar` (`gtmLoader.js`). En localhost o en una versión
+Nuestro GTM carga solo en `indiana.com.ar` y `www.indiana.com.ar` (`gtmLoader.js`; las dos
+sirven el sitio). En localhost o en una versión
 de prueba de Vercel no carga, salvo con `NEXT_PUBLIC_ANALYTICS_TEST=true`: ahí carga y marca la
 visita con `analytics_test`, GTM la manda a GA4 con `debug_mode` y el filtro "tráfico de
 desarrolladores" la deja fuera de los informes (se ve en DebugView). El contenedor de la agencia
@@ -94,5 +100,5 @@ y el Pixel no pasan por este control.
 - GTM → Vista previa contra el preview de Vercel de la rama.
 - GA4 → Tiempo real / DebugView.
 - Que producción no salga marcada como prueba: en Red, los envíos `collect` a `G-9HJ64VGVLH`
-  desde `www.indiana.com.ar` no llevan `_dbg`; desde una prueba con la variable, sí
+  desde producción no llevan `_dbg`; desde una prueba con la variable, sí
   (`docs/analytics/salida-a-produccion.md`).

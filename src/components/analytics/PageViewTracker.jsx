@@ -8,11 +8,13 @@ import { EVENTS } from "@/lib/analytics/events";
 /**
  * Registra `page_view` al entrar y en cada cambio de página.
  *
- * Por qué desde el código: al navegar sin recargar (Next) la etiqueta de
- * Google no registraba la visita; se midió el 2026-10-06 en producción, solo
- * contaba la primera página de cada sesión. Por eso en GTM la etiqueta de
- * Google tiene el page_view automático APAGADO: si se prende, la primera
- * visita se cuenta doble.
+ * Por qué desde el código y no con la medición mejorada de GA4 (que también
+ * manda una visita por cada cambio de historial, comprobado en producción el
+ * 2026-10-07): esa cuenta además cada filtro del listado y el salto de la
+ * redirección de usados. Por eso en GTM la etiqueta de Google tiene el
+ * page_view automático APAGADO y en GA4 se apaga "cambios de página según el
+ * historial" el mismo día que se publica: con cualquiera de los dos prendido,
+ * las visitas se cuentan doble.
  *
  * Solo mira la ruta, no la query: aplicar filtros en usados no es otra visita.
  *

@@ -7,7 +7,9 @@
  * 3. La elección persiste en localStorage; en próximas visitas se reaplica
  *    el estado guardado en lugar del default.
  *
- * Hasta que el usuario decida, GA4 trabaja en modo "modelado" (sin cookies).
+ * Hasta que el usuario acepte, GA4 recibe avisos sin cookies que NO aparecen en
+ * los informes: con la identidad "basada en dispositivo" no hay modelado, y el
+ * modelado igual pide un volumen (miles de usuarios por día) que el sitio no tiene.
  */
 
 import { pushGtagCommand } from "./dataLayer";

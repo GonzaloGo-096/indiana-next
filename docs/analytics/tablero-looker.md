@@ -1,8 +1,11 @@
 # Tablero de Looker Studio: diseño
 
-Reemplaza a "Indiana — Dashboard" (que usa `generate_lead`, `select_item` y
-`view_item_list`, eventos que dejan de existir con la medición simple). Se arma
-**después** de publicar, con una o dos semanas de datos nuevos.
+Reemplaza a "Indiana — Dashboard". Ese tablero usa `generate_lead` (que sigue llegando por el
+puente de GTM hasta la Fase 7) y sus exploraciones usan `select_item` y `view_item_list`, que
+dejan de llegar con la medición simple. Se arma **después** de publicar, con una o dos semanas
+de datos nuevos. `whatsapp_click` y `phone_click` ya llegaban antes con el mismo nombre: la
+serie de contactos tiene historia (con un salto en contactos por modelo el día del corte,
+porque el flotante pasa a decir de qué auto es).
 
 ## Reglas para no romper nada
 
@@ -11,8 +14,9 @@ Reemplaza a "Indiana — Dashboard" (que usa `generate_lead`, `select_item` y
   editarla rompe el viejo. Crear una fuente nueva: conector Google Analytics →
   cuenta Indiana (71428151) → propiedad Indiana Next Metricas (536382821).
 - El tablero viejo se archiva recién cuando el nuevo esté validado.
-- Filtro de informe: **Nombre de host = www.indiana.com.ar** (deja afuera pruebas desde
-  `localhost` y versiones de prueba de Vercel).
+- Filtro de informe: **Nombre de host = indiana.com.ar o www.indiana.com.ar** (deja afuera
+  pruebas desde `localhost` y versiones de prueba de Vercel). Las dos direcciones sirven el
+  sitio y la oficial es sin www: filtrar solo www tira visitas reales (comprobado 2026-10-07).
 
 ## Campos calculados (en la fuente nueva)
 

@@ -94,8 +94,10 @@ nada.** El 2026-10-07 aparecieron las de 11:40, 11:47 y 12:33. Se compararon con
 
 ## Vuelta atrás
 
-Se usa si después de publicar algo sale mal. **GTM y el código vuelven juntos.** Si vuelve uno
-solo, se cuentan doble o se pierden las visitas (ver riesgo 1 de `salida-a-produccion.md`).
+Se usa si después de publicar algo sale mal. **GTM y el código vuelven juntos.** Si vuelve solo
+GTM a la v9 con el código nuevo en producción, "Leads" cae a 0 (la v9 espera un `generate_lead`
+que el código nuevo ya no manda; ver riesgo 1 de `salida-a-produccion.md`). Al volver, prender
+otra vez en GA4 la medición mejorada que se apagó el día de la salida.
 
 ### 1. GTM
 
