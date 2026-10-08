@@ -65,6 +65,15 @@ export function updateConsent({ analytics, ads }) {
     functionality_storage: "granted",
     security_storage: "granted",
   });
+  // El Pixel de Meta sigue la misma elección que los anuncios de Google
+  // (metaPixel.js lo deja en pausa hasta que se acepta).
+  try {
+    if (typeof window !== "undefined" && typeof window.fbq === "function") {
+      window.fbq("consent", ads ? "grant" : "revoke");
+    }
+  } catch {
+    // Si el Pixel falla, el consentimiento de Google ya quedó aplicado.
+  }
 }
 
 /**
