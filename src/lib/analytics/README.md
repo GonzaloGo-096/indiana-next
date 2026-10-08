@@ -44,7 +44,9 @@ en el sitio): con cualquiera prendida, se cuenta doble.
 
 En las fichas (0km, usado, plan) la visita se cuenta cuando la ficha real se armó (aviso de
 `ItemViewTracker` vía `pageItem.js`), no a tiempo fijo: así una redirección o un servidor lento
-no cuentan dos visitas. `page_location` sale sin parámetros de URL con forma de dato personal.
+no cuentan dos visitas. Antes de cualquier etiqueta, `ConsentBootstrap` saca de la barra del
+navegador los parámetros con forma de dato personal (`urlLimpia.js`: `?email=`, `?name=`, `?tel=`…):
+la etiqueta de Google adjunta la dirección a todos los eventos, y GA4 solo oculta emails.
 Rutas fuera de las secciones conocidas (404, páginas sueltas) van con `location = other`.
 
 GA4 solo muestra en informes a quien acepta las cookies (con identidad por dispositivo no hay

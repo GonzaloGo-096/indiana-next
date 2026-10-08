@@ -73,38 +73,8 @@ export const RESET_KEYS = Object.freeze([
   "filters_count",
 ]);
 
-/** Nombres de parámetros de URL que pueden traer un dato personal. */
-const PII_QUERY = /mail|phone|tel[eé]fono|celular|dni|nombre|apellido|direcci|address/i;
-
-/**
- * La URL sin parámetros que parezcan datos personales: un link de campaña de
- * mail puede traer ?email=... y GA4 lo guardaría en page_location. El resto
- * (utm_*, gclid, filtros del listado) queda: GA4 lee de ahí la campaña.
- * @param {string} href
- */
-export function urlSinDatosPersonales(href) {
-  try {
-    const u = new URL(href);
-    // Pedazo por pedazo y sin volver a codificar: así el resto de la URL queda
-    // tal cual llegó (searchParams reescribía %20 como + y las comas).
-    const partes = u.search.slice(1).split("&").filter(Boolean);
-    const quedan = partes.filter((p) => {
-      let clave = p.split("=")[0];
-      try {
-        clave = decodeURIComponent(clave.replace(/\+/g, " "));
-      } catch {
-        // Clave mal codificada: se evalúa como vino.
-      }
-      return !PII_QUERY.test(clave);
-    });
-    if (quedan.length === partes.length) return u.toString();
-    u.search = quedan.length ? `?${quedan.join("&")}` : "";
-    return u.toString();
-  } catch {
-    // Una URL que no se puede leer no se manda.
-    return undefined;
-  }
-}
+// La limpieza de la URL vive en urlLimpia.js (también la usa ConsentBootstrap).
+export { urlSinDatosPersonales } from "./urlLimpia";
 
 /**
  * @param {string} event - uno de EVENTS (events.js)
