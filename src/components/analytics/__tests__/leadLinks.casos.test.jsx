@@ -58,6 +58,19 @@ describe("WhatsAppLink: formas de abrir el link", () => {
     expect(eventos("whatsapp_click")).toHaveLength(1);
   });
 
+  it("ruedita apretada y soltada fuera del botón: no cuenta y el link vuelve al original", () => {
+    vi.useFakeTimers();
+    try {
+      const a = wa();
+      fireEvent.mouseDown(a, { button: 1 });
+      vi.advanceTimersByTime(1500);
+      expect(a.getAttribute("href")).toBe("https://wa.me/1?text=Hola");
+      expect(eventos("whatsapp_click")).toHaveLength(0);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("clic derecho (auxclick con button 2) no es un contacto", () => {
     const a = wa();
     fireEvent(a, new MouseEvent("auxclick", { bubbles: true, button: 2 }));

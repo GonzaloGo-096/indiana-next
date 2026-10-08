@@ -152,6 +152,15 @@ describe("PageViewTracker", () => {
     expect(visitas().map((e) => e.page_title)).toEqual(["Inicio", "Postventa"]);
   });
 
+  it("al sacar un dato personal no reescribe el resto de la URL", () => {
+    ir("/usados/vehiculos?utm_campaign=hola%20mundo&marca=peugeot,fiat&email=a%40b.com#arriba");
+    render(<PageViewTracker />);
+    asentar();
+    expect(visitas()[0].page_location).toBe(
+      "http://localhost:3000/usados/vehiculos?utm_campaign=hola%20mundo&marca=peugeot,fiat#arriba",
+    );
+  });
+
   it("no manda datos personales que vengan en la URL, pero sí la campaña", () => {
     ir("/postventa?utm_source=mail&email=juan@x.com&gclid=G1&telefono=381");
     render(<PageViewTracker />);

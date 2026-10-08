@@ -11,7 +11,8 @@ Borradores para que Gonzalo los revise y los mande. No se envió nada. Corregido
 > quedaron 6 que responden lo que importa (visitas, autos vistos, contactos por WhatsApp y
 > teléfono, búsquedas en usados y postulaciones). Arreglamos datos que salían inflados (por
 > ejemplo, 161 "formularios enviados" para 11 postulaciones reales) y ahora cada WhatsApp
-> dice desde qué botón y por qué auto se hizo, también el botón verde flotante.
+> dice desde qué botón se hizo y, si fue desde la ficha de un auto, de cuál (también el botón
+> verde flotante).
 >
 > **Un cambio que van a ver los vendedores.** El mensaje que llega por WhatsApp ahora termina
 > con un código, por ejemplo "(Ref. web K7M2Q)". Sirve para unir ese chat con lo que pasó en

@@ -19,7 +19,6 @@ export const EVENTS = Object.freeze({
  */
 export const FORM_IDS = Object.freeze({
   CAREERS: "careers",
-  OTHER: "other",
 });
 
 export const LOCATIONS = Object.freeze({
@@ -32,6 +31,8 @@ export const LOCATIONS = Object.freeze({
   PLAN_DETAIL: "plan_detail",
   POSTVENTA: "postventa",
   CAREERS: "careers",
+  // Rutas fuera de estas secciones (404, páginas sueltas).
+  OTHER: "other",
 });
 
 export const ITEM_CATEGORY = Object.freeze({

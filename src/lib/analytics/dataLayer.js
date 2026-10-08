@@ -85,7 +85,20 @@ const PII_QUERY = /mail|phone|tel[eé]fono|celular|dni|nombre|apellido|direcci|a
 export function urlSinDatosPersonales(href) {
   try {
     const u = new URL(href);
-    for (const k of [...u.searchParams.keys()]) if (PII_QUERY.test(k)) u.searchParams.delete(k);
+    // Pedazo por pedazo y sin volver a codificar: así el resto de la URL queda
+    // tal cual llegó (searchParams reescribía %20 como + y las comas).
+    const partes = u.search.slice(1).split("&").filter(Boolean);
+    const quedan = partes.filter((p) => {
+      let clave = p.split("=")[0];
+      try {
+        clave = decodeURIComponent(clave.replace(/\+/g, " "));
+      } catch {
+        // Clave mal codificada: se evalúa como vino.
+      }
+      return !PII_QUERY.test(clave);
+    });
+    if (quedan.length === partes.length) return u.toString();
+    u.search = quedan.length ? `?${quedan.join("&")}` : "";
     return u.toString();
   } catch {
     // Una URL que no se puede leer no se manda.

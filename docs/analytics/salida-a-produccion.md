@@ -53,41 +53,55 @@ La variable va **solo** en el entorno Preview de Vercel, nunca en Production.
 ## Comprobar que producción no sale marcada como prueba
 
 GA4 toma **cualquier** valor de `debug_mode` como prueba (incluso `false`). En producción el
-parámetro no tiene que viajar. Se comprueba en la Fase 2 (con la vista previa de GTM) y otra vez
-en la Fase 4 (en producción):
+parámetro no tiene que viajar. **Solo se puede comprobar en la Fase 4**, en producción y sin
+Tag Assistant: la vista previa de GTM marca todo como prueba (`_dbg=1`) sea cual sea la
+configuración. En la Fase 2 solo se mira que, sin la marca `analytics_test`, la etiqueta tenga
+`debug_mode` indefinido.
 
 - Herramientas de desarrollo del navegador → Red → filtrar `collect`.
-- En los envíos a `G-9HJ64VGVLH`:
-  - **producción** (`www.indiana.com.ar`, sin Tag Assistant): **no** llevan `_dbg` ni
-    `ep.debug_mode`;
-  - **prueba** (Preview con la variable prendida): **sí** llevan `_dbg=1`.
+- En los envíos a `G-9HJ64VGVLH` (mirar la pestaña de **carga útil**: GA4 junta varios eventos
+  en un solo envío): **no** llevan `_dbg` ni `ep.debug_mode`.
 - Si un envío de producción lleva `_dbg`, volver atrás (ver abajo): esos datos quedarían fuera
   de los informes.
 
-## Pasos de la salida, el mismo día y en este orden
+## Pasos de la salida, en este orden
 
-1. **Pre-producción:** revisar los commits con Gonzalo; mezclar a `staging`, después a `main`.
-2. **GTM y GA4, en el mismo minuto:**
-   - publicar el espacio **"medicion-simple"** (ver la comprobación de arriba); la versión 9
-     queda para volver atrás;
-   - enseguida, GA4 → Flujos de datos → Medición mejorada: apagar "cambios de página según el
-     historial", "interacciones con formularios", "clics de salida" y "búsqueda en el sitio".
-   Por qué juntos: hoy la medición mejorada ya manda una visita en cada navegación sin recargar
-   (comprobado en producción el 2026-10-07: 4 de 4). Con el GTM nuevo, el sitio manda la suya;
-   si las dos quedan prendidas, cada navegación se cuenta doble. Y sus `form_submit` y
-   `view_search_results` automáticos llevan el mismo nombre que los nuestros (los 161
-   `form_submit` para 11 postulaciones del diagnóstico salían de ahí).
-3. **GA4**, sin apuro:
-   - Eventos clave: **no tocar.** `generate_lead` (que ahora manda el puente de GTM) sigue
-     siendo el único evento clave hasta la Fase 7. Marcar `whatsapp_click` o `phone_click`
-     antes contaría cada contacto dos veces.
-4. **Looker, tablero viejo:** arreglar la torta "Categoría de Lead" con el respaldo sobre
-   `item_category`/`location`. Antes, copiar su fórmula original en `estado-previo.md`.
-5. **Control:** clics reales en producción, GA4 en Tiempo real, la comprobación de `_dbg` de
-   arriba; repetir a la semana.
+La guía clic a clic está en la página "Pasos de Gonzalo" (link en la memoria del proyecto).
+Resumen y por qué de cada orden:
 
-Lo que ya no depende de la salida (identidad basada en dispositivo, conservación de 14 meses,
-dimensiones `lead_ref`, `item_id` y `marca`, filtro de desarrolladores) se hace en la Fase 1.
+1. **Antes (Fase 2):** variable `NEXT_PUBLIC_ANALYTICS_TEST=true` solo en Preview de Vercel
+   **antes** del push (las variables `NEXT_PUBLIC_*` quedan fijas al armar el sitio: si se carga
+   después hay que volver a desplegar). Verificar que Preview también tiene `NEXT_PUBLIC_GTM_ID`.
+   Push de la rama, vista previa de GTM contra la versión de prueba, y también contra
+   producción (prueba "GTM nuevo + código viejo"). Mezclar a `staging`.
+2. **GTM primero:** publicar el espacio **"medicion-simple"**. Código viejo con GTM nuevo
+   funciona; al revés, "Leads" cae a 0. Después de publicar GTM puede crear un "Default
+   Workspace" nuevo **vacío**: es normal.
+3. **En el mismo minuto, GA4** → Medición mejorada: apagar "cambios de página según el historial",
+   "interacciones con formularios", "clics de salida" y "búsquedas en el sitio". Hoy la medición
+   mejorada ya manda una visita en cada navegación sin recargar (comprobado en producción el
+   2026-10-07: 4 de 4); con el GTM nuevo el sitio manda la suya y se contaría doble. Sus
+   `form_submit` y `view_search_results` llevan el mismo nombre que los nuestros (los 161
+   `form_submit` para 11 postulaciones del diagnóstico salían de ahí). Apagarla antes de
+   publicar haría perder visitas con la v9.
+4. **Esperar:** comprobar que `gtm.js` ya dice la versión nueva y **esperar 15 minutos más**
+   (`gtm.js` queda guardado 15 minutos en cada navegador: `Cache-Control: max-age=900`).
+   Mientras tanto, un clic de WhatsApp real en producción tiene que verse en Tiempo real como
+   `whatsapp_click` + `generate_lead`.
+5. **Recién ahí el código:** mezclar `staging` a `main`; Vercel publica.
+6. **Anotar** en GA4 (anotación sobre el día) la hora de GTM y la del código.
+7. **Looker, tablero viejo:** arreglar la torta "Categoría de Lead" con el respaldo sobre
+   `item_category`/`location` (mejor una fórmula que use `Lead Type` si tiene valor y si no lo
+   nuevo: se puede aplicar antes del corte). Antes, copiar su fórmula original en
+   `estado-previo.md`.
+8. **Eventos clave: no tocar.** `generate_lead` (que ahora manda el puente de GTM) sigue siendo
+   el único evento clave hasta la Fase 7.
+9. **Control (Fase 4):** la comprobación de `_dbg` de arriba, clics reales en Tiempo real,
+   y repetir al día siguiente y a la semana.
+
+Elegir un día hábil (no viernes), en un horario de poco tráfico y lejos de la medianoche de la
+zona horaria de la propiedad. Las pruebas en producción cuentan como leads reales y disparan las
+conversiones de la agencia: pocas y anotadas.
 
 ## Riesgos importantes
 
@@ -163,8 +177,11 @@ dimensiones `lead_ref`, `item_id` y `marca`, filtro de desarrolladores) se hace 
 
 ## Volver atrás
 
-Detalle paso a paso en `estado-previo.md`. Resumen:
+Detalle en `estado-previo.md`. **Primero el código, después GTM** (al revés queda código nuevo
+con GTM v9 y "Leads" en 0):
 
-- GTM: Versiones → versión 9 → Publicar.
-- Código: Vercel → Promote del despliegue anterior, o revertir el merge en `main`.
-- GA4: los cambios de configuración se deshacen desde el mismo lugar.
+1. **Código:** Vercel → Deployments → el despliegue anterior → Instant Rollback (o revertir el
+   merge en `main`). Ojo: después de un Instant Rollback, Vercel **no** publica lo que se suba a
+   `main` hasta apretar **Undo Rollback**.
+2. **GTM:** Versiones → versión 9 → Publicar.
+3. **GA4, en el mismo minuto que GTM:** prender otra vez las 4 opciones de la medición mejorada.

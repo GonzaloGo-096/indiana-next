@@ -12,7 +12,7 @@ porque el flotante pasa a decir de qué auto es).
 - **Informe nuevo, fuente de datos nueva.** La fuente "Indiana" del tablero viejo tiene
   campos calculados propios ("Categoría de Lead") y la comparten los dos informes:
   editarla rompe el viejo. Crear una fuente nueva: conector Google Analytics →
-  cuenta Indiana (71428151) → propiedad Indiana Next Metricas (536382821).
+  cuenta Indiana (71428151) → propiedad Indiana (536382821), flujo "Indiana Next Metricas".
 - El tablero viejo se archiva recién cuando el nuevo esté validado.
 - Filtro de informe: **Nombre de host = indiana.com.ar o www.indiana.com.ar** (deja afuera
   pruebas desde `localhost` y versiones de prueba de Vercel). Las dos direcciones sirven el

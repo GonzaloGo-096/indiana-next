@@ -20,7 +20,7 @@ Leído con `git` el 2026-10-07.
   merge "publicar planes actualizados a octubre 2026". Ese código todavía manda
   `generate_lead` junto a cada `whatsapp_click`.
 - **Rama de trabajo:** `refactor/medicion-simple` en `8ec86b1`, 7 commits por delante de `main`, sin
-  publicar.
+  publicar (foto del 2026-10-06; el estado actual lo da `git log origin/main..refactor/medicion-simple`).
 
 ## GTM (GTM-TPJCFTBB)
 
@@ -94,27 +94,18 @@ nada.** El 2026-10-07 aparecieron las de 11:40, 11:47 y 12:33. Se compararon con
 
 ## Vuelta atrás
 
-Se usa si después de publicar algo sale mal. **GTM y el código vuelven juntos.** Si vuelve solo
-GTM a la v9 con el código nuevo en producción, "Leads" cae a 0 (la v9 espera un `generate_lead`
-que el código nuevo ya no manda; ver riesgo 1 de `salida-a-produccion.md`). Al volver, prender
-otra vez en GA4 la medición mejorada que se apagó el día de la salida.
+Se usa si después de publicar algo sale mal. **Primero el código y después GTM.** Código viejo
+con GTM nuevo funciona (comprobado contra el respaldo de la v9); GTM v9 con el código nuevo deja
+"Leads" en 0 (la v9 espera un `generate_lead` que el código nuevo ya no manda; ver riesgo 1 de
+`salida-a-produccion.md`). Junto con GTM, prender otra vez en GA4 las 4 opciones de la
+medición mejorada que se apagaron el día de la salida.
 
-### 1. GTM
-
-1. Tag Manager → contenedor GTM-TPJCFTBB → **Versiones**.
-2. Abrir la **versión 9** → menú de tres puntos → **Publicar**.
-3. Comprobar en "Versiones" que la 9 figura como "Publicada".
-
-Si la versión 9 ya no estuviera en la lista:
-
-1. Administrador → Importar contenedor → `docs/analytics/backup/GTM-TPJCFTBB_v9.json`.
-2. Espacio de trabajo **nuevo** → **Sobrescribir**.
-3. Enviar → Publicar.
-
-### 2. Código
+### 1. Código (primero)
 
 La forma rápida, en minutos: Vercel → proyecto `indiana-next` → Deployments → el último
-despliegue de producción **anterior** a la salida → **Promote to Production**.
+despliegue de producción **anterior** a la salida → **Instant Rollback** (o "Promote to
+Production"). Ojo: después de un Instant Rollback Vercel **deja de publicar** lo que se suba a
+`main` hasta apretar **Undo Rollback**.
 
 La forma definitiva, en el repo:
 
@@ -127,7 +118,19 @@ git push
 Vercel publica solo. Hay que comprobar que producción vuelve a mandar `generate_lead`: en el
 sitio, un clic de WhatsApp tiene que aparecer en GA4 → Tiempo real.
 
-### 3. GA4
+### 2. GTM (después del código)
+
+1. Tag Manager → contenedor GTM-TPJCFTBB → **Versiones**.
+2. Abrir la **versión 9** → menú de tres puntos → **Publicar**.
+3. Comprobar en "Versiones" que la 9 figura como "Publicada".
+
+Si la versión 9 ya no estuviera en la lista:
+
+1. Administrador → Importar contenedor → `docs/analytics/backup/GTM-TPJCFTBB_v9.json`.
+2. Espacio de trabajo **nuevo** → **Sobrescribir**.
+3. Enviar → Publicar.
+
+### 3. GA4 (en el mismo minuto que GTM)
 
 Cada cambio se deshace en el mismo lugar donde se hizo, y ninguno borra datos:
 

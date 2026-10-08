@@ -38,8 +38,9 @@ que `track()` saca de la URL. Ningún componente la pasa.
 
 `page_view` sale del código (`PageViewTracker`) y no de la medición mejorada de GA4, que
 también cuenta cada filtro del listado y el salto de la redirección de usados. En GTM el
-page_view automático de la etiqueta de Google va **apagado**, y en GA4 se apaga "cambios de
-página según el historial" el día de publicar: con cualquiera prendido, se cuenta doble.
+page_view automático de la etiqueta de Google va **apagado**, y el día de publicar se apagan en
+GA4 cuatro opciones de la medición mejorada (historial, formularios, clics de salida y búsquedas
+en el sitio): con cualquiera prendida, se cuenta doble.
 
 En las fichas (0km, usado, plan) la visita se cuenta cuando la ficha real se armó (aviso de
 `ItemViewTracker` vía `pageItem.js`), no a tiempo fijo: así una redirección o un servidor lento

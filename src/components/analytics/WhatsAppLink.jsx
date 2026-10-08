@@ -67,7 +67,17 @@ export default function WhatsAppLink({
   }
 
   function handleMouseDown(e) {
-    if (e.button === 1) pendiente.current = prepararRef(e.currentTarget);
+    if (e.button === 1) {
+      const a = e.currentTarget;
+      const ref = prepararRef(a);
+      pendiente.current = ref;
+      // Si se suelta fuera del botón no hay auxclick: el link vuelve solo.
+      setTimeout(() => {
+        if (pendiente.current !== ref) return;
+        pendiente.current = null;
+        a.href = href;
+      }, 1500);
+    }
     onMouseDown?.(e);
   }
 
