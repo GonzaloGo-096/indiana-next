@@ -7,7 +7,9 @@ import { useConsent } from "@/hooks/useConsent";
  * Banner de consentimiento de cookies (Consent Mode v2).
  * - Solo se muestra si no hay decisión previa en localStorage.
  * - Aceptar/Rechazar persiste en localStorage y dispara updateConsent al GTM.
- * - Accesible: role="dialog", aria-modal=false (no bloquea), ESC = rechazar.
+ * - Accesible: role="dialog", aria-modal=false (no bloquea).
+ * - Escape no decide nada: el banner no es modal y Escape lo usan la galería y
+ *   los menús. Antes rechazaba, y esa persona desaparecía de GA4 sin elegir.
  *
  * Se monta vía `dynamic({ ssr: false })` desde PublicSiteChrome para evitar
  * hydration mismatch (la decisión vive en localStorage, client-only).
@@ -18,19 +20,12 @@ export default function ConsentBanner() {
 
   useEffect(() => {
     if (!isUnknown) return undefined;
-    const onKey = (e) => {
-      if (e.key === "Escape") rejectAll();
-    };
-    window.addEventListener("keydown", onKey);
     const t = window.setTimeout(() => {
       const btn = dialogRef.current?.querySelector("[data-consent-primary]");
       if (btn) btn.focus();
     }, 50);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      window.clearTimeout(t);
-    };
-  }, [isUnknown, rejectAll]);
+    return () => window.clearTimeout(t);
+  }, [isUnknown]);
 
   if (!isUnknown) return null;
 
