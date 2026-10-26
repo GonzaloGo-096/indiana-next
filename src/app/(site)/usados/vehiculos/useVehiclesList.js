@@ -235,6 +235,8 @@ export function useVehiclesList({ initialData, initialError = null }) {
           cursor: 1,
           signal: ac.signal,
         });
+        // No depender de que el servicio respete el signal.
+        if (ac.signal.aborted) return;
         const mappedData = mapVehiclesPage(backendData, 1);
         if (mappedData.hasNextPage) {
           log.warn(

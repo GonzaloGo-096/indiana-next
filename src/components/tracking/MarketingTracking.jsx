@@ -44,6 +44,9 @@ export default function MarketingTracking() {
           />
         </noscript>
       ) : null}
+      {/* Este <noscript> no puede mirar el dominio: en una copia de prueba sin
+          JavaScript igual pediría el contenedor de la agencia. Se deja porque
+          sin JavaScript sus etiquetas no disparan nada. */}
       {gtmMarketingId ? (
         <noscript>
           <iframe

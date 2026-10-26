@@ -10,7 +10,8 @@ vi.mock("next/navigation", () => ({ usePathname: () => nav.pathname }));
 
 const { default: PageViewTracker, SETTLE_MS, FICHA_MAX_MS } = await import("../PageViewTracker");
 const { setPageItem, forgetPageItemUnless } = await import("@/lib/analytics/pageItem");
-const { persistConsent } = await import("@/lib/analytics/consent");
+const { persistConsent, CONSENT_STORAGE_KEY } = await import("@/lib/analytics/consent");
+const { default: ItemViewTracker } = await import("../ItemViewTracker");
 const asentar = (ms = SETTLE_MS) => act(() => vi.advanceTimersByTime(ms));
 const ir = (path) => {
   nav.pathname = path.split("?")[0];
@@ -189,11 +190,44 @@ describe("PageViewTracker: aceptar las cookies después de la visita", () => {
 
   it("en una ficha, vuelve a contar la visita y el auto visto", () => {
     ir("/0km/208");
+    document.title = "Peugeot 208";
+    render(
+      <>
+        <PageViewTracker />
+        <ItemViewTracker item={{ item_id: "208", item_name: "Peugeot 208", item_category: "0km" }} />
+      </>,
+    );
+    asentar(0);
+    act(() => persistConsent({ analytics: true, ads: true }));
+    // el primero de cada uno salió sin cookies; el segundo es el que cuenta
+    expect(visitas()).toHaveLength(2);
+    expect(fichasVistas()).toHaveLength(2);
+    expect(fichasVistas()[1]).toMatchObject({ item_id: "208", item_name: "Peugeot 208" });
+  });
+
+  it("el permiso llega a GTM antes que lo reenviado", () => {
+    ir("/0km");
     render(<PageViewTracker />);
-    fichaArmada("208", "Peugeot 208");
+    asentar();
+    act(() => persistConsent({ analytics: true, ads: true }));
+    const iPermiso = window.dataLayer.findIndex(
+      (e) => e[0] === "consent" && e[1] === "update" && e[2]?.analytics_storage === "granted",
+    );
+    const iReenvio = window.dataLayer.findLastIndex((e) => e.event === "page_view");
+    expect(iPermiso).toBeGreaterThanOrEqual(0);
+    expect(iPermiso).toBeLessThan(iReenvio);
+  });
+
+  it("con StrictMode (doble montaje) reenvía una sola vez", () => {
+    ir("/0km");
+    render(
+      <StrictMode>
+        <PageViewTracker />
+      </StrictMode>,
+    );
+    asentar();
     act(() => persistConsent({ analytics: true, ads: true }));
     expect(visitas()).toHaveLength(2);
-    expect(fichasVistas()).toEqual([expect.objectContaining({ item_id: "208" })]);
   });
 
   it("si acepta antes de que salga la visita, se cuenta una sola vez", () => {
@@ -214,7 +248,7 @@ describe("PageViewTracker: aceptar las cookies después de la visita", () => {
 
   it("si ya había aceptado antes, cambiar la elección no reenvía", () => {
     window.localStorage.setItem(
-      "indiana_consent_v1",
+      CONSENT_STORAGE_KEY,
       JSON.stringify({ analytics: true, ads: false, ts: 1 }),
     );
     ir("/0km");

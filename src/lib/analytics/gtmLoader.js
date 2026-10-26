@@ -1,5 +1,6 @@
 /**
- * Cargador de NUESTRO contenedor de GTM (GTM-TPJCFTBB).
+ * Qué carga en qué dominio: nuestro contenedor de GTM (GTM-TPJCFTBB), el de
+ * la agencia y el Pixel de Meta.
  *
  * Solo carga en el dominio de producción. En cualquier otro (localhost,
  * versiones de prueba de Vercel) carga únicamente si se pidió a propósito con
