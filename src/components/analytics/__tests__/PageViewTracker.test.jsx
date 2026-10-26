@@ -10,6 +10,7 @@ vi.mock("next/navigation", () => ({ usePathname: () => nav.pathname }));
 
 const { default: PageViewTracker, SETTLE_MS, FICHA_MAX_MS } = await import("../PageViewTracker");
 const { setPageItem, forgetPageItemUnless } = await import("@/lib/analytics/pageItem");
+const { persistConsent } = await import("@/lib/analytics/consent");
 const asentar = (ms = SETTLE_MS) => act(() => vi.advanceTimersByTime(ms));
 const ir = (path) => {
   nav.pathname = path.split("?")[0];
@@ -166,5 +167,60 @@ describe("PageViewTracker", () => {
     render(<PageViewTracker />);
     asentar();
     expect(visitas()[0].page_location).toBe("http://localhost:3000/postventa?utm_source=mail&gclid=G1");
+  });
+});
+
+describe("PageViewTracker: aceptar las cookies después de la visita", () => {
+  // Lo que se manda antes de aceptar sale sin cookies y no entra a los
+  // informes; gtag no lo reenvía al aceptar (comprobado con red el 2026-10-26).
+  const fichasVistas = () => window.dataLayer.filter((e) => e.event === "view_item");
+
+  beforeEach(() => window.localStorage.clear());
+
+  it("en una página común, vuelve a contar la visita al aceptar", () => {
+    ir("/0km");
+    document.title = "0km";
+    render(<PageViewTracker />);
+    asentar();
+    act(() => persistConsent({ analytics: true, ads: true }));
+    expect(visitas()).toHaveLength(2);
+    expect(visitas()[1]).toMatchObject({ location: "okm_list", page_title: "0km" });
+  });
+
+  it("en una ficha, vuelve a contar la visita y el auto visto", () => {
+    ir("/0km/208");
+    render(<PageViewTracker />);
+    fichaArmada("208", "Peugeot 208");
+    act(() => persistConsent({ analytics: true, ads: true }));
+    expect(visitas()).toHaveLength(2);
+    expect(fichasVistas()).toEqual([expect.objectContaining({ item_id: "208" })]);
+  });
+
+  it("si acepta antes de que salga la visita, se cuenta una sola vez", () => {
+    ir("/0km");
+    render(<PageViewTracker />);
+    act(() => persistConsent({ analytics: true, ads: true }));
+    asentar();
+    expect(visitas()).toHaveLength(1);
+  });
+
+  it("rechazar no reenvía nada", () => {
+    ir("/0km");
+    render(<PageViewTracker />);
+    asentar();
+    act(() => persistConsent({ analytics: false, ads: false }));
+    expect(visitas()).toHaveLength(1);
+  });
+
+  it("si ya había aceptado antes, cambiar la elección no reenvía", () => {
+    window.localStorage.setItem(
+      "indiana_consent_v1",
+      JSON.stringify({ analytics: true, ads: false, ts: 1 }),
+    );
+    ir("/0km");
+    render(<PageViewTracker />);
+    asentar();
+    act(() => persistConsent({ analytics: true, ads: true }));
+    expect(visitas()).toHaveLength(1);
   });
 });

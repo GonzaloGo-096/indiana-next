@@ -5,7 +5,13 @@ import { usePathname } from "next/navigation";
 import { track, urlSinDatosPersonales } from "@/lib/analytics/dataLayer";
 import { EVENTS, LOCATIONS } from "@/lib/analytics/events";
 import { locationFromPathname } from "@/lib/analytics/locationFromPath";
-import { forgetPageItemUnless, hasPageItemFor, onPageItem } from "@/lib/analytics/pageItem";
+import { onAnalyticsGranted } from "@/lib/analytics/consent";
+import {
+  forgetPageItemUnless,
+  getPageItem,
+  hasPageItemFor,
+  onPageItem,
+} from "@/lib/analytics/pageItem";
 
 /**
  * Registra `page_view` al entrar y en cada cambio de página.
@@ -36,9 +42,31 @@ export const FICHA_MAX_MS = 8000;
 
 const FICHAS = new Set([LOCATIONS.OKM_DETAIL, LOCATIONS.USADOS_DETAIL, LOCATIONS.PLAN_DETAIL]);
 
+function contarVisita() {
+  track(EVENTS.PAGE_VIEW, {
+    page_location: urlSinDatosPersonales(window.location.href),
+    page_title: document.title,
+  });
+}
+
 export default function PageViewTracker() {
   const pathname = usePathname();
   const last = useRef(null);
+
+  // Quien acepta las cookies después de que salió la visita: esa visita y el
+  // auto de la ficha se mandaron sin cookies (fuera de los informes), así que
+  // se vuelven a contar. Si la visita todavía no salió, sale sola, ya aceptada.
+  useEffect(
+    () =>
+      onAnalyticsGranted(() => {
+        if (last.current !== window.location.pathname) return;
+        contarVisita();
+        const item = getPageItem();
+        if (item) track(EVENTS.VIEW_ITEM, item);
+      }),
+    [],
+  );
+
   useEffect(() => {
     if (!pathname) return undefined;
     forgetPageItemUnless(pathname);
@@ -46,10 +74,7 @@ export default function PageViewTracker() {
     const enviar = () => {
       if (last.current === pathname) return;
       last.current = pathname;
-      track(EVENTS.PAGE_VIEW, {
-        page_location: urlSinDatosPersonales(window.location.href),
-        page_title: document.title,
-      });
+      contarVisita();
     };
 
     if (!FICHAS.has(locationFromPathname(pathname))) {

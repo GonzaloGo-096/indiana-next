@@ -130,6 +130,7 @@ export function persistConsent(prefs) {
   if (typeof window === "undefined") return;
   const analytics = prefs.analytics === true;
   const ads = prefs.ads === true;
+  const yaMedia = readStoredConsent()?.analytics === true;
   try {
     const payload = { analytics, ads, ts: Date.now() };
     window.localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(payload));
@@ -138,6 +139,26 @@ export function persistConsent(prefs) {
     // Si localStorage falla (modo privado, cuotas), igual aplicamos consent en memoria.
     updateConsent({ analytics, ads });
   }
+  if (analytics && !yaMedia) for (const fn of alAceptarAnalitica) fn();
+}
+
+const alAceptarAnalitica = new Set();
+
+/**
+ * Avisa cuando la analítica pasa de no aceptada a aceptada, después de
+ * aplicar el consentimiento.
+ *
+ * Lo enviado antes de aceptar salió sin cookies y no entra a los informes, y
+ * gtag no lo reenvía (comprobado con red el 2026-10-26): quien aceptaba a los
+ * pocos segundos quedaba sin página de entrada y sin el auto que miraba.
+ * PageViewTracker escucha esto para volver a contar la página actual.
+ *
+ * @param {() => void} fn
+ * @returns {() => void} para dejar de escuchar
+ */
+export function onAnalyticsGranted(fn) {
+  alAceptarAnalitica.add(fn);
+  return () => alAceptarAnalitica.delete(fn);
 }
 
 /**
