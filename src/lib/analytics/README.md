@@ -99,7 +99,11 @@ sirven el sitio). En localhost o en una versión
 de prueba de Vercel no carga, salvo con `NEXT_PUBLIC_ANALYTICS_TEST=true`: ahí carga y marca la
 visita con `analytics_test`, GTM la manda a GA4 con `debug_mode` y el filtro "tráfico de
 desarrolladores" la deja fuera de los informes (se ve en DebugView). El contenedor de la agencia
-y el Pixel no pasan por este control.
+y el Pixel cargan solo en producción, sin excepción de prueba (`soloEnProduccion`): no tienen
+marca de prueba y un clic en una copia les llegaría como un contacto real.
+
+Ojo: la marca de prueba la pone el GTM nuevo. Con la versión 9 publicada, una prueba local sale
+sin `_dbg` y entra a los informes; antes de publicar, probar con la vista previa de GTM.
 
 ## Comprobar
 

@@ -2,7 +2,7 @@
  * @vitest-environment jsdom
  */
 import { describe, it, expect, beforeEach } from "vitest";
-import { buildIndianaGtmSnippet, isProductionHost } from "../gtmLoader";
+import { buildIndianaGtmSnippet, buildMarketingGtmSnippet, isProductionHost } from "../gtmLoader";
 
 // Ejecuta el script del cargador como lo haría el navegador, pero con el
 // dominio que se le pase (jsdom siempre es "localhost").
@@ -61,5 +61,29 @@ describe("cargador de nuestro GTM", () => {
     const iGtm = r.dataLayer.findIndex((e) => e.event === "gtm.js");
     expect(iPrueba).toBeGreaterThanOrEqual(0);
     expect(iPrueba).toBeLessThan(iGtm);
+  });
+});
+
+describe("cargador del GTM de la agencia", () => {
+  function correrAgencia(hostname) {
+    new Function("window", "document", "location", buildMarketingGtmSnippet("GTM-AGENCIA"))(
+      { dataLayer: [] },
+      document,
+      { hostname },
+    );
+    return [...document.querySelectorAll("script[src]")].some((s) =>
+      s.src.includes("googletagmanager.com/gtm.js?id=GTM-AGENCIA"),
+    );
+  }
+
+  it("carga en el sitio real", () => {
+    expect(correrAgencia("indiana.com.ar")).toBe(true);
+  });
+
+  // Sus conversiones de Ads y su remarketing no tienen marca de prueba: un
+  // clic en una copia contaría como un contacto real para la agencia.
+  it("no carga en copias de prueba ni en local", () => {
+    expect(correrAgencia("indiana-next-abc-gonzalos-projects.vercel.app")).toBe(false);
+    expect(correrAgencia("localhost")).toBe(false);
   });
 });

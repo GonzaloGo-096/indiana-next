@@ -13,14 +13,17 @@
  */
 
 import { CONSENT_STORAGE_KEY } from "./consent";
+import { soloEnProduccion } from "./gtmLoader";
 
 /**
+ * Solo carga en el dominio de producción (ver soloEnProduccion).
+ *
  * @param {string} pixelId
  * @returns {string} script en línea para <Script>
  */
 export function buildMetaPixelSnippet(pixelId) {
   const id = JSON.stringify(String(pixelId));
-  return `!function(f,b,e,v,n,t,s)
+  return soloEnProduccion(`!function(f,b,e,v,n,t,s)
 {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
 n.callMethod.apply(n,arguments):n.queue.push(arguments)};
 if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
@@ -31,5 +34,5 @@ s.parentNode.insertBefore(t,s)}(window, document,'script',
 (function(){var ok=false;try{var r=JSON.parse(localStorage.getItem('${CONSENT_STORAGE_KEY}')||'null');ok=!!(r&&r.ads===true);}catch(e){}
 if(!ok)fbq('consent','revoke');})();
 fbq('init',${id});
-fbq('track','PageView');`;
+fbq('track','PageView');`);
 }

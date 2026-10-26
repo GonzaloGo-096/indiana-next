@@ -5,10 +5,13 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { buildMetaPixelSnippet } from "../metaPixel";
 import { CONSENT_STORAGE_KEY, persistConsent } from "../consent";
 
-/** Corre el cargador y devuelve los comandos que quedaron en la cola de fbq. */
-function correr() {
-  new Function(buildMetaPixelSnippet("870960458928397"))();
-  return window.fbq.queue.map((args) => [...args]);
+/**
+ * Corre el cargador en el dominio indicado (jsdom siempre es "localhost") y
+ * devuelve los comandos que quedaron en la cola de fbq.
+ */
+function correr(hostname = "www.indiana.com.ar") {
+  new Function("location", buildMetaPixelSnippet("870960458928397"))({ hostname });
+  return window.fbq ? window.fbq.queue.map((args) => [...args]) : null;
 }
 
 beforeEach(() => {
@@ -17,6 +20,16 @@ beforeEach(() => {
   document.head.innerHTML = "<script></script>";
   localStorage.clear();
   window.dataLayer = [];
+});
+
+describe("Pixel de Meta: solo en el sitio real", () => {
+  // Meta no tiene marca de prueba: una prueba en una copia llegaría a la
+  // agencia como una visita real.
+  it("en una copia de prueba de Vercel o en local no carga", () => {
+    expect(correr("indiana-next-abc-gonzalos-projects.vercel.app")).toBeNull();
+    expect(correr("localhost")).toBeNull();
+    expect(document.querySelector('script[src*="fbevents.js"]')).toBeNull();
+  });
 });
 
 describe("Pixel de Meta y consentimiento", () => {

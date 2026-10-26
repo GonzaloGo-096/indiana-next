@@ -148,8 +148,9 @@ conversiones de la agencia: pocas y anotadas.
     con hostname `localhost` en nuestra propiedad y en la de la agencia. En Looker filtrar por
     hostname `indiana.com.ar` **o** `www.indiana.com.ar` (las dos direcciones sirven el sitio y
     la oficial, la del canonical, es sin www: filtrar solo www tira visitas reales). Desde el
-    commit `dba5993` (cuando llegue a main), localhost ya no manda nada a nuestra propiedad; la de la agencia sigue recibiendo desde localhost (su contenedor no
-    pasa por nuestro control).
+    commit `dba5993` (cuando llegue a main), localhost ya no manda nada a nuestra propiedad, y
+    desde `soloEnProduccion` (2026-10-26) el contenedor de la agencia y el Pixel tampoco cargan
+    fuera de producción, ni en local ni en las copias de Vercel.
 11. **Remarketing de la agencia.** Una versión temprana de las pruebas dejó escapar pings de
     remarketing (y posiblemente 1 conversión de prueba de "Contactanos por WhatsApp", ~10:50
     del 2026-10-06) a la cuenta de Ads de la agencia, desde navegadores sin clic en anuncios.
