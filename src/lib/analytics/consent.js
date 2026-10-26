@@ -132,17 +132,22 @@ export function persistConsent(prefs) {
   if (typeof window === "undefined") return;
   const analytics = prefs.analytics === true;
   const ads = prefs.ads === true;
-  const yaMedia = readStoredConsent()?.analytics === true;
+  const yaMedia = readStoredConsent()?.analytics === true || aceptadaSinGuardar;
   try {
     const payload = { analytics, ads, ts: Date.now() };
     window.localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(payload));
     updateConsent(payload);
   } catch {
     // Si localStorage falla (modo privado, cuotas), igual aplicamos consent en memoria.
+    aceptadaSinGuardar = analytics;
     updateConsent({ analytics, ads });
   }
   if (analytics && !yaMedia) for (const fn of alAceptarAnalitica) fn();
 }
+
+// Con localStorage bloqueado no queda nada guardado: sin este recuerdo, cada
+// "Aceptar" volvía a reenviar la página como si fuera la primera vez.
+let aceptadaSinGuardar = false;
 
 const alAceptarAnalitica = new Set();
 
@@ -154,6 +159,10 @@ const alAceptarAnalitica = new Set();
  * gtag no lo reenvía (comprobado con red el 2026-10-26): quien aceptaba a los
  * pocos segundos quedaba sin página de entrada y sin el auto que miraba.
  * PageViewTracker escucha esto para volver a contar la página actual.
+ *
+ * Depende de que lo enviado sin cookies NO aparezca en los informes, que es
+ * así con la identidad "basada en dispositivo". Si GA4 pasa a "Mezclada" (o
+ * empieza a modelar), quien acepta tarde contaría doble: sacar este reenvío.
  *
  * @param {() => void} fn
  * @returns {() => void} para dejar de escuchar

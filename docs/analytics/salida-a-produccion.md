@@ -157,7 +157,10 @@ conversiones de la agencia: pocas y anotadas.
     Impacto esperado: nulo en conversiones; se puede confirmar con ellos.
 12. **Identidad basada en dispositivo** (T8): evita que GA4 oculte filas con pocos usuarios.
     Tiene que quedar así: si alguien vuelve a "Mezclada", la tabla de referencias de chat
-    (una persona por fila) empieza a perder filas.
+    (una persona por fila) empieza a perder filas. Y además quien acepta las cookies tarde
+    contaría doble: el sitio reenvía su visita al aceptar porque lo enviado sin cookies no entra
+    a los informes (`onAnalyticsGranted` en `consent.js`). Si se cambia la identidad, sacar
+    ese reenvío.
 13. **La referencia por chat solo sirve si ventas la anota.** Es un cambio de hábito del
     equipo comercial; sin eso, queda en GA4 pero no se cruza con ventas.
 14. **Cookies rechazadas y bloqueadores.** Con identidad por dispositivo no hay modelado:

@@ -29,6 +29,13 @@ describe("ConsentBanner", () => {
     expect(guardado()).toBeNull();
   });
 
+  it("el foco va al aviso, no a un botón: Enter o Espacio no aceptan sin querer", async () => {
+    const { getByRole, getByText } = render(<ConsentBanner />);
+    await new Promise((r) => setTimeout(r, 100));
+    expect(document.activeElement).not.toBe(getByText("Aceptar todas"));
+    expect(document.activeElement).toBe(getByRole("dialog"));
+  });
+
   it("Rechazar guarda las dos categorías en no", () => {
     const { getByText, queryByRole } = render(<ConsentBanner />);
     fireEvent.click(getByText("Rechazar"));

@@ -7,9 +7,10 @@ import { useConsent } from "@/hooks/useConsent";
  * Banner de consentimiento de cookies (Consent Mode v2).
  * - Solo se muestra si no hay decisión previa en localStorage.
  * - Aceptar/Rechazar persiste en localStorage y dispara updateConsent al GTM.
- * - Accesible: role="dialog", aria-modal=false (no bloquea).
- * - Escape no decide nada: el banner no es modal y Escape lo usan la galería y
- *   los menús. Antes rechazaba, y esa persona desaparecía de GA4 sin elegir.
+ * - Accesible: role="dialog" no modal (no bloquea la página).
+ * - Ninguna tecla decide: Escape lo usan la galería y los menús (antes
+ *   rechazaba), y el foco va al aviso y no a "Aceptar todas" (antes Enter o
+ *   Espacio para bajar la página aceptaban). La elección es siempre un clic.
  *
  * Se monta vía `dynamic({ ssr: false })` desde PublicSiteChrome para evitar
  * hydration mismatch (la decisión vive en localStorage, client-only).
@@ -20,10 +21,7 @@ export default function ConsentBanner() {
 
   useEffect(() => {
     if (!isUnknown) return undefined;
-    const t = window.setTimeout(() => {
-      const btn = dialogRef.current?.querySelector("[data-consent-primary]");
-      if (btn) btn.focus();
-    }, 50);
+    const t = window.setTimeout(() => dialogRef.current?.focus(), 50);
     return () => window.clearTimeout(t);
   }, [isUnknown]);
 
@@ -33,10 +31,11 @@ export default function ConsentBanner() {
     <div
       ref={dialogRef}
       role="dialog"
+      tabIndex={-1}
       aria-live="polite"
       aria-labelledby="consent-banner-title"
       aria-describedby="consent-banner-desc"
-      className="fixed inset-x-0 bottom-0 z-[1000] mx-auto w-full max-w-3xl rounded-t-xl border border-slate-200 bg-white p-4 shadow-2xl sm:bottom-4 sm:rounded-xl sm:p-5"
+      className="fixed inset-x-0 bottom-0 z-[1000] mx-auto w-full max-w-3xl rounded-t-xl border border-slate-200 bg-white p-4 shadow-2xl outline-none sm:bottom-4 sm:rounded-xl sm:p-5"
     >
       <h2
         id="consent-banner-title"
@@ -60,7 +59,6 @@ export default function ConsentBanner() {
         <button
           type="button"
           onClick={acceptAll}
-          data-consent-primary
           className="rounded-md bg-slate-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-500"
         >
           Aceptar todas
