@@ -2,7 +2,8 @@
 
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { track, urlSinDatosPersonales } from "@/lib/analytics/dataLayer";
+import { track } from "@/lib/analytics/dataLayer";
+import { urlSinDatosPersonales } from "@/lib/analytics/urlLimpia";
 import { EVENTS, LOCATIONS } from "@/lib/analytics/events";
 import { locationFromPathname } from "@/lib/analytics/locationFromPath";
 import { onAnalyticsGranted } from "@/lib/analytics/consent";

@@ -369,3 +369,31 @@ describe("vendidos al final", () => {
     expect(orden(result)).toEqual([8, 7]);
   });
 });
+
+describe("búsqueda que termina después de salir del listado", () => {
+  // Si la respuesta llegaba con la persona ya en otra página, track tomaba la
+  // ubicación de la URL nueva (por ejemplo usados_detail).
+  it("al salir del listado se cancela y no se cuenta como búsqueda", async () => {
+    let responder;
+    m.getVehicles.mockImplementation(
+      ({ signal }) =>
+        new Promise((resolve, reject) => {
+          responder = resolve;
+          signal?.addEventListener("abort", () =>
+            reject(Object.assign(new Error("cancelada"), { name: "AbortError" })),
+          );
+        }),
+    );
+    const { result, unmount } = renderHook(() =>
+      useVehiclesList({ initialData: { vehicles: [], total: 0 } }),
+    );
+    let pendiente;
+    act(() => {
+      pendiente = result.current.applyFilters({ marca: ["Ford"] });
+    });
+    unmount();
+    responder({ vehicles: [], total: 3 });
+    await pendiente;
+    expect(m.track).not.toHaveBeenCalled();
+  });
+});

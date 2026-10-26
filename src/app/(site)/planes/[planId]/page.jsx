@@ -325,17 +325,18 @@ export default async function PlanDetallePage({ params }) {
   const modeloSlug = obtenerModeloSlug(plan);
   const imagenModelo = modeloSlug ? obtenerImagenPorModelo(modeloSlug) : null;
 
+  // Uno solo para la visita y el botón: si difieren, el contacto no se cruza con la vista.
+  const item = buildItemParamsFromPlan({
+    id: plan.id,
+    nombre: plan.plan,
+    modelo: plan.modelos?.[0],
+  });
+
   return (
     <div
       className={`${styles.container} w-full min-w-0 antialiased`}
     >
-      <ItemViewTracker
-        item={buildItemParamsFromPlan({
-          id: plan.id,
-          nombre: plan.plan,
-          modelo: plan.modelos?.[0],
-        })}
-      />
+      <ItemViewTracker item={item} />
       <div className={`${styles.backRow} w-full`}>
         <Link
           href="/planes"
@@ -457,11 +458,7 @@ export default async function PlanDetallePage({ params }) {
                   `Hola! Quiero solicitar cotización del Plan ${plan.plan} - financiación Peugeot 0km`
                 )}`}
                 componentId="whatsapp-detalle-plan"
-                item={buildItemParamsFromPlan({
-                  id: plan.id,
-                  nombre: plan.plan,
-                  modelo: plan.modelos?.[0],
-                })}
+                item={item}
                 className={contact.buttonWhatsapp}
                 aria-label="Solicitar cotización por WhatsApp"
               >

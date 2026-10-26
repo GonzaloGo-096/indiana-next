@@ -73,9 +73,6 @@ export const RESET_KEYS = Object.freeze([
   "filters_count",
 ]);
 
-// La limpieza de la URL vive en urlLimpia.js (también la usa ConsentBootstrap).
-export { urlSinDatosPersonales } from "./urlLimpia";
-
 /**
  * @param {string} event - uno de EVENTS (events.js)
  * @param {Record<string, string | number | boolean | null | undefined>} [params]
@@ -104,7 +101,7 @@ export function track(event, params = {}) {
  * Comando de gtag (lo usa consent.js).
  * Tiene que empujar el objeto `arguments` literal: GTM ignora en silencio
  * los comandos empujados como Array, y el consentimiento no se aplicaba
- * hasta recargar la página (bug ya corregido en d4cf0a5).
+ * hasta recargar la página.
  */
 export function pushGtagCommand(...args) {
   if (typeof window === "undefined") return;

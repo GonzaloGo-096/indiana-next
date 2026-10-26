@@ -128,6 +128,10 @@ export function useVehiclesList({ initialData, initialError = null }) {
     applyFilters(currentFilters, { addToHistory: false });
   }, [filtersFingerprint]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Al salir del listado se cancela la búsqueda en curso: si la respuesta
+  // llegaba después, se contaba como búsqueda en la página nueva.
+  useEffect(() => () => filtersAbortRef.current?.abort(), []);
+
   // --- Computed values -------------------------------------------------------
 
   const isFiltered = useMemo(

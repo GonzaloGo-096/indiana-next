@@ -118,6 +118,8 @@ export function readStoredConsent() {
       ts: typeof parsed.ts === "number" ? parsed.ts : 0,
     };
   } catch {
+    // localStorage bloqueado (modo privado) o valor roto: se trata como sin
+    // decisión y el banner vuelve a preguntar.
     return null;
   }
 }
@@ -169,6 +171,7 @@ export function clearStoredConsent() {
   try {
     window.localStorage.removeItem(CONSENT_STORAGE_KEY);
   } catch {
-    /* noop */
+    // Solo se usa para pruebas del banner: si localStorage está bloqueado no
+    // hay nada guardado que borrar.
   }
 }

@@ -69,7 +69,8 @@ const CareersForm = () => {
       }
 
       // Una postulación no es un contacto comercial: se mide aparte y sin datos
-      // de la persona.
+      // de la persona. Hasta la Fase 7, el puente de GTM igual la cuenta como
+      // generate_lead, para no mover los "Leads" del tablero viejo.
       track(EVENTS.FORM_SUBMIT, { form_id: FORM_IDS.CAREERS });
 
       setFormState(FORM_STATE.success);

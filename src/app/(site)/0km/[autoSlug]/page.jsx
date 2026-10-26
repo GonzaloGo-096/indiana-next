@@ -353,6 +353,12 @@ export default async function CeroKilometroDetallePage({ params }) {
       }
     }
 
+    // Uno solo para la visita y el botón: si difieren, el contacto no se cruza con la vista.
+    const item = buildItemParamsFromAuto({
+      slug: autoSlug,
+      titulo: `${modelo.marca || "Peugeot"} ${modelo.nombre}`,
+    });
+
     return (
     <div className={styles.page}>
       {jsonLdHtml ? (
@@ -361,12 +367,7 @@ export default async function CeroKilometroDetallePage({ params }) {
           dangerouslySetInnerHTML={{ __html: jsonLdHtml }}
         />
       ) : null}
-      <ItemViewTracker
-        item={buildItemParamsFromAuto({
-          slug: autoSlug,
-          titulo: `${modelo.marca || "Peugeot"} ${modelo.nombre}`,
-        })}
-      />
+      <ItemViewTracker item={item} />
       {/* Hero Image (solo desktop) - Client Component para evitar carga en mobile */}
       {modelo.heroImage && (
         <HeroImageDesktop heroImage={{ ...modelo.heroImage, modelName: modelo.nombre }} />
@@ -400,10 +401,7 @@ export default async function CeroKilometroDetallePage({ params }) {
                 `Hola! Me interesa conocer más sobre el ${modelo.marca} ${modelo.nombre} 0km`
               )}`}
               componentId="whatsapp-detalle-0km"
-              item={buildItemParamsFromAuto({
-                slug: autoSlug,
-                titulo: `${modelo.marca || "Peugeot"} ${modelo.nombre}`,
-              })}
+              item={item}
               className={contact.buttonWhatsapp}
             >
               <svg
