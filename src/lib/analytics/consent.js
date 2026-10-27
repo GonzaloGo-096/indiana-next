@@ -13,6 +13,7 @@
  */
 
 import { pushGtagCommand } from "./dataLayer";
+import { forgetEntryCampaign } from "./campanaEntrada";
 
 export const CONSENT_STORAGE_KEY = "indiana_consent_v1";
 export const CONSENT_STATUS = Object.freeze({
@@ -149,6 +150,7 @@ export function persistConsent(prefs) {
     updateConsent({ analytics, ads });
   }
   if (analytics && !yaMedia) avisarAceptacion();
+  if (!analytics) forgetEntryCampaign();
 }
 
 /** Si la persona aceptó la medición (guardado, o en memoria si localStorage falla). */
