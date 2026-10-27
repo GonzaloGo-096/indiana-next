@@ -27,11 +27,17 @@ como "SOLICITAR COTIZACIÓN"). Cambiar esos textos les rompe la medición.
 | `view_search_results` | Aplicar filtros en usados (no al limpiarlos) | `results_count`, `filters_count`, `marca` | No |
 | `form_submit` | Postulación enviada en Trabajá con nosotros | `form_id` | No |
 
-**Puente de transición (lo arma GTM, no el código):** en cada `whatsapp_click`, `phone_click` y
-`form_submit` de empleo, GTM manda además un `generate_lead` con `lead_source` (whatsapp, phone o
-form). Así el tablero viejo de Looker sigue funcionando y `generate_lead` sigue siendo el **único**
-evento clave. Se borra en la Fase 7, cuando el tablero nuevo esté validado; ahí se marcan
-`whatsapp_click` y `phone_click` como clave.
+**El puente (lo arma GTM):** en cada `whatsapp_click`, `phone_click` y `form_submit` de empleo,
+el GTM nuevo manda además un `generate_lead` con `lead_source` (whatsapp, phone o form). Así el
+tablero de Looker sigue funcionando y `generate_lead` sigue siendo el **único** evento clave.
+Propuesta de la auditoría del 2026-10-26, pendiente de aprobación: dejarlo **permanente**
+(evento recomendado por Google para leads), contado una vez por sesión y sin las
+postulaciones, en vez de borrarlo en la Fase 7.
+
+**Aviso de compatibilidad (lo empuja el código):** `track()` también empuja `generate_lead`
+después de cada contacto (`LEAD_COMPAT` en `events.js`). Lo usa solo la v9 publicada hoy; el GTM
+nuevo no tiene activador para él, así que no se cuenta doble. Con esto el orden de salida entre
+GTM y código no importa. Se saca cuando la v9 ya no pueda volver.
 
 Todos llevan además `location` (la sección: `home`, `okm_detail`, `usados_list`…),
 que `track()` saca de la URL. Ningún componente la pasa.

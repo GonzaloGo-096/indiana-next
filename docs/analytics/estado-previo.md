@@ -69,7 +69,7 @@ Leído en Administrar el 2026-10-07.
 | Dimensiones personalizadas (13, alcance evento) | Component ID, Item Category, Item List Name, Item Name, Item Variant, Lead Source, Lead Type, Location, Message Template ID, Modelo, Source, Ubicación del botón (`component_source`), vertical | Se agregan `lead_ref`, `item_id` y `marca` (T10). No se archiva ninguna |
 | Filtros de datos | "Internal Traffic" (tráfico interno, excluir), en estado **Prueba** | Se agrega "Tráfico de desarrolladores", activo (T11) |
 | Vínculo con Google Ads | Ninguno | — |
-| Vínculo con BigQuery | Ninguno | Se crea (T12), con autorización de facturación del cliente |
+| Vínculo con BigQuery | Ninguno | Postergado; se recomienda pedir la autorización del cliente pronto (solo guarda desde que se activa), con vencimiento de 14 meses en el dataset |
 | Historial de cambios de la propiedad | **Sin cambios** entre el 7 sept y el 7 oct 2026 | Sirve para comprobar que nadie tocó nada |
 
 **Ojo con la conservación de 2 meses:** las exploraciones de GA4 no pueden mirar eventos de más

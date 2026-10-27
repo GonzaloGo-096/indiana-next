@@ -4,7 +4,8 @@ import { track } from "@/lib/analytics/dataLayer";
 import { EVENTS } from "@/lib/analytics/events";
 
 /**
- * Link `tel:` que registra `phone_click` (evento clave).
+ * Link `tel:` que registra `phone_click` (un contacto; el evento clave es el generate_lead
+ * que sale de él).
  *
  * @param {object} props
  * @param {string} props.phone - el número, con o sin formato

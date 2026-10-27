@@ -4,12 +4,15 @@ Rama: `refactor/medicion-simple`. Qué se mide: `src/lib/analytics/README.md`. E
 vuelta atrás detallada: `docs/analytics/estado-previo.md`.
 Escrito el 2026-10-06; corregido el 2026-10-07 después de la revisión de la Fase 1 y otra vez
 esa noche después de la auditoría (comprobaciones en producción y en el respaldo de la v9).
+Actualizado el 2026-10-26 con la Etapa 0 y la auditoría de seis posturas: aviso de
+compatibilidad, `lead_ref` solo con consentimiento, pasos con criterios de abort y vuelta atrás
+en `main` y `staging`.
 
 ## Estado
 
 | Pieza | Estado |
 |---|---|
-| Código | En la rama, `npm run check` en verde, revisado. Sin publicar |
+| Código | En la rama, `npm run check` en verde, dos revisiones independientes y prueba real con Tag Assistant (2026-10-26). Sin publicar |
 | GTM (GTM-TPJCFTBB) | Publicada la **versión 9** (la de siempre). El espacio "medicion-simple" ya está importado (T13), sin publicar. Ver "GTM: qué espacio de trabajo" |
 | GA4 | Fase 1 hecha: 14 meses, filtro de desarrolladores activo, 3 dimensiones, identidad por dispositivo |
 | Looker Studio | El tablero viejo ("Indiana — Dashboard") intacto. El nuevo se arma aparte |
@@ -24,8 +27,9 @@ Hay **un solo** espacio que se publica. Confundirlos pone en producción una ver
 | ~~"Default Workspace"~~ (espacio 10) | 37 cambios de una importación vieja del 2026-10-06, sin puente, sin `lead_ref`, sin `debug_mode` | **Eliminado en T13** (2026-10-07). Si GTM vuelve a mostrar un espacio con ese contenido, no publicarlo |
 | **"medicion-simple"** (espacio **11**, creado en T13) | `docs/analytics/gtm-medicion-simple.json` importado con **Sobrescribir**: 42 cambios (15 añadidos, 27 eliminados); 8 etiquetas, entre ellas "GA4 - Event - generate_lead (puente, se borra en Fase 7)" | **El único que se publica**, en la Fase 3 |
 
-Publicar una versión sin el puente haría que `generate_lead` dejara de llegar apenas salga el
-código nuevo (el código ya no lo empuja): "Leads" caería a 0.
+Con el aviso de compatibilidad el código sigue empujando `generate_lead`, pero el GTM nuevo no
+lo escucha: en el GTM nuevo, `generate_lead` sale **solo** del puente. Publicar una versión sin
+el puente dejaría "Leads" en 0.
 
 Antes de apretar **Enviar** en la Fase 3, comprobar en pantalla:
 
@@ -78,56 +82,70 @@ configuración. En la Fase 2 solo se mira que, sin la marca `analytics_test`, la
 - Si un envío de producción lleva `_dbg`, volver atrás (ver abajo): esos datos quedarían fuera
   de los informes.
 
-## Pasos de la salida, en este orden
+## Pasos de la salida (reescrito el 2026-10-26 después de la auditoría)
 
-La guía clic a clic está en la página "Pasos de Gonzalo" (link en la memoria del proyecto).
-Resumen y por qué de cada orden:
+Desde el aviso de compatibilidad (`LEAD_COMPAT` en `events.js`) el código sigue empujando
+`generate_lead`, así que **las cuatro combinaciones de código y GTM funcionan** y el orden ya
+no es obligatorio. Igual se sigue un orden fijo, el que deja cada paso fácil de volver atrás.
 
-1. **Antes (Fase 2):** variable `NEXT_PUBLIC_ANALYTICS_TEST=true` solo en Preview de Vercel
-   **antes** del push (las variables `NEXT_PUBLIC_*` quedan fijas al armar el sitio: si se carga
-   después hay que volver a desplegar). Verificar que Preview también tiene `NEXT_PUBLIC_GTM_ID`.
-   Push de la rama, vista previa de GTM contra la versión de prueba, y también contra
-   producción (prueba "GTM nuevo + código viejo"). Mezclar a `staging`.
-2. **GTM primero:** publicar el espacio **"medicion-simple"**. Código viejo con GTM nuevo
-   funciona; al revés, "Leads" cae a 0. Después de publicar GTM puede crear un "Default
-   Workspace" nuevo **vacío**: es normal.
-3. **En el mismo minuto, GA4** → Medición mejorada: apagar "cambios de página según el historial",
-   "interacciones con formularios", "clics de salida" y "búsquedas en el sitio". Hoy la medición
-   mejorada ya manda una visita en cada navegación sin recargar (comprobado en producción el
-   2026-10-07: 4 de 4); con el GTM nuevo el sitio manda la suya y se contaría doble. Sus
-   `form_submit` y `view_search_results` llevan el mismo nombre que los nuestros (los 161
-   `form_submit` para 11 postulaciones del diagnóstico salían de ahí). Apagarla antes de
-   publicar haría perder visitas con la v9.
-4. **Esperar:** comprobar que `gtm.js` ya dice la versión nueva y **esperar 15 minutos más**
-   (`gtm.js` queda guardado 15 minutos en cada navegador: `Cache-Control: max-age=900`).
-   Mientras tanto, un clic de WhatsApp real en producción tiene que verse en Tiempo real como
-   `whatsapp_click` + `generate_lead`.
-5. **Recién ahí el código:** mezclar `staging` a `main`; Vercel publica.
-6. **Anotar** en GA4 (anotación sobre el día) la hora de GTM y la del código.
-7. **Looker, tablero viejo:** arreglar la torta "Categoría de Lead" con el respaldo sobre
-   `item_category`/`location` (mejor una fórmula que use `Lead Type` si tiene valor y si no lo
-   nuevo: se puede aplicar antes del corte). Antes, copiar su fórmula original en
-   `estado-previo.md`.
-8. **Eventos clave: no tocar.** `generate_lead` (que ahora manda el puente de GTM) sigue siendo
-   el único evento clave hasta la Fase 7.
-9. **Control (Fase 4):** la comprobación de `_dbg` de arriba, clics reales en Tiempo real,
-   y repetir al día siguiente y a la semana.
+Decide Gonzalo, solo y en el momento, con los criterios de abajo. Si un criterio de abort se
+cumple, se vuelve atrás ese paso sin discutir y se investiga después.
 
-Elegir un día hábil (no viernes), en un horario de poco tráfico y lejos de la medianoche de la
-zona horaria de la propiedad. Las pruebas en producción cuentan como leads reales y disparan las
-conversiones de la agencia: pocas y anotadas.
+### Día anterior (D-1)
+
+1. **Congelar.** `npm run check` en verde sobre la rama. Merge `--no-ff` de la rama a
+   `staging`, anotar el SHA y esperar el build de Preview de staging en "Ready". Desde acá
+   no entra nada más a `staging` ni a `main` hasta D+1.
+2. **Producción sin modo prueba.** En Vercel → Environment Variables, `NEXT_PUBLIC_ANALYTICS_TEST`
+   figura **solo** en Preview. Anotar el ID y la URL del despliegue de producción actual
+   (hoy `dpl_AzSxqQN1UfnEbHmF4UfoC9Hemarg`, `main@04ef6eb`): es el destino de la vuelta atrás.
+3. **Respaldos.** Comprobar la huella del respaldo v9 (`estado-previo.md`). Copiar la fórmula de
+   "Categoría de Lead" de Looker en `estado-previo.md` y aplicar la que usa `Lead Type` si tiene
+   valor y si no `item_category`/`location` (sirve antes y después del corte).
+4. **Línea base.** De los últimos 7 días, por día: `generate_lead`, `whatsapp_click`,
+   `page_view` y usuarios. Anotar también el mismo día de la semana anterior.
+5. **Avisos con fecha y franja horaria:** agencia (borrador en `mensajes-fase1.md`, con el punto
+   del Pixel), cliente y **equipo de ventas** (el "(Ref. web XXXXX)" les aparece desde ese día,
+   solo en los chats de quien aceptó las cookies).
+6. **Sesiones abiertas** en el perfil de Chrome correcto: Vercel, GitHub, GTM, GA4 y Looker. Los
+   códigos de respaldo del 2FA a mano.
+
+### Día de la salida (D), martes o miércoles desde las 9:30
+
+| Hora | Paso | Criterio para seguir | Abort |
+|---|---|---|---|
+| 9:30 | **Código.** `main` ← `staging` (`--no-ff`), push, esperar "Ready" | `node scripts/smoke.mjs https://indiana.com.ar` 14/14; en Red, los `collect` a `G-9HJ64VGVLH` sin `_dbg` ni `ep.debug_mode`; con cookies aceptadas cargan `GTM-M2J2LBRD` y `fbevents.js`; con rechazadas, el Pixel no manda `PageView` | Build fallido (no se toca nada más) o un criterio falla → Instant Rollback al despliegue anotado |
+| 9:45 | **Un clic de prueba** de WhatsApp desde la oficina, con la v9 todavía publicada | En Tiempo real: `whatsapp_click` y `generate_lead` en menos de 2 min. Anotar su `lead_ref` | Falta `generate_lead` → volver el código |
+| 9:50 | **GTM.** Comprobar en pantalla espacio "medicion-simple" y las 8 etiquetas; publicar con nombre `v10 medicion-simple AAAA-MM-DD` y descripción "volver = publicar v9" | `npm run gtm:publicado` todo ok | — |
+| 9:50 | **GA4, en el mismo minuto.** Medición mejorada: apagar "cambios de página según el historial", "interacciones con formularios" y "búsquedas en el sitio". **Dejar prendidos los clics de salida** (no duplican nada y sirven de control: clics a wa.me contra nuestros `whatsapp_click`) | — | — |
+| 10:05 | **Esperar** 15 min de caché de `gtm.js`; después un clic de prueba en una ventana de incógnito | `whatsapp_click` y `generate_lead` en Tiempo real; `page_view` una sola vez por navegación (en Red) | Falta `generate_lead` o `page_view` doble → publicar v9 y prender las 3 opciones |
+| 10:25 | **Anotar** en GA4 y Looker las horas de código, GTM y medición mejorada; tag de git `release/medicion-simple`; mensaje "listo" a agencia, cliente y ventas | — | — |
+| hasta 18:00 | **Vigilar** Tiempo real cada 2 h y los runtime logs de Vercel en la primera hora | — | `generate_lead` acumulado < 40 % de lo esperado por la línea base horaria, o `whatsapp_click` > 0 con `generate_lead` en 0 por más de 2 h → volver atrás |
+
+Las pruebas en producción cuentan como leads reales y le llegan a la agencia: como máximo 2,
+anotadas con su `lead_ref`.
+
+### Día siguiente (D+1)
+
+1. Informe del día D en GA4:
+   - `generate_lead` / (`whatsapp_click` + `phone_click` + `form_submit` de careers) entre 0,95 y 1,05;
+   - `generate_lead` entre 0,6 y 1,4 veces el mismo día de la semana anterior;
+   - `page_view` por usuario entre 0,7 y 1,2 veces la línea base (puede bajar un poco; no duplicarse);
+   - ningún evento con `debug_mode` en los informes.
+2. Fuera de rango: investigar en menos de 4 h y decidir si se vuelve atrás.
+3. Looker: Leads, % Conversión y la torta (Looker puede tardar horas en refrescar: se mira en D+1).
+4. Pedir a la agencia sus conversiones de Ads y Meta contra la semana anterior.
+5. Levantar el congelamiento.
 
 ## Riesgos importantes
 
-1. **Orden de la salida** (comprobado contra el respaldo de la v9):
-   - **Código nuevo con GTM v9: "Leads" cae a 0.** La v9 dispara `generate_lead` solo cuando
-     el sitio lo empuja, y el código nuevo ya no lo empuja. Las visitas no se cuentan doble: la
-     v9 no tiene etiqueta para el `page_view` del sitio.
-   - **GTM nuevo con código viejo: no se pierde nada.** El código viejo también empuja
-     `page_view`, `whatsapp_click`, `phone_click` y `form_submit` (form_id `careers`), y el
-     puente arma `generate_lead` igual.
-   - Por eso, si hay que elegir, **primero GTM y después el código**, nunca al revés. Y para
-     volver atrás: si se vuelve GTM a la v9, también hay que volver el código.
+1. **Orden de la salida: resuelto con el aviso de compatibilidad** (2026-10-26).
+   - Antes, código nuevo con GTM v9 dejaba "Leads" en 0: la v9 cuenta el `generate_lead` que
+     empuja el sitio y el código nuevo había dejado de empujarlo.
+   - Ahora `track()` lo vuelve a empujar después de cada contacto (`LEAD_COMPAT`), y el GTM
+     nuevo no tiene activador para ese evento: no hay doble conteo (el test de contrato lo
+     exige). Las cuatro combinaciones funcionan y cada pieza se vuelve atrás sola.
+   - El aviso se saca cuando la v9 ya no pueda volver (después del control de D+7).
 2. **Publicar el espacio equivocado.** Ver "GTM: qué espacio de trabajo". Es el error con
    peor efecto: sin puente, "Leads" cae a 0.
 3. **"Leads" no cambia el día de la salida.** Con el puente, `generate_lead` sigue contando
@@ -138,7 +156,7 @@ conversiones de la agencia: pocas y anotadas.
    las salidas en menos de medio segundo. **Contactos por modelo** sí sube: el WhatsApp
    flotante (70% de los contactos) ahora dice de qué auto es. Anotarlo en GA4 y Looker ese día.
 4. **Lo que se rompe del tablero viejo.** La torta "Categoría de Lead": usa `Lead Type`,
-   que el `whatsapp_click` nuevo ya no manda. Se arregla en el paso 4. Además dejan de
+   que el `whatsapp_click` nuevo ya no manda. Se arregla en D-1 (paso 3). Además dejan de
    recibir datos las dimensiones viejas `vertical`, Message Template ID, `component_source`,
    Modelo y `success`: revisar que ningún otro gráfico las use. Las tablas de
    vistas/contactos por modelo siguen (usan `item_name` e `item_category`). Las 7
@@ -154,10 +172,10 @@ conversiones de la agencia: pocas y anotadas.
 8. **El contenedor de la agencia comparte el dataLayer** y carga en todas las páginas. Si
    ellos cambian algo, puede afectar lo nuestro sin aviso; por ejemplo, si empujaran una clave
    `analytics_test` se prendería el modo prueba. Conviene un canal de aviso mutuo.
-9. **Pixel de Meta sin consentimiento.** Se carga desde nuestro código y dispara aunque el
-   usuario rechace las cookies (también la imagen `<noscript>`). El ID es de la agencia, pero
-   **el código que lo carga es nuestro** (`MarketingTracking.jsx`): el arreglo es nuestro y el
-   riesgo legal es de Indiana. Pendiente de decisión de Gonzalo, con aviso previo a la agencia.
+9. **Pixel de Meta y consentimiento: resuelto en la rama** (`metaPixel.js`, 2026-10-07). Queda
+   en pausa hasta que se aceptan las cookies de publicidad y no carga fuera de producción. Lo
+   aprueba Gonzalo en pre-producción; la agencia va a ver menos eventos en Meta (los de quienes
+   rechazan): avisarles en D-1.
 10. **Datos de prueba viejos en GA4.** Las pruebas del 2026-10-06 dejaron unos pocos eventos
     con hostname `localhost` en nuestra propiedad y en la de la agencia. En Looker filtrar por
     hostname `indiana.com.ar` **o** `www.indiana.com.ar` (las dos direcciones sirven el sitio y
@@ -175,7 +193,8 @@ conversiones de la agencia: pocas y anotadas.
     contaría doble: el sitio reenvía su visita al aceptar porque lo enviado sin cookies no entra
     a los informes (`onAnalyticsGranted` en `consent.js`). Si se cambia la identidad, sacar
     ese reenvío.
-13. **La referencia por chat solo sirve si ventas la anota.** Es un cambio de hábito del
+13. **La referencia por chat solo existe con la medición aceptada** (desde 2026-10-26: quien
+    rechaza escribe sin código, ver README). **Y solo sirve si ventas la anota.** Es un cambio de hábito del
     equipo comercial; sin eso, queda en GA4 pero no se cruza con ventas.
 14. **Cookies rechazadas y bloqueadores.** Con identidad por dispositivo no hay modelado:
     quien rechaza las cookies **no aparece en los informes** ni en Looker, y quien bloquea GTM
@@ -195,11 +214,20 @@ conversiones de la agencia: pocas y anotadas.
 
 ## Volver atrás
 
-Detalle en `estado-previo.md`. **Primero el código, después GTM** (al revés queda código nuevo
-con GTM v9 y "Leads" en 0):
+Detalle de cada consola en `estado-previo.md`. Con el aviso de compatibilidad, código y GTM se
+vuelven atrás **por separado**: se vuelve solo la pieza que falló.
 
-1. **Código:** Vercel → Deployments → el despliegue anterior → Instant Rollback (o revertir el
-   merge en `main`). Ojo: después de un Instant Rollback, Vercel **no** publica lo que se suba a
-   `main` hasta apretar **Undo Rollback**.
-2. **GTM:** Versiones → versión 9 → Publicar.
-3. **GA4, en el mismo minuto que GTM:** prender otra vez las 4 opciones de la medición mejorada.
+1. **Código, en minutos:** Vercel → Deployments → el despliegue anotado en D-1 → Instant Rollback
+   (o `vercel rollback <url anotada>`). En el plan Hobby solo se puede volver al despliegue
+   inmediatamente anterior: por eso se anota y no se redespliega nada entre D-1 y D.
+2. **GTM:** Versiones → versión 9 → Publicar. En el mismo minuto, en GA4 volver a prender las 3
+   opciones de la medición mejorada que se apagaron.
+3. **Comprobar:** un clic de prueba muestra `generate_lead` en Tiempo real.
+4. **El mismo día, la vuelta atrás definitiva en git**, si el código no vuelve a salir:
+   - revertir el merge en `main` **y también en `staging`** (si solo se revierte en `main`,
+     `staging` sigue con el código nuevo y el próximo pase lo vuelve a llevar, o lo lleva a
+     medias);
+   - después, Undo Rollback en Vercel (mientras el rollback esté activo, Vercel no publica lo
+     que se suba a `main`);
+   - para reintentar más adelante: revertir el revert en una rama nueva.
+5. Avisar a la agencia, al cliente y a ventas.

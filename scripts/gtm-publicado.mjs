@@ -23,7 +23,7 @@ const r = await fetch(`https://www.googletagmanager.com/gtm.js?id=${ID}`, {
   signal: AbortSignal.timeout(20000),
 });
 if (!r.ok) {
-  console.error(`  gtm.js respondió ${r.status}`);
+  console.log(`  gtm.js respondió ${r.status}`);
   process.exit(1);
 }
 const js = await r.text();

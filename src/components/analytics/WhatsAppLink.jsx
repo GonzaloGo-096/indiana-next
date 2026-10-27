@@ -8,7 +8,8 @@ import { newLeadRef, withLeadRef } from "@/lib/analytics/leadRef";
 import { getPageItem } from "@/lib/analytics/pageItem";
 
 /**
- * Link a WhatsApp que registra `whatsapp_click`, el evento clave del sitio.
+ * Link a WhatsApp que registra `whatsapp_click`, el contacto más frecuente del sitio (el
+ * evento clave es el generate_lead que sale de él).
  *
  * Con la medición aceptada, en cada clic genera un código de referencia, lo
  * suma al mensaje y lo manda a GA4 (`lead_ref`): así un chat se puede cruzar
