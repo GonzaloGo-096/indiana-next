@@ -106,11 +106,10 @@ cumple, se vuelve atrás ese paso sin discutir y se investiga después.
 3. **Respaldos.** Comprobar la huella del respaldo v9 (`estado-previo.md`). Copiar la fórmula de
    "Categoría de Lead" de Looker en `estado-previo.md` y aplicar la que usa `Lead Type` si tiene
    valor y si no `item_category`/`location` (sirve antes y después del corte).
-4. **Línea base.** De los últimos 7 días, por día: `generate_lead`, `whatsapp_click`,
-   `page_view` y usuarios. Del mismo día de la semana anterior, además, el acumulado de
-   `generate_lead` a las 12, 14, 16 y 18 (lo usa el abort de la vigilancia). Tener en cuenta que
-   desde la salida el clic con la ruedita del mouse también cuenta: los contactos pueden subir
-   un poco.
+4. **Línea base.** Está en `linea-base.md` (sacada el 2026-10-27); en D-1 se suma el día 27.
+   Con unos 13 contactos por día no sirve un abort por porcentaje en el día: se decide con los
+   clics de prueba y con la rotura de estructura (ver la vigilancia). Desde la salida el clic con
+   la ruedita del mouse también cuenta: los contactos pueden subir un poco.
 5. **Avisos con fecha y franja horaria:** agencia (borrador en `mensajes-fase1.md`, con el punto
    del Pixel), cliente y **equipo de ventas** (el "(Ref. web XXXXX)" les aparece desde ese día,
    solo en los chats de quien aceptó las cookies).
@@ -127,7 +126,7 @@ cumple, se vuelve atrás ese paso sin discutir y se investiga después.
 | 9:50 | **GA4, en el mismo minuto.** Medición mejorada: apagar "cambios de página según el historial", "interacciones con formularios" y "búsquedas en el sitio". **Dejar prendidos los clics de salida** (no duplican nada y sirven de control: clics a wa.me contra nuestros `whatsapp_click`) | — | — |
 | 10:05 | **Esperar** 15 min de caché de `gtm.js`; después un clic de prueba en una ventana de incógnito | `npm run gtm:publicado` da "Todo ok" (versión posterior a la 9, sin activador de `generate_lead`); `whatsapp_click` y `generate_lead` en Tiempo real; `page_view` una sola vez por navegación (en Red) | `gtm:publicado` no da "Todo ok", falta `generate_lead` o hay `page_view` doble → publicar v9 y prender las 3 opciones |
 | 10:25 | **Anotar** en GA4 y Looker las horas de código, GTM y medición mejorada; tag de git `release/medicion-simple`; mensaje "listo" a agencia, cliente y ventas | — | — |
-| hasta 18:00 | **Vigilar** Tiempo real cada 2 h y los runtime logs de Vercel en la primera hora | — | `generate_lead` acumulado < 40 % de lo esperado por la línea base horaria, o `whatsapp_click` > 0 con `generate_lead` en 0 por más de 2 h → volver atrás: primero GTM v9 + las 3 opciones; si en 30 min no mejora, el código. (Los informes estándar tardan horas: mirar Tiempo real antes de decidir.) |
+| hasta 18:00 | **Vigilar** Tiempo real cada 2 h y los runtime logs de Vercel en la primera hora | — | `whatsapp_click` de personas reales en Tiempo real y ningún `generate_lead` durante 2 h, o visitas dobles por navegación (el volumen es bajo para un porcentaje: `linea-base.md`) → volver atrás: primero GTM v9 + las 3 opciones; si en 30 min no mejora, el código. (Los informes estándar tardan horas: mirar Tiempo real antes de decidir.) |
 
 Las pruebas en producción cuentan como leads reales y le llegan a la agencia: como máximo 2,
 anotadas con su `lead_ref`.
@@ -136,8 +135,8 @@ anotadas con su `lead_ref`.
 
 1. Informe del día D en GA4:
    - `generate_lead` / (`whatsapp_click` + `phone_click` + `form_submit` de careers) entre 0,95 y 1,05;
-   - `generate_lead` entre 0,6 y 1,4 veces el mismo día de la semana anterior;
-   - `page_view` por usuario entre 0,7 y 1,2 veces la línea base (puede bajar un poco; no duplicarse);
+   - personas que contactaron entre 7 y 28 (rango de las últimas 4 semanas, `linea-base.md`);
+   - visitas por persona entre 2,5 y 4 (puede bajar un poco; no duplicarse);
    - ningún evento con `debug_mode` en los informes.
 2. Fuera de rango: investigar en menos de 4 h y decidir si se vuelve atrás.
 3. Looker: Leads, % Conversión y la torta (Looker puede tardar horas en refrescar: se mira en D+1).
