@@ -111,6 +111,16 @@ describe("track: aviso de compatibilidad generate_lead", () => {
     expect(leads()).toEqual([expect.objectContaining({ lead_source: "form", form_id: "careers" })]);
   });
 
+  it("lead_source no queda pegado en GTM: el evento siguiente lo lleva vacío", () => {
+    // La v9 lee {{DLV - lead_source}} también en whatsapp_click: sin vaciarlo,
+    // un WhatsApp después de un teléfono salía con lead_source=phone.
+    track("phone_click", { component_id: "footer-tel" });
+    track("whatsapp_click", { component_id: "whatsapp-floating" });
+    const wa = window.dataLayer.find((e) => e.event === "whatsapp_click");
+    expect(Object.prototype.hasOwnProperty.call(wa, "lead_source")).toBe(true);
+    expect(wa.lead_source).toBeUndefined();
+  });
+
   it("visitas, fichas y búsquedas no son contactos", () => {
     track("page_view", {});
     track("view_item", { item_id: "208" });

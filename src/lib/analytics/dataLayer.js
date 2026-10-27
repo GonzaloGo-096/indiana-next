@@ -84,6 +84,8 @@ export function track(event, params = {}) {
     const payload = {
       event,
       ...Object.fromEntries(RESET_KEYS.map((k) => [k, undefined])),
+      // Lo pone el aviso de compatibilidad; la v9 lo lee también en whatsapp_click.
+      lead_source: undefined,
       location: locationFromPathname(window.location.pathname),
       ...cleanParams(params),
     };

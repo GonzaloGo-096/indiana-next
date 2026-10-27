@@ -12,9 +12,7 @@ import TelLink from "@/components/analytics/TelLink";
 import ItemViewTracker from "@/components/analytics/ItemViewTracker";
 import { getPageItem, setPageItem } from "@/lib/analytics/pageItem";
 import { CONSENT_STORAGE_KEY } from "@/lib/analytics/consent";
-
-// Sin el aviso de compatibilidad generate_lead (probado aparte en dataLayer.test.js).
-const sinCompat = () => window.dataLayer.filter((e) => e.event !== "generate_lead");
+import { sinCompat } from "@/lib/analytics/__tests__/helpers";
 
 const A = { item_id: "208", item_name: "Peugeot 208", item_category: "0km" };
 const B = { item_id: "2008", item_name: "Peugeot 2008", item_category: "0km" };

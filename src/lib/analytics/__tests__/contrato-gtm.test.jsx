@@ -19,6 +19,7 @@ import path from "node:path";
 import { render, fireEvent, cleanup, act, renderHook, waitFor } from "@testing-library/react";
 import { CONTRATO, PUENTE, MARCA_PRUEBA, buildContainer } from "../../../../scripts/gtm-definition.mjs";
 import { EVENTS, FORM_IDS, LEAD_COMPAT } from "../events";
+import { CONSENT_STORAGE_KEY } from "../consent";
 import { buildIndianaGtmSnippet } from "../gtmLoader";
 import { buildItemParamsFromAuto, buildItemParamsFromUsado, buildItemParamsFromPlan } from "../params";
 
@@ -51,7 +52,7 @@ beforeAll(async () => {
   vi.spyOn(console, "debug").mockImplementation(() => {});
   window.dataLayer = [];
   // Con la medición aceptada, que es cuando viaja todo lo que GTM lee (lead_ref).
-  window.localStorage.setItem("indiana_consent_v1", JSON.stringify({ analytics: true, ads: true, ts: 1 }));
+  window.localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify({ analytics: true, ads: true, ts: 1 }));
   document.title = "Peugeot 208 0km | Peugeot Indiana"; // el sitio siempre tiene título; jsdom no
   window.history.pushState({}, "", "/0km/208");
   m.pathname = "/0km/208";

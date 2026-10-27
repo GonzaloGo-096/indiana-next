@@ -10,9 +10,7 @@ import WhatsAppLink from "../WhatsAppLink";
 import TelLink from "../TelLink";
 import ItemViewTracker from "../ItemViewTracker";
 import { CONSENT_STORAGE_KEY } from "@/lib/analytics/consent";
-
-// Sin el aviso de compatibilidad generate_lead (probado aparte en dataLayer.test.js).
-const sinCompat = () => window.dataLayer.filter((e) => e.event !== "generate_lead");
+import { sinCompat } from "@/lib/analytics/__tests__/helpers";
 
 const ITEM = { item_id: "208", item_name: "Peugeot 208", item_category: "0km" };
 
@@ -156,10 +154,11 @@ describe("WhatsAppLink sin consentimiento de medición", () => {
         </WhatsAppLink>,
       );
       const a = getByText("WhatsApp");
-      let alHacerClic;
-      a.addEventListener("click", () => (alHacerClic = a.href));
       fireEvent.click(a);
-      expect(alHacerClic).toBe("https://wa.me/1?text=Hola");
+      // Justo después del clic: con referencia, el href la lleva hasta el
+      // próximo tick (restaurar). Un listener propio no sirve: corre antes que
+      // el onClick de React (revisión independiente del 2026-10-27).
+      expect(a.href).toBe("https://wa.me/1?text=Hola");
       expect(sinCompat()).toHaveLength(1);
       expect(sinCompat()[0]).toMatchObject({ event: "whatsapp_click", component_id: "whatsapp-floating" });
       expect(sinCompat()[0].lead_ref).toBeUndefined();

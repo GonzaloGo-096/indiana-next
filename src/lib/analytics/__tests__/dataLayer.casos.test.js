@@ -8,9 +8,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { track, RESET_KEYS } from "@/lib/analytics/dataLayer";
 import { CONTRATO, PUENTE, MARCA_PRUEBA } from "../../../../scripts/gtm-definition.mjs";
-
-// Sin el aviso de compatibilidad generate_lead (probado aparte en dataLayer.test.js).
-const sinCompat = () => window.dataLayer.filter((e) => e.event !== "generate_lead");
+import { sinCompat } from "@/lib/analytics/__tests__/helpers";
 
 beforeEach(() => {
   window.dataLayer = [];
