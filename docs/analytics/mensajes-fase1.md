@@ -61,6 +61,14 @@ como historia. No se envió nada todavía.
 > WhatsApp), que hoy sus conversiones no cuentan porque el botón no tiene texto. ¿Hubo algún cambio
 > en las campañas de búsqueda desde el 12 de octubre?
 >
+> Y una propuesta, para que sus campañas se vean mejor en nuestros informes (sin cambiar nada de
+> lo que miden ustedes): en los últimos 90 días, el tráfico de Google Ads llega bien marcado, pero
+> el de **Taboola** (81 visitas, de las que mejor convierten) y algunos clics de **Display** llegan
+> como "sitio que nos linkeó", sin decir que son pagos. Si les sirve, armamos juntos una forma
+> única de etiquetar los links (`utm_source`, `utm_medium`, `utm_campaign`) para Taboola, Meta, los
+> mails y el Linktree. El sitio ya conserva esas etiquetas aunque la persona navegue antes de
+> aceptar las cookies.
+>
 > Cualquier cosa, estamos.
 
 ### Al equipo de ventas (puede ir dentro del mensaje al cliente)
