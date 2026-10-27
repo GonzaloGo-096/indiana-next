@@ -35,6 +35,20 @@ Antes de apretar **Enviar** en la Fase 3, comprobar en pantalla:
 
 ## Antes de probar fuera de producción
 
+**Cómo se prueba (comprobado el 2026-10-26).** La vista previa de GTM no se conecta a las copias de
+Vercel: están protegidas con login y Tag Assistant queda "Not Connected". Se prueba en la
+computadora: `NEXT_PUBLIC_ANALYTICS_TEST=true npm run build`, después
+`NEXT_PUBLIC_ANALYTICS_TEST=true npm run start`, y Vista previa contra
+`http://localhost:3000/0km/208`. Es el mismo código que la copia. En la copia de Vercel sí se
+comprueba lo que no necesita GTM: que no carguen la agencia ni el Pixel. Fuera de la vista
+previa, una prueba con la versión 9 publicada sale sin `_dbg` y entra a los informes: no aceptar
+cookies ni tocar WhatsApp en una copia sin la vista previa conectada.
+
+Resultado de la prueba del 2026-10-26 (Tag Assistant, envíos reales con `_dbg=1`): aceptar tarde
+reenvía `page_view` y `view_item`; WhatsApp de la ficha y flotante llevan botón, auto y
+`lead_ref`; el puente manda `lead_source=whatsapp`; la búsqueda de usados manda `marca`,
+`filters_count` y `results_count` (también con 0 resultados).
+
 `NEXT_PUBLIC_ANALYTICS_TEST=true` (localhost o Preview de Vercel) hace que nuestro GTM cargue y
 mande todo con `debug_mode`, **incluido el `generate_lead` del puente, que es evento clave**.
 Sin el filtro de desarrolladores activo, esas pruebas entran a los informes e inflan "Leads" y
