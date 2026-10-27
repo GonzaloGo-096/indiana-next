@@ -1,5 +1,80 @@
 # Mensajes de la Fase 1 (T14)
 
+## Versión final para la salida del jueves 29 de octubre (mandar el miércoles 28)
+
+Actualizada el 2026-10-27 con lo decidido en pre-producción: el código "(Ref. web)" solo
+aparece en los chats de quien aceptó las cookies, y el Pixel de Meta respeta la elección de
+cookies. Los mensajes de más abajo son los borradores originales del 7 de octubre y quedan
+como historia. No se envió nada todavía.
+
+### Al cliente (Indiana)
+
+> Hola, les cuento: **el jueves 29 a la mañana** publicamos la nueva medición del sitio.
+>
+> **Qué cambia.** Ordenamos lo que mide la web: de unos 25 eventos quedaron 6 que responden lo
+> que importa (visitas, autos vistos, contactos por WhatsApp y teléfono, búsquedas en usados y
+> postulaciones). Cada WhatsApp ahora dice desde qué botón salió y de qué auto, también el
+> botón verde flotante, que es el 70 % de los contactos.
+>
+> **Lo que van a ver los vendedores.** En los chats de las personas que aceptaron las cookies
+> del sitio, el mensaje termina con un código, por ejemplo "(Ref. web K7M2Q)". Si el vendedor
+> lo anota cuando vende, se puede saber qué auto, qué botón y qué campaña trajo la venta. Quien
+> rechazó las cookies escribe igual, pero sin código. Necesitamos una persona de ventas que
+> coordine el registro.
+>
+> **Qué no cambia.** Los botones y textos del sitio son los mismos, y el número de "Leads" del
+> tablero sigue contando igual. Ese día puede saltar "contactos por modelo": no es más demanda,
+> es que antes el botón flotante no decía de qué auto era.
+>
+> **Sobre los números.** Analytics solo cuenta a quienes aceptan las cookies del aviso del
+> sitio. Los números son de ese grupo, no del total de visitantes.
+>
+> **Lo que necesitamos de ustedes.**
+> 1. **Una política de privacidad para el sitio**, con su abogado: hoy el sitio no tiene. Nosotros
+>    armamos la página y los links; el texto legal tiene que venir de ustedes.
+> 2. **Autorización para BigQuery**: una copia diaria de los datos. Requiere un proyecto de Google
+>    Cloud a nombre de Indiana con una tarjeta cargada; con este tráfico el costo esperado es cero
+>    o centavos. Solo guarda desde que se activa.
+> 3. **Las IP fijas de cada sede**, para no contar como clientes los clics de vendedores.
+> 4. **Una persona de ventas** que coordine el código "Ref. web".
+
+### A la agencia
+
+> Hola, les avisamos que **el jueves 29 a las 9:30** actualizamos la medición propia del sitio
+> (nuestro GTM-TPJCFTBB y nuestro GA4). **No tocamos su contenedor GTM-M2J2LBRD, sus etiquetas ni
+> Google Ads**, y no cambia ningún texto de botón: "Contactar por WhatsApp", "Contactanos por
+> WhatsApp", "Cotizá con nosotros", "Reservá tu turno", "Consultá productos" y "Solicitar
+> cotización" siguen iguales.
+>
+> Dos cosas que cambian y conviene que sepan:
+>
+> 1. **WhatsApp:** en los chats de quien aceptó las cookies, el mensaje prellenado termina con un
+>    código "(Ref. web XXXXX)". El link y el número son los mismos.
+> 2. **Pixel de Meta (870960458928397):** desde ese día respeta la elección de cookies del
+>    visitante. Es un requisito legal para Indiana. Van a ver menos eventos en Meta: son los de
+>    quienes rechazan.
+>
+> Y un pedido: **¿pueden vincular su cuenta de Google Ads con nuestra propiedad de GA4?** Hoy
+> nuestro Analytics no ve los nombres de campaña, y en las últimas dos semanas los contactos que
+> llegan desde Ads bajaron con el mismo tráfico: con el vínculo podemos ver qué campaña cambió.
+> Además les permitiría importar como conversión el WhatsApp del botón flotante (el 70 % de los
+> WhatsApp), que hoy sus conversiones no cuentan porque el botón no tiene texto. ¿Hubo algún cambio
+> en las campañas de búsqueda desde el 12 de octubre?
+>
+> Cualquier cosa, estamos.
+
+### Al equipo de ventas (puede ir dentro del mensaje al cliente)
+
+> Desde el jueves 29, algunos mensajes de WhatsApp que llegan desde la web van a terminar con un
+> código, por ejemplo "(Ref. web K7M2Q)". No hay que responder nada distinto. Si ese contacto
+> termina en una venta o en una visita al salón, anoten el código con la fecha: con eso sabemos qué
+> auto miró y de qué anuncio vino. Si el mensaje no trae código, no pasa nada: esa persona prefirió
+> no aceptar las cookies del sitio.
+
+---
+
+## Borradores originales del 2026-10-07 (historia)
+
 Borradores para que Gonzalo los revise y los mande. No se envió nada. Corregidos el
 2026-10-07 a la noche, después de la auditoría: cada afirmación está comprobada.
 
