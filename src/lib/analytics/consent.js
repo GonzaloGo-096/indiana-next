@@ -132,7 +132,7 @@ export function persistConsent(prefs) {
   if (typeof window === "undefined") return;
   const analytics = prefs.analytics === true;
   const ads = prefs.ads === true;
-  const yaMedia = readStoredConsent()?.analytics === true || aceptadaSinGuardar;
+  const yaMedia = analyticsAceptada();
   try {
     const payload = { analytics, ads, ts: Date.now() };
     window.localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(payload));
@@ -148,6 +148,11 @@ export function persistConsent(prefs) {
 // Con localStorage bloqueado no queda nada guardado: sin este recuerdo, cada
 // "Aceptar" volvía a reenviar la página como si fuera la primera vez.
 let aceptadaSinGuardar = false;
+
+/** Si la persona aceptó la medición (guardado, o en memoria si localStorage falla). */
+export function analyticsAceptada() {
+  return readStoredConsent()?.analytics === true || aceptadaSinGuardar;
+}
 
 const alAceptarAnalitica = new Set();
 

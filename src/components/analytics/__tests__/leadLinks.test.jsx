@@ -9,11 +9,21 @@ import { render, fireEvent, cleanup } from "@testing-library/react";
 import WhatsAppLink from "../WhatsAppLink";
 import TelLink from "../TelLink";
 import ItemViewTracker from "../ItemViewTracker";
+import { CONSENT_STORAGE_KEY } from "@/lib/analytics/consent";
 
 const ITEM = { item_id: "208", item_name: "Peugeot 208", item_category: "0km" };
 
+/** La referencia solo existe con la medición aceptada (ver "sin consentimiento"). */
+function aceptarMedicion() {
+  window.localStorage.setItem(
+    CONSENT_STORAGE_KEY,
+    JSON.stringify({ analytics: true, ads: true, ts: 1 }),
+  );
+}
+
 beforeEach(() => {
   window.dataLayer = [];
+  aceptarMedicion();
   window.history.pushState({}, "", "/0km/208");
   vi.spyOn(console, "debug").mockImplementation(() => {});
 });
@@ -122,5 +132,46 @@ describe("ItemViewTracker", () => {
   it("sin item no manda nada", () => {
     render(<ItemViewTracker item={null} />);
     expect(window.dataLayer).toEqual([]);
+  });
+});
+
+describe("WhatsAppLink sin consentimiento de medición", () => {
+  // Quien rechaza (o todavía no eligió) no lleva referencia: unida al chat por
+  // ventas, la visita quedaría atada a una persona que dijo que no
+  // (auditoría de privacidad del 2026-10-26).
+  const casos = [
+    ["rechazó", { analytics: false, ads: false, ts: 1 }],
+    ["todavía no eligió", null],
+  ];
+  for (const [nombre, guardado] of casos) {
+    it(`si ${nombre}: el mensaje va sin código y el evento sin lead_ref`, () => {
+      window.localStorage.clear();
+      if (guardado) window.localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(guardado));
+      const { getByText } = render(
+        <WhatsAppLink href="https://wa.me/1?text=Hola" componentId="whatsapp-floating">
+          WhatsApp
+        </WhatsAppLink>,
+      );
+      const a = getByText("WhatsApp");
+      let alHacerClic;
+      a.addEventListener("click", () => (alHacerClic = a.href));
+      fireEvent.click(a);
+      expect(alHacerClic).toBe("https://wa.me/1?text=Hola");
+      expect(window.dataLayer).toHaveLength(1);
+      expect(window.dataLayer[0]).toMatchObject({ event: "whatsapp_click", component_id: "whatsapp-floating" });
+      expect(window.dataLayer[0].lead_ref).toBeUndefined();
+    });
+  }
+
+  it("aceptó solo publicidad: tampoco lleva código (es un dato de medición)", () => {
+    window.localStorage.setItem(
+      CONSENT_STORAGE_KEY,
+      JSON.stringify({ analytics: false, ads: true, ts: 1 }),
+    );
+    const { getByText } = render(
+      <WhatsAppLink href="https://wa.me/1?text=Hola" componentId="x">WhatsApp</WhatsAppLink>,
+    );
+    fireEvent.click(getByText("WhatsApp"));
+    expect(window.dataLayer[0].lead_ref).toBeUndefined();
   });
 });

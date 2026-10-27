@@ -3,14 +3,16 @@
 import { useRef } from "react";
 import { track } from "@/lib/analytics/dataLayer";
 import { EVENTS } from "@/lib/analytics/events";
+import { analyticsAceptada } from "@/lib/analytics/consent";
 import { newLeadRef, withLeadRef } from "@/lib/analytics/leadRef";
 import { getPageItem } from "@/lib/analytics/pageItem";
 
 /**
  * Link a WhatsApp que registra `whatsapp_click`, el evento clave del sitio.
  *
- * En cada clic genera un código de referencia, lo suma al mensaje y lo manda
- * a GA4 (`lead_ref`): así un chat se puede cruzar con su visita.
+ * Con la medición aceptada, en cada clic genera un código de referencia, lo
+ * suma al mensaje y lo manda a GA4 (`lead_ref`): así un chat se puede cruzar
+ * con su visita.
  *
  * @param {object} props
  * @param {string} props.href - URL wa.me / api.whatsapp.com completa
@@ -38,7 +40,11 @@ export default function WhatsAppLink({
   // pestaña nueva antes del auxclick (probado con navegador el 2026-10-07).
   const pendiente = useRef(null);
 
+  // Sin la medición aceptada no hay referencia: ventas la une al chat, y la
+  // visita quedaría atada a alguien que no dio permiso (auditoría de
+  // privacidad del 2026-10-26). El contacto se cuenta igual, sin código.
   function prepararRef(a) {
+    if (!analyticsAceptada()) return undefined;
     const ref = newLeadRef();
     // El texto visible del botón no se toca (la agencia mide por ese texto).
     a.href = withLeadRef(href, ref);

@@ -4,7 +4,9 @@
  * Viaja en el mensaje que la persona manda ("(Ref. web K7Q2M)") y en el
  * evento whatsapp_click de GA4 (`lead_ref`). Cuando el vendedor anota la
  * referencia de un chat, se cruza con GA4 y se sabe de qué auto, qué botón y
- * qué campaña vino. Es al azar: no identifica a la persona.
+ * qué campaña vino. Es al azar y no sale de ningún dato de la persona, pero
+ * está hecho para unirse a un chat con nombre y teléfono: por eso solo se
+ * genera con la medición aceptada (WhatsAppLink).
  */
 
 // Sin 0/O, 1/I/L: el vendedor lo copia a mano desde el chat.

@@ -49,6 +49,8 @@ let capturados = [];
 beforeAll(async () => {
   vi.spyOn(console, "debug").mockImplementation(() => {});
   window.dataLayer = [];
+  // Con la medición aceptada, que es cuando viaja todo lo que GTM lee (lead_ref).
+  window.localStorage.setItem("indiana_consent_v1", JSON.stringify({ analytics: true, ads: true, ts: 1 }));
   document.title = "Peugeot 208 0km | Peugeot Indiana"; // el sitio siempre tiene título; jsdom no
   window.history.pushState({}, "", "/0km/208");
   m.pathname = "/0km/208";

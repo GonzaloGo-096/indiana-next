@@ -73,10 +73,15 @@ clave compartida, va ahí.
 
 ## Código de referencia (lead_ref)
 
-Cada clic en WhatsApp genera un código de 5 caracteres (`leadRef.js`) que se suma al
-final del mensaje, "(Ref. web K7Q2M)", y viaja a GA4 como `lead_ref`. Si el vendedor
-anota la referencia del chat, en GA4 se filtra por ese `lead_ref` y aparece la visita:
-de qué auto, qué botón y qué campaña vino. Es al azar y no identifica a la persona.
+Con la medición aceptada, cada clic en WhatsApp genera un código de 5 caracteres
+(`leadRef.js`) que se suma al final del mensaje, "(Ref. web K7Q2M)", y viaja a GA4 como
+`lead_ref`. Si el vendedor anota la referencia del chat, en GA4 se filtra por ese
+`lead_ref` y aparece la visita: de qué auto, qué botón y qué campaña vino.
+
+Es al azar, pero está hecho para unirse a un chat con nombre y teléfono: una vez unido,
+es un dato personal. Por eso quien rechaza o todavía no eligió escribe sin código y su
+`whatsapp_click` va sin `lead_ref` (el contacto se cuenta igual). Tiene que figurar en la
+política de privacidad del sitio.
 
 En una ficha, el WhatsApp flotante manda el auto de esa ficha (`pageItem.js`): lo anota
 `ItemViewTracker` y el flotante lo lee al hacer clic (`itemFromPage`).

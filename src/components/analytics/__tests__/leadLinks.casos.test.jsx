@@ -11,6 +11,7 @@ import WhatsAppLink from "@/components/analytics/WhatsAppLink";
 import TelLink from "@/components/analytics/TelLink";
 import ItemViewTracker from "@/components/analytics/ItemViewTracker";
 import { getPageItem, setPageItem } from "@/lib/analytics/pageItem";
+import { CONSENT_STORAGE_KEY } from "@/lib/analytics/consent";
 
 const A = { item_id: "208", item_name: "Peugeot 208", item_category: "0km" };
 const B = { item_id: "2008", item_name: "Peugeot 2008", item_category: "0km" };
@@ -19,6 +20,11 @@ const ir = (p) => window.history.pushState({}, "", p);
 
 beforeEach(() => {
   window.dataLayer = [];
+  // La referencia existe solo con la medición aceptada (leadLinks.test.jsx).
+  window.localStorage.setItem(
+    CONSENT_STORAGE_KEY,
+    JSON.stringify({ analytics: true, ads: true, ts: 1 }),
+  );
   ir("/0km/208");
   vi.spyOn(console, "debug").mockImplementation(() => {});
   vi.spyOn(console, "error").mockImplementation(() => {}); // jsdom: "navigation to another Document"
