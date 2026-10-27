@@ -55,6 +55,7 @@ wait_for_update:500
  * @param {{ analytics: boolean, ads: boolean }} prefs
  */
 export function updateConsent({ analytics, ads }) {
+  medicionAplicada = analytics === true;
   const a = analytics ? "granted" : "denied";
   const b = ads ? "granted" : "denied";
   pushGtagCommand("consent", "update", {
@@ -109,7 +110,7 @@ export function readStoredConsent() {
   if (typeof window === "undefined") return null;
   try {
     const raw = window.localStorage.getItem(CONSENT_STORAGE_KEY);
-    if (!raw) return null;
+    if (!raw) return enMemoria;
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return null;
     return {
@@ -118,11 +119,16 @@ export function readStoredConsent() {
       ts: typeof parsed.ts === "number" ? parsed.ts : 0,
     };
   } catch {
-    // localStorage bloqueado (modo privado) o valor roto: se trata como sin
-    // decisión y el banner vuelve a preguntar.
-    return null;
+    // localStorage bloqueado (modo privado, WebView sin DOM storage) o valor
+    // roto: vale lo decidido en esta página, si hubo; si no, el banner pregunta.
+    return enMemoria;
   }
 }
+
+// La decisión de esta página cuando localStorage no deja guardarla. Sin esto,
+// "Aceptar" no cerraba el banner (seguía leyendo "sin decisión") y cada
+// aceptación volvía a reenviar la página.
+let enMemoria = null;
 
 /**
  * Guarda la decisión y aplica updateConsent.
@@ -139,22 +145,40 @@ export function persistConsent(prefs) {
     updateConsent(payload);
   } catch {
     // Si localStorage falla (modo privado, cuotas), igual aplicamos consent en memoria.
-    aceptadaSinGuardar = analytics;
+    enMemoria = { analytics, ads, ts: Date.now() };
     updateConsent({ analytics, ads });
   }
-  if (analytics && !yaMedia) for (const fn of alAceptarAnalitica) fn();
+  if (analytics && !yaMedia) avisarAceptacion();
 }
-
-// Con localStorage bloqueado no queda nada guardado: sin este recuerdo, cada
-// "Aceptar" volvía a reenviar la página como si fuera la primera vez.
-let aceptadaSinGuardar = false;
 
 /** Si la persona aceptó la medición (guardado, o en memoria si localStorage falla). */
 export function analyticsAceptada() {
-  return readStoredConsent()?.analytics === true || aceptadaSinGuardar;
+  return readStoredConsent()?.analytics === true;
 }
 
+/**
+ * La decisión llegó desde otra pestaña (evento `storage`). Esa pestaña la
+ * guardó y se la dijo a su GTM, pero el de esta seguía en "denied" hasta
+ * recargar. Se aplica acá también y, si la medición pasa a aceptada, se
+ * reenvía la página igual que al aceptar en esta.
+ */
+export function applyConsentFromOtherTab() {
+  const decision = readStoredConsent();
+  if (!decision) return;
+  const yaMedia = medicionAplicada;
+  updateConsent(decision);
+  if (decision.analytics && !yaMedia) avisarAceptacion();
+}
+
+// Lo último que se le dijo al GTM de esta página sobre la medición. Arranca
+// con lo que aplicó el default al cargar (lo guardado).
+let medicionAplicada = typeof window !== "undefined" && analyticsAceptada();
+
 const alAceptarAnalitica = new Set();
+
+function avisarAceptacion() {
+  for (const fn of alAceptarAnalitica) fn();
+}
 
 /**
  * Avisa cuando la analítica pasa de no aceptada a aceptada, después de
@@ -182,6 +206,7 @@ export function onAnalyticsGranted(fn) {
  */
 export function clearStoredConsent() {
   if (typeof window === "undefined") return;
+  enMemoria = null;
   try {
     window.localStorage.removeItem(CONSENT_STORAGE_KEY);
   } catch {
