@@ -94,31 +94,27 @@ nada.** El 2026-10-07 aparecieron las de 11:40, 11:47 y 12:33. Se compararon con
 
 ## Vuelta atrás
 
-Se usa si después de publicar algo sale mal. **Primero el código y después GTM.** Código viejo
-con GTM nuevo funciona (comprobado contra el respaldo de la v9); GTM v9 con el código nuevo deja
-"Leads" en 0 (la v9 espera un `generate_lead` que el código nuevo ya no manda; ver riesgo 1 de
-`salida-a-produccion.md`). Junto con GTM, prender otra vez en GA4 las 4 opciones de la
-medición mejorada que se apagaron el día de la salida.
+Se usa si después de publicar algo sale mal. El orden y los comandos están en "Volver atrás" de
+`salida-a-produccion.md`; acá, el detalle de cada consola.
 
-### 1. Código (primero)
+Código y GTM se vuelven atrás **por separado** (aviso de compatibilidad, riesgo 1 de
+`salida-a-produccion.md`): el código nuevo con la v9 sigue contando Leads. Junto con GTM,
+prender otra vez en GA4 las **3** opciones de la medición mejorada que se apagaron el día de la
+salida.
+
+### 1. Código
 
 La forma rápida, en minutos: Vercel → proyecto `indiana-next` → Deployments → el último
 despliegue de producción **anterior** a la salida → **Instant Rollback** (o "Promote to
 Production"). Ojo: después de un Instant Rollback Vercel **deja de publicar** lo que se suba a
 `main` hasta apretar **Undo Rollback**.
 
-La forma definitiva, en el repo:
-
-```
-git checkout main
-git revert -m 1 <commit del merge de la salida>
-git push
-```
-
-Vercel publica solo. Hay que comprobar que producción vuelve a mandar `generate_lead`: en el
+La forma definitiva, en el repo: los comandos de "Volver atrás" en `salida-a-produccion.md`
+(revert en `main` **y** en `staging`, y Undo Rollback eligiendo el despliegue del revert). Hay
+que comprobar que producción vuelve a mandar `generate_lead`: en el
 sitio, un clic de WhatsApp tiene que aparecer en GA4 → Tiempo real.
 
-### 2. GTM (después del código)
+### 2. GTM
 
 1. Tag Manager → contenedor GTM-TPJCFTBB → **Versiones**.
 2. Abrir la **versión 9** → menú de tres puntos → **Publicar**.
@@ -132,12 +128,17 @@ Si la versión 9 ya no estuviera en la lista:
 
 ### 3. GA4 (en el mismo minuto que GTM)
 
+**Medición mejorada:** volver a activar las 3 opciones que se apagaron el día de la salida
+(cambios de página según el historial, interacciones con formularios, búsquedas en el sitio).
+Los clics de salida no se tocan. Es lo único de GA4 que cambia la salida.
+
+#### Deshacer la Fase 1 (no es parte de la salida)
+
 Cada cambio se deshace en el mismo lugar donde se hizo, y ninguno borra datos:
 
-- **Medición mejorada:** volver a activar lo que se apagó. Los valores originales están en la
-  tabla de arriba.
 - **Eventos clave:** dejar `generate_lead` como único evento clave.
-- **Identidad:** volver a "Mezclado". Es solo cómo se muestran los informes; no cambia los datos.
+- **Identidad:** **no** volver a "Mezclado" mientras el código nuevo esté en producción: quien
+  acepta las cookies tarde contaría doble (riesgo 12 de `salida-a-produccion.md`).
 - **Conservación:** 14 meses no se revierte; no hace falta.
 - **Dimensiones nuevas:** archivarlas si molestan. **No** archivar las 13 existentes, porque
   se pierde el acceso al historial con ellas.
