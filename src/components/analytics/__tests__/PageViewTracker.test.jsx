@@ -258,3 +258,48 @@ describe("PageViewTracker: aceptar las cookies después de la visita", () => {
     expect(visitas()).toHaveLength(1);
   });
 });
+
+describe("PageViewTracker: el reenvío conserva la campaña de entrada", () => {
+  // Quien llega de un anuncio, navega y recién después acepta: la sesión con
+  // cookies arranca en el reenvío, y sin la campaña quedaba como orgánica o
+  // directa (auditoría de analítica del 2026-10-26).
+  beforeEach(() => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+  });
+
+  it("si navegó antes de aceptar, el reenvío lleva el gclid y los utm de la entrada", () => {
+    ir("/0km?utm_source=google&utm_campaign=ofertas&gclid=abc123");
+    const { rerender } = render(<PageViewTracker />);
+    asentar();
+    ir("/planes");
+    rerender(<PageViewTracker />);
+    asentar();
+    act(() => persistConsent({ analytics: true, ads: true }));
+    const reenvio = new URL(visitas().at(-1).page_location);
+    expect(reenvio.pathname).toBe("/planes");
+    expect(reenvio.searchParams.get("gclid")).toBe("abc123");
+    expect(reenvio.searchParams.get("utm_campaign")).toBe("ofertas");
+  });
+
+  it("las visitas normales no se tocan: la segunda página sale sin la campaña", () => {
+    ir("/0km?gclid=abc123");
+    const { rerender } = render(<PageViewTracker />);
+    asentar();
+    ir("/planes");
+    rerender(<PageViewTracker />);
+    asentar();
+    expect(new URL(visitas().at(-1).page_location).search).toBe("");
+  });
+
+  it("si la página actual ya trae campaña, gana la actual", () => {
+    ir("/0km?utm_campaign=vieja");
+    const { rerender } = render(<PageViewTracker />);
+    asentar();
+    ir("/planes?utm_campaign=nueva");
+    rerender(<PageViewTracker />);
+    asentar();
+    act(() => persistConsent({ analytics: true, ads: true }));
+    expect(new URL(visitas().at(-1).page_location).searchParams.get("utm_campaign")).toBe("nueva");
+  });
+});

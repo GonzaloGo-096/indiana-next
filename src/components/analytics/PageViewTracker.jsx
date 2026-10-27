@@ -43,11 +43,44 @@ export const FICHA_MAX_MS = 8000;
 
 const FICHAS = new Set([LOCATIONS.OKM_DETAIL, LOCATIONS.USADOS_DETAIL, LOCATIONS.PLAN_DETAIL]);
 
-function contarVisita() {
+function contarVisita(href = window.location.href) {
   track(EVENTS.PAGE_VIEW, {
-    page_location: urlSinDatosPersonales(window.location.href),
+    page_location: urlSinDatosPersonales(href),
     page_title: document.title,
   });
+}
+
+// La campaña con la que entró a la sesión (anuncio o link con utm). El
+// reenvío al aceptar abre la sesión con cookies: si para entonces ya navegó,
+// la dirección no trae la campaña y la visita quedaba como orgánica o directa.
+const CAMPANA = /^(utm_[a-z_]+|gclid|gbraid|wbraid)$/;
+const CLAVE_CAMPANA = "indiana_campana_entrada";
+
+function campana(search) {
+  return [...new URLSearchParams(search)].filter(([k]) => CAMPANA.test(k));
+}
+
+function recordarCampana() {
+  try {
+    const c = campana(window.location.search);
+    if (c.length) window.sessionStorage.setItem(CLAVE_CAMPANA, new URLSearchParams(c).toString());
+  } catch {
+    // sessionStorage bloqueado: el reenvío sale sin la campaña, como antes.
+  }
+}
+
+function conCampanaDeEntrada(href) {
+  try {
+    const u = new URL(href);
+    if (campana(u.search).length) return href;
+    const guardada = window.sessionStorage.getItem(CLAVE_CAMPANA);
+    if (!guardada) return href;
+    for (const [k, v] of new URLSearchParams(guardada)) u.searchParams.set(k, v);
+    return u.toString();
+  } catch {
+    // Sin poder leerla, se reenvía la dirección tal cual.
+    return href;
+  }
 }
 
 export default function PageViewTracker() {
@@ -61,7 +94,7 @@ export default function PageViewTracker() {
     () =>
       onAnalyticsGranted(() => {
         if (last.current !== window.location.pathname) return;
-        contarVisita();
+        contarVisita(conCampanaDeEntrada(window.location.href));
         const item = getPageItem();
         if (item) track(EVENTS.VIEW_ITEM, item);
       }),
@@ -70,6 +103,7 @@ export default function PageViewTracker() {
 
   useEffect(() => {
     if (!pathname) return undefined;
+    recordarCampana();
     forgetPageItemUnless(pathname);
     if (last.current === pathname) return undefined;
     const enviar = () => {
