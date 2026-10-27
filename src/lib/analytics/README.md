@@ -22,7 +22,7 @@ como "SOLICITAR COTIZACIÓN"). Cambiar esos textos les rompe la medición.
 |---|---|---|---|
 | `page_view` | Al entrar y en cada cambio de página (no al filtrar) | `page_location`, `page_title` | No |
 | `view_item` | Abrir una ficha de 0km, usado o plan | `item_id`, `item_name`, `item_category` | No |
-| `whatsapp_click` | Clic en cualquier botón de WhatsApp | `component_id`, `lead_ref` + el auto si es de una ficha (también el flotante) | No, hasta la Fase 7 (ver puente) |
+| `whatsapp_click` | Clic en cualquier botón de WhatsApp | `component_id`, `lead_ref` (solo con la medición aceptada) + el auto si es de una ficha (también el flotante) | No, hasta la Fase 7 (ver puente) |
 | `phone_click` | Clic en un teléfono | `component_id` | No, hasta la Fase 7 (ver puente) |
 | `view_search_results` | Aplicar filtros en usados (no al limpiarlos) | `results_count`, `filters_count`, `marca` | No |
 | `form_submit` | Postulación enviada en Trabajá con nosotros | `form_id` | No |

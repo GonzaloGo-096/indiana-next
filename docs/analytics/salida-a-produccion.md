@@ -85,7 +85,9 @@ configuración. En la Fase 2 solo se mira que, sin la marca `analytics_test`, la
 ## Pasos de la salida (reescrito el 2026-10-26 después de la auditoría)
 
 Desde el aviso de compatibilidad (`LEAD_COMPAT` en `events.js`) el código sigue empujando
-`generate_lead`, así que **las cuatro combinaciones de código y GTM funcionan** y el orden ya
+`generate_lead`, así que **en las cuatro combinaciones de código y GTM "Leads" sigue contando**
+(las visitas no: el código viejo con el GTM nuevo manda también un `page_view` por cada filtro
+del listado, así que ese estado intermedio dura lo menos posible) y el orden ya
 no es obligatorio. Igual se sigue un orden fijo, el que deja cada paso fácil de volver atrás.
 
 Decide Gonzalo, solo y en el momento, con los criterios de abajo. Si un criterio de abort se
@@ -116,9 +118,9 @@ cumple, se vuelve atrás ese paso sin discutir y se investiga después.
 |---|---|---|---|
 | 9:30 | **Código.** `main` ← `staging` (`--no-ff`), push, esperar "Ready" | `node scripts/smoke.mjs https://indiana.com.ar` 14/14; en Red, los `collect` a `G-9HJ64VGVLH` sin `_dbg` ni `ep.debug_mode`; con cookies aceptadas cargan `GTM-M2J2LBRD` y `fbevents.js`; con rechazadas, el Pixel no manda `PageView` | Build fallido (no se toca nada más) o un criterio falla → Instant Rollback al despliegue anotado |
 | 9:45 | **Un clic de prueba** de WhatsApp desde la oficina, con la v9 todavía publicada | En Tiempo real: `whatsapp_click` y `generate_lead` en menos de 2 min. Anotar su `lead_ref` | Falta `generate_lead` → volver el código |
-| 9:50 | **GTM.** Comprobar en pantalla espacio "medicion-simple" y las 8 etiquetas; publicar con nombre `v10 medicion-simple AAAA-MM-DD` y descripción "volver = publicar v9" | `npm run gtm:publicado` todo ok | — |
+| 9:50 | **GTM.** Comprobar en pantalla espacio "medicion-simple" y las 8 etiquetas; publicar con nombre `v10 medicion-simple AAAA-MM-DD` y descripción "volver = publicar v9" | — | — |
 | 9:50 | **GA4, en el mismo minuto.** Medición mejorada: apagar "cambios de página según el historial", "interacciones con formularios" y "búsquedas en el sitio". **Dejar prendidos los clics de salida** (no duplican nada y sirven de control: clics a wa.me contra nuestros `whatsapp_click`) | — | — |
-| 10:05 | **Esperar** 15 min de caché de `gtm.js`; después un clic de prueba en una ventana de incógnito | `whatsapp_click` y `generate_lead` en Tiempo real; `page_view` una sola vez por navegación (en Red) | Falta `generate_lead` o `page_view` doble → publicar v9 y prender las 3 opciones |
+| 10:05 | **Esperar** 15 min de caché de `gtm.js`; después un clic de prueba en una ventana de incógnito | `npm run gtm:publicado` da "Todo ok" (versión posterior a la 9, sin activador de `generate_lead`); `whatsapp_click` y `generate_lead` en Tiempo real; `page_view` una sola vez por navegación (en Red) | Falta `generate_lead` o `page_view` doble → publicar v9 y prender las 3 opciones |
 | 10:25 | **Anotar** en GA4 y Looker las horas de código, GTM y medición mejorada; tag de git `release/medicion-simple`; mensaje "listo" a agencia, cliente y ventas | — | — |
 | hasta 18:00 | **Vigilar** Tiempo real cada 2 h y los runtime logs de Vercel en la primera hora | — | `generate_lead` acumulado < 40 % de lo esperado por la línea base horaria, o `whatsapp_click` > 0 con `generate_lead` en 0 por más de 2 h → volver atrás |
 
@@ -144,7 +146,7 @@ anotadas con su `lead_ref`.
      empuja el sitio y el código nuevo había dejado de empujarlo.
    - Ahora `track()` lo vuelve a empujar después de cada contacto (`LEAD_COMPAT`), y el GTM
      nuevo no tiene activador para ese evento: no hay doble conteo (el test de contrato lo
-     exige). Las cuatro combinaciones funcionan y cada pieza se vuelve atrás sola.
+     exige). En las cuatro combinaciones "Leads" sigue contando y cada pieza se vuelve atrás sola.
    - El aviso se saca cuando la v9 ya no pueda volver (después del control de D+7).
 2. **Publicar el espacio equivocado.** Ver "GTM: qué espacio de trabajo". Es el error con
    peor efecto: sin puente, "Leads" cae a 0.

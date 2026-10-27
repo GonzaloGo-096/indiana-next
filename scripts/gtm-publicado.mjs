@@ -3,20 +3,29 @@
  *
  * El test de contrato compara el código con scripts/gtm-definition.mjs, y el
  * JSON para importar con esa misma definición. Nada comprobaba lo que de
- * verdad está publicado en GTM. gtm.js es público y trae, como texto, los
- * nombres de evento de los activadores, las claves de dataLayer que leen las
- * variables y el ID de GA4: alcanza para detectar un contenedor viejo, una
- * publicación a medias o una variable borrada a mano.
+ * verdad está publicado. gtm.js es público y trae la configuración como
+ * texto: se buscan las piezas con su forma exacta, no las palabras sueltas
+ * (nombres como "page_view" o "generate_lead" también están dentro de la
+ * librería de Google, y buscarlos sueltos daba "ok" en cualquier contenedor;
+ * revisión independiente del 2026-10-27):
+ *   - activador por evento:        "arg1":"<evento>"
+ *   - etiqueta que manda el evento: "vtp_eventName":"<evento>"
+ *   - variable de la capa de datos: "vtp_name":"<clave>"
  *
- * Limitación: mira presencia de textos, no la configuración completa (por
- * ejemplo no distingue a qué etiqueta va cada parámetro).
+ * Además exige que NO haya activador de generate_lead: el sitio empuja ese
+ * evento solo para la v9 (aviso de compatibilidad) y, si el contenedor nuevo
+ * lo escuchara, se contaría doble con el puente.
  *
  *   node scripts/gtm-publicado.mjs            contra GTM-TPJCFTBB
  *   node scripts/gtm-publicado.mjs GTM-XXXX
  *
- * Sale con código 1 si falta algo.
+ * Correrlo 15 minutos después de publicar (gtm.js queda en caché). Sale con
+ * código 1 si falta algo.
  */
 import { CONTRATO, PUENTE, MARCA_PRUEBA, GA4 } from "./gtm-definition.mjs";
+
+// La versión publicada antes de la medición simple: la nueva tiene que ser posterior.
+const VERSION_VIEJA = 9;
 
 const ID = process.argv[2] || "GTM-TPJCFTBB";
 const r = await fetch(`https://www.googletagmanager.com/gtm.js?id=${ID}`, {
@@ -27,20 +36,25 @@ if (!r.ok) {
   process.exit(1);
 }
 const js = await r.text();
-const version = js.match(/"version":"(\d+)"/)?.[1] ?? "?";
+const version = Number(js.match(/"version":"(\d+)"/)?.[1] ?? 0);
 
-const esperados = [
-  ...Object.keys(CONTRATO).map((ev) => ["evento", ev]),
-  ...[...new Set([...Object.values(CONTRATO).flat(), ...PUENTE.parametros])].map((p) => ["parámetro", p]),
-  ["evento del puente", PUENTE.evento],
-  ["marca de prueba", MARCA_PRUEBA],
-  ["GA4", GA4],
+const claves = [...new Set([...Object.values(CONTRATO).flat(), MARCA_PRUEBA])];
+const chequeos = [
+  [`versión posterior a la ${VERSION_VIEJA}`, `versión ${version}`, version > VERSION_VIEJA],
+  ...Object.keys(CONTRATO).flatMap((ev) => [
+    ["activador", ev, js.includes(`"arg1":"${ev}"`)],
+    ["etiqueta", ev, js.includes(`"vtp_eventName":"${ev}"`)],
+  ]),
+  ["puente", PUENTE.evento, js.includes(`"vtp_eventName":"${PUENTE.evento}"`)],
+  [`sin activador de ${PUENTE.evento}`, "no cuenta doble", !js.includes(`"arg1":"${PUENTE.evento}"`)],
+  ...claves.map((k) => ["variable", k, js.includes(`"vtp_name":"${k}"`)]),
+  ["GA4", GA4, js.includes(GA4)],
 ];
 
-const faltan = esperados.filter(([, texto]) => !js.includes(texto));
 console.log(`\n  ${ID} publicado: versión ${version}, ${js.length} bytes`);
-for (const [tipo, texto] of esperados) {
-  console.log(`  ${faltan.some(([, t]) => t === texto) ? "FALTA" : "ok   "}  ${tipo.padEnd(18)} ${texto}`);
+for (const [tipo, que, ok] of chequeos) {
+  console.log(`  ${ok ? "ok   " : "FALTA"}  ${tipo.padEnd(28)} ${que}`);
 }
-console.log("");
-process.exit(faltan.length ? 1 : 0);
+const fallas = chequeos.filter(([, , ok]) => !ok).length;
+console.log(fallas ? `\n  ${fallas} chequeo(s) fallaron\n` : "\n  Todo ok\n");
+process.exit(fallas ? 1 : 0);
