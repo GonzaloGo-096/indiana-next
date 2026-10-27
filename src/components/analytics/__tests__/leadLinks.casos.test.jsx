@@ -13,9 +13,12 @@ import ItemViewTracker from "@/components/analytics/ItemViewTracker";
 import { getPageItem, setPageItem } from "@/lib/analytics/pageItem";
 import { CONSENT_STORAGE_KEY } from "@/lib/analytics/consent";
 
+// Sin el aviso de compatibilidad generate_lead (probado aparte en dataLayer.test.js).
+const sinCompat = () => window.dataLayer.filter((e) => e.event !== "generate_lead");
+
 const A = { item_id: "208", item_name: "Peugeot 208", item_category: "0km" };
 const B = { item_id: "2008", item_name: "Peugeot 2008", item_category: "0km" };
-const eventos = (n) => window.dataLayer.filter((e) => e.event === n);
+const eventos = (n) => sinCompat().filter((e) => e.event === n);
 const ir = (p) => window.history.pushState({}, "", p);
 
 beforeEach(() => {
@@ -44,7 +47,7 @@ describe("WhatsAppLink: formas de abrir el link", () => {
     fireEvent.click(a, { metaKey: true });
     fireEvent.click(a, { shiftKey: true });
     expect(eventos("whatsapp_click")).toHaveLength(3);
-    expect(new URL(a.href).searchParams.get("text")).toContain(`(Ref. web ${window.dataLayer[2].lead_ref})`);
+    expect(new URL(a.href).searchParams.get("text")).toContain(`(Ref. web ${sinCompat()[2].lead_ref})`);
   });
 
   it("clic medio (rueda del mouse): cuenta el contacto y abre el chat con su referencia", () => {
@@ -108,7 +111,7 @@ describe("WhatsAppLink: formas de abrir el link", () => {
     try {
       const a = wa();
       fireEvent.click(a);
-      const ref = window.dataLayer[0].lead_ref;
+      const ref = sinCompat()[0].lead_ref;
       expect(a.href).toContain(ref); // mientras el navegador lo abre
       vi.runAllTimers();
       expect(a.getAttribute("href")).toBe("https://wa.me/1?text=Hola");
@@ -119,7 +122,7 @@ describe("WhatsAppLink: formas de abrir el link", () => {
 
   it("onClick del padre recibe el evento y corre después del track", () => {
     const orden = [];
-    const onClick = vi.fn(() => orden.push(window.dataLayer.length));
+    const onClick = vi.fn(() => orden.push(sinCompat().length));
     fireEvent.click(wa({ onClick }));
     expect(onClick).toHaveBeenCalledTimes(1);
     expect(orden).toEqual([1]);
@@ -140,13 +143,13 @@ describe("WhatsAppLink: qué auto viaja", () => {
   it("item explícito gana sobre el de la ficha", () => {
     setPageItem(B);
     fireEvent.click(wa({ item: A, itemFromPage: true }));
-    expect(window.dataLayer[0]).toMatchObject(A);
+    expect(sinCompat()[0]).toMatchObject(A);
   });
 
   it("sin itemFromPage, el auto de la ficha NO se usa (botones que no son de ficha)", () => {
     setPageItem(A);
     fireEvent.click(wa());
-    expect(window.dataLayer[0].item_id).toBeUndefined();
+    expect(sinCompat()[0].item_id).toBeUndefined();
   });
 
   it("navegación SPA entre fichas: el flotante manda el auto de la ficha actual, no el anterior", () => {

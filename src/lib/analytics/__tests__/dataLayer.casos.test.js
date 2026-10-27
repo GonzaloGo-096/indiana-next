@@ -9,6 +9,9 @@ import { describe, it, expect, beforeEach, vi } from "vitest";
 import { track, RESET_KEYS } from "@/lib/analytics/dataLayer";
 import { CONTRATO, PUENTE, MARCA_PRUEBA } from "../../../../scripts/gtm-definition.mjs";
 
+// Sin el aviso de compatibilidad generate_lead (probado aparte en dataLayer.test.js).
+const sinCompat = () => window.dataLayer.filter((e) => e.event !== "generate_lead");
+
 beforeEach(() => {
   window.dataLayer = [];
   window.history.pushState({}, "", "/");
@@ -56,7 +59,7 @@ describe("RESET_KEYS cubre todo lo que GTM leería de un evento anterior", () =>
     it(`${ev}: lo que no manda queda vaciado, no heredado`, () => {
       track("evento_previo", TODO);
       track(ev, MINIMO[ev]);
-      const ultimo = window.dataLayer.at(-1);
+      const ultimo = sinCompat().at(-1);
       const heredables = leidosPor(ev).filter((p) => !(p in MINIMO[ev]) && p in TODO);
       for (const p of heredables) {
         expect(Object.prototype.hasOwnProperty.call(ultimo, p), `${ev}.${p} no se vacía`).toBe(true);
@@ -68,7 +71,7 @@ describe("RESET_KEYS cubre todo lo que GTM leería de un evento anterior", () =>
   it("una postulación después de un WhatsApp no le pasa el botón ni la referencia al generate_lead", () => {
     track("whatsapp_click", { component_id: "whatsapp-floating", lead_ref: "K7Q2M" });
     track("form_submit", { form_id: "careers" });
-    const ev = window.dataLayer[1];
+    const ev = sinCompat()[1];
     expect(Object.prototype.hasOwnProperty.call(ev, "component_id")).toBe(true);
     expect(ev.component_id).toBeUndefined();
     expect(Object.prototype.hasOwnProperty.call(ev, "lead_ref")).toBe(true);
@@ -79,37 +82,37 @@ describe("RESET_KEYS cubre todo lo que GTM leería de un evento anterior", () =>
 describe("valores que sí tienen que viajar", () => {
   it("una búsqueda sin resultados manda results_count 0 (no se descarta por falsy)", () => {
     track("view_search_results", { results_count: 0, filters_count: 0 });
-    expect(window.dataLayer[0]).toMatchObject({ results_count: 0, filters_count: 0 });
+    expect(sinCompat()[0]).toMatchObject({ results_count: 0, filters_count: 0 });
   });
 
   it("false viaja; Infinity no", () => {
     track("x", { a: false, b: Infinity, c: -Infinity });
-    expect(window.dataLayer[0].a).toBe(false);
-    expect("b" in window.dataLayer[0] && window.dataLayer[0].b !== undefined).toBe(false);
+    expect(sinCompat()[0].a).toBe(false);
+    expect("b" in sinCompat()[0] && sinCompat()[0].b !== undefined).toBe(false);
   });
 });
 
 describe("claves reservadas y marca de prueba", () => {
   it("un parámetro llamado `event` no pisa el nombre del evento", () => {
     track("whatsapp_click", { event: "otro" });
-    expect(window.dataLayer[0].event).toBe("whatsapp_click");
+    expect(sinCompat()[0].event).toBe("whatsapp_click");
   });
 
   it("un parámetro `location` no pisa la sección sacada de la URL", () => {
     window.history.pushState({}, "", "/0km/208");
     track("whatsapp_click", { location: "home" });
-    expect(window.dataLayer[0].location).toBe("okm_detail");
+    expect(sinCompat()[0].location).toBe("okm_detail");
   });
 
   it(`${MARCA_PRUEBA} nunca viaja en un evento, ni con false (GTM mandaría debug_mode)`, () => {
     track("whatsapp_click", { [MARCA_PRUEBA]: true });
     track("whatsapp_click", { [MARCA_PRUEBA]: false });
-    expect(window.dataLayer.map((e) => MARCA_PRUEBA in e)).toEqual([false, false]);
+    expect(sinCompat().map((e) => MARCA_PRUEBA in e)).toEqual([false, false]);
   });
 
   it("PII: también se descartan las variantes del nombre de la clave", () => {
     track("form_submit", { form_id: "careers", user_email: "a@b.com", nombreApellido: "Juan", Telefono2: "381" });
-    expect(Object.keys(window.dataLayer[0]).filter((k) => window.dataLayer[0][k] !== undefined).sort()).toEqual(["event", "form_id", "location"]);
+    expect(Object.keys(sinCompat()[0]).filter((k) => sinCompat()[0][k] !== undefined).sort()).toEqual(["event", "form_id", "location"]);
   });
 
   it("PII: los parámetros del contrato no caen en el filtro", () => {
@@ -117,7 +120,7 @@ describe("claves reservadas y marca de prueba", () => {
       window.dataLayer = [];
       const enviados = Object.fromEntries(ps.filter((p) => p !== "location").map((p) => [p, "x"]));
       track(ev, enviados);
-      expect(window.dataLayer[0], ev).toMatchObject(enviados);
+      expect(sinCompat()[0], ev).toMatchObject(enviados);
     }
   });
 });

@@ -15,13 +15,12 @@ describe("track", () => {
   it("agrega la sección del sitio sacada de la URL", () => {
     window.history.pushState({}, "", "/usados/peugeot-208-2023-abc");
     track("whatsapp_click", { component_id: "whatsapp-card-detalle-usado" });
-    expect(window.dataLayer).toEqual([
-      {
-        event: "whatsapp_click",
-        location: "usados_detail",
-        component_id: "whatsapp-card-detalle-usado",
-      },
-    ]);
+    // [1] es el aviso de compatibilidad generate_lead (probado más abajo).
+    expect(window.dataLayer[0]).toEqual({
+      event: "whatsapp_click",
+      location: "usados_detail",
+      component_id: "whatsapp-card-detalle-usado",
+    });
   });
 
   it("vacía el auto y el botón del evento anterior (GTM los recuerda)", () => {
@@ -38,8 +37,9 @@ describe("track", () => {
   it("un WhatsApp después de una postulación no arrastra su form_id", () => {
     track("form_submit", { form_id: "careers" });
     track("whatsapp_click", { component_id: "whatsapp-floating" });
-    expect(Object.prototype.hasOwnProperty.call(window.dataLayer[1], "form_id")).toBe(true);
-    expect(window.dataLayer[1].form_id).toBeUndefined();
+    const wa = window.dataLayer.find((e) => e.event === "whatsapp_click");
+    expect(Object.prototype.hasOwnProperty.call(wa, "form_id")).toBe(true);
+    expect(wa.form_id).toBeUndefined();
   });
 
   it("una búsqueda sin marca no hereda la marca de la anterior", () => {
@@ -76,5 +76,45 @@ describe("pushGtagCommand", () => {
     const cmd = window.dataLayer[0];
     expect(Array.isArray(cmd)).toBe(false);
     expect(Array.from(cmd)).toEqual(["consent", "update", { analytics_storage: "granted" }]);
+  });
+});
+
+describe("track: aviso de compatibilidad generate_lead", () => {
+  // El GTM publicado (v9) cuenta "Leads" con el generate_lead que empuja el
+  // sitio. Mientras exista, el código lo sigue empujando junto a cada
+  // contacto: así código nuevo con GTM v9 no deja "Leads" en 0, y el día de
+  // salida el orden entre GTM y código no importa (auditoría de releases
+  // 2026-10-26). El GTM nuevo no lo escucha (test de contrato).
+  const leads = () => window.dataLayer.filter((e) => e.event === "generate_lead");
+
+  it("cada WhatsApp empuja después un generate_lead con los mismos datos y lead_source", () => {
+    window.history.pushState({}, "", "/0km/208");
+    track("whatsapp_click", { component_id: "whatsapp-floating", lead_ref: "K7Q2M", item_id: "208" });
+    expect(window.dataLayer.map((e) => e.event)).toEqual(["whatsapp_click", "generate_lead"]);
+    expect(leads()[0]).toMatchObject({
+      lead_source: "whatsapp",
+      location: "okm_detail",
+      component_id: "whatsapp-floating",
+      lead_ref: "K7Q2M",
+      item_id: "208",
+    });
+  });
+
+  it("teléfono → lead_source phone", () => {
+    track("phone_click", { component_id: "footer-tel" });
+    expect(leads()).toEqual([expect.objectContaining({ lead_source: "phone", component_id: "footer-tel" })]);
+  });
+
+  it("solo la postulación cuenta como form; otro formulario no", () => {
+    track("form_submit", { form_id: "careers" });
+    track("form_submit", { form_id: "otro" });
+    expect(leads()).toEqual([expect.objectContaining({ lead_source: "form", form_id: "careers" })]);
+  });
+
+  it("visitas, fichas y búsquedas no son contactos", () => {
+    track("page_view", {});
+    track("view_item", { item_id: "208" });
+    track("view_search_results", { results_count: 3 });
+    expect(leads()).toEqual([]);
   });
 });

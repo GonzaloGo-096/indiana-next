@@ -10,6 +10,7 @@
 
 import { createLogger } from "@/lib/logger";
 import { locationFromPathname } from "./locationFromPath";
+import { EVENTS, LEAD_COMPAT } from "./events";
 
 const log = createLogger("analytics");
 
@@ -91,6 +92,9 @@ export function track(event, params = {}) {
     // console.debug y no el logger: el logger se prende con API_DEBUG, que no
     // existe en el navegador.
     if (debug) console.debug("[analytics]", payload);
+    const fuente = LEAD_COMPAT.leadSource[event];
+    const esLead = fuente && (event !== EVENTS.FORM_SUBMIT || payload.form_id === LEAD_COMPAT.formId);
+    if (esLead) window.dataLayer.push({ ...payload, event: LEAD_COMPAT.event, lead_source: fuente });
   } catch (err) {
     // Se registra y se sigue: un error de medición no puede romper un clic.
     log.warn(`no se pudo registrar "${event}":`, err?.message);

@@ -11,6 +11,9 @@ import TelLink from "../TelLink";
 import ItemViewTracker from "../ItemViewTracker";
 import { CONSENT_STORAGE_KEY } from "@/lib/analytics/consent";
 
+// Sin el aviso de compatibilidad generate_lead (probado aparte en dataLayer.test.js).
+const sinCompat = () => window.dataLayer.filter((e) => e.event !== "generate_lead");
+
 const ITEM = { item_id: "208", item_name: "Peugeot 208", item_category: "0km" };
 
 /** La referencia solo existe con la medición aceptada (ver "sin consentimiento"). */
@@ -40,8 +43,8 @@ describe("WhatsAppLink", () => {
       </WhatsAppLink>,
     );
     fireEvent.click(getByText("Contactanos por WhatsApp"));
-    expect(window.dataLayer).toHaveLength(1);
-    const ev = window.dataLayer[0];
+    expect(sinCompat()).toHaveLength(1);
+    const ev = sinCompat()[0];
     expect(ev).toMatchObject({
       event: "whatsapp_click",
       location: "okm_detail",
@@ -62,14 +65,14 @@ describe("WhatsAppLink", () => {
     const texto = new URL(a.href).searchParams.get("text");
     expect(texto).toBe(`Hola, quiero info
 
-(Ref. web ${window.dataLayer[0].lead_ref})`);
+(Ref. web ${sinCompat()[0].lead_ref})`);
   });
 
   it("cada clic tiene su propia referencia", () => {
     const { getByText } = render(<WhatsAppLink href="https://wa.me/1" componentId="x">wa</WhatsAppLink>);
     fireEvent.click(getByText("wa"));
     fireEvent.click(getByText("wa"));
-    expect(window.dataLayer[0].lead_ref).not.toBe(window.dataLayer[1].lead_ref);
+    expect(sinCompat()[0].lead_ref).not.toBe(sinCompat()[1].lead_ref);
   });
 
   it("el flotante toma el auto de la ficha abierta, y solo en esa ficha", () => {
@@ -78,12 +81,12 @@ describe("WhatsAppLink", () => {
       <WhatsAppLink href="https://wa.me/1" componentId="whatsapp-floating" itemFromPage aria-label="wa" />,
     );
     fireEvent.click(getByLabelText("wa"));
-    expect(window.dataLayer[1]).toMatchObject({ component_id: "whatsapp-floating", ...ITEM });
+    expect(sinCompat()[1]).toMatchObject({ component_id: "whatsapp-floating", ...ITEM });
 
     window.history.pushState({}, "", "/");
     fireEvent.click(getByLabelText("wa"));
-    expect(window.dataLayer[2].item_id).toBeUndefined();
-    expect(window.dataLayer[2].location).toBe("home");
+    expect(sinCompat()[2].item_id).toBeUndefined();
+    expect(sinCompat()[2].location).toBe("home");
   });
 
   it("sin auto ni ficha manda solo el botón", () => {
@@ -91,8 +94,8 @@ describe("WhatsAppLink", () => {
       <WhatsAppLink href="https://wa.me/1" componentId="whatsapp-floating" aria-label="wa" />,
     );
     fireEvent.click(getByLabelText("wa"));
-    expect(window.dataLayer[0]).toMatchObject({ event: "whatsapp_click", component_id: "whatsapp-floating" });
-    expect(window.dataLayer[0].item_id).toBeUndefined();
+    expect(sinCompat()[0]).toMatchObject({ event: "whatsapp_click", component_id: "whatsapp-floating" });
+    expect(sinCompat()[0].item_id).toBeUndefined();
   });
 
   it("no cambia el texto del botón ni cómo se abre", () => {
@@ -116,7 +119,7 @@ describe("TelLink", () => {
     const a = getByLabelText("tel");
     expect(a.getAttribute("href")).toBe("tel:03814212000");
     fireEvent.click(a);
-    expect(window.dataLayer).toEqual([
+    expect(sinCompat()).toEqual([
       { event: "phone_click", location: "okm_detail", component_id: "footer-tel-peugeot-san-miguel" },
     ]);
   });
@@ -126,12 +129,12 @@ describe("ItemViewTracker", () => {
   it("manda view_item una sola vez aunque se vuelva a renderizar", () => {
     const { rerender } = render(<ItemViewTracker item={ITEM} />);
     rerender(<ItemViewTracker item={{ ...ITEM }} />);
-    expect(window.dataLayer).toEqual([{ event: "view_item", location: "okm_detail", ...ITEM }]);
+    expect(sinCompat()).toEqual([{ event: "view_item", location: "okm_detail", ...ITEM }]);
   });
 
   it("sin item no manda nada", () => {
     render(<ItemViewTracker item={null} />);
-    expect(window.dataLayer).toEqual([]);
+    expect(sinCompat()).toEqual([]);
   });
 });
 
@@ -157,9 +160,9 @@ describe("WhatsAppLink sin consentimiento de medición", () => {
       a.addEventListener("click", () => (alHacerClic = a.href));
       fireEvent.click(a);
       expect(alHacerClic).toBe("https://wa.me/1?text=Hola");
-      expect(window.dataLayer).toHaveLength(1);
-      expect(window.dataLayer[0]).toMatchObject({ event: "whatsapp_click", component_id: "whatsapp-floating" });
-      expect(window.dataLayer[0].lead_ref).toBeUndefined();
+      expect(sinCompat()).toHaveLength(1);
+      expect(sinCompat()[0]).toMatchObject({ event: "whatsapp_click", component_id: "whatsapp-floating" });
+      expect(sinCompat()[0].lead_ref).toBeUndefined();
     });
   }
 
@@ -172,6 +175,6 @@ describe("WhatsAppLink sin consentimiento de medición", () => {
       <WhatsAppLink href="https://wa.me/1?text=Hola" componentId="x">WhatsApp</WhatsAppLink>,
     );
     fireEvent.click(getByText("WhatsApp"));
-    expect(window.dataLayer[0].lead_ref).toBeUndefined();
+    expect(sinCompat()[0].lead_ref).toBeUndefined();
   });
 });

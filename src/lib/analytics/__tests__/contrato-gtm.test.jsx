@@ -18,7 +18,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { render, fireEvent, cleanup, act, renderHook, waitFor } from "@testing-library/react";
 import { CONTRATO, PUENTE, MARCA_PRUEBA, buildContainer } from "../../../../scripts/gtm-definition.mjs";
-import { EVENTS, FORM_IDS } from "../events";
+import { EVENTS, FORM_IDS, LEAD_COMPAT } from "../events";
 import { buildIndianaGtmSnippet } from "../gtmLoader";
 import { buildItemParamsFromAuto, buildItemParamsFromUsado, buildItemParamsFromPlan } from "../params";
 
@@ -45,6 +45,7 @@ const enviadas = (e) => Object.keys(e).filter((k) => k !== "event" && e[k] !== u
 
 /** Lo que el código real empuja al dataLayer, ejerciendo cada emisor una vez. */
 let capturados = [];
+let todos = [];
 
 beforeAll(async () => {
   vi.spyOn(console, "debug").mockImplementation(() => {});
@@ -105,7 +106,10 @@ beforeAll(async () => {
   global.fetch = fetchOriginal;
   cleanup();
 
-  capturados = window.dataLayer.filter((e) => e && e.event && !String(e.event).startsWith("gtm"));
+  todos = window.dataLayer.filter((e) => e && e.event && !String(e.event).startsWith("gtm"));
+  // El aviso de compatibilidad es para la v9 y el GTM nuevo no lo escucha:
+  // tiene sus propios tests al final.
+  capturados = todos.filter((e) => e.event !== LEAD_COMPAT.event);
 });
 
 afterEach(() => {
@@ -205,5 +209,31 @@ describe("GTM: debug_mode y puente", () => {
       if (ev) porEvento[ev] = (porEvento[ev] || 0) + 1;
     }
     expect(Object.values(porEvento).every((n) => n === 1)).toBe(true);
+  });
+});
+
+describe("aviso de compatibilidad generate_lead (para el GTM v9)", () => {
+  it("el GTM nuevo no tiene activador para él: no se cuenta doble con el puente", () => {
+    const { containerVersion } = buildContainer();
+    const escuchados = containerVersion.trigger.flatMap((t) =>
+      (t.customEventFilter || []).map((f) => f.parameter.find((p) => p.key === "arg1").value),
+    );
+    expect(escuchados).toContain(EVENTS.WHATSAPP_CLICK); // la lectura funciona
+    expect(escuchados).not.toContain(LEAD_COMPAT.event);
+  });
+
+  it("sale de los mismos contactos que el puente, con el mismo lead_source", () => {
+    expect(LEAD_COMPAT.event).toBe(PUENTE.evento);
+    expect(LEAD_COMPAT.leadSource).toEqual(PUENTE.leadSource);
+    expect(PUENTE.disparadores).toContain(`${EVENTS.FORM_SUBMIT}:${LEAD_COMPAT.formId}`);
+  });
+
+  it("con los emisores reales, cada contacto deja exactamente un aviso", () => {
+    const contactos = todos.filter(
+      (e) => e.event in LEAD_COMPAT.leadSource && (e.event !== EVENTS.FORM_SUBMIT || e.form_id === LEAD_COMPAT.formId),
+    );
+    const avisos = todos.filter((e) => e.event === LEAD_COMPAT.event);
+    expect(avisos.length).toBe(contactos.length);
+    expect(avisos.length).toBeGreaterThan(0);
   });
 });

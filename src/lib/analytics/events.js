@@ -21,6 +21,26 @@ export const FORM_IDS = Object.freeze({
   CAREERS: "careers",
 });
 
+/**
+ * Aviso de compatibilidad con el GTM publicado (v9), que cuenta "Leads" con el
+ * generate_lead que empuja el sitio. track() lo empuja después de cada
+ * contacto, con los mismos datos y `lead_source`. El GTM nuevo no tiene
+ * activador para este evento (lo arma su puente), así que no cuenta doble: el
+ * test de contrato lo exige. Con esto, código nuevo + GTM v9 no deja "Leads" en
+ * 0 y el día de salida el orden entre GTM y código no importa (auditoría de
+ * releases del 2026-10-26). Se saca cuando la v9 ya no pueda volver.
+ */
+export const LEAD_COMPAT = Object.freeze({
+  event: "generate_lead",
+  leadSource: Object.freeze({
+    [EVENTS.WHATSAPP_CLICK]: "whatsapp",
+    [EVENTS.PHONE_CLICK]: "phone",
+    [EVENTS.FORM_SUBMIT]: "form",
+  }),
+  // Solo la postulación es un form_submit que cuenta como lead.
+  formId: FORM_IDS.CAREERS,
+});
+
 export const LOCATIONS = Object.freeze({
   HOME: "home",
   OKM_LIST: "okm_list",
