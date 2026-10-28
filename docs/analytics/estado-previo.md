@@ -153,4 +153,9 @@ Cada cambio se deshace en el mismo lugar donde se hizo, y ninguno borra datos:
 - Si algo del tablero queda mal: Archivo → Historial de versiones → la última versión anterior
   a la salida → **Restaurar esta versión**.
 
-Fórmula original de "Categoría de Lead": *(se completa el día de publicar, antes de editarla)*
+Fórmula original de "Categoría de Lead" (campo `calc_g9rxuioh4d` de la fuente insertada
+"Indiana"), copiada del editor el 2026-10-28, antes de editarla:
+
+```
+CASE WHEN Lead Type = "used_vehicle_inquiry" THEN "Usados" WHEN Lead Type = "zero_km_inquiry" THEN "0km" WHEN Lead Type = "plan_inquiry" THEN "Planes" WHEN Lead Type IN ("service_booking","bodywork_quote","parts_inquiry") THEN "Postventa" WHEN Lead Type = "general_inquiry" THEN "Consultas generales" ELSE "RRHH/Otros" END
+```
