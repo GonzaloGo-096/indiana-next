@@ -1,4 +1,5 @@
 import { buildConsentDefaultSnippet } from "@/lib/analytics/consent";
+import { buildUrlCleanSnippet } from "@/lib/analytics/urlLimpia";
 
 /**
  * Inyecta el snippet de Google Consent Mode v2 default ANTES de que cargue GTM.
@@ -9,7 +10,7 @@ import { buildConsentDefaultSnippet } from "@/lib/analytics/consent";
  * no contiene datos de usuario.
  */
 export default function ConsentBootstrap() {
-  const snippet = buildConsentDefaultSnippet();
+  const snippet = buildUrlCleanSnippet() + buildConsentDefaultSnippet();
   return (
     <script dangerouslySetInnerHTML={{ __html: snippet }} />
   );

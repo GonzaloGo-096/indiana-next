@@ -7,11 +7,13 @@
  * 3. La elección persiste en localStorage; en próximas visitas se reaplica
  *    el estado guardado en lugar del default.
  *
- * Hasta que el usuario decida, GA4 trabaja en modo "modelado" (sin cookies).
+ * Hasta que el usuario acepte, GA4 recibe avisos sin cookies que NO aparecen en
+ * los informes: con la identidad "basada en dispositivo" no hay modelado, y el
+ * modelado igual pide un volumen (miles de usuarios por día) que el sitio no tiene.
  */
 
-import { pushGtagCommand, pushDataLayer } from "./dataLayer";
-import { EVENTS } from "./events";
+import { pushGtagCommand } from "./dataLayer";
+import { forgetEntryCampaign } from "./campanaEntrada";
 
 export const CONSENT_STORAGE_KEY = "indiana_consent_v1";
 export const CONSENT_STATUS = Object.freeze({
@@ -54,6 +56,7 @@ wait_for_update:500
  * @param {{ analytics: boolean, ads: boolean }} prefs
  */
 export function updateConsent({ analytics, ads }) {
+  medicionAplicada = analytics === true;
   const a = analytics ? "granted" : "denied";
   const b = ads ? "granted" : "denied";
   pushGtagCommand("consent", "update", {
@@ -64,6 +67,40 @@ export function updateConsent({ analytics, ads }) {
     functionality_storage: "granted",
     security_storage: "granted",
   });
+  aplicarAlPixel(ads ? "grant" : "revoke");
+}
+
+/**
+ * El Pixel de Meta sigue la misma elección que los anuncios de Google
+ * (metaPixel.js lo deja en pausa hasta que se acepta).
+ *
+ * Si el script de Meta todavía no terminó de bajar, el comando queda en su
+ * cola detrás del "revoke" inicial, y al cargar Meta frena en el revoke y no lo
+ * aplica (nuxt/scripts#928). Por eso se espera a que el script esté cargado
+ * (fbq.callMethod) y recién ahí se manda.
+ */
+export const PIXEL_ESPERA_MS = 15000;
+
+function aplicarAlPixel(estado) {
+  if (typeof window === "undefined" || typeof window.fbq !== "function") return;
+  const mandar = () => {
+    try {
+      window.fbq("consent", estado);
+    } catch {
+      // Si el Pixel falla, el consentimiento de Google ya quedó aplicado.
+    }
+  };
+  if (window.fbq.callMethod || !Array.isArray(window.fbq.queue)) return mandar();
+  const desde = Date.now();
+  const t = setInterval(() => {
+    if (window.fbq?.callMethod) {
+      clearInterval(t);
+      mandar();
+    } else if (Date.now() - desde > PIXEL_ESPERA_MS) {
+      // No cargó (bloqueador, sin red): no hay Pixel al que avisarle.
+      clearInterval(t);
+    }
+  }, 200);
 }
 
 /**
@@ -74,7 +111,7 @@ export function readStoredConsent() {
   if (typeof window === "undefined") return null;
   try {
     const raw = window.localStorage.getItem(CONSENT_STORAGE_KEY);
-    if (!raw) return null;
+    if (!raw) return enMemoria;
     const parsed = JSON.parse(raw);
     if (!parsed || typeof parsed !== "object") return null;
     return {
@@ -83,9 +120,16 @@ export function readStoredConsent() {
       ts: typeof parsed.ts === "number" ? parsed.ts : 0,
     };
   } catch {
-    return null;
+    // localStorage bloqueado (modo privado, WebView sin DOM storage) o valor
+    // roto: vale lo decidido en esta página, si hubo; si no, el banner pregunta.
+    return enMemoria;
   }
 }
+
+// La decisión de esta página cuando localStorage no deja guardarla. Sin esto,
+// "Aceptar" no cerraba el banner (seguía leyendo "sin decisión") y cada
+// aceptación volvía a reenviar la página.
+let enMemoria = null;
 
 /**
  * Guarda la decisión y aplica updateConsent.
@@ -95,20 +139,68 @@ export function persistConsent(prefs) {
   if (typeof window === "undefined") return;
   const analytics = prefs.analytics === true;
   const ads = prefs.ads === true;
+  const yaMedia = analyticsAceptada();
   try {
     const payload = { analytics, ads, ts: Date.now() };
     window.localStorage.setItem(CONSENT_STORAGE_KEY, JSON.stringify(payload));
     updateConsent(payload);
   } catch {
     // Si localStorage falla (modo privado, cuotas), igual aplicamos consent en memoria.
+    enMemoria = { analytics, ads, ts: Date.now() };
     updateConsent({ analytics, ads });
   }
-  // Evento para medir en GA4 la tasa de aceptación del banner (granted/denied).
-  // Se dispara DESPUÉS de updateConsent: si acepta, viaja con consent ya 'granted';
-  // si rechaza, GA lo recibe como ping cookieless (modelado) y suma al denominador.
-  pushDataLayer(analytics ? EVENTS.CONSENT_GRANTED : EVENTS.CONSENT_DENIED, {
-    ads_consent: ads ? "granted" : "denied",
-  });
+  if (analytics && !yaMedia) avisarAceptacion();
+  if (!analytics) forgetEntryCampaign();
+}
+
+/** Si la persona aceptó la medición (guardado, o en memoria si localStorage falla). */
+export function analyticsAceptada() {
+  return readStoredConsent()?.analytics === true;
+}
+
+/**
+ * La decisión llegó desde otra pestaña (evento `storage`). Esa pestaña la
+ * guardó y se la dijo a su GTM, pero el de esta seguía en "denied" hasta
+ * recargar. Se aplica acá también y, si la medición pasa a aceptada, se
+ * reenvía la página igual que al aceptar en esta.
+ */
+export function applyConsentFromOtherTab() {
+  const decision = readStoredConsent();
+  if (!decision) return;
+  const yaMedia = medicionAplicada;
+  updateConsent(decision);
+  if (decision.analytics && !yaMedia) avisarAceptacion();
+}
+
+// Lo último que se le dijo al GTM de esta página sobre la medición. Arranca
+// con lo que aplicó el default al cargar (lo guardado).
+let medicionAplicada = typeof window !== "undefined" && analyticsAceptada();
+
+const alAceptarAnalitica = new Set();
+
+function avisarAceptacion() {
+  for (const fn of alAceptarAnalitica) fn();
+}
+
+/**
+ * Avisa cuando la analítica pasa de no aceptada a aceptada, después de
+ * aplicar el consentimiento.
+ *
+ * Lo enviado antes de aceptar salió sin cookies y no entra a los informes, y
+ * gtag no lo reenvía (comprobado con red el 2026-10-26): quien aceptaba a los
+ * pocos segundos quedaba sin página de entrada y sin el auto que miraba.
+ * PageViewTracker escucha esto para volver a contar la página actual.
+ *
+ * Depende de que lo enviado sin cookies NO aparezca en los informes, que es
+ * así con la identidad "basada en dispositivo". Si GA4 pasa a "Mezclada" (o
+ * empieza a modelar), quien acepta tarde contaría doble: sacar este reenvío.
+ *
+ * @param {() => void} fn
+ * @returns {() => void} para dejar de escuchar
+ */
+export function onAnalyticsGranted(fn) {
+  alAceptarAnalitica.add(fn);
+  return () => alAceptarAnalitica.delete(fn);
 }
 
 /**
@@ -116,9 +208,11 @@ export function persistConsent(prefs) {
  */
 export function clearStoredConsent() {
   if (typeof window === "undefined") return;
+  enMemoria = null;
   try {
     window.localStorage.removeItem(CONSENT_STORAGE_KEY);
   } catch {
-    /* noop */
+    // Solo se usa para pruebas del banner: si localStorage está bloqueado no
+    // hay nada guardado que borrar.
   }
 }

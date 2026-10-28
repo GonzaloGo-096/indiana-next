@@ -13,7 +13,6 @@ import contact from "../ui/ContactButtons.module.css";
 import styles from "./PostventaServiceCard.module.css";
 import { staticImages } from "@/config/cloudinaryStaticImages";
 import WhatsAppLink from "../analytics/WhatsAppLink";
-import { SOURCES, LOCATIONS, VERTICALS } from "@/lib/analytics/events";
 
 // Mapa de imágenes de servicios
 const serviceImagesMap = {
@@ -46,7 +45,6 @@ export default function PostventaServiceCard({
   alt,
   buttonText,
   whatsappMessage = "",
-  leadType,
 }) {
   const imageSrc = serviceImagesMap[image] || fallbackImage; // Fallback a taller-2
 
@@ -79,13 +77,7 @@ export default function PostventaServiceCard({
         <div className={styles.buttonContainer}>
           <WhatsAppLink
             href={whatsappUrl}
-            phone={POSTVENTA_WHATSAPP}
-            source={SOURCES.CARD}
-            location={LOCATIONS.POSTVENTA}
             componentId={`whatsapp-postventa-${id}`}
-            messageTemplateId={id}
-            leadType={leadType}
-            vertical={VERTICALS.POSTVENTA}
             className={`${contact.buttonWhatsapp} ${contact.buttonWhatsappFull}`}
             aria-label={`Contactar por WhatsApp sobre ${title}`}
           >

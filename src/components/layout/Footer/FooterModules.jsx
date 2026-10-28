@@ -2,28 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { ChevronIcon } from "@/components/ui/icons/ChevronIcon";
 import { PhoneIcon } from "@/components/ui/icons/PhoneIcon";
 import { contactoModules, sitioModule, vehiculosModule, footerIcons } from "./footerConfig";
 import WhatsAppLink from "@/components/analytics/WhatsAppLink";
 import TelLink from "@/components/analytics/TelLink";
-import { SOURCES, LEAD_TYPES } from "@/lib/analytics/events";
-import { locationFromPathname } from "@/lib/analytics/locationFromPath";
 import styles from "./FooterModules.module.css";
-
-/**
- * Extrae el número en formato wa.me/api.whatsapp del href.
- * api.whatsapp.com/send?phone=NNN o wa.me/NNN
- */
-function extractWhatsAppPhone(href) {
-  if (typeof href !== "string") return null;
-  const apiMatch = href.match(/[?&]phone=(\d+)/);
-  if (apiMatch) return apiMatch[1];
-  const waMatch = href.match(/wa\.me\/(\d+)/);
-  if (waMatch) return waMatch[1];
-  return null;
-}
 
 function extractTelPhone(href) {
   if (typeof href !== "string") return null;
@@ -50,8 +34,6 @@ const FooterTextLink = ({ item }) => {
  * Otros enlaces externos (instagram, maps) quedan como <a> sin tracking de lead.
  */
 const FooterItem = ({ item, sedeId }) => {
-  const pathname = usePathname() || "/";
-  const location = locationFromPathname(pathname);
   const iconSrc = footerIcons[item.icon];
   const isSvgIcon = iconSrc === "svg"; // Teléfono usa SVG
   const ariaLabel = item.external
@@ -70,7 +52,6 @@ const FooterItem = ({ item, sedeId }) => {
 
   if (item.type === "link") {
     if (item.icon === "whatsapp") {
-      const phone = extractWhatsAppPhone(item.href);
       const componentId = sedeId
         ? `footer-whatsapp-${sedeId}`
         : "footer-whatsapp";
@@ -78,12 +59,7 @@ const FooterItem = ({ item, sedeId }) => {
         <li className={styles.moduleItem}>
           <WhatsAppLink
             href={item.href}
-            phone={phone}
-            source={SOURCES.FOOTER}
-            location={location}
             componentId={componentId}
-            messageTemplateId={sedeId || "footer"}
-            leadType={LEAD_TYPES.GENERAL_INQUIRY}
             className={styles.iconLink}
             aria-label={ariaLabel}
           >
@@ -100,8 +76,6 @@ const FooterItem = ({ item, sedeId }) => {
         <li className={styles.moduleItem}>
           <TelLink
             phone={phone}
-            source={SOURCES.FOOTER}
-            location={location}
             componentId={componentId}
             className={styles.iconLink}
             aria-label={ariaLabel}

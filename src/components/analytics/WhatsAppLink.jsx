@@ -1,81 +1,114 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
-import { pushDataLayer } from "@/lib/analytics/dataLayer";
-import { EVENTS, LEAD_SOURCES } from "@/lib/analytics/events";
-import { hashPhoneNumber } from "@/lib/analytics/params";
+import { useRef } from "react";
+import { track } from "@/lib/analytics/dataLayer";
+import { EVENTS } from "@/lib/analytics/events";
+import { analyticsAceptada } from "@/lib/analytics/consent";
+import { newLeadRef, withLeadRef } from "@/lib/analytics/leadRef";
+import { getPageItem } from "@/lib/analytics/pageItem";
 
 /**
- * Link a WhatsApp con tracking de whatsapp_click + generate_lead.
+ * Link a WhatsApp que registra `whatsapp_click`, el contacto más frecuente del sitio (el
+ * evento clave es el generate_lead que sale de él).
  *
- * Props mínimos: href (URL completa wa.me), source, location, componentId.
- * Opcionales: phone (para hashear y mandar phone_number_hash, sin PII),
- * item (objeto del builder buildItemParamsFromX para asociar al lead),
- * messageTemplateId, target/rel (overrides).
+ * Con la medición aceptada, en cada clic genera un código de referencia, lo
+ * suma al mensaje y lo manda a GA4 (`lead_ref`): así un chat se puede cruzar
+ * con su visita.
  *
- * El hash del teléfono se calcula en mount (async) y se manda solo si está listo
- * en el momento del click. Si no, se manda el evento sin él.
+ * @param {object} props
+ * @param {string} props.href - URL wa.me / api.whatsapp.com completa
+ * @param {string} props.componentId - qué botón es, estable y en kebab-case
+ *   (ej. "whatsapp-floating"); es lo que separa un botón de otro en GA4
+ * @param {{ item_id: string, item_name: string, item_category: string } | null} [props.item]
+ *   - el vehículo, si el botón es de una ficha (buildItemParamsFrom*)
+ * @param {boolean} [props.itemFromPage] - sin `item`, usar el de la ficha
+ *   abierta (lo usa el flotante, que no sabe en qué ficha está)
  */
 export default function WhatsAppLink({
   href,
-  phone,
-  source,
-  location,
   componentId,
   item,
-  messageTemplateId,
-  leadType,
-  vertical,
+  itemFromPage = false,
   onClick,
+  onAuxClick,
+  onMouseDown,
   target = "_blank",
   rel = "noopener noreferrer",
   children,
   ...rest
 }) {
-  const [phoneHash, setPhoneHash] = useState(null);
+  // Referencia preparada al apretar la ruedita: Chrome toma el link para la
+  // pestaña nueva antes del auxclick (probado con navegador el 2026-10-07).
+  const pendiente = useRef(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    if (!phone) return undefined;
-    hashPhoneNumber(phone).then((h) => {
-      if (!cancelled) setPhoneHash(h);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [phone]);
+  // Sin la medición aceptada no hay referencia: ventas la une al chat, y la
+  // visita quedaría atada a alguien que no dio permiso (auditoría de
+  // privacidad del 2026-10-26). El contacto se cuenta igual, sin código.
+  function prepararRef(a) {
+    if (!analyticsAceptada()) return undefined;
+    const ref = newLeadRef();
+    // El texto visible del botón no se toca (la agencia mide por ese texto).
+    a.href = withLeadRef(href, ref);
+    return ref;
+  }
 
-  const handleClick = useCallback(
-    (e) => {
-      try {
-        const base = {
-          source,
-          location,
-          component_id: componentId,
-          ...(phoneHash ? { phone_number_hash: phoneHash } : {}),
-          ...(messageTemplateId ? { message_template_id: messageTemplateId } : {}),
-          ...(leadType ? { lead_type: leadType } : {}),
-          ...(vertical ? { vertical } : {}),
-          ...(item || {}),
-        };
-        pushDataLayer(EVENTS.WHATSAPP_CLICK, {
-          ...base,
-          lead_source: LEAD_SOURCES.WHATSAPP,
-        });
-        pushDataLayer(EVENTS.GENERATE_LEAD, {
-          ...base,
-          lead_source: LEAD_SOURCES.WHATSAPP,
-        });
-      } catch {
-        /* noop */
-      }
-      if (typeof onClick === "function") onClick(e);
-    },
-    [source, location, componentId, phoneHash, messageTemplateId, leadType, vertical, item, onClick],
-  );
+  // Se devuelve el link original apenas se abrió: si no, React no lo restaura
+  // (la prop no cambió) y el próximo "copiar enlace" o "abrir en pestaña
+  // nueva" salía con la referencia de este clic y sin evento.
+  function restaurar(a) {
+    setTimeout(() => {
+      a.href = href;
+    }, 0);
+  }
+
+  function registrar(ref) {
+    const vehiculo = item || (itemFromPage ? getPageItem() : null);
+    track(EVENTS.WHATSAPP_CLICK, { component_id: componentId, lead_ref: ref, ...vehiculo });
+  }
+
+  function handleClick(e) {
+    const a = e.currentTarget;
+    registrar(prepararRef(a));
+    restaurar(a);
+    onClick?.(e);
+  }
+
+  function handleMouseDown(e) {
+    if (e.button === 1) {
+      const a = e.currentTarget;
+      const ref = prepararRef(a);
+      pendiente.current = ref;
+      // Si se suelta fuera del botón no hay auxclick: el link vuelve solo.
+      setTimeout(() => {
+        if (pendiente.current !== ref) return;
+        pendiente.current = null;
+        a.href = href;
+      }, 1500);
+    }
+    onMouseDown?.(e);
+  }
+
+  // Clic con la ruedita: abre el chat en otra pestaña sin pasar por onClick.
+  function handleAuxClick(e) {
+    if (e.button === 1) {
+      const a = e.currentTarget;
+      registrar(pendiente.current || prepararRef(a));
+      pendiente.current = null;
+      restaurar(a);
+    }
+    onAuxClick?.(e);
+  }
 
   return (
-    <a {...rest} href={href} target={target} rel={rel} onClick={handleClick}>
+    <a
+      {...rest}
+      href={href}
+      target={target}
+      rel={rel}
+      onClick={handleClick}
+      onMouseDown={handleMouseDown}
+      onAuxClick={handleAuxClick}
+    >
       {children}
     </a>
   );

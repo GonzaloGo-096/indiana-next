@@ -21,7 +21,7 @@ const m = vi.hoisted(() => {
     router,
     searchParams: new URLSearchParams(""),
     getVehicles: vi.fn(),
-    pushDataLayer: vi.fn(),
+    track: vi.fn(),
   };
 });
 
@@ -35,7 +35,7 @@ vi.mock("@/lib/services/vehiclesApi", () => ({
 }));
 
 vi.mock("@/lib/analytics/dataLayer", () => ({
-  pushDataLayer: (...a) => m.pushDataLayer(...a),
+  track: (...a) => m.track(...a),
 }));
 
 // El mapeo del backend ya tiene sus propios tests. Acá se deja pasar tal cual
@@ -48,6 +48,7 @@ vi.mock("../useScrollRestore", () => ({ useScrollRestore: () => {} }));
 
 const { useVehiclesList } = await import("@/app/(site)/usados/vehiculos/useVehiclesList");
 const { LIST_ERROR_MESSAGE, VEHICLE_CONSTANTS } = await import("@/constants/vehicles");
+const { FILTER_DEFAULTS } = await import("@/constants/filterOptions");
 
 /** Una página de resultados con la forma que devuelve el mapeo. */
 function pagina(ids, { hasNextPage = false, nextPage = null, total = ids.length } = {}) {
@@ -71,7 +72,7 @@ beforeEach(() => {
   m.router.push.mockClear();
   m.router.replace.mockClear();
   m.getVehicles.mockReset();
-  m.pushDataLayer.mockClear();
+  m.track.mockClear();
   sessionStorage.clear();
   vi.spyOn(console, "error").mockImplementation(() => {});
 });
@@ -263,16 +264,37 @@ describe("aplicar filtros", () => {
 });
 
 describe("medición", () => {
-  it("informa cuántos resultados dio el filtro", async () => {
+  it("filtrar manda una sola búsqueda con resultados, filtros y marca", async () => {
     m.getVehicles.mockResolvedValue(pagina([1, 2], { total: 2 }));
     const { result } = montar();
 
     await act(async () => {
-      await result.current.applyFilters({ marca: ["Toyota"] });
+      await result.current.applyFilters({ marca: ["Toyota", "Ford"], caja: ["Manual"] });
     });
 
-    const evento = m.pushDataLayer.mock.calls.find(([nombre]) => /filter/i.test(nombre));
-    expect(evento?.[1]).toMatchObject({ results_count: 2 });
+    expect(m.track).toHaveBeenCalledTimes(1);
+    expect(m.track).toHaveBeenCalledWith("view_search_results", {
+      results_count: 2,
+      filters_count: 2,
+      marca: "Toyota,Ford",
+    });
+  });
+
+  it("los rangos en su valor por defecto no cuentan como filtro (el formulario los manda siempre)", async () => {
+    m.getVehicles.mockResolvedValue(pagina([1], { total: 1 }));
+    const { result } = montar();
+    const d = FILTER_DEFAULTS;
+
+    await act(async () => {
+      await result.current.applyFilters({
+        marca: ["Ford"],
+        año: [d.AÑO.min, d.AÑO.max],
+        precio: [d.PRECIO.min, d.PRECIO.max],
+        kilometraje: [d.KILOMETRAJE.min, d.KILOMETRAJE.max],
+      });
+    });
+
+    expect(m.track.mock.calls[0][1]).toMatchObject({ filters_count: 1, marca: "Ford" });
   });
 
   it("limpiar todos los filtros no cuenta como una búsqueda", async () => {
@@ -283,8 +305,7 @@ describe("medición", () => {
       await result.current.applyFilters({});
     });
 
-    const busqueda = m.pushDataLayer.mock.calls.find(([n]) => /search/i.test(n));
-    expect(busqueda).toBeUndefined();
+    expect(m.track).not.toHaveBeenCalled();
   });
 });
 
@@ -346,5 +367,33 @@ describe("vendidos al final", () => {
     });
 
     expect(orden(result)).toEqual([8, 7]);
+  });
+});
+
+describe("búsqueda que termina después de salir del listado", () => {
+  // Si la respuesta llegaba con la persona ya en otra página, track tomaba la
+  // ubicación de la URL nueva (por ejemplo usados_detail).
+  it("al salir del listado se cancela y no se cuenta como búsqueda", async () => {
+    let responder;
+    m.getVehicles.mockImplementation(
+      ({ signal }) =>
+        new Promise((resolve, reject) => {
+          responder = resolve;
+          signal?.addEventListener("abort", () =>
+            reject(Object.assign(new Error("cancelada"), { name: "AbortError" })),
+          );
+        }),
+    );
+    const { result, unmount } = renderHook(() =>
+      useVehiclesList({ initialData: { vehicles: [], total: 0 } }),
+    );
+    let pendiente;
+    act(() => {
+      pendiente = result.current.applyFilters({ marca: ["Ford"] });
+    });
+    unmount();
+    responder({ vehicles: [], total: 3 });
+    await pendiente;
+    expect(m.track).not.toHaveBeenCalled();
   });
 });

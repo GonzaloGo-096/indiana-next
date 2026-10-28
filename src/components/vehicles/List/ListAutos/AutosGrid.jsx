@@ -15,8 +15,6 @@
 
 import { memo, useMemo, useCallback } from "react";
 import { CardAuto } from "@/components/vehicles/Card/CardAuto";
-import { pushDataLayer } from "@/lib/analytics/dataLayer";
-import { EVENTS, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 import styles from "./ListAutos.module.css";
 
 /**
@@ -110,9 +108,9 @@ ListAutosSkeleton.displayName = "ListAutosSkeleton";
 /**
  * Componente de tarjeta individual optimizado
  */
-const MemoizedCardAuto = memo(({ vehicle, priority = "auto", index }) => (
+const MemoizedCardAuto = memo(({ vehicle, priority = "auto" }) => (
   <div className={styles.cardWrapper}>
-    <CardAuto auto={vehicle} imagePriority={priority} index={index} />
+    <CardAuto auto={vehicle} imagePriority={priority} />
   </div>
 ));
 
@@ -136,15 +134,9 @@ const AutosGrid = memo(
     // ✅ Callback memoizado para loadMore
     const handleLoadMore = useCallback(() => {
       if (hasNextPage && !isLoadingMore && onLoadMore) {
-        pushDataLayer(EVENTS.LOAD_MORE_CLICK, {
-          location: LOCATIONS.USADOS_LIST,
-          list_name: ITEM_LIST.USADOS_GRID,
-          loaded_count: loadedCount,
-          total_count: totalCount,
-        });
         onLoadMore();
       }
-    }, [hasNextPage, isLoadingMore, onLoadMore, loadedCount, totalCount]);
+    }, [hasNextPage, isLoadingMore, onLoadMore]);
 
     // ✅ OPTIMIZADO: Memoizar el grid de vehículos con keys estables
     const vehiclesGrid = useMemo(() => {
@@ -178,7 +170,6 @@ const AutosGrid = memo(
             key={stableKey}
             vehicle={vehicle}
             priority={index < 6 ? "high" : "auto"}
-            index={index}
           />
         );
       });

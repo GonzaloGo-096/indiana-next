@@ -21,8 +21,6 @@ import AutosGrid from "@/components/vehicles/List/ListAutos";
 import FilterFormSimple from "@/components/vehicles/Filters/FilterFormSimple";
 import ActiveFilterChips from "@/components/vehicles/Filters/ActiveFilterChips";
 import ActionButtons from "@/components/vehicles/ActionButtons/ActionButtons";
-import ItemListViewTracker from "@/components/analytics/ItemListViewTracker";
-import { SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
 
 import { useVehiclesList } from "./useVehiclesList";
 
@@ -82,8 +80,6 @@ export default function VehiculosClient({
     changeSort,
     clearFilters,
     selectBrand,
-    trackingItems,
-    listSignature,
   } = useVehiclesList({ initialData, initialError });
 
   // --- UI state (visual only) ------------------------------------------------
@@ -170,13 +166,6 @@ export default function VehiculosClient({
 
   return (
     <div className={`${styles.page} w-full min-w-0 antialiased`}>
-      <ItemListViewTracker
-        items={trackingItems}
-        itemListName={ITEM_LIST.USADOS_GRID}
-        location={LOCATIONS.USADOS_LIST}
-        source={SOURCES.LISTING_PAGE}
-        signature={listSignature}
-      />
       <div className={`${styles.backRow} w-full min-w-0`}>
         <Link
           href="/usados"

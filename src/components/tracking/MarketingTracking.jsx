@@ -1,6 +1,8 @@
 "use client";
 
 import Script from "next/script";
+import { buildIndianaGtmSnippet, buildMarketingGtmSnippet } from "@/lib/analytics/gtmLoader";
+import { buildMetaPixelSnippet } from "@/lib/analytics/metaPixel";
 
 function getGtmId() {
   return process.env.NEXT_PUBLIC_GTM_ID?.trim() ?? "";
@@ -12,14 +14,6 @@ function getGtmMarketingId() {
 
 function getMetaPixelId() {
   return process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim() ?? "";
-}
-
-function gtmSnippet(id) {
-  return `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','${id}');`;
 }
 
 /**
@@ -50,6 +44,9 @@ export default function MarketingTracking() {
           />
         </noscript>
       ) : null}
+      {/* Este <noscript> no puede mirar el dominio: en una copia de prueba sin
+          JavaScript igual pediría el contenedor de la agencia. Se deja porque
+          sin JavaScript sus etiquetas no disparan nada. */}
       {gtmMarketingId ? (
         <noscript>
           <iframe
@@ -61,44 +58,28 @@ export default function MarketingTracking() {
           />
         </noscript>
       ) : null}
-      {pixelId ? (
-        <noscript>
-          <img
-            height={1}
-            width={1}
-            style={{ display: "none" }}
-            src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
-            alt=""
-          />
-        </noscript>
-      ) : null}
+      {/* Sin <noscript> del Pixel: sin JavaScript no hay banner, y avisaba a Meta
+          sin consentimiento. */}
 
-      {/* Contenedor Indiana */}
+      {/* Contenedor Indiana: solo en producción, o en pruebas pedidas a propósito (gtmLoader.js) */}
       {gtmId ? (
         <Script id="gtm-loader" strategy="afterInteractive">
-          {gtmSnippet(gtmId)}
+          {buildIndianaGtmSnippet(gtmId, {
+            allowNonProduction: process.env.NEXT_PUBLIC_ANALYTICS_TEST === "true",
+          })}
         </Script>
       ) : null}
 
-      {/* Contenedor agencia de marketing */}
+      {/* Contenedor de la agencia: solo en producción (gtmLoader.js) */}
       {gtmMarketingId ? (
         <Script id="gtm-loader-marketing" strategy="afterInteractive">
-          {gtmSnippet(gtmMarketingId)}
+          {buildMarketingGtmSnippet(gtmMarketingId)}
         </Script>
       ) : null}
 
       {pixelId ? (
         <Script id="meta-pixel" strategy="afterInteractive">
-          {`!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init','${pixelId}');
-fbq('track','PageView');`}
+          {buildMetaPixelSnippet(pixelId)}
         </Script>
       ) : null}
     </>
