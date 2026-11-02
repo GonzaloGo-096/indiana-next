@@ -144,8 +144,16 @@ Todas, comprobadas el mismo día. Si falta una, no se empieza.
 3. Producción en `dpl_AzSxqQN1UfnEbHmF4UfoC9Hemarg` (`main@04ef6eb`), sin despliegues de
    producción posteriores: en el plan Hobby solo se puede volver al despliegue de producción
    inmediatamente anterior.
-4. Marca del código viejo: `curl -s https://indiana.com.ar/ | grep -c "consent','revoke'"` da
-   **0** (el código nuevo trae el Pixel en pausa y da 1 o más).
+4. Marca del código publicado. Los scripts de medición no están en el HTML sino en los JS que
+   carga la portada; este comando los recorre:
+
+   ```
+   node -e 'const b="https://indiana.com.ar";(async()=>{const h=await(await fetch(b+"/")).text();let p=0,n=0;for(const u of new Set(h.match(/\/_next\/static\/[^"\x27\s]+?\.js/g))){const j=await(await fetch(b+u)).text();if(j.includes("fbq(\x27init\x27"))p++;if(j.includes("fbq(\x27consent\x27,\x27revoke\x27)"))n++}console.log({pixel:p,nuevo:n})})()'
+   ```
+
+   Código viejo: `{ pixel: 1, nuevo: 0 }` (comprobado en producción el 2026-11-02). Código
+   nuevo: `nuevo` 1 o más (trae el Pixel en pausa). `pixel: 0` significa que el comando no
+   encontró el JS del Pixel: la marca no sirve y se mira el despliegue en Vercel.
 5. Avisos enviados (agencia, cliente, ventas: `mensajes-fase1.md`).
 6. Sesiones abiertas: GTM, GA4 y Looker (`infodigital@indiana.com.ar`, perfil "peugeot
    indiana"), Vercel (perfil "gona") y `git push` desde la computadora.
@@ -153,14 +161,14 @@ Todas, comprobadas el mismo día. Si falta una, no se empieza.
    `infodigital@indiana.com.ar` (hoy el segundo paso le llega a otra persona: si se depende de
    ella, tiene que estar disponible durante toda la salida). Los códigos **nunca** pasan por el
    chat: si una pantalla pide verificación, Claude avisa y Gonzalo la completa en el navegador.
-8. Gonzalo autoriza de antemano las vueltas atrás de esta salida: si se cumple una condición de
-   detención, se vuelve atrás sin esperar otra confirmación (ver "Volver atrás").
+8. Gonzalo da (o no) la autorización previa de "Volver atrás → Qué está autorizado de
+   antemano". Se da ese día, en el chat; ninguna revisión anterior la da.
 
 ### Etapa 1: código nuevo (A → B)
 
 | Paso | Qué | Quién | Para seguir | Se detiene si |
 |---|---|---|---|---|
-| 1.1 | `git checkout main && git pull --ff-only && git merge --no-ff staging -m "merge: publicar medicion simple a produccion"`, `git push`; esperar "Ready" en Vercel. Anotar el SHA del merge y el ID del despliegue | Claude, con OK de Gonzalo en el momento | Despliegue "Ready" y la marca del paso 0.4 da 1 o más | El build falla: producción no cambió, no se toca nada más |
+| 1.1 | `git checkout main && git pull --ff-only && git merge --no-ff staging -m "merge: publicar medicion simple a produccion"`, `git push`; esperar "Ready" en Vercel. Anotar el SHA del merge y el ID del despliegue | Claude, con OK de Gonzalo en el momento | Despliegue "Ready" y la marca del paso 0.4 da `nuevo` 1 o más | El build falla: producción no cambió, no se toca nada más |
 | 1.2 | ¿El sitio funciona? (tabla "Qué prueba qué") | Claude | Las 4 pruebas bien | Algo no carga → Instant Rollback (B → A) |
 | 1.3 | Consentimiento y Pixel: los 3 escenarios de "Consentimiento: qué mirar" | Claude, Gonzalo mira | Los 3 escenarios dan lo esperado | Resultado legal incorrecto → B → A inmediato |
 | 1.4 | En Red, los `collect` sin `_dbg` ni `ep.debug_mode` | Claude | Ninguno lo lleva | Alguno lo lleva → B → A (esos datos quedarían fuera de los informes) |
@@ -211,7 +219,7 @@ Herramientas de desarrollo → **Red**, filtrando `collect` (Google) y `facebook
 |---|---|---|---|---|
 | **Sin responder** | Salen envíos con `gcs=G100` | **No** hay `_ga` ni `_ga_9HJ64VGVLH` | Se descarga `fbevents.js`; **ningún** envío a `facebook.com/tr` | **No** hay `_fbp` |
 | **Rechazar** | Siguen con `gcs=G100`. `localStorage` → `indiana_consent_v1` con `analytics:false, ads:false`. Al recargar, el cartel no vuelve | **No** hay `_ga` | Ningún `facebook.com/tr` | **No** hay `_fbp` |
-| **Aceptar** | Desde ahí, `gcs=G111`; sale de nuevo el `page_view` de la página (reenvío al aceptar tarde, con la campaña de entrada) | **Aparecen** `_ga` y `_ga_9HJ64VGVLH` | Aparece `facebook.com/tr?…ev=PageView` (seguro desde la página siguiente; en la misma página puede salir el retenido: no comprobado) | **Aparece** `_fbp` |
+| **Aceptar** | Desde ahí, `gcs=G111`; sale de nuevo el `page_view` de la página (reenvío al aceptar tarde, con la campaña de entrada) | **Aparecen** `_ga` y `_ga_9HJ64VGVLH` | Aparece `facebook.com/tr?…ev=PageView`, en la misma página o recién al recargar (ver "Prueba del PageView retenido") | **Aparece** `_fbp` |
 | **Aceptar y recargar** | El primer envío ya sale con `gcs=G111` | Siguen | `PageView` al cargar | Sigue |
 
 `gcs` es `G1` + publicidad + analítica (1 concedido, 0 denegado): `G100` todo denegado, `G111`
@@ -226,6 +234,26 @@ ni `G110`. `gcd` lleva el detalle de las 4 señales de Consent Mode v2: es secun
 | Después de aceptar sigue `G100` o no aparece `_ga` | No mide a quien aceptó | Funcional | B → A e investigar |
 | Después de aceptar no hay `facebook.com/tr` | La agencia pierde datos de Meta | Funcional (agencia) | B → A, avisar a la agencia, corregir en una rama |
 | Falta "(Ref. web)" con cookies aceptadas | Solo afecta a ventas | Menor | No se vuelve atrás; se corrige en una rama |
+
+### Prueba del PageView retenido
+
+El Pixel registra el `PageView` al cargar, en pausa. No está comprobado si al aceptar lo manda
+en esa misma página o recién en la siguiente. Se prueba una vez, en la etapa 1:
+
+1. Ventana de incógnito nueva. Red con "Conservar registro" activado y filtro `facebook.com/tr`.
+2. Abrir una ficha (anotar su dirección). No tocar nada: la lista tiene que quedar vacía.
+3. Aceptar las cookies **sin moverse de la página** y esperar 10 segundos. Anotar si aparece
+   `tr?…ev=PageView` y con qué `dl=` (la dirección de la página).
+4. Recargar con F5 (una carga completa: no depende de si el Pixel sigue las navegaciones
+   internas del sitio). Tiene que aparecer un `PageView` con la dirección de esa página.
+
+| Resultado | Lectura |
+|---|---|
+| Un `PageView` en el paso 3 con la dirección de la ficha, y otro en el 4 | Bien: el retenido sale al aceptar |
+| Nada en el paso 3, uno en el 4 | Bien: Meta pierde solo la página donde se aceptó. Anotarlo para la agencia |
+| Dos `PageView` de la misma dirección en el paso 3 | Falla: Meta cuenta doble esa visita. Corregir en una rama; no es legal ni urgente |
+| Ninguno en el paso 3 ni en el 4 | Falla funcional: B → A (ver la tabla de abajo) |
+| Alguno **antes** de aceptar (paso 2) | Falla legal: B → A inmediato |
 
 **Señal técnica no es cumplimiento legal.** Estas pruebas demuestran qué sale del navegador en
 cada caso. No demuestran que el diseño cumpla la ley, que depende de cosas que estas pruebas no
@@ -317,9 +345,31 @@ miran y que decide el cliente con su abogado (`docs/PLAN.md`, D1 y D2):
 ## Volver atrás
 
 Detalle de cada consola en `estado-previo.md`. Toda vuelta atrás termina en un estado ✅ (ver
-"Los tres estados"): de C se vuelve a B, de B a A, y de C a A se pasa por B. Cuando se cumple
-una condición de detención se vuelve atrás sin discutir (autorizado en el paso 0.8) y se
-investiga después.
+"Los tres estados"): de C se vuelve a B, de B a A, y de C a A se pasa por B.
+
+### Qué está autorizado de antemano
+
+Si Gonzalo lo autoriza en el paso 0.8, vale **solo el día de la salida** y **solo cuando se
+cumple una condición de detención escrita** en las etapas 1 y 2 o en "Consentimiento: qué
+mirar". Ahí no se pide otra confirmación:
+
+| Acción | Quién la hace | Lleva a |
+|---|---|---|
+| Vercel: Instant Rollback a `dpl_AzSxqQN1UfnEbHmF4UfoC9Hemarg` | Claude (o Gonzalo) | B → A |
+| GTM: publicar la versión 9 | Gonzalo hace clic, Claude guía | C → B |
+| GA4: prender las 3 opciones de la medición mejorada | Gonzalo hace clic, Claude guía | C → B |
+| Dejar de avanzar (no pasar a la etapa siguiente) | Cualquiera de los dos | — |
+
+Siempre con autorización explícita de Gonzalo en el momento, aunque haya autorización previa:
+
+- los `git revert` en `main` y `staging` (vuelta atrás definitiva);
+- promover cualquier despliegue en Vercel (incluido el del revert);
+- reintentar: volver a publicar la v10 o volver a mergear;
+- volver atrás por un motivo que no es una condición de detención escrita (por criterio);
+- cualquier cambio en Looker, en otra configuración de GA4 o en el contenedor de la agencia;
+- todo lo posterior al día de la salida.
+
+Las acciones automáticas se avisan en el chat en el momento, con qué condición se cumplió.
 
 ### C → B: GTM v9 y las 3 opciones prendidas
 
@@ -348,7 +398,7 @@ investiga después.
    al despliegue de producción **inmediatamente anterior**: por eso no se despliega nada a
    producción entre la etapa 0 y la salida.
 2. **Comprobar:**
-   - `curl -s https://indiana.com.ar/ | grep -c "consent','revoke'"` da **0** (código viejo);
+   - la marca del paso 0.4 vuelve a dar `{ pixel: 1, nuevo: 0 }` (código viejo);
    - `node scripts/smoke.mjs https://indiana.com.ar` 14/14;
    - clic de prueba: `whatsapp_click` y `generate_lead` en Tiempo real (el código viejo los
      empuja los dos).
@@ -379,7 +429,7 @@ reactiva el flujo de Vercel:
    `vercel promote <url del despliegue del revert>`. Promover **vuelve a activar la asignación
    automática del dominio** (documentación de Vercel, "Instant Rollback"). Ojo: promover el
    despliegue de la salida en vez del revert vuelve a poner el código nuevo.
-4. Comprobar: la marca del paso 0.4 da 0, `smoke.mjs` 14/14, y que el siguiente push a `main`
+4. Comprobar: la marca del paso 0.4 da `nuevo: 0`, `smoke.mjs` 14/14, y que el siguiente push a `main`
    (por ejemplo, un cambio de documentación) quede publicado solo.
 5. Para reintentar la salida más adelante: rama nueva desde `staging` y `git revert <sha del
    revert en staging>`. **No** volver a mergear `refactor/medicion-simple`: git responde
