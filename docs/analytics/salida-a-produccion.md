@@ -229,8 +229,8 @@ ni `G110`. `gcd` lleva el detalle de las 4 señales de Consent Mode v2: es secun
 
 | Resultado incorrecto | Qué significa | Gravedad | Qué se hace |
 |---|---|---|---|
-| `G111`, `_ga` o `_ga_…` antes de aceptar, o después de rechazar | Google mide con cookies sin permiso | **Legal** | Inmediato: B → A (o C → B → A) |
-| `facebook.com/tr` o `_fbp` antes de aceptar, o después de rechazar | Meta recibe sin permiso | **Legal** | Inmediato: B → A (o C → B → A) |
+| `G111`, `_ga` o `_ga_…` antes de aceptar, o después de rechazar | Google mide con cookies sin permiso | **Legal** | Inmediato: Instant Rollback del código; si estaba en C, después GTM v9 y las 3 opciones |
+| `facebook.com/tr` o `_fbp` antes de aceptar, o después de rechazar | Meta recibe sin permiso | **Legal** | Inmediato: Instant Rollback del código; si estaba en C, después GTM v9 y las 3 opciones |
 | Después de aceptar sigue `G100` o no aparece `_ga` | No mide a quien aceptó | Funcional | B → A e investigar |
 | Después de aceptar no hay `facebook.com/tr` | La agencia pierde datos de Meta | Funcional (agencia) | B → A, avisar a la agencia, corregir en una rama |
 | Falta "(Ref. web)" con cookies aceptadas | Solo afecta a ventas | Menor | No se vuelve atrás; se corrige en una rama |
@@ -345,7 +345,9 @@ miran y que decide el cliente con su abogado (`docs/PLAN.md`, D1 y D2):
 ## Volver atrás
 
 Detalle de cada consola en `estado-previo.md`. Toda vuelta atrás termina en un estado ✅ (ver
-"Los tres estados"): de C se vuelve a B, de B a A, y de C a A se pasa por B.
+"Los tres estados"): de C se vuelve a B y de B a A. De C a A se pasa por B, salvo ante una falla
+legal de consentimiento o del Pixel: ahí va primero el código (B → A, Instant Rollback) y después
+GTM v9 y las 3 opciones, porque el consentimiento y el Pixel están en el código.
 
 ### Qué está autorizado de antemano
 
@@ -355,10 +357,17 @@ mirar". Ahí no se pide otra confirmación:
 
 | Acción | Quién la hace | Lleva a |
 |---|---|---|
-| Vercel: Instant Rollback a `dpl_AzSxqQN1UfnEbHmF4UfoC9Hemarg` | Claude (o Gonzalo) | B → A |
-| GTM: publicar la versión 9 | Gonzalo hace clic, Claude guía | C → B |
-| GA4: prender las 3 opciones de la medición mejorada | Gonzalo hace clic, Claude guía | C → B |
+| Vercel: Instant Rollback a `dpl_AzSxqQN1UfnEbHmF4UfoC9Hemarg` | Claude, apenas se cumple la condición (Gonzalo mira si está) | B → A |
+| GTM: publicar la versión 9 | Gonzalo, guiado por Claude. Si no responde al aviso en 15 min, Claude | C → B |
+| GA4: prender las 3 opciones de la medición mejorada, después de comprobar la v9 | Igual que GTM | C → B |
 | Dejar de avanzar (no pasar a la etapa siguiente) | Cualquiera de los dos | — |
+
+Reglas en una vuelta atrás:
+
+- una acción por vez, y se comprueba antes de la siguiente;
+- antes de "Publicar" en GTM se escribe en el chat el número de versión que se va a publicar (9);
+- si Google pide una verificación (segundo factor), se frena todo hasta que la complete Gonzalo:
+  los códigos nunca pasan por el chat ni por Claude.
 
 Siempre con autorización explícita de Gonzalo en el momento, aunque haya autorización previa:
 
