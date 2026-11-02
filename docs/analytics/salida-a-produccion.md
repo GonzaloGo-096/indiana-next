@@ -366,8 +366,9 @@ Reglas en una vuelta atrás:
 
 - una acción por vez, y se comprueba antes de la siguiente;
 - antes de "Publicar" en GTM se escribe en el chat el número de versión que se va a publicar (9);
-- si Google pide una verificación (segundo factor), se frena todo hasta que la complete Gonzalo:
-  los códigos nunca pasan por el chat ni por Claude.
+- si Google solicita una verificación de segundo factor, se detiene el procedimiento hasta que
+  Gonzalo complete la verificación;
+- los códigos de verificación nunca deben compartirse por el chat ni con Claude.
 
 Siempre con autorización explícita de Gonzalo en el momento, aunque haya autorización previa:
 
