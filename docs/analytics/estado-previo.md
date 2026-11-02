@@ -159,3 +159,40 @@ Fórmula original de "Categoría de Lead" (campo `calc_g9rxuioh4d` de la fuente 
 ```
 CASE WHEN Lead Type = "used_vehicle_inquiry" THEN "Usados" WHEN Lead Type = "zero_km_inquiry" THEN "0km" WHEN Lead Type = "plan_inquiry" THEN "Planes" WHEN Lead Type IN ("service_booking","bodywork_quote","parts_inquiry") THEN "Postventa" WHEN Lead Type = "general_inquiry" THEN "Consultas generales" ELSE "RRHH/Otros" END
 ```
+
+Fórmula aplicada el 2026-11-02 (versión 2, aprobada por Gonzalo). Reproduce la clasificación
+vieja: las 5 primeras líneas clasifican la historia; las 2 siguientes mantienen las dos
+excepciones del código viejo (WhatsApp del pie de página y flotante en postventa contaban como
+consulta general); después decide la categoría del auto y, si no hay auto, la sección. Looker la
+validó sin errores y la torta del 19-oct al 1-nov dio igual antes y después (241, 142, 40, 23,
+20, sin "RRHH/Otros"), también con los datos pedidos de nuevo a GA4:
+
+```
+CASE
+  WHEN Lead Type = "used_vehicle_inquiry" THEN "Usados"
+  WHEN Lead Type = "zero_km_inquiry" THEN "0km"
+  WHEN Lead Type = "plan_inquiry" THEN "Planes"
+  WHEN Lead Type IN ("service_booking","bodywork_quote","parts_inquiry") THEN "Postventa"
+  WHEN Lead Type = "general_inquiry" THEN "Consultas generales"
+  WHEN REGEXP_MATCH(Component ID, "^footer-.*") THEN "Consultas generales"
+  WHEN Component ID = "whatsapp-floating" AND Location = "postventa" THEN "Consultas generales"
+  WHEN Item Category = "usado" THEN "Usados"
+  WHEN Item Category = "0km" THEN "0km"
+  WHEN Item Category = "plan" THEN "Planes"
+  WHEN Location IN ("usados_list","usados_detail") THEN "Usados"
+  WHEN Location IN ("okm_list","okm_detail") THEN "0km"
+  WHEN Location IN ("planes_list","plan_detail") THEN "Planes"
+  WHEN Location = "postventa" THEN "Postventa"
+  WHEN Location IN ("home","other") THEN "Consultas generales"
+  ELSE "RRHH/Otros"
+END
+```
+
+La fuente "Indiana" no tiene todavía Item ID, Lead Ref, marca ni Results Count (no se actualizó
+desde antes del 2026-10-07). No se actualiza: el tablero nuevo usa una fuente nueva
+(`tablero-looker.md`).
+
+### GA4: dimensión agregada el 2026-11-02
+
+"Results Count", parámetro `results_count`, alcance Evento (cantidad de autos que devolvió la
+búsqueda en usados; 0 = sin resultados). No es retroactiva. Para deshacerla: archivarla.

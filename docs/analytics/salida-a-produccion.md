@@ -7,6 +7,9 @@ esa noche después de la auditoría (comprobaciones en producción y en el respa
 Actualizado el 2026-10-26 con la Etapa 0 y la auditoría de seis posturas: aviso de
 compatibilidad, `lead_ref` solo con consentimiento, pasos con criterios de abort y vuelta atrás
 en `main` y `staging`.
+Actualizado el 2026-11-02 después de la certificación por pasos (código, GTM, GA4, Looker y
+preparación): salida por etapas A → B → C con condiciones de avance y de detención, qué mirar del
+consentimiento y vuelta atrás paso a paso.
 
 ## Estado
 
@@ -14,8 +17,8 @@ en `main` y `staging`.
 |---|---|
 | Código | En la rama, `npm run check` en verde, dos revisiones independientes y prueba real con Tag Assistant (2026-10-26). Sin publicar |
 | GTM (GTM-TPJCFTBB) | Publicada la **versión 9** (la de siempre). El espacio "medicion-simple" ya está importado (T13), sin publicar. Ver "GTM: qué espacio de trabajo" |
-| GA4 | Fase 1 hecha: 14 meses, filtro de desarrolladores activo, 3 dimensiones, identidad por dispositivo |
-| Looker Studio | El tablero viejo ("Indiana — Dashboard") intacto. El nuevo se arma aparte |
+| GA4 | Fase 1 hecha: 14 meses, filtro de desarrolladores activo, 3 dimensiones, identidad por dispositivo. Dimensión Results Count (`results_count`) creada el 2026-11-02 |
+| Looker Studio | El tablero viejo ("Indiana — Dashboard") con la fórmula v2 de "Categoría de Lead" aplicada el 2026-11-02 (torta idéntica antes y después; `estado-previo.md`). El nuevo se arma aparte |
 | Agencia (GTM-M2J2LBRD, Ads, Pixel) | Sin tocar. Ningún texto de botón cambió |
 
 ## GTM: qué espacio de trabajo
@@ -82,66 +85,158 @@ configuración. En la Fase 2 solo se mira que, sin la marca `analytics_test`, la
 - Si un envío de producción lleva `_dbg`, volver atrás (ver abajo): esos datos quedarían fuera
   de los informes.
 
-## Pasos de la salida (reescrito el 2026-10-26 después de la auditoría)
+## Pasos de la salida (reescrito el 2026-11-02: por etapas, sin horarios)
 
-Desde el aviso de compatibilidad (`LEAD_COMPAT` en `events.js`) el código sigue empujando
-`generate_lead`, así que **en las cuatro combinaciones de código y GTM "Leads" sigue contando**
-(las visitas no: el código viejo con el GTM nuevo manda también un `page_view` por cada filtro
-del listado, así que ese estado intermedio dura lo menos posible) y el orden ya
-no es obligatorio. Igual se sigue un orden fijo, el que deja cada paso fácil de volver atrás.
+La salida del 2026-10-29 no se hizo. Desde el 2026-11-02 se sale **por etapas**: cada paso
+avanza solo si se cumple su condición, y se detiene si se cumple la de detención. No hay
+horarios ni operaciones seguidas sin comprobar. Decide Gonzalo; Claude ejecuta lo suyo y
+comprueba.
 
-Decide Gonzalo, solo y en el momento, con los criterios de abajo. Si un criterio de abort se
-cumple, se vuelve atrás ese paso sin discutir y se investiga después.
+### Los tres estados
 
-### Día anterior (D-1)
+| Estado | Código | GTM | GA4: 3 opciones de medición mejorada* | ¿Se puede quedar así? |
+|---|---|---|---|---|
+| **A** (antes de salir) | viejo (`main@04ef6eb`) | v9 | prendidas | Sí |
+| **B** (intermedio) | nuevo (`staging@0d46ac6`) | v9 | prendidas | **Sí, horas o días.** Leads cuenta por `LEAD_COMPAT`; las visitas, igual que en A |
+| **C** (objetivo) | nuevo | v10 | **apagadas** | Sí |
 
-1. **Congelar.** Mergear `origin/staging` en la rama si hay algo nuevo (el 2026-10-27 se trajeron
-   los commits de planes y quedó sin conflictos), `npm run check` en verde, push, y recién ahí
-   merge `--no-ff` de la rama a `staging`; anotar el SHA y esperar el build de Preview de
-   staging en "Ready". Desde acá
-   no entra nada más a `staging` ni a `main` hasta D+1.
-2. **Producción sin modo prueba.** En Vercel → Environment Variables, `NEXT_PUBLIC_ANALYTICS_TEST`
-   figura **solo** en Preview. Anotar el ID y la URL del despliegue de producción actual
-   (hoy `dpl_AzSxqQN1UfnEbHmF4UfoC9Hemarg`, `main@04ef6eb`): es el destino de la vuelta atrás.
-3. **Respaldos.** Comprobar la huella del respaldo v9 (`estado-previo.md`). Copiar la fórmula de
-   "Categoría de Lead" de Looker en `estado-previo.md` y aplicar la que usa `Lead Type` si tiene
-   valor y si no `item_category`/`location` (sirve antes y después del corte).
-4. **Línea base.** Está en `linea-base.md` (sacada el 2026-10-27); en D-1 se suma el día 27.
-   Con unos 13 contactos por día no sirve un abort por porcentaje en el día: se decide con los
-   clics de prueba y con la rotura de estructura (ver la vigilancia). Desde la salida el clic con
-   la ruedita del mouse también cuenta: los contactos pueden subir un poco.
-5. **Avisos con fecha y franja horaria:** agencia (borrador en `mensajes-fase1.md`, con el punto
-   del Pixel), cliente y **equipo de ventas** (el "(Ref. web XXXXX)" les aparece desde ese día,
-   solo en los chats de quien aceptó las cookies).
-6. **Sesiones abiertas** en el perfil de Chrome correcto: Vercel, GitHub, GTM, GA4 y Looker. Los
-   códigos de respaldo del 2FA a mano.
+\* "La página cambia en función de los eventos del historial de navegación", "Interacciones con
+formularios" y "Búsquedas en el sitio". Los clics de salida quedan prendidos siempre: no
+duplican nada y sirven de control (clics a wa.me contra nuestros `whatsapp_click`).
 
-### Día de la salida (D), martes o miércoles desde las 9:30
+**Regla: GTM v10 y las 3 opciones apagadas van siempre juntas.** v10 con las opciones prendidas
+duplica `page_view` y mezcla el `form_submit` y el `view_search_results` automáticos de GA4 con
+los nuestros; v9 con las opciones apagadas deja de contar las navegaciones sin recarga (la v9 no
+tiene etiqueta de `page_view`). Por eso el código es una etapa y GTM + GA4 es otra.
 
-| Hora | Paso | Criterio para seguir | Abort |
+| Código | GTM | 3 opciones | Resultado |
 |---|---|---|---|
-| 9:30 | **Código.** `main` ← `staging` (`--no-ff`), push, esperar "Ready"; anotar el SHA del merge en `main` (`git rev-parse HEAD`) y el ID del despliegue nuevo | `node scripts/smoke.mjs https://indiana.com.ar` 14/14; en Red, los `collect` a `G-9HJ64VGVLH` sin `_dbg` ni `ep.debug_mode`; con cookies aceptadas cargan `GTM-M2J2LBRD` y `fbevents.js`; con rechazadas, el Pixel no manda `PageView` | Build fallido (no se toca nada más) o un criterio falla → Instant Rollback al despliegue anotado |
-| 9:45 | **Un clic de prueba** de WhatsApp desde la oficina, con la v9 todavía publicada | En Tiempo real: `whatsapp_click` y `generate_lead` en menos de 2 min. Anotar su `lead_ref` | Falta `generate_lead` → volver el código |
-| 9:50 | **GTM.** Comprobar en pantalla espacio "medicion-simple" y las 8 etiquetas; publicar con nombre `v10 medicion-simple AAAA-MM-DD` y descripción "volver = publicar v9" | — | — |
-| 9:50 | **GA4, en el mismo minuto.** Medición mejorada: apagar "cambios de página según el historial", "interacciones con formularios" y "búsquedas en el sitio". **Dejar prendidos los clics de salida** (no duplican nada y sirven de control: clics a wa.me contra nuestros `whatsapp_click`) | — | — |
-| 10:05 | **Esperar** 15 min de caché de `gtm.js`; después un clic de prueba en una ventana de incógnito | `npm run gtm:publicado` da "Todo ok" (versión posterior a la 9, sin activador de `generate_lead`); `whatsapp_click` y `generate_lead` en Tiempo real; `page_view` una sola vez por navegación (en Red) | `gtm:publicado` no da "Todo ok", falta `generate_lead` o hay `page_view` doble → publicar v9 y prender las 3 opciones |
-| 10:25 | **Anotar** en GA4 y Looker las horas de código, GTM y medición mejorada; tag de git `release/medicion-simple`; mensaje "listo" a agencia, cliente y ventas | — | — |
-| hasta 18:00 | **Vigilar** Tiempo real cada 2 h y los runtime logs de Vercel en la primera hora | — | `whatsapp_click` de personas reales en Tiempo real y ningún `generate_lead` durante 2 h, o visitas dobles por navegación (el volumen es bajo para un porcentaje: `linea-base.md`) → volver atrás: primero GTM v9 + las 3 opciones; si en 30 min no mejora, el código. (Los informes estándar tardan horas: mirar Tiempo real antes de decidir.) |
+| viejo | v9 | prendidas | ✅ A |
+| nuevo | v9 | prendidas | ✅ B |
+| nuevo | v10 | apagadas | ✅ C |
+| viejo | v10 | apagadas | ⚠️ Leads bien; el código viejo manda un `page_view` por cada filtro del listado. Solo minutos |
+| cualquiera | v10 | prendidas | ❌ visitas dobles; formularios y búsquedas mezclados |
+| cualquiera | v9 | apagadas | ❌ se pierden las visitas sin recarga |
 
-Las pruebas en producción cuentan como leads reales y le llegan a la agencia: como máximo 2,
-anotadas con su `lead_ref`.
+Toda vuelta atrás termina en un estado ✅ (ver "Volver atrás").
 
-### Día siguiente (D+1)
+### Qué prueba qué
 
-1. Informe del día D en GA4:
+| Pregunta | Prueba que la responde | No alcanza |
+|---|---|---|
+| ¿El sitio funciona? | `node scripts/smoke.mjs https://indiana.com.ar` 14/14, WhatsApp abre al primer clic, el cartel aparece, consola sin errores nuevos | — |
+| ¿El navegador mandó el evento? | Herramientas de desarrollo → Red → `collect` a `G-9HJ64VGVLH` | — |
+| ¿GA4 lo recibió? | Tiempo real o DebugView: el evento suma 1 **con el `lead_ref` del clic de prueba** (en B, que no manda `lead_ref`, con el auto elegido y la hora anotada) | Red: el envío puede salir y GA4 descartarlo |
+| ¿GA4 lo procesó? | Informes estándar y Looker al día siguiente | Tiempo real |
+| ¿Cumple con el consentimiento? | Red y cookies del navegador (ver "Consentimiento: qué mirar") | GA4: lo enviado sin permiso no aparece en ningún informe |
+
+Un evento se da por bueno cuando GA4 lo muestra con el código del clic de prueba, no cuando
+aparece en Red. Las pruebas en producción cuentan como leads reales y le llegan a la agencia:
+como máximo 3, anotadas con su `lead_ref`.
+
+### Etapa 0: condiciones para empezar (A)
+
+Todas, comprobadas el mismo día. Si falta una, no se empieza.
+
+1. `origin/staging` = `0d46ac6`, `origin/main` = `04ef6eb` (`git fetch && git rev-parse`).
+2. GTM publicado: versión 9 (`npm run gtm:publicado` dice "versión 9"). Espacio
+   "medicion-simple": 42 cambios (15 añadidos, 27 eliminados), sin avisos de conflicto.
+3. Producción en `dpl_AzSxqQN1UfnEbHmF4UfoC9Hemarg` (`main@04ef6eb`), sin despliegues de
+   producción posteriores: en el plan Hobby solo se puede volver al despliegue de producción
+   inmediatamente anterior.
+4. Marca del código viejo: `curl -s https://indiana.com.ar/ | grep -c "consent','revoke'"` da
+   **0** (el código nuevo trae el Pixel en pausa y da 1 o más).
+5. Avisos enviados (agencia, cliente, ventas: `mensajes-fase1.md`).
+6. Sesiones abiertas: GTM, GA4 y Looker (`infodigital@indiana.com.ar`, perfil "peugeot
+   indiana"), Vercel (perfil "gona") y `git push` desde la computadora.
+7. **2FA:** Gonzalo puede completar él mismo, en el momento, una verificación de
+   `infodigital@indiana.com.ar` (hoy el segundo paso le llega a otra persona: si se depende de
+   ella, tiene que estar disponible durante toda la salida). Los códigos **nunca** pasan por el
+   chat: si una pantalla pide verificación, Claude avisa y Gonzalo la completa en el navegador.
+8. Gonzalo autoriza de antemano las vueltas atrás de esta salida: si se cumple una condición de
+   detención, se vuelve atrás sin esperar otra confirmación (ver "Volver atrás").
+
+### Etapa 1: código nuevo (A → B)
+
+| Paso | Qué | Quién | Para seguir | Se detiene si |
+|---|---|---|---|---|
+| 1.1 | `git checkout main && git pull --ff-only && git merge --no-ff staging -m "merge: publicar medicion simple a produccion"`, `git push`; esperar "Ready" en Vercel. Anotar el SHA del merge y el ID del despliegue | Claude, con OK de Gonzalo en el momento | Despliegue "Ready" y la marca del paso 0.4 da 1 o más | El build falla: producción no cambió, no se toca nada más |
+| 1.2 | ¿El sitio funciona? (tabla "Qué prueba qué") | Claude | Las 4 pruebas bien | Algo no carga → Instant Rollback (B → A) |
+| 1.3 | Consentimiento y Pixel: los 3 escenarios de "Consentimiento: qué mirar" | Claude, Gonzalo mira | Los 3 escenarios dan lo esperado | Resultado legal incorrecto → B → A inmediato |
+| 1.4 | En Red, los `collect` sin `_dbg` ni `ep.debug_mode` | Claude | Ninguno lo lleva | Alguno lo lleva → B → A (esos datos quedarían fuera de los informes) |
+| 1.5 | Clic de prueba de WhatsApp desde una ficha elegida antes, con cookies aceptadas | Gonzalo hace el clic, Claude lee GA4 | En Tiempo real, en menos de 5 min: `whatsapp_click` +1 y `generate_lead` +1 con ese auto; el mensaje termina en "(Ref. web XXXXX)" | Falta `generate_lead` → B → A |
+| 1.6 | Observar B al menos 1 hora | Claude | Contactos de personas reales, cada uno con su `generate_lead` | Contactos reales sin `generate_lead` → B → A |
+
+Al cerrar la etapa 1 se decide si la etapa 2 va ese día u otro: B es estable.
+
+### Etapa 2: GTM v10 + GA4, una sola unidad (B → C)
+
+| Paso | Qué | Quién | Para seguir | Se detiene si |
+|---|---|---|---|---|
+| 2.1 | GA4 → Flujo web → Medición mejorada: apagar las 3 opciones; los clics de salida quedan prendidos. Guardar | Gonzalo hace clic, Claude guía | Reabriendo el panel, las 3 apagadas | — |
+| 2.2 | Enseguida: GTM → espacio "medicion-simple" → comprobar en pantalla el nombre del espacio, 42 cambios y la etiqueta "generate_lead (puente…)" → Enviar → Publicar, nombre `v10 medicion-simple AAAA-MM-DD`, descripción "volver = publicar v9" | Gonzalo hace clic, Claude guía | Versiones: v10 "Publicada" | GTM no deja publicar → volver a prender las 3 opciones (B) |
+| 2.3 | Esperar 15 min (caché de `gtm.js`) y `npm run gtm:publicado` | Claude | "Todo ok" | Un faltante: comprobarlo a mano en Tiempo real; si es real → C → B |
+| 2.4 | Clic de prueba en incógnito con cookies aceptadas; anotar su "Ref. web" | Gonzalo hace el clic, Claude lee GA4 | Tiempo real: en `whatsapp_click` y en `generate_lead`, el parámetro `lead_ref` muestra ese código una vez cada uno | Aparece dos veces en `generate_lead` o no aparece → C → B |
+| 2.5 | Navegar 3 páginas en esa ventana | Claude | Red: un `page_view` por página. Tiempo real: `page_view` +3 | +6 → revisar que las 3 opciones quedaron apagadas; si lo están → C → B |
+| 2.6 | Clic con cookies rechazadas, en otra ventana de incógnito | Gonzalo | El mensaje sale sin "(Ref. web)"; nada a `facebook.com/tr` | Envíos a Meta → B → A del código (ver "Volver atrás") |
+| 2.7 | Anotaciones en GA4 y Looker (horas de código, GTM y medición mejorada), tag de git `release/medicion-simple`, mensaje "listo" | Claude y Gonzalo | — | — |
+| 2.8 | Vigilar Tiempo real cada 2 h el resto del día y los runtime logs de Vercel en la primera hora | Claude | Contactos reales con su `generate_lead` | 2 h con `whatsapp_click` reales y ningún `generate_lead`, o visitas dobles → C → B; si en 30 min no mejora, B → A |
+
+El orden 2.1 → 2.2 es a propósito: en los ~15 min de caché conviven visitantes con la
+configuración vieja y la nueva. Con GA4 primero, el error posible es contar de menos algunas
+navegaciones; con GTM primero sería contar doble. Contar de menos no ensucia los promedios.
+
+### Etapa 3: confirmación en informes (C, día siguiente)
+
+1. Informe del día de la salida en GA4:
    - `generate_lead` / (`whatsapp_click` + `phone_click` + `form_submit` de careers) entre 0,95 y 1,05;
-   - personas que contactaron entre 7 y 28 (rango de las últimas 4 semanas, `linea-base.md`);
+   - personas que contactaron dentro del rango de `linea-base.md` (el 2026-11-01 es anómalo:
+     no cuenta para el rango);
    - visitas por persona entre 2,5 y 4 (puede bajar un poco; no duplicarse);
    - ningún evento con `debug_mode` en los informes.
-2. Fuera de rango: investigar en menos de 4 h y decidir si se vuelve atrás.
-3. Looker: Leads, % Conversión y la torta (Looker puede tardar horas en refrescar: se mira en D+1).
+2. Looker: Leads y % Conversión dentro del rango; en la torta "Categoría de Lead", el clic de
+   prueba de la ficha de un usado cae en **"Usados"** (fórmula v2, `estado-previo.md`).
+3. Fuera de rango: investigar en menos de 4 h y decidir si se vuelve atrás.
 4. Pedir a la agencia sus conversiones de Ads y Meta contra la semana anterior.
-5. Levantar el congelamiento.
+5. Levantar el congelamiento de `staging` y `main` recién después del control a los 7 días (el
+   rollback rápido de Vercel solo llega al despliegue inmediatamente anterior).
+
+## Consentimiento: qué mirar
+
+Cada escenario en una ventana de incógnito **nueva** (sin cookies ni `localStorage` de antes).
+Herramientas de desarrollo → **Red**, filtrando `collect` (Google) y `facebook` (Meta), y →
+**Aplicación → Cookies** de `indiana.com.ar`.
+
+| Escenario | Google (`collect` a `G-9HJ64VGVLH` y envíos de Ads de la agencia) | Cookies de Google | Meta | Cookie de Meta |
+|---|---|---|---|---|
+| **Sin responder** | Salen envíos con `gcs=G100` | **No** hay `_ga` ni `_ga_9HJ64VGVLH` | Se descarga `fbevents.js`; **ningún** envío a `facebook.com/tr` | **No** hay `_fbp` |
+| **Rechazar** | Siguen con `gcs=G100`. `localStorage` → `indiana_consent_v1` con `analytics:false, ads:false`. Al recargar, el cartel no vuelve | **No** hay `_ga` | Ningún `facebook.com/tr` | **No** hay `_fbp` |
+| **Aceptar** | Desde ahí, `gcs=G111`; sale de nuevo el `page_view` de la página (reenvío al aceptar tarde, con la campaña de entrada) | **Aparecen** `_ga` y `_ga_9HJ64VGVLH` | Aparece `facebook.com/tr?…ev=PageView` (seguro desde la página siguiente; en la misma página puede salir el retenido: no comprobado) | **Aparece** `_fbp` |
+| **Aceptar y recargar** | El primer envío ya sale con `gcs=G111` | Siguen | `PageView` al cargar | Sigue |
+
+`gcs` es `G1` + publicidad + analítica (1 concedido, 0 denegado): `G100` todo denegado, `G111`
+todo concedido. Con nuestro cartel (solo "Aceptar todas" y "Rechazar") no deberían verse `G101`
+ni `G110`. `gcd` lleva el detalle de las 4 señales de Consent Mode v2: es secundario, se mira
+`gcs`.
+
+| Resultado incorrecto | Qué significa | Gravedad | Qué se hace |
+|---|---|---|---|
+| `G111`, `_ga` o `_ga_…` antes de aceptar, o después de rechazar | Google mide con cookies sin permiso | **Legal** | Inmediato: B → A (o C → B → A) |
+| `facebook.com/tr` o `_fbp` antes de aceptar, o después de rechazar | Meta recibe sin permiso | **Legal** | Inmediato: B → A (o C → B → A) |
+| Después de aceptar sigue `G100` o no aparece `_ga` | No mide a quien aceptó | Funcional | B → A e investigar |
+| Después de aceptar no hay `facebook.com/tr` | La agencia pierde datos de Meta | Funcional (agencia) | B → A, avisar a la agencia, corregir en una rama |
+| Falta "(Ref. web)" con cookies aceptadas | Solo afecta a ventas | Menor | No se vuelve atrás; se corrige en una rama |
+
+**Señal técnica no es cumplimiento legal.** Estas pruebas demuestran qué sale del navegador en
+cada caso. No demuestran que el diseño cumpla la ley, que depende de cosas que estas pruebas no
+miran y que decide el cliente con su abogado (`docs/PLAN.md`, D1 y D2):
+
+- el sitio todavía no tiene política de privacidad (`/privacidad` da error) y el cartel no la
+  enlaza;
+- antes de responder, Google recibe envíos **sin cookies** (`G100`) y el navegador descarga la
+  librería de Meta (`fbevents.js`) aunque no mande eventos: los dos le muestran a Google y a Meta
+  la IP y el navegador. Es el funcionamiento estándar de Consent Mode v2 "avanzado"; hay
+  interpretaciones estrictas que piden no cargar nada antes del permiso.
 
 ## Riesgos importantes
 
@@ -162,7 +257,8 @@ anotadas con su `lead_ref`.
    las salidas en menos de medio segundo. **Contactos por modelo** sí sube: el WhatsApp
    flotante (70% de los contactos) ahora dice de qué auto es. Anotarlo en GA4 y Looker ese día.
 4. **Lo que se rompe del tablero viejo.** La torta "Categoría de Lead": usa `Lead Type`,
-   que el `whatsapp_click` nuevo ya no manda. Se arregla en D-1 (paso 3). Además dejan de
+   que el `whatsapp_click` nuevo ya no manda. Arreglado el 2026-11-02 con la fórmula v2, que
+   reproduce la clasificación vieja (`estado-previo.md`). Además dejan de
    recibir datos las dimensiones viejas `vertical`, Message Template ID, `component_source`,
    Modelo y `success`: revisar que ningún otro gráfico las use. Las tablas de
    vistas/contactos por modelo siguen (usan `item_name` e `item_category`). Las 7
@@ -220,36 +316,79 @@ anotadas con su `lead_ref`.
 
 ## Volver atrás
 
-Detalle de cada consola en `estado-previo.md`. Con el aviso de compatibilidad, código y GTM se
-vuelven atrás **por separado**: se vuelve solo la pieza que falló.
+Detalle de cada consola en `estado-previo.md`. Toda vuelta atrás termina en un estado ✅ (ver
+"Los tres estados"): de C se vuelve a B, de B a A, y de C a A se pasa por B. Cuando se cumple
+una condición de detención se vuelve atrás sin discutir (autorizado en el paso 0.8) y se
+investiga después.
 
-1. **Código, en minutos:** Vercel → Deployments → el despliegue anotado en D-1 → Instant Rollback
-   (o `vercel rollback <url anotada>`). En el plan Hobby solo se puede volver al despliegue
-   inmediatamente anterior: por eso se anota y no se redespliega nada entre D-1 y D.
-2. **GTM:** Versiones → versión 9 → Publicar. En el mismo minuto, en GA4 volver a prender las 3
-   opciones de la medición mejorada que se apagaron.
-3. **Comprobar:** un clic de prueba muestra `generate_lead` en Tiempo real y, pasados 15 min,
-   `npm run gtm:publicado` muestra "versión 9" (fallan 8 chequeos: es lo esperado con la v9).
-4. **El mismo día, la vuelta atrás definitiva en git**, si el código no vuelve a salir:
-   - revertir el merge en `main` **y también en `staging`** (si solo se revierte en `main`,
-     `staging` sigue con el código nuevo y el próximo pase lo vuelve a llevar, o lo lleva a
-     medias);
-   - comandos (es la única excepción a "nunca commitear directo a main/staging" de CLAUDE.md):
+### C → B: GTM v9 y las 3 opciones prendidas
 
-     ```
-     git fetch origin
-     git checkout main && git pull --ff-only
-     git revert -m 1 <sha del merge de la salida en main> --no-edit && git push origin main
-     git checkout staging && git pull --ff-only
-     git revert -m 1 <sha del merge de la rama en staging> --no-edit && git push origin staging
-     ```
+1. **GTM:** Versiones → versión 9 → menú ⋮ → **Publicar**.
+   - Comprobar: en Versiones, la 9 figura "Publicada". La v10 queda en la lista: para
+     reintentar se publica de nuevo la v10, sin reimportar nada.
+   - Si la 9 no estuviera: importar `docs/analytics/backup/GTM-TPJCFTBB_v9.json` en un espacio
+     nuevo con **Sobrescribir** y publicar (`estado-previo.md`).
+2. **Enseguida, GA4:** Flujo web → Medición mejorada → prender "La página cambia en función de
+   los eventos del historial de navegación" (en la configuración avanzada de Vistas de página),
+   "Interacciones con formularios" y "Búsquedas en el sitio" → Guardar.
+   - Comprobar: reabriendo el panel, las 7 opciones prendidas; en Historial de cambios de la
+     propiedad, una entrada nueva de la medición mejorada.
+   - El orden (GTM primero) es el inverso de la etapa 2, por el mismo motivo: en los minutos de
+     caché el error posible es contar de menos, no doble.
+3. **Comprobar B, pasados 15 min:**
+   - `npm run gtm:publicado` muestra "versión 9" (fallan 8 chequeos: es lo esperado con la v9);
+   - clic de prueba: `whatsapp_click` y `generate_lead` +1 en Tiempo real;
+   - 3 páginas navegadas: `page_view` +3 en Tiempo real.
 
-   - esperar que el despliegue del revert (`main@<sha del revert>`) quede en "Ready"; después
-     Vercel → Undo Rollback → **elegir ese despliegue** (no el de la salida) → Confirm. Undo
-     Rollback promueve el despliegue que se elige: si se elige el de la salida, vuelve el código
-     nuevo. Equivalente: `vercel promote <url del despliegue del revert>`. Comprobar con
-     `node scripts/smoke.mjs https://indiana.com.ar` y un clic de prueba;
-   - para reintentar más adelante: rama nueva desde `staging` y `git revert <sha del revert en
-     staging>`. **No** volver a mergear `refactor/medicion-simple`: git responde "Already up to
-     date" y no trae nada (comprobado en simulación el 2026-10-27).
-5. Avisar a la agencia, al cliente y a ventas.
+### B → A: código viejo, en minutos
+
+1. **Vercel** (perfil "gona", pestaña nueva) → proyecto `indiana-next` → Deployments →
+   `dpl_AzSxqQN1UfnEbHmF4UfoC9Hemarg` (`main@04ef6eb`) → **Instant Rollback** → confirmar.
+   Equivalente: `vercel rollback <url de ese despliegue>`. En el plan Hobby solo se puede volver
+   al despliegue de producción **inmediatamente anterior**: por eso no se despliega nada a
+   producción entre la etapa 0 y la salida.
+2. **Comprobar:**
+   - `curl -s https://indiana.com.ar/ | grep -c "consent','revoke'"` da **0** (código viejo);
+   - `node scripts/smoke.mjs https://indiana.com.ar` 14/14;
+   - clic de prueba: `whatsapp_click` y `generate_lead` en Tiempo real (el código viejo los
+     empuja los dos).
+3. **Efecto en los despliegues siguientes:** después de un Instant Rollback, Vercel **deja de
+   asignar el dominio de producción** a los despliegues nuevos. Lo que se suba a `main` se
+   construye pero **no se publica**. Esto es lo que se quiere mientras se investiga.
+
+### Volver al flujo normal de despliegue
+
+Si el código no vuelve a salir ese día, la vuelta atrás definitiva se hace en git y después se
+reactiva el flujo de Vercel:
+
+1. Revertir el merge en `main` **y también en `staging`** (si solo se revierte en `main`,
+   `staging` sigue con el código nuevo y el próximo pase lo vuelve a llevar, o lo lleva a
+   medias). Es la única excepción a "nunca commitear directo a main/staging" de CLAUDE.md:
+
+   ```
+   git fetch origin
+   git checkout main && git pull --ff-only
+   git revert -m 1 <sha del merge de la salida en main> --no-edit && git push origin main
+   git checkout staging && git pull --ff-only
+   git revert -m 1 <sha del merge de la rama en staging> --no-edit && git push origin staging
+   ```
+
+2. Esperar que el despliegue del revert (`main@<sha del revert>`) quede en "Ready". Por el
+   rollback, todavía **no** está en producción.
+3. **Promoverlo:** Vercel → ese despliegue → ⋮ → **Promote to Production**, o
+   `vercel promote <url del despliegue del revert>`. Promover **vuelve a activar la asignación
+   automática del dominio** (documentación de Vercel, "Instant Rollback"). Ojo: promover el
+   despliegue de la salida en vez del revert vuelve a poner el código nuevo.
+4. Comprobar: la marca del paso 0.4 da 0, `smoke.mjs` 14/14, y que el siguiente push a `main`
+   (por ejemplo, un cambio de documentación) quede publicado solo.
+5. Para reintentar la salida más adelante: rama nueva desde `staging` y `git revert <sha del
+   revert en staging>`. **No** volver a mergear `refactor/medicion-simple`: git responde
+   "Already up to date" y no trae nada (comprobado en simulación el 2026-10-27).
+
+Si en cambio se corrige el problema y el código nuevo vuelve a salir, el despliegue nuevo se
+promueve igual (paso 3), y eso también reactiva el flujo normal.
+
+### Después de cualquier vuelta atrás
+
+Avisar a la agencia, al cliente y a ventas, y anotar en este documento qué falló, en qué paso y
+en qué estado quedó el sitio.
