@@ -518,8 +518,8 @@ mirar". Ahí no se pide otra confirmación:
 | Acción | Quién la hace | Lleva a |
 |---|---|---|
 | Vercel: Instant Rollback a `dpl_AzSxqQN1UfnEbHmF4UfoC9Hemarg` | Claude, apenas se cumple la condición (Gonzalo mira si está) | B → A |
-| GTM: publicar la versión 9 | Gonzalo, guiado por Claude. Si no responde al aviso en 15 min, Claude | C → B |
-| GA4: prender las 3 opciones de la medición mejorada, después de comprobar la v9 | Igual que GTM | C → B |
+| GTM: publicar la versión 9 | **No está autorizado de antemano.** Claude avisa y pide autorización expresa en el momento; con el OK, Gonzalo lo hace guiado por Claude | C → B |
+| GA4: prender las 3 opciones de la medición mejorada, después de comprobar la v9 | Igual que GTM: autorización expresa en el momento | C → B |
 | Dejar de avanzar (no pasar a la etapa siguiente) | Cualquiera de los dos | — |
 
 Reglas en una vuelta atrás:
@@ -630,3 +630,8 @@ cuando se mande.
   mensaje. Tiempo real: `whatsapp_click` 1 y `generate_lead` 1 con ese auto. Se descuenta en los
   controles.
 - Observación 1.6 hasta 16:40: contactos reales con su `generate_lead`, uno a uno.
+- Autorización previa (0.8), dada por Gonzalo al autorizar la etapa 1: Claude puede hacer el
+  Instant Rollback ante una condición de detención escrita. Volver GTM a la v9 y prender las 3
+  opciones de GA4 **siempre** lleva su autorización expresa en el momento; si no responde, no se
+  hace (se quitó la regla de los 15 minutos).
+- Quedan sin probar con tráfico real: `phone_click`, `form_submit` y el WhatsApp flotante.
