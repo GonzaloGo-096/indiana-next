@@ -143,7 +143,8 @@ Todas, comprobadas el mismo día. Si falta una, no se empieza.
    "medicion-simple": 42 cambios (15 añadidos, 27 eliminados), sin avisos de conflicto.
 3. Producción en `dpl_AzSxqQN1UfnEbHmF4UfoC9Hemarg` (`main@04ef6eb`), sin despliegues de
    producción posteriores: en el plan Hobby solo se puede volver al despliegue de producción
-   inmediatamente anterior.
+   inmediatamente anterior. En Vercel → Settings → Git → Deploy Hooks, ninguno apunta a `main`
+   (ver "Congelamiento hasta el control a los 7 días").
 4. Marca del código publicado. Los scripts de medición no están en el HTML sino en los JS que
    carga la portada; este comando los recorre:
 
@@ -196,18 +197,155 @@ navegaciones; con GTM primero sería contar doble. Contar de menos no ensucia lo
 
 ### Etapa 3: confirmación en informes (C, día siguiente)
 
-1. Informe del día de la salida en GA4:
-   - `generate_lead` / (`whatsapp_click` + `phone_click` + `form_submit` de careers) entre 0,95 y 1,05;
-   - personas que contactaron dentro del rango de `linea-base.md` (el 2026-11-01 es anómalo:
-     no cuenta para el rango);
+1. Día de la salida en GA4:
+   - leads contra contactos, con el procedimiento de "Validación de leads en GA4" (lectura
+     provisoria; la definitiva es a los 2 días);
    - visitas por persona entre 2,5 y 4 (puede bajar un poco; no duplicarse);
    - ningún evento con `debug_mode` en los informes.
 2. Looker: Leads y % Conversión dentro del rango; en la torta "Categoría de Lead", el clic de
    prueba de la ficha de un usado cae en **"Usados"** (fórmula v2, `estado-previo.md`).
 3. Fuera de rango: investigar en menos de 4 h y decidir si se vuelve atrás.
-4. Pedir a la agencia sus conversiones de Ads y Meta contra la semana anterior.
-5. Levantar el congelamiento de `staging` y `main` recién después del control a los 7 días (el
-   rollback rápido de Vercel solo llega al despliegue inmediatamente anterior).
+4. Pedir a la agencia los datos de "Conversiones de la agencia".
+5. Sigue el congelamiento hasta el control a los 7 días (ver "Congelamiento hasta el control a
+   los 7 días").
+
+### Control a los 7 días (D+7): cuándo la medición está terminada
+
+1. Siete días en C sin vuelta atrás.
+2. Leads contra contactos: los tres controles de "Validación de leads en GA4" bien, cada día y
+   en el acumulado.
+3. Personas que contactaron: **la semana completa** dentro del rango de las semanas de
+   `linea-base.md` (entre la peor y la mejor; el 2026-11-01 es anómalo y no cuenta). No se
+   compara día por día: con ~13 personas por día la variación diaria es mayor que cualquier
+   margen útil.
+4. Looker: Leads y % Conversión dentro del rango, y la torta clasificando bien.
+5. Consentimiento: se repiten "Rechazar" y "Aceptar" de "Consentimiento: qué mirar", en
+   producción, y dan lo esperado.
+6. Agencia: Google Ads sin cambios; Meta leído con "Conversiones de la agencia".
+
+Con todo bien, y con OK de Gonzalo: se mezcla la rama de documentación, se levanta el
+congelamiento y se marca la etapa A como terminada en `docs/PLAN.md`.
+
+### Validación de leads en GA4
+
+Cada contacto (WhatsApp, teléfono, postulación a empleo) genera **un** `generate_lead`: lo
+garantiza el código y lo prueba el test de contrato. Los dos eventos salen del mismo clic, en el
+mismo momento y con el mismo consentimiento. Por eso el valor esperado de la diferencia es
+**exactamente 0**, y una diferencia es una falla (por ejemplo, el puente que no se dispara), no
+ruido. Con ~30 contactos por día un porcentaje engaña: un solo evento perdido ya es más del 3%,
+y en una semana de 200 un margen del 5% esconde 10.
+
+**Cómo se arma la comparación**, para que los dos lados se midan igual:
+
+| Qué | Cómo | Por qué |
+|---|---|---|
+| Herramienta | GA4 → Explorar → **Exploración libre** "Validación leads salida". Los dos eventos en **la misma tabla** | Misma fuente, mismo rango, mismos filtros para las dos filas. No se compara un número de GA4 con uno de Looker ni de Tiempo real: Looker tiene hasta 12 h de caché y Tiempo real mira 30 min |
+| Zona horaria | La de la propiedad: (GMT-03:00) hora de Buenos Aires (comprobado el 2026-11-03 en Administrar → Detalles de la propiedad). Las exploraciones siempre usan esa | Que "un día" sea el mismo día para los dos eventos |
+| Fechas | Rango personalizado de **un solo día** (inicio = fin). Lectura provisoria al día siguiente; **definitiva a los 2 días** | GA4 termina de procesar en 24 a 48 h. Si el número cambia entre las dos lecturas, era procesamiento |
+| Métrica | **Número de eventos**, la misma para todas las filas | No usar "Usuarios" ni "Eventos clave": cuentan otra cosa |
+| Tabla 1 | Filas: **Nombre del evento**. Filtro: el nombre coincide exactamente con `generate_lead`, `whatsapp_click`, `phone_click` o `form_submit` | La diferencia del día |
+| Tabla 2 | Filas: **Nombre del evento** y **Lead Source**. Mismo filtro | Cada canal contra su evento: `whatsapp` ↔ `whatsapp_click`, `phone` ↔ `phone_click`, `form` ↔ `form_submit` |
+| Sin segmentos ni comparaciones | Ningún segmento, ninguna comparación, ningún filtro de hostname | Cualquier filtro extra se aplicaría distinto a cada evento |
+| Muestreo | El indicador de la exploración tiene que decir que usa el 100% de los datos | Con muestreo, los números son estimados |
+
+**`form_submit`:** el sitio solo lo manda en la postulación de empleo, pero mientras las 3
+opciones de GA4 están prendidas (A y B), GA4 suma su `form_submit` automático y la comparación
+no sirve (no hay dimensión `form_id` registrada para separarlos). Por eso el control vale para
+los **días completos en C**. El día de la salida se mira con la dimensión **Hora**, solo desde la
+hora siguiente al paso 2.3.
+
+**Los tres controles:**
+
+| Control | Pasa si | Se investiga si |
+|---|---|---|
+| Diferencia del día: `generate_lead` − (`whatsapp_click` + `phone_click` + `form_submit`) | Da 0 | Da 2 o más, en cualquier sentido |
+| Por canal (tabla 2) | Cada par coincide; ningún `generate_lead` con Lead Source `(not set)` | Un canal falla (señala qué activador del puente está mal) |
+| Acumulado de la semana: la suma de las diferencias de los 7 días | 2 o menos | 3 o más, o siempre con el mismo signo |
+
+Una diferencia de 1 se acepta solo con causa conocida (por ejemplo, los 15 min de caché del día
+de la salida). Cada lectura se anota en este documento: fecha, los 4 números y la diferencia.
+
+### Conversiones de la agencia
+
+**Qué se les pide**, por día, desde el 2026-10-20 hasta la salida y la semana siguiente:
+
+| Fuente | Datos |
+|---|---|
+| Google Ads | Por cada una de las 6 acciones de conversión: conversiones **por hora de la conversión** (no por fecha del clic: esas se siguen sumando días después) y clics |
+| Meta (Administrador de eventos del Pixel) | `PageView` y cada evento de contacto que usen (que nos digan sus nombres) |
+| Su GA4 (`G-9BJB9NYSBF`), opcional | `page_view`: tiene que quedar igual, sirve de control |
+
+**Google Ads: no debería cambiar.** La salida no toca la parte de Google (el cartel y Consent
+Mode ya están en producción) ni los textos de sus botones. Pasa si las conversiones por clic de la
+semana quedan dentro del rango de las semanas anteriores. Si baja una sola acción, puede ser un
+texto o un botón que cambió; si bajan todas, algo de la carga de su contenedor.
+
+**Meta: va a bajar, y es lo esperado.** Desde la salida el Pixel solo manda lo de quienes aceptan
+el cartel.
+
+**La prueba principal de Meta es técnica, no estadística:** los escenarios de "Consentimiento:
+qué mirar" y la "Prueba del PageView retenido", en la etapa 1, en el paso 2.6 y otra vez a los 7
+días. Ahí se ve directamente que antes de aceptar no sale nada y que al aceptar sí.
+
+Los números de Meta son un **indicador orientativo**, no una condición matemática. Como la pausa
+afecta a todos los eventos por igual, la baja por consentimiento debería ser **parecida** en
+`PageView` y en contactos. No se exige una proporción exacta: con poco volumen, las dos bajas
+pueden diferir sin que haya falla. Sirven para decidir **qué mirar**:
+
+| Lo que se ve | Lectura | Qué se hace |
+|---|---|---|
+| `PageView` y contactos bajan en una proporción parecida | Consentimiento | Nada |
+| Los contactos bajan bastante más que los `PageView` | Puede haber una falla de contactos | Repetir la prueba técnica con un clic aceptado |
+| `PageView` en 0 o casi 0 | El Pixel no carga o no recibe el permiso | Repetir la prueba técnica; si falla, es la falla funcional de "Consentimiento: qué mirar" |
+| No bajan nada | La pausa no funciona | Repetir la prueba técnica; si sale algo antes de aceptar, es falla **legal** |
+
+La decisión de volver atrás sale siempre de la prueba técnica, nunca solo de los números.
+
+### Congelamiento hasta el control a los 7 días
+
+**Qué es:** desde la etapa 0 hasta el control de D+7 no se mezcla ni se sube nada a `staging` ni
+a `main`, no se publica nada en GTM y no se cambia la configuración de GA4.
+
+**Cómo funciona la vuelta atrás en nuestro plan** (Vercel Hobby; documentación de `vercel
+rollback` y API de Vercel, consultadas el 2026-11-03):
+
+- Instant Rollback lleva producción al despliegue de producción **inmediatamente anterior**, y
+  solo a ese. Pedir uno más viejo da el error "To roll back further than the previous production
+  deployment, upgrade to pro".
+- Hoy: producción es `dpl_AzSxqQN1UfnEbHmF4UfoC9Hemarg` (`main@04ef6eb`, A); el anterior es
+  `dpl_8iw4nZXAD6kWsdL52sCULbnSuJMH` (`main@7b99624`).
+- Después del paso 1.1: producción es el despliegue de la salida y el anterior pasa a ser
+  `dpl_AzSx…` (A). **Ese es el destino que hay que conservar.**
+
+**Qué mueve el destino** (todo lo que crea un despliegue de **producción**):
+
+| Acción | ¿Mueve el destino? |
+|---|---|
+| Push o merge a `main` (rama de producción), aunque sea solo documentación | **Sí** |
+| "Redeploy" de un despliegue de producción en el panel de Vercel, aunque sea el mismo código | **Sí** |
+| `vercel --prod` o `vercel deploy --prod` desde la computadora | **Sí** |
+| "Promote to Production" de cualquier despliegue | **Sí** |
+| Un deploy hook que apunte a `main` (no verificado si existe: se mira en Settings → Git → Deploy Hooks en la etapa 0) | **Sí** |
+| Cambiar una variable de entorno de producción | Por sí solo no, pero para que tome efecto hace falta un redeploy, que sí |
+| Push a `staging` o a cualquier otra rama | No: son vistas previas (`target: null`, comprobado) |
+| Cambios en GTM, GA4 o Looker | No (pero se congelan por la comparación) |
+
+Si el destino se mueve, volver a A deja de ser un clic: hace falta el `git revert` y un despliegue
+nuevo ("Volver al flujo normal de despliegue"), en medio de un problema.
+
+**Qué más evita el congelamiento:**
+
+- que otro cambio del sitio mueva los números y no se sepa si fue la medición;
+- que haya commits encima del merge de la salida y el revert de emergencia tenga conflictos.
+
+**Qué queda permitido:** trabajar en ramas (`feat/`, `fix/`, `docs/`…), commitearlas, subirlas y
+ver su vista previa; leer GA4 y Looker y armar exploraciones; empezar el tablero nuevo de Looker
+en una **copia**; preparar la segunda etapa (privacidad, pedidos a la agencia).
+
+**Excepción:** una urgencia en producción (sitio caído, un precio mal mostrado), con OK de
+Gonzalo. Se anota acá que el destino del rollback cambió y que ese día queda marcado en la
+comparación. La actualización de los planes de ahorro entra en esta regla: si el cliente la
+necesita antes de D+7, es una excepción; si no, va después.
 
 ## Consentimiento: qué mirar
 
@@ -406,7 +544,7 @@ Las acciones automáticas se avisan en el chat en el momento, con qué condició
    `dpl_AzSxqQN1UfnEbHmF4UfoC9Hemarg` (`main@04ef6eb`) → **Instant Rollback** → confirmar.
    Equivalente: `vercel rollback <url de ese despliegue>`. En el plan Hobby solo se puede volver
    al despliegue de producción **inmediatamente anterior**: por eso no se despliega nada a
-   producción entre la etapa 0 y la salida.
+   producción desde la etapa 0 hasta D+7 (ver "Congelamiento hasta el control a los 7 días").
 2. **Comprobar:**
    - la marca del paso 0.4 vuelve a dar `{ pixel: 1, nuevo: 0 }` (código viejo);
    - `node scripts/smoke.mjs https://indiana.com.ar` 14/14;

@@ -59,7 +59,7 @@ Los números de esta página se usan en D+1 y D+7, con días completos.
 | Cuándo | Qué se compara | Rango esperado |
 |---|---|---|
 | D+1 (viernes 30) | Personas que contactaron el jueves 29 | 7 a 28 (el rango de las últimas 4 semanas) |
-| D+1 | `generate_lead` / (`whatsapp_click` + `phone_click` + postulaciones) | 0,95 a 1,05 |
+| D+1 y D+7 | `generate_lead` − (`whatsapp_click` + `phone_click` + `form_submit`), por día y por canal | 0 (1 solo con causa conocida); acumulado de la semana 2 o menos. Procedimiento: `salida-a-produccion.md` → "Validación de leads en GA4" |
 | D+1 | Visitas por persona | 2,5 a 4 (hoy 2,5 a 4,1) |
 | D+7 (jueves 5 nov) | Personas que contactan, promedio de 7 días | 8 a 20 (hoy 13) |
 | D+7 | Ningún evento con `debug_mode` en los informes | 0 |
