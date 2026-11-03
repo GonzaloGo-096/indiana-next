@@ -200,7 +200,7 @@ navegaciones; con GTM primero sería contar doble. Contar de menos no ensucia lo
 1. Día de la salida en GA4:
    - leads contra contactos, con el procedimiento de "Validación de leads en GA4" (lectura
      provisoria; la definitiva es a los 2 días);
-   - visitas por persona entre 2,5 y 4 (puede bajar un poco; no duplicarse);
+   - visitas por persona entre 2,4 y 4,5 (puede bajar un poco; no duplicarse);
    - ningún evento con `debug_mode` en los informes.
 2. Looker: Leads y % Conversión dentro del rango; en la torta "Categoría de Lead", el clic de
    prueba de la ficha de un usado cae en **"Usados"** (fórmula v2, `estado-previo.md`).
