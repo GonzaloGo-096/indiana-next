@@ -613,3 +613,20 @@ promueve igual (paso 3), y eso también reactiva el flujo normal.
 Anotar en este documento qué falló, en qué paso y en qué estado quedó el sitio. Si el "Aviso
 posterior" ya salió, avisar a la agencia, al cliente y a ventas; si no, se cuenta en ese aviso
 cuando se mande.
+
+## Registro de la salida
+
+### 2026-11-03: etapa 1 (A → B)
+
+- 15:39: merge `staging` → `main` (`f0a7aae`), push. Despliegue `dpl_918ZMhw3qoXnjoPvCRPZDQPGdioo`,
+  "Ready" a las 15:40. Destino de la vuelta atrás: `dpl_AzSxqQN1UfnEbHmF4UfoC9Hemarg`.
+- Marca `{ pixel: 1, nuevo: 1 }`; smoke 14/14; sin errores nuevos en Vercel.
+- Consentimiento (1.3), en contextos limpios: sin responder y rechazar, ningún envío a Meta ni
+  cookies; aceptar, `G111`, `_ga` y `_fbp`, y el PageView retenido sale en la misma página. Ojo:
+  Meta descarta los envíos de navegadores automáticos ("HeadlessChrome"); la prueba vale con un
+  user agent de Chrome normal.
+- Sin `_dbg` ni `debug_mode` (1.4).
+- **Clic de prueba 1.5:** 15:58 a 16:02, ficha Ford Focus 2014, **Ref. web SCMNN**, sin enviar el
+  mensaje. Tiempo real: `whatsapp_click` 1 y `generate_lead` 1 con ese auto. Se descuenta en los
+  controles.
+- Observación 1.6 hasta 16:40: contactos reales con su `generate_lead`, uno a uno.
