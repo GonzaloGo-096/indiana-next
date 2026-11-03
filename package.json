@@ -16,7 +16,8 @@
     "smoke:update": "node scripts/smoke.mjs --update",
     "planes": "node --no-warnings scripts/planes-oficiales.mjs",
     "planes:verificar": "node --no-warnings scripts/planes-verificar.mjs",
-    "check": "npm run typecheck && npm run lint && npm run test && npm run build"
+    "check": "npm run typecheck && npm run lint && npm run test && npm run build",
+    "gtm:publicado": "node scripts/gtm-publicado.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

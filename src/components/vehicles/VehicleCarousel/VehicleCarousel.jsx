@@ -218,9 +218,9 @@ export function VehicleCarousel({
                 <p>{errorMessage}</p>
               </div>
             ) : (
-              vehicles.map((vehicle, index) => (
+              vehicles.map((vehicle) => (
                 <div key={vehicle.id || vehicle._id} className={styles.cardWrapper}>
-                  <CardSimilar auto={vehicle} index={index} />
+                  <CardSimilar auto={vehicle} />
                 </div>
               ))
             )}

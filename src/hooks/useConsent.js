@@ -8,6 +8,7 @@
 
 import { useCallback, useSyncExternalStore } from "react";
 import {
+  applyConsentFromOtherTab,
   CONSENT_STATUS,
   CONSENT_STORAGE_KEY,
   persistConsent,
@@ -32,7 +33,9 @@ function notify() {
 function subscribe(callback) {
   listeners.add(callback);
   const handler = (e) => {
-    if (e.key === CONSENT_STORAGE_KEY) callback();
+    if (e.key !== CONSENT_STORAGE_KEY) return;
+    applyConsentFromOtherTab();
+    callback();
   };
   if (typeof window !== "undefined") {
     window.addEventListener("storage", handler);

@@ -31,9 +31,6 @@ import { STORAGE_KEYS } from "@/constants/storageKeys";
 import { buildVehicleDetailUrl } from "@/utils/vehicleSlug";
 import { getVehicleOfferDisplay } from "@/utils/vehicleOffer";
 import { VehiclePrice } from "@/components/vehicles/VehiclePrice/VehiclePrice";
-import { pushEcommerceEvent } from "@/lib/analytics/dataLayer";
-import { EVENTS, SOURCES, LOCATIONS, ITEM_LIST } from "@/lib/analytics/events";
-import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import styles from "./CardSimilar.module.css";
 import { VEHICLE_PLACEHOLDER } from "@/config/cloudinaryStaticImages";
 
@@ -44,16 +41,11 @@ import { VEHICLE_PLACEHOLDER } from "@/config/cloudinaryStaticImages";
  * @param {Object} props.auto - Datos del vehículo
  * @param {boolean} props.isPriority - Si es una de las primeras imágenes (LCP)
  * @param {boolean} props.usadosCarousel - Más padding/gap en cuerpo (solo carrusel Usados)
- * @param {string} props.trackingLocation - LOCATIONS enum para el evento select_item
- * @param {string} props.trackingListName - ITEM_LIST enum para el evento select_item
  */
 export const CardSimilar = memo(({
   auto,
   isPriority = false,
   usadosCarousel = false,
-  trackingLocation = LOCATIONS.USADOS_DETAIL,
-  trackingListName = ITEM_LIST.SIMILAR,
-  index = 0,
 }) => {
   const vehicleId = auto?.id || auto?._id;
 
@@ -69,29 +61,11 @@ export const CardSimilar = memo(({
     return buildVehicleDetailUrl(auto);
   }, [auto, vehicleId]);
 
-  // ✅ HANDLER: Analytics + scroll save.
-  // La navegación la delega al <Link> para evitar doble-fire por router.push()
-  // asíncrono en clics rápidos y para aprovechar prefetching de Next.js.
+  // Guarda el scroll antes de ir al detalle. La navegación la hace el <Link>
+  // para evitar doble disparo con router.push() y aprovechar el prefetch.
   const handleCardClick = useCallback(() => {
     if (!vehicleId) return;
 
-    // Analytics: select_item con contexto inyectado por el padre (location y list varían según placement)
-    const itemParams = buildItemParamsFromUsado(auto, trackingListName);
-    if (itemParams) {
-      pushEcommerceEvent(EVENTS.SELECT_ITEM, {
-        source: SOURCES.CAROUSEL,
-        location: trackingLocation,
-        component_id: "vehicle-card-similar",
-        item_id: itemParams.item_id,
-        item_name: itemParams.item_name,
-        item_category: itemParams.item_category,
-        item_list_name: trackingListName,
-        itemListName: trackingListName,
-        items: [{ ...itemParams, index }],
-      });
-    }
-
-    // Guardar posición de scroll antes de navegar
     if (typeof window !== "undefined") {
       const scrollData = {
         position: window.scrollY,
@@ -100,7 +74,7 @@ export const CardSimilar = memo(({
       };
       sessionStorage.setItem(STORAGE_KEYS.VEHICLES_LIST_SCROLL, JSON.stringify(scrollData));
     }
-  }, [auto, vehicleId, index, trackingLocation, trackingListName]);
+  }, [vehicleId]);
 
   // ✅ MEMOIZAR DATOS FORMATEADOS
   const formattedData = useMemo(() => {

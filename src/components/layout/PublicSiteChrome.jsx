@@ -1,6 +1,5 @@
 "use client";
 
-import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import Nav from "./Nav";
 import FooterLazy from "./Footer/FooterLazy";
@@ -25,16 +24,14 @@ const ConsentBanner = dynamic(() => import("../analytics/ConsentBanner"), {
  * Orden de tracking (importante):
  *   <head> root layout: ConsentBootstrap (default 'denied' antes de GTM)
  *   → MarketingTracking (loaders GTM/Meta)
- *   → PageViewTracker (page_view en cada navegación SPA, dentro de Suspense)
+ *   → PageViewTracker (page_view al entrar y en cada cambio de página)
  *   → ConsentBanner (UI opt-in)
  */
 export default function PublicSiteChrome({ children }) {
   return (
     <>
       <MarketingTracking />
-      <Suspense fallback={null}>
-        <PageViewTracker />
-      </Suspense>
+      <PageViewTracker />
       <ClientOnlyComponents />
       <Nav />
       <main className="main-content">{children}</main>

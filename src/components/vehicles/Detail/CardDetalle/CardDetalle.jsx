@@ -35,7 +35,6 @@ import { GalleryModal } from "@/components/vehicles/GalleryModal/GalleryModal";
 import { VehiclePrice } from "@/components/vehicles/VehiclePrice/VehiclePrice";
 import contact from "@/components/ui/ContactButtons.module.css";
 import WhatsAppLink from "@/components/analytics/WhatsAppLink";
-import { SOURCES, LOCATIONS, LEAD_TYPES, VERTICALS } from "@/lib/analytics/events";
 import { buildItemParamsFromUsado } from "@/lib/analytics/params";
 import styles from "./CardDetalle.module.css";
 
@@ -294,17 +293,11 @@ export const CardDetalle = memo(({ auto, contactInfo }) => {
             <div className={styles.whatsappSection}>
               <WhatsAppLink
                 href={`https://wa.me/${WHATSAPP_PHONE}?text=${encodeURIComponent(mensajeWhatsapp)}`}
-                phone={WHATSAPP_PHONE}
-                source={SOURCES.INLINE}
-                location={LOCATIONS.USADOS_DETAIL}
                 componentId={
                   vendido
                     ? "whatsapp-card-detalle-usado-vendido"
                     : "whatsapp-card-detalle-usado"
                 }
-                messageTemplateId={vendido ? "usado_detail_vendido" : "usado_detail"}
-                leadType={LEAD_TYPES.USED_VEHICLE_INQUIRY}
-                vertical={VERTICALS.USADOS}
                 item={buildItemParamsFromUsado(auto)}
                 className={`${contact.buttonWhatsapp} ${contact.buttonWhatsappFull}`}
                 aria-label={

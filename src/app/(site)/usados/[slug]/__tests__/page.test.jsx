@@ -136,6 +136,20 @@ describe("ficha: auto existente", () => {
     expect(error?.digest).toBe(`NEXT_REDIRECT;replace;/usados/${CANONICA};308;`);
   });
 
+  it("la redirección conserva la query: utm y gclid no se pierden", async () => {
+    m.getVehicleById.mockResolvedValue(AUTO);
+
+    const error = await errorDe(() =>
+      VehicleDetailPage({
+        ...props(ID),
+        searchParams: Promise.resolve({ utm_source: "google", gclid: "Cj0K", tag: ["a", "b"] }),
+      }),
+    );
+    expect(error?.digest).toBe(
+      `NEXT_REDIRECT;replace;/usados/${CANONICA}?utm_source=google&gclid=Cj0K&tag=a&tag=b;308;`,
+    );
+  });
+
   it.each([
     ["URL completa", "https://res.cloudinary.com/x/a.jpg", "https://res.cloudinary.com/x/a.jpg"],
     ["ruta relativa", "fotos/a.jpg", `${SITE}/fotos/a.jpg`],
