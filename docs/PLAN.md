@@ -36,7 +36,7 @@ Detalle: `docs/analytics/salida-a-produccion.md`. Explicación completa: guía d
 | A3 | Vercel: modo prueba solo en Preview; anotar el despliegue de producción de hoy (destino de la vuelta atrás) | C | Mié 28 | Anotado en el runbook |
 | A4 | Sumar el día 27 a `docs/analytics/linea-base.md` | C | Mié 28 | Commit |
 | A5 | Copiar la fórmula "Categoría de Lead" en Looker | G con guía | Mié 28, 10 min | Tablero sin errores |
-| A6 | Mandar los avisos a la agencia, al cliente y a ventas (`mensajes-fase1.md`) | G | Mié 28, 10 min | Enviados |
+| A6 | Aviso **posterior** a la agencia, al cliente y a ventas, cuando la etapa 3 da bien (sin avisos previos: decisión del 2026-11-03; ver "Aviso posterior" en el runbook) | G (C redacta) | D+1 | Enviados |
 | A7 | Mirar el consumo de Cloudinary (imágenes). El control vencía el 1 de julio | G (C guía) | Mié 28, 2 min | Número anotado; si pasa del 70 %, se planifica |
 | A8 | **Salida**: código 9:30 → clic de prueba 9:45 → Tag Manager y 3 opciones de Analytics 9:50 → control 10:05 | C y G | **Jue 29** | `npm run gtm:publicado` da "Todo ok" |
 | A9 | Vigilancia cada 2 horas | C | Jue 29 hasta 18:00 | Sin señales de abort |

@@ -155,7 +155,9 @@ Todas, comprobadas el mismo día. Si falta una, no se empieza.
    Código viejo: `{ pixel: 1, nuevo: 0 }` (comprobado en producción el 2026-11-02). Código
    nuevo: `nuevo` 1 o más (trae el Pixel en pausa). `pixel: 0` significa que el comando no
    encontró el JS del Pixel: la marca no sirve y se mira el despliegue en Vercel.
-5. Avisos enviados (agencia, cliente, ventas: `mensajes-fase1.md`).
+5. **Sin avisos previos** (decisión de Gonzalo, 2026-11-03): antes de la salida no se avisa a la
+   agencia, al cliente ni a ventas. Se les informa después de comprobar que la medición funciona
+   (ver "Aviso posterior"). **Esta condición no bloquea el inicio.**
 6. Sesiones abiertas: GTM, GA4 y Looker (`infodigital@indiana.com.ar`, perfil "peugeot
    indiana"), Vercel (perfil "gona") y `git push` desde la computadora.
 7. **2FA:** Gonzalo puede completar él mismo, en el momento, una verificación de
@@ -205,9 +207,28 @@ navegaciones; con GTM primero sería contar doble. Contar de menos no ensucia lo
 2. Looker: Leads y % Conversión dentro del rango; en la torta "Categoría de Lead", el clic de
    prueba de la ficha de un usado cae en **"Usados"** (fórmula v2, `estado-previo.md`).
 3. Fuera de rango: investigar en menos de 4 h y decidir si se vuelve atrás.
-4. Pedir a la agencia los datos de "Conversiones de la agencia".
+4. Con los puntos 1 y 2 bien, mandar el "Aviso posterior", que incluye el pedido de datos de
+   "Conversiones de la agencia".
 5. Sigue el congelamiento hasta el control a los 7 días (ver "Congelamiento hasta el control a
    los 7 días").
+
+### Aviso posterior
+
+No hay avisos previos (condición 0.5). La agencia, el cliente y ventas se enteran **después de
+comprobar que la nueva medición funciona**: cuando la etapa 3 da bien los puntos 1 y 2 (lectura
+provisoria del día siguiente). Claude redacta los mensajes; Gonzalo los manda.
+
+| A quién | Qué dice |
+|---|---|
+| Agencia | Qué cambió y cuándo (fecha y hora de las etapas 1 y 2); que el Pixel de Meta ahora espera el permiso del cartel, así que van a ver menos eventos desde esa hora; que no se tocó su contenedor ni los textos de sus botones; el pedido de datos de "Conversiones de la agencia"; que no cambien su contenedor ni esos textos hasta D+7 |
+| Cliente | Que la medición nueva está funcionando y qué mide; cuándo llega el control de los 7 días |
+| Ventas | Que los chats de quienes aceptan las cookies llegan con "(Ref. web XXXXX)" y para qué sirve anotarlo |
+
+Si hubo una vuelta atrás antes del aviso, se cuenta en el mismo aviso.
+
+**Riesgo aceptado:** entre la etapa 1 y el aviso (1 o 2 días), la agencia puede notar la baja de
+eventos en Meta sin saber por qué. Si preguntan antes, se les manda el aviso en ese momento, sin
+esperar la lectura.
 
 ### Control a los 7 días (D+7): cuándo la medición está terminada
 
@@ -267,7 +288,8 @@ de la salida). Cada lectura se anota en este documento: fecha, los 4 números y 
 
 ### Conversiones de la agencia
 
-**Qué se les pide**, por día, desde el 2026-10-20 hasta la salida y la semana siguiente:
+**Qué se les pide** (en el "Aviso posterior"), por día, desde el 2026-10-20 hasta la salida y la
+semana siguiente:
 
 | Fuente | Datos |
 |---|---|
@@ -370,7 +392,7 @@ ni `G110`. `gcd` lleva el detalle de las 4 señales de Consent Mode v2: es secun
 | `G111`, `_ga` o `_ga_…` antes de aceptar, o después de rechazar | Google mide con cookies sin permiso | **Falla de consentimiento** | Inmediato: Instant Rollback del código; si estaba en C, después GTM v9 y las 3 opciones |
 | `facebook.com/tr` o `_fbp` antes de aceptar, o después de rechazar | Meta recibe sin permiso | **Falla de consentimiento** | Inmediato: Instant Rollback del código; si estaba en C, después GTM v9 y las 3 opciones |
 | Después de aceptar sigue `G100` o no aparece `_ga` | No mide a quien aceptó | Funcional | B → A e investigar |
-| Después de aceptar no hay `facebook.com/tr` | La agencia pierde datos de Meta | Funcional (agencia) | B → A, avisar a la agencia, corregir en una rama |
+| Después de aceptar no hay `facebook.com/tr` | La agencia pierde datos de Meta | Funcional (agencia) | B → A, contarlo en el aviso a la agencia, corregir en una rama |
 | Falta "(Ref. web)" con cookies aceptadas | Solo afecta a ventas | Menor | No se vuelve atrás; se corrige en una rama |
 
 ### Prueba del PageView retenido
@@ -443,7 +465,7 @@ miran y que decide el cliente con su abogado (`docs/PLAN.md`, D1 y D2):
 9. **Pixel de Meta y consentimiento: resuelto en la rama** (`metaPixel.js`, 2026-10-07). Queda
    en pausa hasta que se aceptan las cookies de publicidad y no carga fuera de producción. Lo
    aprueba Gonzalo en pre-producción; la agencia va a ver menos eventos en Meta (los de quienes
-   rechazan): avisarles en D-1.
+   rechazan): se les informa después de comprobar la medición (ver "Aviso posterior").
 10. **Datos de prueba viejos en GA4.** Las pruebas del 2026-10-06 dejaron unos pocos eventos
     con hostname `localhost` en nuestra propiedad y en la de la agencia. En Looker filtrar por
     hostname `indiana.com.ar` **o** `www.indiana.com.ar` (las dos direcciones sirven el sitio y
@@ -588,5 +610,6 @@ promueve igual (paso 3), y eso también reactiva el flujo normal.
 
 ### Después de cualquier vuelta atrás
 
-Avisar a la agencia, al cliente y a ventas, y anotar en este documento qué falló, en qué paso y
-en qué estado quedó el sitio.
+Anotar en este documento qué falló, en qué paso y en qué estado quedó el sitio. Si el "Aviso
+posterior" ya salió, avisar a la agencia, al cliente y a ventas; si no, se cuenta en ese aviso
+cuando se mande.
