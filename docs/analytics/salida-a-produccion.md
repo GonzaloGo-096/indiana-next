@@ -171,7 +171,7 @@ Todas, comprobadas el mismo día. Si falta una, no se empieza.
 |---|---|---|---|---|
 | 1.1 | `git checkout main && git pull --ff-only && git merge --no-ff staging -m "merge: publicar medicion simple a produccion"`, `git push`; esperar "Ready" en Vercel. Anotar el SHA del merge y el ID del despliegue | Claude, con OK de Gonzalo en el momento | Despliegue "Ready" y la marca del paso 0.4 da `nuevo` 1 o más | El build falla: producción no cambió, no se toca nada más |
 | 1.2 | ¿El sitio funciona? (tabla "Qué prueba qué") | Claude | Las 4 pruebas bien | Algo no carga → Instant Rollback (B → A) |
-| 1.3 | Consentimiento y Pixel: los 3 escenarios de "Consentimiento: qué mirar" | Claude, Gonzalo mira | Los 3 escenarios dan lo esperado | Resultado legal incorrecto → B → A inmediato |
+| 1.3 | Consentimiento y Pixel: los 3 escenarios de "Consentimiento: qué mirar" | Claude, Gonzalo mira | Los 3 escenarios dan lo esperado | Falla de consentimiento → B → A inmediato |
 | 1.4 | En Red, los `collect` sin `_dbg` ni `ep.debug_mode` | Claude | Ninguno lo lleva | Alguno lo lleva → B → A (esos datos quedarían fuera de los informes) |
 | 1.5 | Clic de prueba de WhatsApp desde una ficha elegida antes, con cookies aceptadas | Gonzalo hace el clic, Claude lee GA4 | En Tiempo real, en menos de 5 min: `whatsapp_click` +1 y `generate_lead` +1 con ese auto; el mensaje termina en "(Ref. web XXXXX)" | Falta `generate_lead` → B → A |
 | 1.6 | Observar B al menos 1 hora | Claude | Contactos de personas reales, cada uno con su `generate_lead` | Contactos reales sin `generate_lead` → B → A |
@@ -260,7 +260,7 @@ hora siguiente al paso 2.3.
 |---|---|---|
 | Diferencia del día: `generate_lead` − (`whatsapp_click` + `phone_click` + `form_submit`) | Da 0 | Da 2 o más, en cualquier sentido |
 | Por canal (tabla 2) | Cada par coincide; ningún `generate_lead` con Lead Source `(not set)` | Un canal falla (señala qué activador del puente está mal) |
-| Acumulado de la semana: la suma de las diferencias de los 7 días | 2 o menos | 3 o más, o siempre con el mismo signo |
+| Acumulado de la semana: la suma de las diferencias **en valor absoluto** de los 7 días (un +1 y un −1 suman 2, no 0) | 2 o menos, y cada día distinto de 0 con su causa anotada | 3 o más, o un día distinto de 0 sin causa |
 
 Una diferencia de 1 se acepta solo con causa conocida (por ejemplo, los 15 min de caché del día
 de la salida). Cada lectura se anota en este documento: fecha, los 4 números y la diferencia.
@@ -297,7 +297,7 @@ pueden diferir sin que haya falla. Sirven para decidir **qué mirar**:
 | `PageView` y contactos bajan en una proporción parecida | Consentimiento | Nada |
 | Los contactos bajan bastante más que los `PageView` | Puede haber una falla de contactos | Repetir la prueba técnica con un clic aceptado |
 | `PageView` en 0 o casi 0 | El Pixel no carga o no recibe el permiso | Repetir la prueba técnica; si falla, es la falla funcional de "Consentimiento: qué mirar" |
-| No bajan nada | La pausa no funciona | Repetir la prueba técnica; si sale algo antes de aceptar, es falla **legal** |
+| No bajan nada | La pausa no funciona | Repetir la prueba técnica; si sale algo antes de aceptar, es falla **de consentimiento** |
 
 La decisión de volver atrás sale siempre de la prueba técnica, nunca solo de los números.
 
@@ -367,8 +367,8 @@ ni `G110`. `gcd` lleva el detalle de las 4 señales de Consent Mode v2: es secun
 
 | Resultado incorrecto | Qué significa | Gravedad | Qué se hace |
 |---|---|---|---|
-| `G111`, `_ga` o `_ga_…` antes de aceptar, o después de rechazar | Google mide con cookies sin permiso | **Legal** | Inmediato: Instant Rollback del código; si estaba en C, después GTM v9 y las 3 opciones |
-| `facebook.com/tr` o `_fbp` antes de aceptar, o después de rechazar | Meta recibe sin permiso | **Legal** | Inmediato: Instant Rollback del código; si estaba en C, después GTM v9 y las 3 opciones |
+| `G111`, `_ga` o `_ga_…` antes de aceptar, o después de rechazar | Google mide con cookies sin permiso | **Falla de consentimiento** | Inmediato: Instant Rollback del código; si estaba en C, después GTM v9 y las 3 opciones |
+| `facebook.com/tr` o `_fbp` antes de aceptar, o después de rechazar | Meta recibe sin permiso | **Falla de consentimiento** | Inmediato: Instant Rollback del código; si estaba en C, después GTM v9 y las 3 opciones |
 | Después de aceptar sigue `G100` o no aparece `_ga` | No mide a quien aceptó | Funcional | B → A e investigar |
 | Después de aceptar no hay `facebook.com/tr` | La agencia pierde datos de Meta | Funcional (agencia) | B → A, avisar a la agencia, corregir en una rama |
 | Falta "(Ref. web)" con cookies aceptadas | Solo afecta a ventas | Menor | No se vuelve atrás; se corrige en una rama |
@@ -389,9 +389,9 @@ en esa misma página o recién en la siguiente. Se prueba una vez, en la etapa 1
 |---|---|
 | Un `PageView` en el paso 3 con la dirección de la ficha, y otro en el 4 | Bien: el retenido sale al aceptar |
 | Nada en el paso 3, uno en el 4 | Bien: Meta pierde solo la página donde se aceptó. Anotarlo para la agencia |
-| Dos `PageView` de la misma dirección en el paso 3 | Falla: Meta cuenta doble esa visita. Corregir en una rama; no es legal ni urgente |
+| Dos `PageView` de la misma dirección en el paso 3 | Falla: Meta cuenta doble esa visita. Corregir en una rama; no es falla de consentimiento ni urgente |
 | Ninguno en el paso 3 ni en el 4 | Falla funcional: B → A (ver la tabla de abajo) |
-| Alguno **antes** de aceptar (paso 2) | Falla legal: B → A inmediato |
+| Alguno **antes** de aceptar (paso 2) | Falla de consentimiento: B → A inmediato |
 
 **Señal técnica no es cumplimiento legal.** Estas pruebas demuestran qué sale del navegador en
 cada caso. No demuestran que el diseño cumpla la ley, que depende de cosas que estas pruebas no
@@ -484,7 +484,7 @@ miran y que decide el cliente con su abogado (`docs/PLAN.md`, D1 y D2):
 
 Detalle de cada consola en `estado-previo.md`. Toda vuelta atrás termina en un estado ✅ (ver
 "Los tres estados"): de C se vuelve a B y de B a A. De C a A se pasa por B, salvo ante una falla
-legal de consentimiento o del Pixel: ahí va primero el código (B → A, Instant Rollback) y después
+de consentimiento (Google o el Pixel envían sin permiso): ahí va primero el código (B → A, Instant Rollback) y después
 GTM v9 y las 3 opciones, porque el consentimiento y el Pixel están en el código.
 
 ### Qué está autorizado de antemano
