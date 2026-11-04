@@ -17,7 +17,7 @@ import { describe, it, expect, beforeAll, afterEach, vi } from "vitest";
 import fs from "node:fs";
 import path from "node:path";
 import { render, fireEvent, cleanup, act, renderHook, waitFor } from "@testing-library/react";
-import { CONTRATO, PUENTE, MARCA_PRUEBA, buildContainer } from "../../../../scripts/gtm-definition.mjs";
+import { CONTRATO, PUENTE, MARCA_PRUEBA, DATO_EVENTO_AUTOMATICO, SOLO_AVISOS_DEL_SITIO, buildContainer } from "../../../../scripts/gtm-definition.mjs";
 import { EVENTS, FORM_IDS, LEAD_COMPAT } from "../events";
 import { CONSENT_STORAGE_KEY } from "../consent";
 import { buildIndianaGtmSnippet } from "../gtmLoader";
@@ -169,6 +169,19 @@ describe("GTM: debug_mode y puente", () => {
     for (const t of tag) expect(valor(t, "debug_mode"), t.name).toBe(`{{DLV - ${MARCA_PRUEBA}}}`);
     const dlv = variable.find((v) => v.name === `DLV - ${MARCA_PRUEBA}`);
     expect(dlv.parameter.find((p) => p.key === "setDefaultValue").value).toBe("false");
+  });
+
+  it("los activadores que chocan con eventos automáticos de Google solo responden a los avisos del sitio", () => {
+    const exige = (t) => t.filter?.some((f) => f.parameter[0].value === `{{DLV - ${DATO_EVENTO_AUTOMATICO}}}` && f.parameter[1].value === "undefined");
+    const delEvento = (ev) => trigger.filter((t) => t.customEventFilter[0].parameter[1].value === ev);
+    for (const ev of SOLO_AVISOS_DEL_SITIO) {
+      expect(delEvento(ev).length, ev).toBeGreaterThan(0);
+      for (const t of delEvento(ev)) expect(exige(t), t.name).toBe(true);
+    }
+  });
+
+  it("ningún aviso que el sitio empuja lleva el dato de los eventos automáticos", () => {
+    expect(todos.filter((e) => DATO_EVENTO_AUTOMATICO in e)).toEqual([]);
   });
 
   it("la marca que lee GTM es la que empuja el cargador fuera de producción, y en producción no se empuja", () => {

@@ -22,7 +22,7 @@
  * Correrlo 15 minutos después de publicar (gtm.js queda en caché). Sale con
  * código 1 si falta algo.
  */
-import { CONTRATO, PUENTE, MARCA_PRUEBA, GA4 } from "./gtm-definition.mjs";
+import { CONTRATO, PUENTE, MARCA_PRUEBA, GA4, DATO_EVENTO_AUTOMATICO } from "./gtm-definition.mjs";
 
 // La versión publicada antes de la medición simple: la nueva tiene que ser posterior.
 const VERSION_VIEJA = 9;
@@ -38,7 +38,7 @@ if (!r.ok) {
 const js = await r.text();
 const version = Number(js.match(/"version":"(\d+)"/)?.[1] ?? 0);
 
-const claves = [...new Set([...Object.values(CONTRATO).flat(), MARCA_PRUEBA])];
+const claves = [...new Set([...Object.values(CONTRATO).flat(), MARCA_PRUEBA, DATO_EVENTO_AUTOMATICO])];
 const chequeos = [
   [`versión posterior a la ${VERSION_VIEJA}`, `versión ${version}`, version > VERSION_VIEJA],
   ...Object.keys(CONTRATO).flatMap((ev) => [
@@ -48,6 +48,7 @@ const chequeos = [
   ["puente", PUENTE.evento, js.includes(`"vtp_eventName":"${PUENTE.evento}"`)],
   [`sin activador de ${PUENTE.evento}`, "no cuenta doble", !js.includes(`"arg1":"${PUENTE.evento}"`)],
   ...claves.map((k) => ["variable", k, js.includes(`"vtp_name":"${k}"`)]),
+  ["filtro de eventos automáticos", DATO_EVENTO_AUTOMATICO, js.includes(`"arg1":"undefined"`)],
   ["GA4", GA4, js.includes(GA4)],
 ];
 

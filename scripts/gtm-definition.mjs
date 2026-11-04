@@ -50,6 +50,18 @@ export const PUENTE = Object.freeze({
   leadSource: { whatsapp_click: "whatsapp", phone_click: "phone", form_submit: "form" },
 });
 
+/**
+ * La etiqueta de Google Ads de la agencia genera sola eventos con estos mismos
+ * nombres (mide cambios de página, formularios y búsquedas). Un activador de
+ * GTM responde a cualquier evento con su nombre, venga de donde venga: con la
+ * v10, cada navegación interna contaba dos visitas (2026-11-04). Los eventos
+ * automáticos traen `eventModel` y los que empuja el sitio no, así que estos
+ * activadores exigen que esté indefinido. No es un dato documentado por Google:
+ * si lo cambia, vuelve el doble conteo, y lo muestra la prueba de 3 páginas.
+ */
+export const DATO_EVENTO_AUTOMATICO = "eventModel";
+export const SOLO_AVISOS_DEL_SITIO = Object.freeze(["page_view", "view_search_results", "form_submit"]);
+
 const base = { accountId: ACCOUNT, containerId: CONTAINER };
 const T = (key, value) => ({ type: "TEMPLATE", key, value });
 const fila = (parametro, valor) => ({ type: "MAP", map: [T("parameter", parametro), T("parameterValue", valor)] });
@@ -57,7 +69,8 @@ const consent = { consentStatus: "NOT_SET" };
 
 export function buildContainer({ exportTime = "2026-10-07 00:00:00" } = {}) {
   const eventos = Object.keys(CONTRATO);
-  const nombres = [...new Set([...Object.values(CONTRATO).flat(), ...PUENTE.parametros, MARCA_PRUEBA])];
+  const nombres = [...new Set([...Object.values(CONTRATO).flat(), ...PUENTE.parametros, MARCA_PRUEBA, DATO_EVENTO_AUTOMATICO])];
+  const soloDelSitio = { type: "EQUALS", parameter: [T("arg0", `{{DLV - ${DATO_EVENTO_AUTOMATICO}}}`), T("arg1", "undefined")] };
 
   const variable = [
     ...nombres.map((name, i) => ({
@@ -97,6 +110,7 @@ export function buildContainer({ exportTime = "2026-10-07 00:00:00" } = {}) {
       name: `CE - ${ev}`,
       type: "CUSTOM_EVENT",
       customEventFilter: [{ type: "EQUALS", parameter: [T("arg0", "{{_event}}"), T("arg1", ev)] }],
+      ...(SOLO_AVISOS_DEL_SITIO.includes(ev) ? { filter: [soloDelSitio] } : {}),
     })),
     // Disparadores del puente filtrados por form_id ("form_submit:careers").
     ...PUENTE.disparadores
@@ -109,7 +123,7 @@ export function buildContainer({ exportTime = "2026-10-07 00:00:00" } = {}) {
           name: `CE - ${ev} (${formId === "careers" ? "empleo" : formId})`,
           type: "CUSTOM_EVENT",
           customEventFilter: [{ type: "EQUALS", parameter: [T("arg0", "{{_event}}"), T("arg1", ev)] }],
-          filter: [{ type: "EQUALS", parameter: [T("arg0", "{{DLV - form_id}}"), T("arg1", formId)] }],
+          filter: [{ type: "EQUALS", parameter: [T("arg0", "{{DLV - form_id}}"), T("arg1", formId)] }, soloDelSitio],
         };
       }),
   ];

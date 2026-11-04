@@ -899,6 +899,23 @@
               }
             ]
           }
+        ],
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - eventModel}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "undefined"
+              }
+            ]
+          }
         ]
       },
       {
@@ -995,6 +1012,23 @@
               }
             ]
           }
+        ],
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - eventModel}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "undefined"
+              }
+            ]
+          }
         ]
       },
       {
@@ -1016,6 +1050,23 @@
                 "type": "TEMPLATE",
                 "key": "arg1",
                 "value": "form_submit"
+              }
+            ]
+          }
+        ],
+        "filter": [
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - eventModel}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "undefined"
               }
             ]
           }
@@ -1057,6 +1108,21 @@
                 "type": "TEMPLATE",
                 "key": "arg1",
                 "value": "careers"
+              }
+            ]
+          },
+          {
+            "type": "EQUALS",
+            "parameter": [
+              {
+                "type": "TEMPLATE",
+                "key": "arg0",
+                "value": "{{DLV - eventModel}}"
+              },
+              {
+                "type": "TEMPLATE",
+                "key": "arg1",
+                "value": "undefined"
               }
             ]
           }
@@ -1373,6 +1439,30 @@
             "type": "TEMPLATE",
             "key": "name",
             "value": "analytics_test"
+          }
+        ]
+      },
+      {
+        "accountId": "6351586507",
+        "containerId": "250370263",
+        "variableId": "113",
+        "name": "DLV - eventModel",
+        "type": "v",
+        "parameter": [
+          {
+            "type": "INTEGER",
+            "key": "dataLayerVersion",
+            "value": "2"
+          },
+          {
+            "type": "BOOLEAN",
+            "key": "setDefaultValue",
+            "value": "false"
+          },
+          {
+            "type": "TEMPLATE",
+            "key": "name",
+            "value": "eventModel"
           }
         ]
       },
