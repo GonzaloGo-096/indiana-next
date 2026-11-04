@@ -98,13 +98,13 @@ comprueba.
 |---|---|---|---|---|
 | **A** (antes de salir) | viejo (`main@04ef6eb`) | v9 | prendidas | Sí |
 | **B** (intermedio) | nuevo (`staging@0d46ac6`) | v9 | prendidas | **Sí, horas o días.** Leads cuenta por `LEAD_COMPAT`; las visitas, igual que en A |
-| **C** (objetivo) | nuevo | v10 | **apagadas** | Sí |
+| **C** (objetivo) | nuevo | **v11** (la v10 con el filtro de eventos automáticos; ver "Registro de la salida") | **apagadas** | Sí |
 
 \* "La página cambia en función de los eventos del historial de navegación", "Interacciones con
 formularios" y "Búsquedas en el sitio". Los clics de salida quedan prendidos siempre: no
 duplican nada y sirven de control (clics a wa.me contra nuestros `whatsapp_click`).
 
-**Regla: GTM v10 y las 3 opciones apagadas van siempre juntas.** v10 con las opciones prendidas
+**Regla: GTM v11 y las 3 opciones apagadas van siempre juntas.** v11 con las opciones prendidas
 duplica `page_view` y mezcla el `form_submit` y el `view_search_results` automáticos de GA4 con
 los nuestros; v9 con las opciones apagadas deja de contar las navegaciones sin recarga (la v9 no
 tiene etiqueta de `page_view`). Por eso el código es una etapa y GTM + GA4 es otra.
@@ -113,9 +113,10 @@ tiene etiqueta de `page_view`). Por eso el código es una etapa y GTM + GA4 es o
 |---|---|---|---|
 | viejo | v9 | prendidas | ✅ A |
 | nuevo | v9 | prendidas | ✅ B |
-| nuevo | v10 | apagadas | ✅ C |
-| viejo | v10 | apagadas | ⚠️ Leads bien; el código viejo manda un `page_view` por cada filtro del listado. Solo minutos |
-| cualquiera | v10 | prendidas | ❌ visitas dobles; formularios y búsquedas mezclados |
+| nuevo | v11 | apagadas | ✅ C |
+| viejo | v11 | apagadas | ⚠️ Leads bien; el código viejo manda un `page_view` por cada filtro del listado. Solo minutos |
+| cualquiera | v11 | prendidas | ❌ visitas dobles; formularios y búsquedas mezclados |
+| cualquiera | v10 | cualquiera | ❌ visitas internas dobles: **no volver a publicarla** |
 | cualquiera | v9 | apagadas | ❌ se pierden las visitas sin recarga |
 
 Toda vuelta atrás termina en un estado ✅ (ver "Volver atrás").
@@ -181,6 +182,9 @@ Todas, comprobadas el mismo día. Si falta una, no se empieza.
 Al cerrar la etapa 1 se decide si la etapa 2 va ese día u otro: B es estable.
 
 ### Etapa 2: GTM v10 + GA4, una sola unidad (B → C)
+
+Ejecutada el 2026-11-04. La tabla queda como se planeó; la v10 falló en el paso 2.5 y se reemplazó por
+la v11 (ver "Registro de la salida").
 
 | Paso | Qué | Quién | Para seguir | Se detiene si |
 |---|---|---|---|---|
@@ -534,7 +538,7 @@ Siempre con autorización explícita de Gonzalo en el momento, aunque haya autor
 
 - los `git revert` en `main` y `staging` (vuelta atrás definitiva);
 - promover cualquier despliegue en Vercel (incluido el del revert);
-- reintentar: volver a publicar la v10 o volver a mergear;
+- reintentar: volver a publicar la v11 (nunca la v10: cuenta doble) o volver a mergear;
 - volver atrás por un motivo que no es una condición de detención escrita (por criterio);
 - cualquier cambio en Looker, en otra configuración de GA4 o en el contenedor de la agencia;
 - todo lo posterior al día de la salida.
@@ -544,8 +548,8 @@ Las acciones automáticas se avisan en el chat en el momento, con qué condició
 ### C → B: GTM v9 y las 3 opciones prendidas
 
 1. **GTM:** Versiones → versión 9 → menú ⋮ → **Publicar**.
-   - Comprobar: en Versiones, la 9 figura "Publicada". La v10 queda en la lista: para
-     reintentar se publica de nuevo la v10, sin reimportar nada.
+   - Comprobar: en Versiones, la 9 figura "Publicada". La v11 queda en la lista: para
+     reintentar se publica de nuevo la v11, sin reimportar nada.
    - Si la 9 no estuviera: importar `docs/analytics/backup/GTM-TPJCFTBB_v9.json` en un espacio
      nuevo con **Sobrescribir** y publicar (`estado-previo.md`).
 2. **Enseguida, GA4:** Flujo web → Medición mejorada → prender "La página cambia en función de
@@ -635,3 +639,51 @@ cuando se mande.
   opciones de GA4 **siempre** lleva su autorización expresa en el momento; si no responde, no se
   hace (se quitó la regla de los 15 minutos).
 - Quedan sin probar con tráfico real: `phone_click`, `form_submit` y el WhatsApp flotante.
+
+### 2026-11-04: etapa 2 (B → C), con un doble conteo corregido
+
+**Control previo:** el 3-nov dio 21 `whatsapp_click` y 21 `generate_lead`, iguales hora por hora;
+desde las 15:00, 10 y 10, incluida la prueba SCMNN.
+
+| Hora | Qué pasó |
+|---|---|
+| 9:39:47 | 2.1: Gonzalo apaga las 3 opciones de GA4; comprobado reabriendo el panel |
+| 10:07 | 2.2: Gonzalo publica la v10, 27 minutos después de GA4 |
+| 10:23 | 2.3: `gtm:publicado` da "Todo ok" |
+| ~10:26 | 2.4: prueba **HDMUV**, una vez en cada evento |
+| 10:39 y 10:53 | 2.5 **falla**: 3 páginas con 2 vistas cada una; un clic en Postventa suma 2. Condición de detención; opciones de GA4 sin cambios |
+| 11:13 a 12:08 | Gonzalo decide corregir sin volver a la v9, con límite hasta las 12:15. Se aísla la causa y se arma la corrección sin publicarla |
+| 12:17 | Gonzalo publica la **v11** |
+| 12:32 | 2.3 repetido: "Todo ok" |
+| ~12:50 | 2.4 y 2.5 repetidos: prueba **VMJG5**, una vez en cada evento; 3 páginas con 1 vista cada una |
+| ~13:00 | 2.6: con cookies rechazadas, mensaje sin código y sin envío a Meta en la consola |
+
+**Causa:** la etiqueta de Google Ads del contenedor de la agencia genera sola eventos `page_view` y
+`form_submit`. Nuestros activadores respondían a cualquier evento con ese nombre, además de a los
+avisos del sitio. El código empuja un solo `page_view` por página.
+
+**Cómo se aisló, sin mandar datos:** sitio local con los dos contenedores reales y los envíos
+respondidos dentro del navegador. Solo nuestro contenedor: 1 visita. Con el de la agencia: 2. Sin su
+etiqueta de Ads: 1.
+
+**Corrección (v11):** variable `DLV - eventModel` y la condición "`eventModel` es igual a
+`undefined`" en `CE - page_view`, `CE - view_search_results`, `CE - form_submit` y
+`CE - form_submit (empleo)`. Definida en `scripts/gtm-definition.mjs`. El contenedor de la agencia
+no se tocó. Google no documenta `eventModel`: si lo cambia, vuelve el doble conteo. Evaluar después
+de D+7 que el código use un nombre de evento propio.
+
+**Datos del 4-nov:** las vistas no sirven de referencia. De 9:39 a 10:07 se pudieron contar de menos
+las navegaciones internas, y de 10:07 a unas 12:32 quedaron dobles. Las pruebas de laboratorio no
+mandaron datos. Sí llegaron a GA4 las pruebas de Gonzalo y una carga de la portada hecha por Claude
+cerca de las 10:50.
+
+**Límites:** la prueba de Meta del 2.6 se leyó en la consola, porque la pestaña Red tampoco mostró el
+envío al aceptar.
+
+**Sin resolver:** la referencia **8KYMJ** salió en un mensaje y no apareció en Tiempo real; **A6X43**
+apareció una vez en cada evento y no se sabe de quién es. Se revisan en los informes del 5-nov.
+
+**Sin probar con tráfico real:** `phone_click`, el formulario real de empleo y el WhatsApp flotante.
+
+**Anotaciones:** GA4, 3-nov y 4-nov. Looker no tiene anotaciones propias: un cuadro de texto se vería
+en el tablero, así que queda a decisión de Gonzalo. Tag `release/medicion-simple` en `f0a7aae`.
