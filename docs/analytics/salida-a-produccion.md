@@ -683,7 +683,16 @@ envío al aceptar.
 **Sin resolver:** la referencia **8KYMJ** salió en un mensaje y no apareció en Tiempo real; **A6X43**
 apareció una vez en cada evento y no se sabe de quién es. Se revisan en los informes del 5-nov.
 
-**Sin probar con tráfico real:** `phone_click`, el formulario real de empleo y el WhatsApp flotante.
+**Pruebas de la tarde (Gonzalo, en incógnito):**
+- ~15:35, WhatsApp flotante de `/planes`: **RSKQY**, una vez en `whatsapp_click` y una en
+  `generate_lead`. WhatsApp se abrió de verdad.
+- ~16:30, teléfono del pie: `phone_click` 1 y `generate_lead` 1, sin llamada real. Un clic anterior no
+  apareció porque esa ventana tenía guardado el rechazo de las cookies.
 
-**Anotaciones:** GA4, 3-nov y 4-nov. Looker no tiene anotaciones propias: un cuadro de texto se vería
-en el tablero, así que queda a decisión de Gonzalo. Tag `release/medicion-simple` en `f0a7aae`.
+**Sin probar con tráfico real:** el formulario de empleo, que todavía no entrega las postulaciones.
+
+**Control a los 7 días:** 2026-11-11, contado desde la v11 (confirmado por Gonzalo).
+
+**Anotaciones:** GA4, 3-nov y 4-nov. Looker queda sin anotación por decisión de Gonzalo: no tiene una
+función propia, y un cuadro de texto lo vería cualquiera que abra el tablero. Tag
+`release/medicion-simple` en `f0a7aae`.
